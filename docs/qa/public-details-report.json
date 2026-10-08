@@ -1,0 +1,180 @@
+[
+  {
+    "category": "Grocery",
+    "width": 320,
+    "overflow": []
+  },
+  {
+    "category": "Hardware",
+    "width": 320,
+    "overflow": []
+  },
+  {
+    "category": "Fruits & vegetables",
+    "width": 320,
+    "overflow": []
+  },
+  {
+    "category": "Mobile accessories",
+    "width": 320,
+    "overflow": []
+  },
+  {
+    "category": "Clothing",
+    "width": 320,
+    "overflow": []
+  },
+  {
+    "category": "General business",
+    "width": 320,
+    "overflow": []
+  },
+  {
+    "route": "/hi",
+    "status": 200,
+    "title": "DukaanSet — अपनी दुकान, सब सेट।",
+    "overflow": [],
+    "violations": []
+  },
+  {
+    "route": "/features",
+    "status": 200,
+    "title": "Business tools for everyday shop operations | DukaanSet",
+    "overflow": [],
+    "violations": []
+  },
+  {
+    "route": "/features/billing",
+    "status": 200,
+    "title": "Connected billing for small shops | DukaanSet",
+    "overflow": [],
+    "violations": []
+  },
+  {
+    "route": "/features/inventory",
+    "status": 200,
+    "title": "Inventory and stock movement tracking | DukaanSet",
+    "overflow": [],
+    "violations": []
+  },
+  {
+    "route": "/features/udhar",
+    "status": 200,
+    "title": "Customer credit and payment tracking | DukaanSet",
+    "overflow": [],
+    "violations": []
+  },
+  {
+    "route": "/features/ai",
+    "status": 200,
+    "title": "AI assistance roadmap and current availability | DukaanSet",
+    "overflow": [],
+    "violations": []
+  },
+  {
+    "route": "/business-types",
+    "status": 200,
+    "title": "A workspace for different kinds of shops | DukaanSet",
+    "overflow": [],
+    "violations": []
+  },
+  {
+    "route": "/business-types/grocery",
+    "status": 200,
+    "title": "Kirana and grocery shop workspace | DukaanSet",
+    "overflow": [],
+    "violations": []
+  },
+  {
+    "route": "/business-types/hardware",
+    "status": 200,
+    "title": "Hardware and electrical stock workspace | DukaanSet",
+    "overflow": [],
+    "violations": []
+  },
+  {
+    "route": "/business-types/vegetables",
+    "status": 200,
+    "title": "Fruit and vegetable billing workspace | DukaanSet",
+    "overflow": [],
+    "violations": []
+  },
+  {
+    "route": "/business-types/mobile",
+    "status": 200,
+    "title": "Mobile accessories shop workspace | DukaanSet",
+    "overflow": [],
+    "violations": []
+  },
+  {
+    "route": "/pricing",
+    "status": 200,
+    "title": "DukaanSet plan structure and pricing status | DukaanSet",
+    "overflow": [],
+    "violations": []
+  },
+  {
+    "route": "/how-it-works",
+    "status": 200,
+    "title": "Getting started with DukaanSet | DukaanSet",
+    "overflow": [],
+    "violations": []
+  },
+  {
+    "route": "/help",
+    "status": 200,
+    "title": "DukaanSet help centre | DukaanSet",
+    "overflow": [],
+    "violations": []
+  },
+  {
+    "route": "/contact",
+    "status": 200,
+    "title": "Contact the DukaanSet project | DukaanSet",
+    "overflow": [],
+    "violations": []
+  },
+  {
+    "route": "/about",
+    "status": 200,
+    "title": "About DukaanSet | DukaanSet",
+    "overflow": [],
+    "violations": []
+  },
+  {
+    "route": "/privacy",
+    "status": 200,
+    "title": "Privacy policy draft — legal review required | DukaanSet",
+    "overflow": [],
+    "violations": []
+  },
+  {
+    "route": "/terms",
+    "status": 200,
+    "title": "Terms of service draft — legal review required | DukaanSet",
+    "overflow": [],
+    "violations": []
+  },
+  {
+    "route": "/security",
+    "status": 200,
+    "title": "DukaanSet security approach and release boundaries | DukaanSet",
+    "overflow": [],
+    "violations": []
+  },
+  {
+    "route": "/unknown-page",
+    "status": 404,
+    "title": "DukaanSet — Apni Dukaan, Sab Set.",
+    "overflow": [],
+    "violations": []
+  },
+  {
+    "consoles": [
+      {
+        "type": "error",
+        "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      }
+    ]
+  }
+]

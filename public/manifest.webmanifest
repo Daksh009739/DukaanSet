@@ -1,0 +1,18 @@
+{
+  "id": "/",
+  "name": "DukaanSet — Apni Dukaan, Sab Set.",
+  "short_name": "DukaanSet",
+  "description": "Bills, stock and customer payments in one clear workspace.",
+  "lang": "en-IN",
+  "dir": "ltr",
+  "start_url": "/app",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#F7FAF8",
+  "theme_color": "#103B36",
+  "icons": [
+    { "src": "/brand/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/brand/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/brand/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

@@ -24,3 +24,15 @@ venv/
 .DS_Store
 Thumbs.db
 Desktop.ini
+
+# Local financial database, build and test artifacts
+.data/
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
+*.sqlite-journal
+test-results/
+playwright-report/
+*.tsbuildinfo
+.local/
+.next-e2e/

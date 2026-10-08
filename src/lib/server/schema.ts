@@ -1,0 +1,26 @@
+export const schema = `
+CREATE TABLE IF NOT EXISTS users (id TEXT PRIMARY KEY, name TEXT NOT NULL, email TEXT NOT NULL UNIQUE, password_hash TEXT NOT NULL, language TEXT NOT NULL, demo INTEGER NOT NULL DEFAULT 0, created_at TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS businesses (id TEXT PRIMARY KEY, name TEXT NOT NULL, category TEXT NOT NULL, created_at TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS memberships (user_id TEXT NOT NULL REFERENCES users(id), business_id TEXT NOT NULL REFERENCES businesses(id), role TEXT NOT NULL DEFAULT 'owner', PRIMARY KEY (user_id,business_id));
+CREATE TABLE IF NOT EXISTS sessions (token_hash TEXT PRIMARY KEY, user_id TEXT NOT NULL REFERENCES users(id), expires_at TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS products (id TEXT PRIMARY KEY, business_id TEXT NOT NULL REFERENCES businesses(id), name TEXT NOT NULL, sku TEXT NOT NULL, unit TEXT NOT NULL, price_paise INTEGER NOT NULL CHECK(price_paise>=0), cost_paise INTEGER NOT NULL CHECK(cost_paise>=0), quantity_milli INTEGER NOT NULL CHECK(quantity_milli>=0), min_stock_milli INTEGER NOT NULL CHECK(min_stock_milli>=0), expiry_date TEXT);
+CREATE UNIQUE INDEX IF NOT EXISTS products_sku ON products(business_id,sku) WHERE sku != '';
+CREATE TABLE IF NOT EXISTS customers (id TEXT PRIMARY KEY, business_id TEXT NOT NULL REFERENCES businesses(id), name TEXT NOT NULL, phone TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS suppliers (id TEXT PRIMARY KEY, business_id TEXT NOT NULL REFERENCES businesses(id), name TEXT NOT NULL, phone TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS invoices (id TEXT PRIMARY KEY, business_id TEXT NOT NULL REFERENCES businesses(id), number TEXT NOT NULL, date TEXT NOT NULL, customer_id TEXT REFERENCES customers(id), customer_name TEXT NOT NULL, items_json TEXT NOT NULL, subtotal_paise INTEGER NOT NULL, discount_paise INTEGER NOT NULL, total_paise INTEGER NOT NULL, paid_paise INTEGER NOT NULL, original_paid_paise INTEGER NOT NULL, balance_paise INTEGER NOT NULL, payment_method TEXT NOT NULL, status TEXT NOT NULL, due_date TEXT, CHECK(total_paise>=0 AND paid_paise>=0 AND balance_paise>=0 AND total_paise=paid_paise+balance_paise), UNIQUE(business_id,number));
+CREATE TABLE IF NOT EXISTS payments (id TEXT PRIMARY KEY, business_id TEXT NOT NULL REFERENCES businesses(id), customer_id TEXT REFERENCES customers(id), invoice_id TEXT REFERENCES invoices(id), amount_paise INTEGER NOT NULL CHECK(amount_paise>0), method TEXT NOT NULL, date TEXT NOT NULL, kind TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS movements (id TEXT PRIMARY KEY, business_id TEXT NOT NULL REFERENCES businesses(id), product_id TEXT NOT NULL REFERENCES products(id), quantity_milli INTEGER NOT NULL, reason TEXT NOT NULL, date TEXT NOT NULL, reference_id TEXT);
+CREATE TABLE IF NOT EXISTS purchases (id TEXT PRIMARY KEY, business_id TEXT NOT NULL REFERENCES businesses(id), supplier_id TEXT NOT NULL REFERENCES suppliers(id), date TEXT NOT NULL, items_json TEXT NOT NULL, total_paise INTEGER NOT NULL, paid_paise INTEGER NOT NULL, balance_paise INTEGER NOT NULL, CHECK(total_paise>=0 AND paid_paise>=0 AND balance_paise>=0 AND total_paise=paid_paise+balance_paise));
+CREATE TABLE IF NOT EXISTS expenses (id TEXT PRIMARY KEY, business_id TEXT NOT NULL REFERENCES businesses(id), description TEXT NOT NULL, amount_paise INTEGER NOT NULL CHECK(amount_paise>0), method TEXT NOT NULL, date TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS closings (id TEXT PRIMARY KEY, business_id TEXT NOT NULL REFERENCES businesses(id), date TEXT NOT NULL, business_day TEXT NOT NULL, opening_cash_paise INTEGER NOT NULL, expected_cash_paise INTEGER NOT NULL, actual_cash_paise INTEGER NOT NULL, difference_paise INTEGER NOT NULL, UNIQUE(business_id,business_day));
+CREATE TABLE IF NOT EXISTS audit (id TEXT PRIMARY KEY, business_id TEXT NOT NULL REFERENCES businesses(id), actor_id TEXT NOT NULL REFERENCES users(id), action TEXT NOT NULL, detail TEXT NOT NULL, date TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS idempotency (business_id TEXT NOT NULL REFERENCES businesses(id), operation TEXT NOT NULL, key TEXT NOT NULL, fingerprint TEXT NOT NULL, result_json TEXT NOT NULL, created_at TEXT NOT NULL, PRIMARY KEY(business_id,operation,key));
+CREATE INDEX IF NOT EXISTS invoices_business_date ON invoices(business_id,date);
+CREATE INDEX IF NOT EXISTS invoices_customer ON invoices(business_id,customer_id);
+CREATE INDEX IF NOT EXISTS payments_business_date ON payments(business_id,date);
+CREATE INDEX IF NOT EXISTS memberships_business ON memberships(business_id);
+CREATE INDEX IF NOT EXISTS products_business ON products(business_id);
+CREATE INDEX IF NOT EXISTS movements_business ON movements(business_id);
+CREATE INDEX IF NOT EXISTS audit_business ON audit(business_id,date);
+PRAGMA user_version = 1;
+`;

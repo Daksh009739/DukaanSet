@@ -1,0 +1,2 @@
+import type { MetadataRoute } from 'next';
+export default function sitemap():MetadataRoute.Sitemap {const root=process.env.NEXT_PUBLIC_SITE_URL||'http://localhost:3000';return ['','/hi','/features','/features/billing','/features/inventory','/features/udhar','/features/ai','/business-types','/business-types/grocery','/business-types/hardware','/business-types/vegetables','/pricing','/how-it-works','/help','/contact','/about','/privacy','/terms','/security'].map(route=>({url:root+route,changeFrequency:'monthly',priority:route?0.6:1}));}

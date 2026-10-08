@@ -1,0 +1,110 @@
+[
+  {
+    "name": "product",
+    "width": 320,
+    "height": 568,
+    "scrollWidth": 320,
+    "actionsTop": 488,
+    "actionsBottom": 568,
+    "headerTop": 51.125,
+    "headerBottom": 177.203125,
+    "violations": [],
+    "focusTrapped": true
+  },
+  {
+    "name": "stock",
+    "width": 320,
+    "height": 568,
+    "scrollWidth": 320,
+    "actionsTop": 487.734375,
+    "actionsBottom": 567.734375,
+    "headerTop": 51.125,
+    "headerBottom": 177.203125,
+    "violations": [],
+    "focusTrapped": true
+  },
+  {
+    "name": "customer",
+    "width": 320,
+    "height": 568,
+    "scrollWidth": 320,
+    "actionsTop": 488,
+    "actionsBottom": 568,
+    "headerTop": 155.546875,
+    "headerBottom": 281.625,
+    "violations": [],
+    "focusTrapped": true
+  },
+  {
+    "name": "purchase",
+    "width": 320,
+    "height": 568,
+    "scrollWidth": 320,
+    "actionsTop": 474.890625,
+    "actionsBottom": 567.890625,
+    "headerTop": 51.125,
+    "headerBottom": 177.203125,
+    "violations": [],
+    "focusTrapped": true
+  },
+  {
+    "name": "mobile-more-menu",
+    "width": 320,
+    "height": 568,
+    "violations": []
+  },
+  {
+    "name": "product",
+    "width": 390,
+    "height": 844,
+    "scrollWidth": 390,
+    "actionsTop": 763.5625,
+    "actionsBottom": 843.5625,
+    "headerTop": 75.96875,
+    "headerBottom": 181.65625,
+    "violations": [],
+    "focusTrapped": true
+  },
+  {
+    "name": "stock",
+    "width": 390,
+    "height": 844,
+    "scrollWidth": 390,
+    "actionsTop": 764,
+    "actionsBottom": 844,
+    "headerTop": 226.78125,
+    "headerBottom": 332.46875,
+    "violations": [],
+    "focusTrapped": true
+  },
+  {
+    "name": "customer",
+    "width": 390,
+    "height": 844,
+    "scrollWidth": 390,
+    "actionsTop": 764,
+    "actionsBottom": 844,
+    "headerTop": 447.9375,
+    "headerBottom": 553.625,
+    "violations": [],
+    "focusTrapped": true
+  },
+  {
+    "name": "purchase",
+    "width": 390,
+    "height": 844,
+    "scrollWidth": 390,
+    "actionsTop": 750.546875,
+    "actionsBottom": 843.546875,
+    "headerTop": 75.96875,
+    "headerBottom": 202.046875,
+    "violations": [],
+    "focusTrapped": true
+  },
+  {
+    "name": "mobile-more-menu",
+    "width": 390,
+    "height": 844,
+    "violations": []
+  }
+]

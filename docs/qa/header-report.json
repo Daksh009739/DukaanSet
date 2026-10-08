@@ -1,0 +1,26 @@
+[
+  {
+    "width": 1366,
+    "headerMenuVisible": false,
+    "scrollWidth": 1366,
+    "violations": []
+  },
+  {
+    "width": 768,
+    "headerMenuVisible": true,
+    "scrollWidth": 768,
+    "violations": []
+  },
+  {
+    "width": 390,
+    "headerMenuVisible": false,
+    "scrollWidth": 390,
+    "violations": []
+  },
+  {
+    "width": 320,
+    "headerMenuVisible": false,
+    "scrollWidth": 320,
+    "violations": []
+  }
+]

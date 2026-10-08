@@ -1,0 +1,128 @@
+[
+  {
+    "page": "/",
+    "width": 320,
+    "viewport": 320,
+    "scrollWidth": 320,
+    "overflow": []
+  },
+  {
+    "page": "/",
+    "width": 360,
+    "viewport": 360,
+    "scrollWidth": 360,
+    "overflow": []
+  },
+  {
+    "page": "/",
+    "width": 375,
+    "viewport": 375,
+    "scrollWidth": 375,
+    "overflow": []
+  },
+  {
+    "page": "/",
+    "width": 390,
+    "viewport": 390,
+    "scrollWidth": 390,
+    "overflow": []
+  },
+  {
+    "page": "/",
+    "width": 412,
+    "viewport": 412,
+    "scrollWidth": 412,
+    "overflow": []
+  },
+  {
+    "page": "/",
+    "width": 430,
+    "viewport": 430,
+    "scrollWidth": 430,
+    "overflow": []
+  },
+  {
+    "page": "/",
+    "width": 768,
+    "viewport": 768,
+    "scrollWidth": 768,
+    "overflow": []
+  },
+  {
+    "page": "/",
+    "width": 1366,
+    "viewport": 1366,
+    "scrollWidth": 1366,
+    "overflow": []
+  },
+  {
+    "check": "Mobile menu opens",
+    "passed": true
+  },
+  {
+    "check": "Hardware preview changes",
+    "passed": true
+  },
+  {
+    "check": "Keyboard category navigation",
+    "passed": true
+  },
+  {
+    "check": "Hindi language preview",
+    "passed": true
+  },
+  {
+    "check": "FAQ expands",
+    "passed": true
+  },
+  {
+    "check": "Home accessibility",
+    "violations": []
+  },
+  {
+    "route": "/hi",
+    "viewport": 390,
+    "scrollWidth": 390,
+    "h1": "अपनी दुकान,सब सेट.",
+    "title": "DukaanSet — अपनी दुकान, सब सेट।"
+  },
+  {
+    "route": "/features/billing",
+    "viewport": 390,
+    "scrollWidth": 390,
+    "h1": "A bill made.\nA day kept in order.",
+    "title": "Connected billing for small shops | DukaanSet"
+  },
+  {
+    "route": "/business-types/vegetables",
+    "viewport": 390,
+    "scrollWidth": 390,
+    "h1": "Fresh stock.\nA clear daily picture.",
+    "title": "Fruit and vegetable billing workspace | DukaanSet"
+  },
+  {
+    "route": "/pricing",
+    "viewport": 390,
+    "scrollWidth": 390,
+    "h1": "Your everyday essentials.\nRoom to grow.",
+    "title": "DukaanSet plan structure and pricing status | DukaanSet"
+  },
+  {
+    "route": "/privacy",
+    "viewport": 390,
+    "scrollWidth": 390,
+    "h1": "Your business data\ndeserves clear answers.",
+    "title": "Privacy policy draft — legal review required | DukaanSet"
+  },
+  {
+    "route": "/unknown-page",
+    "viewport": 390,
+    "scrollWidth": 390,
+    "h1": "This page isn’t here.",
+    "title": "DukaanSet — Apni Dukaan, Sab Set."
+  },
+  {
+    "check": "Runtime page errors",
+    "errors": []
+  }
+]
