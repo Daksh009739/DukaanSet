@@ -1,0 +1,26 @@
+# Local secrets and environment configuration
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Dependencies and generated output
+node_modules/
+dist/
+build/
+.next/
+coverage/
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Local caches and logs
+.cache/
+*.log
+
+# Operating system files
+.DS_Store
+Thumbs.db
+Desktop.ini
