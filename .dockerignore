@@ -1,0 +1,15 @@
+.git
+.env
+.env.*
+node_modules
+.next*
+.vercel
+.data
+.local
+.dukaanset-build.json
+test-results
+playwright-report
+coverage
+*.sqlite*
+*.log
+docs/qa

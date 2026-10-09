@@ -1,6 +1,7 @@
 import { spawn, spawnSync } from 'node:child_process';
 import { existsSync } from 'node:fs';
 import path from 'node:path';
+import { writeBuildInfo } from './build-info.mjs';
 
 let runtime = process.env.DUKAANSET_NODE || process.execPath;
 const version = candidate => Number(spawnSync(candidate, ['-p', 'process.versions.node.split(".")[0]'], {encoding:'utf8', windowsHide:true}).stdout?.trim() || 0);
@@ -14,15 +15,25 @@ const commands = {
   build: ['node_modules/next/dist/bin/next', 'build'],
   start: ['node_modules/next/dist/bin/next', 'start', '--hostname', '127.0.0.1'],
   typecheck: ['node_modules/typescript/bin/tsc', '--noEmit'],
-  test: ['--import', 'tsx', '--test', 'tests/backend.test.ts', 'tests/client.test.ts', 'tests/voice.test.ts', 'tests/v3.test.ts'],
+  test: ['--import', 'tsx', '--test', 'tests/backend.test.ts', 'tests/client.test.ts', 'tests/voice.test.ts', 'tests/v3.test.ts', 'tests/deployment.test.ts'],
   e2e: ['scripts/run-e2e.mjs'],
   backup: ['scripts/backup-database.mjs'],
   smoke: ['scripts/check-production.mjs'],
+  'staging-smoke': ['scripts/check-staging.mjs'],
 };
 const command = commands[process.argv[2]];
 if (!command) { console.error('Unknown command.'); process.exit(1); }
+if (process.argv[2] === 'typecheck') {
+  const generated = spawnSync(runtime, ['node_modules/next/dist/bin/next', 'typegen'], { stdio: 'inherit', windowsHide: true, env: process.env });
+  if (generated.status !== 0) process.exit(generated.status ?? 1);
+}
 const child = spawn(runtime, [...command, ...process.argv.slice(3)], {stdio:'inherit', windowsHide:true, env:process.env});
 child.on('error', error => { console.error(error.message); process.exitCode=1; });
-child.on('exit', code => { process.exitCode=code ?? 1; });
+child.on('exit', code => {
+  process.exitCode=code ?? 1;
+  if (code === 0 && process.argv[2] === 'build') {
+    try { writeBuildInfo(); } catch (error) { console.error(error.message); process.exitCode = 1; }
+  }
+});
 process.on('SIGINT', ()=>child.kill('SIGINT'));
 process.on('SIGTERM', ()=>child.kill('SIGTERM'));

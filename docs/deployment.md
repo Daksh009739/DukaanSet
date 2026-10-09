@@ -63,3 +63,6 @@ Failures or incomplete responses show an unavailable state; saved-record summari
 Before public operation, complete the actual HTTPS/host/provider checks, persistent backup/restore drill, distributed throttles and monitoring, privacy retention/deletion/export procedures, device/screen-reader/merchant acceptance and legal/tax review. Current throttles are process-local and reset on restart. Invitation currently requires an already registered non-demo recipient; ownership transfer is deliberately separate. Shared businesses cannot use demo reset.
 
 PWA caches only selected public assets and an offline fallback. Real HTTPS installation/upgrade and Android distribution are unverified. Financial actions require online server confirmation; offline financial sync, subscriptions, settlement verification and nearby merchant networking remain future work. Final local evidence is in the [V3 QA report](v3-test-report.md).
+# Vercel staging
+
+The repository now includes a Vercel gateway and persistent Node backend packaging. Read [the staging setup guide](VERCEL_STAGING_SETUP.md) before importing this project. The gateway forwards the whole app to an isolated persistent backend; direct SQLite deployment into Vercel Functions is rejected. A successful local build is not a verified hosted deployment.

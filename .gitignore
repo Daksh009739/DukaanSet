@@ -38,3 +38,6 @@ playwright-report/
 .next-e2e/
 
 .next-local/
+.vercel/
+.dukaanset-build.json
+next-env.d.ts

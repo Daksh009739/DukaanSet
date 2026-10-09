@@ -67,3 +67,6 @@ Browser tests use a separate `.data/e2e.sqlite`, private test outbox and `.next-
 `dev` contains active work; `staging` is for reviewed release candidates and `production` for explicitly approved stable releases. Branches do not deploy the app. This delivery saves V3 on `dev`; promotion and hosting are separate actions.
 
 Other project documents: [progress](docs/progress.md), [architecture](docs/architecture.md), [design system](docs/design-system.md), [requirements](docs/requirements.md), [roadmap](docs/roadmap.md), [deployment preparation](docs/deployment.md), [server security boundary](src/lib/server/SECURITY.md), [V2 implementation](docs/v2-implementation.md) and [voice workflow](docs/v2-voice.md).
+## Staging preparation
+
+Vercel staging uses a checked HTTPS gateway plus a persistent Node 24 backend. CI, isolated-host configuration, build metadata and staging SEO are prepared; the actual shareable deployment still requires backend hosting and verified email configuration. See [Vercel staging setup](docs/VERCEL_STAGING_SETUP.md). `main` is the unchanged initial production baseline; tested dev changes require review before the first production release.

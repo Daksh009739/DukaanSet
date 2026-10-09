@@ -582,6 +582,7 @@ export class Store {
 
 declare global { var dukaanStore: Store | undefined; }
 export function getStore(): Store {
+  if (process.env.VERCEL === '1') throw new Error('DukaanSet SQLite requires a persistent backend. Deploy the Vercel gateway instead.');
   if (globalThis.dukaanStore && globalThis.dukaanStore.runtimeRevision !== "v3.1") { globalThis.dukaanStore.close(); globalThis.dukaanStore = undefined; }
   return globalThis.dukaanStore ??= new Store();
 }

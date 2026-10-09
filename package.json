@@ -5,11 +5,14 @@
   "scripts": {
     "dev": "node scripts/run.mjs dev",
     "build": "node scripts/run.mjs build",
+    "build:vercel": "node scripts/build-vercel.mjs",
     "start": "node scripts/run.mjs start",
+    "start:backend": "node scripts/start-backend.mjs",
     "typecheck": "node scripts/run.mjs typecheck",
     "test": "node scripts/run.mjs test",
     "test:e2e": "node scripts/run.mjs e2e",
     "test:production": "node scripts/run.mjs smoke",
+    "test:staging": "node scripts/run.mjs staging-smoke",
     "backup": "node scripts/run.mjs backup"
   },
   "dependencies": {
@@ -38,6 +41,6 @@
     "typescript": "^7.0.2"
   },
   "engines": {
-    "node": ">=24.0.0"
+    "node": "24.x"
   }
 }

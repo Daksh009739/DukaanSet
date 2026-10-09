@@ -30,7 +30,15 @@ export function requireSameOrigin(request: Request): void {
   const origin = request.headers.get("origin");
   const internalUrl = new URL(request.url), host = request.headers.get("host");
   let targetOrigin = internalUrl.origin;
-  if (host) {
+  if (process.env.DUKAANSET_PUBLIC_ORIGIN && ['staging', 'production'].includes(process.env.DUKAANSET_ENV || '')) {
+    // An explicitly configured origin supports HTTPS proxies that replace Host.
+    // Never derive this trust decision from X-Forwarded-* client headers.
+    try {
+      const configured = new URL(process.env.DUKAANSET_PUBLIC_ORIGIN);
+      if (configured.protocol !== 'https:' || configured.username || configured.password || configured.pathname !== '/' || configured.search || configured.hash) throw new Error('Invalid origin');
+      targetOrigin = configured.origin;
+    } catch { throw new DomainError('CSRF_REJECTED', 'The public origin is not configured correctly.', 403); }
+  } else if (host) {
     // Next normalizes loopback URLs to localhost. Bind to the browser's actual
     // HTTP authority instead; browsers cannot set Host. Do not trust forwarding
     // headers supplied by clients. A deployed reverse proxy must preserve Host.

@@ -8,6 +8,7 @@ const config: NextConfig = {
   serverExternalPackages: ['node:sqlite'],
   async headers() {
     return [{ source: '/:path*', headers: [
+      ...(process.env.DUKAANSET_ENV === 'staging' ? [{ key: 'X-Robots-Tag', value: 'noindex, nofollow, noarchive' }] : []),
       { key: 'X-Content-Type-Options', value: 'nosniff' },
       { key: 'Referrer-Policy', value: 'no-referrer' },
       { key: 'X-Frame-Options', value: 'DENY' },

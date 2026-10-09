@@ -1,0 +1,15 @@
+{
+  "checkedAt": "2026-10-09T12:42:12.596Z",
+  "scope": "Local compiled production build in staging mode; isolated fictional database. No hosted deployment acceptance.",
+  "checks": [
+    "compiled staging banner, noindex, robots and four phone widths",
+    "owner-only build details and highlighted voice entry on compiled staging",
+    "anonymous metadata rejection and minimal health"
+  ],
+  "mobileWidths": [
+    320,
+    360,
+    375,
+    390
+  ]
+}
