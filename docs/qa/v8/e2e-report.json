@@ -1,0 +1,80 @@
+{
+  "checkedAt": "2026-10-09T21:27:07.000Z",
+  "artifactRoot": "Windows temporary directory · no merchant data",
+  "runs": [
+    {
+      "suite": [
+        "tests/e2e/invoice-studio.spec.ts"
+      ],
+      "exitCode": 0,
+      "passed": 7
+    },
+    {
+      "suite": [
+        "tests/e2e/localization.spec.ts"
+      ],
+      "exitCode": 0,
+      "passed": 9
+    },
+    {
+      "suite": [
+        "tests/e2e/premium-website.spec.ts"
+      ],
+      "exitCode": 0,
+      "finalRecheckAt": "2026-10-09T21:27:07.000Z",
+      "passed": 4
+    },
+    {
+      "suite": [
+        "tests/e2e/product.spec.ts"
+      ],
+      "exitCode": 0,
+      "passed": 7
+    },
+    {
+      "suite": [
+        "tests/e2e/v2-business.spec.ts"
+      ],
+      "exitCode": 0,
+      "passed": 2
+    },
+    {
+      "suite": [
+        "tests/e2e/v2-sales.spec.ts"
+      ],
+      "exitCode": 0,
+      "passed": 9
+    },
+    {
+      "suite": [
+        "tests/e2e/v2-voice.spec.ts"
+      ],
+      "exitCode": 0,
+      "passed": 6
+    },
+    {
+      "suite": [
+        "tests/e2e/v3-demand.spec.ts"
+      ],
+      "exitCode": 0,
+      "passed": 8
+    },
+    {
+      "suite": [
+        "tests/e2e/voice-products.spec.ts"
+      ],
+      "exitCode": 0,
+      "passed": 3
+    },
+    {
+      "suite": [
+        "tests/e2e/voiceos.spec.ts"
+      ],
+      "exitCode": 0,
+      "finalRecheckAt": "2026-10-09T21:07:11.596Z",
+      "passed": 8
+    }
+  ],
+  "totalPassed": 63,
+  "note": "Suite results combined across sequential isolated test servers; final V8 and VoiceOS used a clean source-only Windows temporary copy after local filesystem/artifact read errors. The final V8 recheck also verifies auth public links retain Hindi/Hinglish after a language change. No merchant databases or credentials were copied."
+}

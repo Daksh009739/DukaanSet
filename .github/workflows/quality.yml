@@ -43,3 +43,5 @@ jobs:
         run: npm run test:e2e -- tests/e2e/localization.spec.ts
       - name: Invoice Studio, Customer Hisaab and WhatsApp confirmation browser checks
         run: npm run test:e2e -- tests/e2e/invoice-studio.spec.ts
+      - name: Premium website, multilingual auth and product demonstration browser checks
+        run: npm run test:e2e -- tests/e2e/premium-website.spec.ts

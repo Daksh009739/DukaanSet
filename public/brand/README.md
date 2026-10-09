@@ -1,6 +1,6 @@
 # DukaanSet brand assets
 
-Original SVG concept: a compact storefront combined with a checkmark. The rounded square is deliberately simple for small mobile icons. No external illustrations, photos or competitor assets are used.
+V8 original SVG concept: a geometric storefront roof, a D-shaped store edge and a connected check. The mark remains readable at small mobile sizes. No external illustrations, photos or competitor assets are used. See [brand usage](USAGE.md).
 
 - `logo.svg`: primary horizontal lockup on light surfaces
 - `logo-dark.svg`: inverted lockup for dark surfaces
@@ -11,5 +11,6 @@ Original SVG concept: a compact storefront combined with a checkmark. The rounde
 - `splash.svg`: splash branding artwork; runtime splash behaviour is browser-dependent
 - `/icon.svg`: favicon master
 - `/social.svg`: editable original social artwork
+- `invoice-logo.svg` / `invoice-logo.png`: print and PDF-compatible platform identity
 
 Runtime logo identity is centralised in `src/components/brand.tsx`; CSS lives in `src/components/marketing.css`. SVG text remains editable and uses Manrope with an Arial fallback. The working brand has not received trademark or domain clearance.

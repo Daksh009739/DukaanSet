@@ -1,5 +1,7 @@
 # DukaanSet
 
+The V8 public website uses the refined storefront identity, fictional interactive sale/VoiceOS/DemandPulse previews, six business categories and redesigned multilingual auth screens. See [brand usage](public/brand/USAGE.md) and [V8 implementation and verification](docs/v8-test-report.md). Commercial pricing and direct WhatsApp setup are labelled honestly; previews never write business records.
+
 **Apni Dukaan, Sab Set.** A mobile-first, three-language workspace for sales, stock, customer dues and missed demand. V4 adds one shared VoiceOS engine and global/contextual voice drafts to the transactional billing, inventory, payments and DemandPulse workflows.
 
 Source: [Daksh009739/DukaanSet](https://github.com/Daksh009739/DukaanSet). See the [V3 implementation and limits](docs/v3-implementation.md), [QA report](docs/v3-test-report.md) and preserved [V3 brief](docs/briefs/v3-master.md).

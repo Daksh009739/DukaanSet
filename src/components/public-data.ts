@@ -1,6 +1,7 @@
 /** Fictional source records, preserved across languages; never copied into merchant data. */
 export const publicBusinessKeys=['grocery','hardware','vegetables','mobile','clothing','general'] as const;
 export type PublicBusinessKey=typeof publicBusinessKeys[number];
+export const publicJourneyAccount={name:'Rahul',email:'rahul@example.test'} as const;
 export const publicExamples={
  grocery:{name:'Annapurna Kirana',sales:'6,840',collected:'5,940',bills:24,credit:'3,250',products:[{name:'Aashirvaad atta · 5 kg',unit:'packet',quantity:4},{name:'Toor dal',unit:'kg',quantity:18.5},{name:'Sunflower oil',unit:'litre',quantity:12}]},
  hardware:{name:'Setu Hardware',sales:'12,450',collected:'9,450',bills:11,credit:'8,600',products:[{name:'PVC pipe · ¾ inch',unit:'pcs',quantity:6},{name:'Hex bolt · M8',unit:'pcs',quantity:240},{name:'Copper wire',unit:'metre',quantity:85}]},

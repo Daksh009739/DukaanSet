@@ -147,30 +147,21 @@
       "title": "Business Assistant Aur AI Availability",
       "description": "Recorded-data summaries available hain. Optional live AI sirf allowed business data par jawab deta hai; provider setup aur live tests chahiye.",
       "eyebrow": "Business Assistant Aur AI Availability",
-      "headline": "Apne Hisaab Par Sawaal Poochho.",
-      "intro": "Recorded-data summaries available hain. Optional live AI sirf allowed business data par jawab deta hai; provider setup aur live tests chahiye.",
+      "headline": "Bas boliye. Saaf draft se shuru karein.",
+      "intro": "Bolkar bill ya stock ka draft banayein. Products, quantity aur payments check karke asli action confirm karein.",
       "note": "Live AI ki actual testing nahi hui hai. Provider credentials chahiye. Yahan ke answers fictional examples hain.",
       "sections": [
         {
-          "title": "Kaam Ke Sawaal",
-          "body": "Aaj ki bikri, customer ke baaki paise aur kam stock recorded figures se samjho. Assistant sales invent nahi karta.",
-          "items": [
-            "Aaj Kya Bika?",
-            "Kaunse Products Ka Stock Kam Hai?",
-            "Customers Ke Kitne Paise Baaki Hain?"
-          ]
+          "title": "Review ke liye draft",
+          "body": "Yeh preview microphone use nahin karta. App mein speech browser par depend karti hai; AI ke liye configuration chahiye."
         },
         {
-          "title": "Business Aur Permission",
-          "body": "Sawaal active business aur member permissions se jude rehte hain. Dusre business ka data nahi milta."
+          "title": "Customers ki zaroorat yaad rakhein.",
+          "body": "Jo maal nahin mila, woh bhi kaam ki jaankari hai. Maang likhein, patterns dekhein aur tay karein kya mangana hai."
         },
         {
-          "title": "Read-only Assistant",
-          "body": "AI sale, stock, payment ya messages nahi bhej sakta. Naye records ke liye normal form review aur confirm karo."
-        },
-        {
-          "title": "Sahi Availability",
-          "body": "Provider connected na ho ya answer incomplete ho to availability saaf dikhegi. Rules ka summary available rahega."
+          "title": "Ek bikri. Har hisaab apni jagah.",
+          "body": "Ek kalpanik bikri ko bill se dashboard tak dekhein. Apne workspace mein review aur confirm karne ke baad hi records badalte hain."
         }
       ]
     },
@@ -363,28 +354,40 @@
       "intro": "Bills, stock, payments, business switch aur available services ki jaankari paao.",
       "sections": [
         {
-          "title": "Pehli Baar App Khol Rahe Hain",
-          "body": "Fictional demo chuno ya naya account banao. Shop aur products setup karo. Demo data real business se alag rehta hai."
+          "title": "Shuru karein",
+          "body": "Account banayein, email verify karein, business type chunein aur dukaan ki zaroori details dein. Kuch products jodkar pehli sale check karein."
         },
         {
-          "title": "Bill Save Nahi Hua",
-          "body": "Internet aur shown error dekho. Sahi quantity, available stock aur credit ke liye customer chahiye. Uncertain response par history dekhkar same request retry karo."
+          "title": "Bill aur split payments",
+          "body": "Sale mein products jodkar quantity aur prices check karein. Cash aur UPI ki rakam alag likhein. Customer aur baaki balance check karke confirm karein."
         },
         {
-          "title": "Customer Ne Baad Mein Payment Diya",
-          "body": "Actually received amount aur method darj karo. Collection balance ghatata hai; original sale total nahi badalta."
+          "title": "Stock aur units",
+          "body": "Har product ki sahi unit rakhein. Purchase receive karke stock jodein; adjustment ka reason likhein. Movement history mein changes dekhein."
         },
         {
-          "title": "Business Badal Diya",
-          "body": "Selected shop hi dashboard, products, customers aur reports tay karti hai. Entry se pehle uska naam check karo."
+          "title": "Customer hisaab aur udhaar",
+          "body": "Customer profile mein bills, receipts aur baaki balance dekhein. Poore statement ke liye period chunein. Receipt recorded payment batati hai, bank verification nahin."
         },
         {
-          "title": "Internet Ya AI Available Nahi",
-          "body": "Financial confirmation ko internet chahiye. Offline page private database nahi hai. AI provider ke bina bhi normal business workflows chalte hain."
+          "title": "VoiceOS ke drafts",
+          "body": "Bolein ya command likhein. Speech browser par depend karti hai; AI service ke liye configuration chahiye. Confirm se pehle products, quantity aur amounts check karein. Sirf bolne se transaction nahin hota."
         },
         {
-          "title": "Problem Batani Hai",
-          "body": "GitHub issue mein page, action aur safe error text do. Passwords, customer phones aur financial exports mat daalo. Support response time abhi tay nahi hai."
+          "title": "DemandPulse requests",
+          "body": "Na mile product ki maang darj karein. Patterns dekhkar maal mangane par sochein. Customer se contact se pehle sahi permission lein. Asli sale confirm hone par hi request sale banti hai."
+        },
+        {
+          "title": "Bills, PDF aur sharing",
+          "body": "Saved bill ko Invoice Studio mein kholein. PDF banakar dekhein, phir download ya print karein. WhatsApp par file khud attach karein; official delivery ke liye authorised sender aur approved templates chahiye."
+        },
+        {
+          "title": "Accounts aur password recovery",
+          "body": "Login par Forgot Password chunein. Email ka recovery link kholkar naya, alag password rakhein. Link expire ho toh naya maangein. File email mode sirf local development ke liye hai."
+        },
+        {
+          "title": "Bhasha settings",
+          "body": "Language selector se English, Hindi ya Hinglish chunein. Form ki values bani rehti hain. Saved product aur customer names chupke translate hone ke bajaay original records rehte hain."
         }
       ]
     },
@@ -554,9 +557,9 @@
   "personal": "Aapki Dukaan Apni Hai. App Bhi Aapke Hisaab Se Ho.",
   "inDevelopment": "Yeh Product Abhi Develop Ho Raha Hai.",
   "heroEyebrow": "Roz Ke Business Mein Saaf Hisaab",
-  "heroFirst": "Apni Dukaan,",
-  "heroSecond": "Sab Set.",
-  "heroDescription": "Bills, stock aur customer ke payments ek jagah. Kam uljhan, business ke liye zyada waqt.",
+  "heroFirst": "Apni dukaan. Apne customers.",
+  "heroSecond": "Sab set.",
+  "heroDescription": "Bikri, stock aur customers ke payments ek aasan workspace mein jude hain. Hisaab likhne mein kam samay. Dukaan ke liye zyada samay.",
   "phoneBuilt": "Phone Ke Liye Bana",
   "languages": "English · Hindi · Hinglish",
   "findBusiness": "Apni Dukaan Ka Type Dekho",
@@ -678,38 +681,236 @@
     {
       "question": "Kya UPI Verify Hota Hai?",
       "answer": "UPI khud darj hota hai. Bank verification aur subscription checkout connected nahi hain."
+    },
+    {
+      "question": "Kya bolte hi sale save ho jaati hai?",
+      "answer": "Nahin. VoiceOS draft banata hai. Action confirm karne se pehle products aur payments check karein."
+    },
+    {
+      "question": "Kya unavailable products ki maang rakh sakte hain?",
+      "answer": "Haan. DemandPulse review aur stock mangane ke liye requests rakhta hai. Requests poori sale ya revenue nahin gini jaati."
+    },
+    {
+      "question": "Password kaise recover karein?",
+      "answer": "Login par Forgot Password chunein, phir email link kholein. Purana link expire ho toh naya maangein."
+    },
+    {
+      "question": "Kya bills seedhe WhatsApp par bhej sakte hain?",
+      "answer": "Downloaded PDF khud share kar sakte hain. Official direct delivery ke liye authorised Meta sender, approved templates aur send ki saaf confirmation chahiye."
     }
   ],
   "plans": [
     {
-      "name": "Trial",
+      "name": "Starter",
       "eyebrow": "Pehchaan Banao",
       "description": "Business ke main workflows dekho.",
       "items": [
-        "Billing Aur Product Catalogue",
-        "Stock Aur Customer Records",
-        "English, Hindi Aur Hinglish"
+        "Bill aur product list",
+        "Stock aur customer records",
+        "English, Hindi aur Hinglish"
       ]
     },
     {
-      "name": "Starter",
+      "name": "Badhta Business",
       "eyebrow": "Roz Ke Kaam",
       "description": "Roz ke business ka proposed plan.",
       "items": [
-        "Billing Aur Product Catalogue",
-        "Stock Aur Customer Records",
-        "English, Hindi Aur Hinglish"
+        "Customer 360° aur period ka hisaab",
+        "Branded PDF bills aur receipts",
+        "DemandPulse aur roz ki reports"
       ]
     },
     {
-      "name": "AI Pro",
+      "name": "AI aur Voice",
       "eyebrow": "Aur Help",
       "description": "Configured AI tools ka proposed plan.",
       "items": [
-        "Billing Aur Product Catalogue",
-        "Stock Aur Customer Records",
-        "English, Hindi Aur Hinglish"
+        "Browser ke hisaab se voice drafts",
+        "Configure hone par AI interpretation",
+        "Save se pehle review aur confirmation"
       ]
     }
-  ]
+  ],
+  "v8": {
+    "heroFirst": "Apni dukaan. Apne customers.",
+    "heroSecond": "Sab set.",
+    "heroDescription": "Bikri, stock aur customers ke payments ek aasan workspace mein jude hain. Hisaab likhne mein kam samay. Dukaan ke liye zyada samay.",
+    "eyebrow": "ROZ KE DUKAAN KE KAAM KE LIYE",
+    "status": "Kaam karta product · neeche kalpanik previews",
+    "saleTag": "EK BIKRI. SAAT JUDE RECORDS.",
+    "saleTitle": "Ek bikri. Har hisaab apni jagah.",
+    "saleHint": "Ek kalpanik bikri ko bill se dashboard tak dekhein. Apne workspace mein review aur confirm karne ke baad hi records badalte hain.",
+    "fictional": "Interactive demo · kalpanik records",
+    "play": "Poora workflow dekhein",
+    "pause": "Demo rokein",
+    "resume": "Demo jaari rakhein",
+    "replay": "Dobara dekhein",
+    "ready": "Dekhne ke liye taiyaar",
+    "complete": "Demo poora hua. Business ke records nahin badle.",
+    "saleSaved": "Bikri darj",
+    "invoiceMade": "Bill taiyaar",
+    "stockUpdated": "Stock badla",
+    "customerUpdated": "Customer ka history badla",
+    "paymentRecorded": "Payment darj",
+    "balanceAdded": "Baaki rakam darj",
+    "dashboardUpdated": "Dashboard badla",
+    "sampleShop": "Rozana Kapde · namoone ki dukaan",
+    "blueShirt": "Neeli shirt",
+    "customer": "Customer",
+    "rahul": "Rahul · kalpanik customer",
+    "quantity": "Quantity",
+    "total": "Bill ka total",
+    "received": "Mili rakam",
+    "pending": "Baaki rakam",
+    "inventory": "Maujood stock",
+    "before": "Pehle",
+    "after": "Baad mein",
+    "cash": "Cash",
+    "upi": "UPI",
+    "problemTag": "ROZ KI ULJHAN SE AASAN DIN TAK",
+    "problemTitle": "Dukaan tez chalti hai. Hisaab bhi saath chale.",
+    "problemHint": "Chhoti details judi rahein, taaki zaroori baatein aasani se dikhein.",
+    "manual": "Bill ek bahi mein. Udhaar doosri mein.",
+    "connected": "Ek bill se bikri, stock aur payments judte hain.",
+    "stockProblem": "Shelf ke stock ka andaaza lagana.",
+    "stockSolution": "Stock ki movements aur kam stock ke alerts dekhein.",
+    "demandProblem": "Customer jaate hi bhooli hui maang.",
+    "demandSolution": "Chhooti maang darj karein. Soch-samajhkar maal mangayein.",
+    "voiceTag": "VoiceOS · SAVE KARNE SE PEHLE CHECK",
+    "voiceTitle": "Bas boliye. Saaf draft se shuru karein.",
+    "voiceHint": "Bolkar bill ya stock ka draft banayein. Products, quantity aur payments check karke asli action confirm karein.",
+    "command": "“Rahul ko 2 shirts bechi, 899 rupaye ki ek. 1000 cash mila aur 500 UPI se.”",
+    "voiceDemo": "Namoone ka draft dekhein",
+    "voiceReset": "Namoona reset karein",
+    "voiceDisclaimer": "Yeh preview microphone use nahin karta. App mein speech browser par depend karti hai; AI ke liye configuration chahiye.",
+    "draft": "Review ke liye draft",
+    "stockVoice": "Bolkar stock ka draft",
+    "demandTag": "DemandPulse · BIKRI SE AAGE KI MAANG",
+    "demandTitle": "Customers ki zaroorat yaad rakhein.",
+    "demandHint": "Jo maal nahin mila, woh bhi kaam ki jaankari hai. Maang likhein, patterns dekhein aur tay karein kya mangana hai.",
+    "requested": "Customer ki maang",
+    "unavailable": "Aaj maujood nahin",
+    "recorded": "Maang darj",
+    "reorder": "Dobara maal mangane par soch",
+    "available": "Stock maujood",
+    "possible": "Aage ki mumkin bikri",
+    "demandSample": "Neeli shirt · XL · 3 kalpanik requests",
+    "demandDisclaimer": "Requests kamai nahin hain. Confirm hone par hi sale gini jaati hai; customer se contact ke liye sahi permission chahiye.",
+    "next": "Agla step",
+    "back": "Pichhla step",
+    "customerTag": "CUSTOMER 360° · SAAF HISAAB",
+    "customerTitle": "Customer ko jaanein. Hisaab saaf rakhein.",
+    "customerHint": "Customer profile mein saved sales, payment receipts aur chuni hui avadhi ka poora hisaab saath dekhein.",
+    "purchaseHistory": "Kharid ka history",
+    "accountClear": "Saved bill, split payment aur baaki ₹298 — poora hisaab saaf.",
+    "invoiceTag": "SMART BILL STUDIO",
+    "invoiceTitle": "Sahi records. Professional andaaz.",
+    "invoiceHint": "Saved bill se branded PDF dekhein. Asli file download, print ya share karein. Har document par apni dukaan ki pehchaan rakhein.",
+    "invoice": "Bikri ka bill · namoona",
+    "documentFlow": "Saved bill → PDF dekhein → download, print ya share",
+    "manualShare": "WhatsApp par file khud share karein",
+    "directShare": "Official direct delivery ke liye authorised sender aur approved templates chahiye.",
+    "industryTag": "ALAG DUKAANEIN. PEHCHAANA WORKSPACE.",
+    "industryTitle": "Aapke kaam ke tareeke ke liye.",
+    "industryHint": "Dukaan ka type chunein. Kalpanik records se products, units aur roz ka workflow dekhein.",
+    "typical": "Roz ka kaam",
+    "languageTag": "APNI BHASHA. APNA BUSINESS.",
+    "languageTitle": "Pehle click se apnapan.",
+    "languageHint": "English, Hindi ya Hinglish — records bachakar interface ki bhasha badlein. Neeche preview dekhein.",
+    "journeyTag": "ACCOUNT SE ROZ KE BHAROSE TAK",
+    "journeyTitle": "Chhoti shuruaat. Dukaan set.",
+    "journeyHint": "Zaroori details se shuru karein. Jab chahiye tab smart tools laayein.",
+    "featureTitle": "Dohraya kaam kam. Hisaab zyada saaf.",
+    "featureHint": "Jude records se roz ke paanch kaam aasan. Previews dekhein, phir actual workspace try karein.",
+    "sell": "Bikri jaldi karein",
+    "sellHint": "Bill banayein, split payment likhein aur bill ko stock se jodein.",
+    "stock": "Stock sambhaalein",
+    "stockHint": "Quantity, units, kharid aur badlaav dekhein. Bolkar draft banayein, phir check karein.",
+    "people": "Customers ko jaanein",
+    "peopleHint": "Ek customer profile mein sales, receipts aur baaki rakam dekhein.",
+    "opportunities": "Chhoote mauke darj karein",
+    "opportunitiesHint": "Na mile product ki maang yaad rakhein aur sochkar stock mangayein.",
+    "understand": "Business samjhein",
+    "understandHint": "Aaj ke kaam, reports aur daily closing se dekhein kahaan dhyaan chahiye.",
+    "working": "Workspace mein maujood",
+    "helpTitle": "Thodi madad. Aasan din.",
+    "searchHelp": "Madad ke topics khojein",
+    "noHelp": "Topic nahin mila. Chhota shabd khojein.",
+    "guides": "Kaam ki guides",
+    "faq": "Sawaalon ke saaf jawaab.",
+    "pricingTitle": "Saaf plans, sachchi details.",
+    "pricingHint": "Commercial plans tay ho rahe hain. Yeh proposed categories hain, paid checkout nahin. Pehle working demo dekhein.",
+    "earlyAccess": "Early-access ke liye account banayein",
+    "finalTitle": "Agla kaam ka din, thoda aur set.",
+    "finalHint": "Demo ki kalpanik dukaan dekhein, ya account banakar apne products se shuru karein.",
+    "authTitle": "Busywork kam. Business zyada.",
+    "authHint": "Sales, stock aur customer records ek aasan workspace mein jude.",
+    "showPassword": "Password dikhaayein",
+    "hidePassword": "Password chhupaayein",
+    "passwordShort": "Kam se kam 10 characters rakhein. Lamba, alag passphrase behtar hai.",
+    "passwordOkay": "Zaroori length poori hai. Is account ka alag password rakhein.",
+    "passwordStrong": "Lamba passphrase. Sirf is account ke liye rakhein.",
+    "passwordMismatch": "Passwords match nahin karte.",
+    "passwordMatch": "Passwords match hain.",
+    "acceptTerms": "Maine terms aur privacy ki jaankari padhi hai.",
+    "terms": "Shartein",
+    "privacy": "Gopniyata",
+    "authDemo": "Pehle kalpanik dukaan ka demo dekhein",
+    "journey": [
+      {
+        "title": "Apna account banayein",
+        "hint": "Naam, email aur alag password rakhein."
+      },
+      {
+        "title": "Business chunein",
+        "hint": "Apni dukaan jaisa type chunein."
+      },
+      {
+        "title": "Dukaan ki details dein",
+        "hint": "Dukaan ka naam, bhasha aur zaroori details dein."
+      },
+      {
+        "title": "Apne products jodein",
+        "hint": "Naam, units, prices aur stock se shuru karein."
+      },
+      {
+        "title": "Pehli bikri likhein",
+        "hint": "Confirm se pehle bill, customer aur payment check karein."
+      },
+      {
+        "title": "Jude records dekhein",
+        "hint": "Sales, stock aur customer hisaab saath badalta hai."
+      },
+      {
+        "title": "Roz ka kaam aasan karein",
+        "hint": "Zaroorat par voice drafts, demand aur reports laayein."
+      }
+    ],
+    "industries": {
+      "grocery": {
+        "hint": "Packets, kilo aur roz ka udhaar.",
+        "workflow": "Maal lein → bill banayein → kam stock dekhein"
+      },
+      "hardware": {
+        "hint": "Pieces, metres aur supplier se kharid.",
+        "workflow": "Kharid likhein → units bechein → baaki hisaab dekhein"
+      },
+      "vegetables": {
+        "hint": "Busy counter ke liye wazan ke bills.",
+        "workflow": "Taaza stock jodein → wazan ka bill → wastage likhein"
+      },
+      "mobile": {
+        "hint": "Accessories, units aur customer ka history.",
+        "workflow": "Accessories jodein → bill banayein → customer history dekhein"
+      },
+      "clothing": {
+        "hint": "Product records mein size aur colour.",
+        "workflow": "Variants jodein → pieces bechein → missing sizes ki maang likhein"
+      },
+      "general": {
+        "hint": "Roz ka saamaan, saaf units aur aasan bills.",
+        "workflow": "Items jodein → saath bechein → din ka hisaab dekhein"
+      }
+    }
+  }
 }

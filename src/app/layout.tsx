@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import '@/components/locale.css';
 import '@/components/marketing.css';
+import '@/components/brand-experience.css';
 import { PwaRegistration } from '@/components/pwa';
 import {LocaleProvider} from '@/components/locale-provider';
 import {SystemText} from '@/components/localized-data';
