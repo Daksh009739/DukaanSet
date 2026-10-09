@@ -264,8 +264,9 @@ test("session cookies are always Secure in production and on HTTPS", async () =>
   const store = new Store(":memory:"), previousMode = process.env.NODE_ENV;
   try {
     Reflect.set(process.env, "NODE_ENV", "production");
-    const registered = await handleRequest(new Request("http://localhost/api/auth/register", { method: "POST", headers: { Origin: "http://localhost", "Content-Type": "application/json" }, body: JSON.stringify({ name: "Secure Owner", email: "secure-cookie@example.com", password: "secure-cookie-password", businessName: "Secure shop" }) }), store);
-    assert.equal(registered.status, 201); assert.match(registered.headers.get("set-cookie")!, /; Secure(?:;|$)/); assert.match(registered.headers.get("set-cookie")!, /HttpOnly/); assert.match(registered.headers.get("set-cookie")!, /SameSite=Lax/);
+    store.register({name:'Secure Owner',email:'secure-cookie@example.com',password:'secure-cookie-password',businessName:'Secure shop'});
+    const registered = await handleRequest(new Request("http://localhost/api/auth/login", { method: "POST", headers: { Origin: "http://localhost", "Content-Type": "application/json" }, body: JSON.stringify({email:'secure-cookie@example.com',password:'secure-cookie-password'}) }), store);
+    assert.equal(registered.status, 200); assert.match(registered.headers.get("set-cookie")!, /; Secure(?:;|$)/); assert.match(registered.headers.get("set-cookie")!, /HttpOnly/); assert.match(registered.headers.get("set-cookie")!, /SameSite=Lax/);
     Reflect.set(process.env, "NODE_ENV", "development");
     const https = await handleRequest(new Request("https://localhost/api/auth/logout", { method: "POST", headers: { Origin: "https://localhost" } }), store);
     assert.equal(https.status, 200); assert.match(https.headers.get("set-cookie")!, /; Secure(?:;|$)/);
@@ -337,13 +338,13 @@ test("V1 file migration preserves merchant ledgers, sessions and product stock a
     old.exec(schema);
     for (const table of ["users", "businesses", "memberships", "sessions", "products", "customers", "suppliers", "invoices", "payments", "movements", "audit", "idempotency"]) {
       for (const row of f.store.db.prepare(`SELECT * FROM ${table}`).all()) {
-        const values = Object.values(row).slice(0, table === "products" ? 10 : undefined);
+        const values = Object.values(row).slice(0, table === "products" ? 10 : table === 'users' ? 7 : table === 'memberships' ? 3 : undefined);
         old.prepare(`INSERT INTO ${table} VALUES(${values.map(() => "?").join(",")})`).run(...values);
       }
     }
     old.close();
     upgraded = new Store(path);
-    assert.equal(upgraded.db.prepare("PRAGMA user_version").get()?.user_version, 2);
+    assert.equal(upgraded.db.prepare("PRAGMA user_version").get()?.user_version, 3);
     assert.equal(upgraded.authenticate(token), f.user);
     const state = upgraded.state(f.user, f.business);
     assert.equal(state.products[0].quantityMilli, 19000); assert.deepEqual(state.products[0].aliases, []);
@@ -509,7 +510,7 @@ test("demo reset is transactional, retains session/language/business IDs and nev
     assert.deepEqual(f.store.state(f.user, f.business), beforeReal); assert.deepEqual(other.businesses.map(b => f.store.state(other.user.id, b.id)), beforeOther);
     throwsCode(() => f.store.resetDemo(f.user), "DEMO_ONLY");
     assert.deepEqual(f.store.state(f.user, f.business), beforeReal);
-    f.store.db.prepare("INSERT INTO memberships VALUES(?,?,?)").run(f.user, fashion.id, "owner");
+    f.store.db.prepare("INSERT INTO memberships(user_id,business_id,role) VALUES(?,?,?)").run(f.user, fashion.id, "owner");
     const beforeShared = demo.businesses.map(b => f.store.state(demo.user.id, b.id));
     throwsCode(() => f.store.resetDemo(demo.user.id), "DEMO_ONLY");
     assert.deepEqual(demo.businesses.map(b => f.store.state(demo.user.id, b.id)), beforeShared);

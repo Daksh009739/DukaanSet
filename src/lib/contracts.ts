@@ -1,7 +1,7 @@
 export type Language = "en" | "hi" | "hinglish";
 export type Category = "grocery" | "hardware" | "vegetables" | "mobile" | "clothing" | "general";
 export type PaymentMethod = "cash" | "upi";
-export interface User { id: string; name: string; email: string; language: Language; demo: boolean }
+export interface User { id: string; name: string; email: string; language: Language; demo: boolean; emailVerified: boolean; verificationRequired: boolean }
 export interface Business { id: string; name: string; category: Category }
 export interface Session { user: User; businesses: Business[] }
 export interface Product { id: string; name: string; sku: string; unit: string; pricePaise: number; costPaise: number; quantityMilli: number; minStockMilli: number; expiryDate: string | null; aliases: string[]; barcode: string; variation: string; packSize: number | null }
@@ -20,7 +20,7 @@ export interface Purchase { id: string; supplierId: string; supplierName: string
 export interface Expense { id: string; description: string; amountPaise: number; method: PaymentMethod; date: string }
 export interface Closing { id: string; date: string; businessDay: string; openingCashPaise: number; expectedCashPaise: number; actualCashPaise: number; differencePaise: number }
 export interface Metrics { salesTodayPaise: number; collectedTodayPaise: number; outstandingPaise: number; lowStockCount: number; billsToday: number; stockValuePaise: number }
-export interface Task { id: string; title: string; detail: string; type: "stock" | "credit" | "expiry"; name: string; productId?: string; customerId?: string; quantityMilli?: number; unit?: string; balancePaise?: number; expiryDate?: string }
+export interface Task { id: string; title: string; detail: string; type: "stock" | "credit" | "expiry" | "demand"; name: string; productId?: string; customerId?: string; quantityMilli?: number; unit?: string; balancePaise?: number; expiryDate?: string }
 export interface Activity { id: string; action: string; detail: string; date: string }
 export interface BusinessState { business: Business; products: Product[]; customers: Customer[]; suppliers: Supplier[]; invoices: Invoice[]; payments: Payment[]; movements: Movement[]; inventoryEntries: InventoryEntry[]; purchases: Purchase[]; expenses: Expense[]; closings: Closing[]; metrics: Metrics; totals: { salesPaise: number; receivedPaise: number; expensesPaise: number }; daily: { cashPaise: number; upiPaise: number; purchaseCount: number; expensesPaise: number; cashExpensesPaise: number; cashPurchasePaymentsPaise: number; creditSalesPaise: number; olderDuesReceivedPaise: number }; weeklySales: { date: string; label: string; salesPaise: number }[]; tasks: Task[]; activity: Activity[] }
 export interface ApiError { error: { code: string; message: string } }

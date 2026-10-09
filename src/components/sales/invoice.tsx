@@ -41,8 +41,8 @@ export function SaleInvoicePage({ id }: { id: string }) {
   return <div className="sale-invoice-page"><div className="sale-page-heading"><div><Link href="/app/sales" className="sale-back"><ArrowLeft size={17} />{t('back')}</Link><h1>{invoice.number}</h1><p>{t('invoiceHint')}</p></div></div>
     <InvoiceActions invoice={invoice} businessName={app.state!.business.name} payments={payments} />
     <InvoiceDocument invoice={invoice} businessName={app.state!.business.name} payments={payments} />
-    {invoice.customerId && <Link className="text-link sale-invoice-customer" href={`/app/customers/${invoice.customerId}`}>{t('openCustomer')}</Link>}
-    {invoice.status !== 'cancelled' && <div className="sale-invoice-reversal"><p>{t('reversalWarning')}</p><Button variant="danger" onClick={() => setConfirm(true)}><XCircle size={17} />{t('cancelSale')}</Button></div>}
+    {invoice.customerId && app.state!.configuration.permissions.customers && <Link className="text-link sale-invoice-customer" href={`/app/customers/${invoice.customerId}`}>{t('openCustomer')}</Link>}
+    {invoice.status !== 'cancelled' && app.state!.configuration.permissions.sales && <div className="sale-invoice-reversal"><p>{t('reversalWarning')}</p><Button variant="danger" onClick={() => setConfirm(true)}><XCircle size={17} />{t('cancelSale')}</Button></div>}
     <Sheet title={t('cancelSale')} description={t('cancellationHint')} open={confirm} onOpenChange={next => { if (!busy) setConfirm(next); }}><div className="sheet-body"><p>{invoice.number} · {money(invoice.totalPaise)}</p><p className="sale-section-hint">{t('reversalWarning')}</p><FormError message={error} /></div><div className="sheet-actions"><Button variant="secondary" disabled={busy} onClick={() => setConfirm(false)}>{t('back')}</Button><Button variant="danger" busy={busy} onClick={reverse}>{t('confirmCancel')}</Button></div></Sheet>
   </div>;
 }

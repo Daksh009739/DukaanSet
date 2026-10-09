@@ -18,12 +18,14 @@ import { PaymentSelector } from './payment-selector';
 import { SaleSummary } from './sale-summary';
 import { SaleSuccess } from './sale-success';
 import { removePendingPhoto } from './sale-photo-uploader';
+import { useTranslation } from 'react-i18next';
 
 export function NewSalePage() {
   const app = useApp();
   const state = app.state!;
   const { t } = useSalesCopy();
   const params = useSearchParams();
+  const v=useTranslation('v3').t;const demand=state.configuration.features.demandPulse&&state.configuration.permissions.demand?state.demand.requestsList.find(request=>request.id===params.get('demand')):undefined;
   const storageKey = `ds-draft-${app.session!.user.id}-${app.businessId}`;
   const { draft, setDraft, update, clear, complete, remember, freeze, reject, markConflict, hydrated, storageError } = useSaleDraft(storageKey, app.businessId);
   const [busy, setBusy] = useState(false);
@@ -41,7 +43,7 @@ export function NewSalePage() {
     const product = state.products.find(item => item.id === params.get('product'));
     const customer = state.customers.find(item => item.id === params.get('customer'));
     if (draft.savedInvoiceId && (product || customer)) update({ savedInvoiceId: '' });
-    if (product && !draft.items[product.id]) { update({ items: { ...draft.items, [product.id]: '1' } }); setContextHint(product.name); }
+    if (product && !draft.items[product.id]) {const amount=demand?.productId===product.id&&!Object.keys(draft.items).length?Math.min(demand.remainingMilli,product.quantityMilli):1000;update({ items: { ...draft.items, [product.id]: amount>0?String(amount/1000):'1' } }); setContextHint(product.name); }
     if (customer && !draft.customerId) update({ customerId: customer.id });
     else if (customer && customer.id !== draft.customerId) setContextCustomer(customer.id);
   }, [draft, hydrated, params, state.customers, state.products, update]);
@@ -100,12 +102,13 @@ export function NewSalePage() {
     } finally { submitting.current = false; setBusy(false); }
   };
 
-  if (savedInvoice) return <SaleSuccess invoice={savedInvoice} businessName={state.business.name} onNew={clearSale} />;
+  if (savedInvoice) return <><SaleSuccess invoice={savedInvoice} businessName={state.business.name} onNew={clearSale} />{demand&&<section className="card below-card"><p>{v('linkHint')}</p><Link className="btn btn-secondary" href={`/app/demand?request=${demand.id}&invoice=${savedInvoice.id}#request-${demand.id}`}>{v('linkSale')}</Link></section>}</>;
   return <div className="sale-editor" data-sale-editor>
     <div className="sale-page-heading"><div><Link href="/app/sales" className="sale-back"><ArrowLeft size={17} />{t('back')}</Link><h1>{t('newSale')}</h1><p>{t('saleHint')}</p></div><button type="button" className="sale-draft-button" aria-label={t('saveDraft')} disabled={!hydrated || locked} onClick={() => { if (remember(draft)) app.notify(t('draftSaved')); }}><Save size={16} /><span>{t('saveDraft')}</span></button></div>
     <div className="sale-draft-status"><span><span className="sale-status-dot" />{draft.recoveryBlocked ? t('pendingTitle') : storageError ? t('draftWarning') : t('draftSaved')}</span><button type="button" disabled={locked || uploadsActive} onClick={clearSale}>{t('clearDraft')}</button></div>
     {(draft.pendingSale || draft.recoveryBlocked) && <section className="sale-recovery" aria-labelledby="sale-recovery-title" role="status"><div><ShieldCheck size={22} /><div><h2 id="sale-recovery-title">{t('pendingTitle')}</h2><p>{t(draft.recoveryBlocked ? 'recoveryInvalid' : draft.pendingSale?.conflict ? 'conflictHint' : 'pendingHint')}</p></div></div><div className="sale-recovery-actions">{draft.pendingSale && !draft.pendingSale.conflict && <Button className="sale-recovery-retry" busy={busy} disabled={busy || !app.online} onClick={() => void save()}><RefreshCw size={17} />{t('retrySale')}</Button>}<Link href="/app/sales">{t('reviewHistory')}</Link></div></section>}
     {contextHint && <p className="sale-context-note" role="status"><Package size={17} />{t('productAdded', { name: contextHint })}</p>}
+    {demand&&<p className="sale-context-note">{v('demandTitle')} · {demand.productName} {demand.variant} · {v('linkHint')}</p>}
     {contextCustomer && <div className="sale-context-note"><p>{t('contextCustomer', { name: state.customers.find(item => item.id === contextCustomer)?.name })}</p><button type="button" className="text-link" disabled={locked} onClick={() => { update({ customerId: contextCustomer }); setContextCustomer(''); }}>{t('useCustomer')}</button></div>}
     <div className="sale-layout"><div className="sale-main-column">
       <ProductSelector products={state.products} category={state.business.category} selected={draft.items} onAdd={add} disabled={locked || !hydrated} frequentIds={frequentIds} />

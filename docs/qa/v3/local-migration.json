@@ -1,0 +1,79 @@
+{
+  "date": "2026-10-09T11:31:43.705Z",
+  "sourceVersion": 2,
+  "targetVersion": 3,
+  "reopened": true,
+  "integrity": "ok",
+  "foreignKeyErrors": 0,
+  "originalColumnsAndValuesUnchanged": true,
+  "tables": [
+    {
+      "table": "users",
+      "count": 16
+    },
+    {
+      "table": "businesses",
+      "count": 51
+    },
+    {
+      "table": "memberships",
+      "count": 51
+    },
+    {
+      "table": "sessions",
+      "count": 16
+    },
+    {
+      "table": "products",
+      "count": 505
+    },
+    {
+      "table": "customers",
+      "count": 185
+    },
+    {
+      "table": "suppliers",
+      "count": 100
+    },
+    {
+      "table": "invoices",
+      "count": 315
+    },
+    {
+      "table": "payments",
+      "count": 315
+    },
+    {
+      "table": "movements",
+      "count": 820
+    },
+    {
+      "table": "inventory_entries",
+      "count": 0
+    },
+    {
+      "table": "purchases",
+      "count": 0
+    },
+    {
+      "table": "expenses",
+      "count": 0
+    },
+    {
+      "table": "closings",
+      "count": 0
+    },
+    {
+      "table": "audit",
+      "count": 1156
+    },
+    {
+      "table": "idempotency",
+      "count": 315
+    },
+    {
+      "table": "attachments",
+      "count": 0
+    }
+  ]
+}

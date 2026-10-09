@@ -3,6 +3,10 @@ import { getStore } from "./store";
 import { DomainError, isDomainError } from "./validation";
 import { createHash } from "node:crypto";
 import { decodePhoto, MAX_IMAGE_BYTES } from "./images";
+import { SaaSService } from './saas';
+import { AuthenticationService } from './authentication';
+import { authorize } from './access';
+import { AssistantService } from './assistant';
 
 const COOKIE = "dukaanset_session";
 const buckets = new Map<string, { count: number; expires: number }>();
@@ -54,7 +58,7 @@ async function readBody(request: Request, max: number): Promise<Buffer> {
 
 export async function handleRequest(request: Request, store: Store = getStore()): Promise<Response> {
   try {
-    const url = new URL(request.url), path = url.pathname.replace(/\/$/, ""), verb = request.method;
+    const url = new URL(request.url), path = url.pathname.replace(/\/$/, ""), verb = request.method, saas=new SaaSService(store), auth=new AuthenticationService(store);
     if (!["GET", "POST"].includes(verb)) return json({ error: { code: "METHOD_NOT_ALLOWED", message: "Method not supported." } }, 405, { Allow: "GET, POST" });
     if (verb === "POST") requireSameOrigin(request);
     if (path.startsWith("/api/auth/") && verb === "POST") {
@@ -71,19 +75,27 @@ export async function handleRequest(request: Request, store: Store = getStore())
         const session = store.demo(), secret = store.issueSession(session.user.id);
         return json(session, 201, { "Set-Cookie": cookie(secret, request) });
       }
+      if(action==='verify'){const session=auth.verify(await body(request));return json(session,200,{'Set-Cookie':cookie(store.issueSession(session.user.id),request)});}
+      if(action==='forgot'){const input=await body(request);const address=input&&typeof input==='object'&&'email' in input?String(input.email).trim().toLowerCase().slice(0,254):'unknown';throttle('reset:email:'+address,3,3600000);return json(await auth.forgot(input));}
+      if(action==='reset')return json(auth.reset(await body(request)),200,{'Set-Cookie':cookie('',request,true)});
+      if(action==='verification'){const userId=store.authenticate(token(request));throttle(`verify:${userId}`,3,3600000);return json(await auth.resendVerification(userId));}
+      if(action==='acceptinvite'){const userId=store.authenticate(token(request));return json(auth.acceptInvite(userId,await body(request)));}
       if (action !== "register" && action !== "login") throw new DomainError("NOT_FOUND", "Endpoint not found.", 404);
       const input = await body(request);
       const address = input && typeof input === "object" && "email" in input ? String(input.email).trim().toLowerCase().slice(0, 254) : "unknown";
       throttle(`auth:email:${address}`, 10, 600_000);
-      const session = action === "register" ? store.register(input) : store.login(input), secret = store.issueSession(session.user.id);
+      const session = action === "register" ? await auth.register(input) : store.login(input), secret = store.issueSession(session.user.id);
       return json(session, action === "register" ? 201 : 200, { "Set-Cookie": cookie(secret, request) });
     }
     const userId = store.authenticate(token(request));
     throttle(`user:${userId}`, 180);
     if (path === "/api/session" && verb === "GET") return json(store.session(userId));
     if (path === "/api/account/language" && verb === "POST") return json(store.updateLanguage(userId, await body(request)));
-    if (path === "/api/businesses" && verb === "POST") return json(store.createBusiness(userId, await body(request)), 201);
-    const match = path.match(/^\/api\/businesses\/([a-f0-9-]{36})\/([a-z]+)(?:\/([a-f0-9-]{36})(?:\/([a-z]+))?)?$/);
+    if(path==='/api/account/profile'&&verb==='POST')return json(auth.account(userId,await body(request)));
+    if(path==='/api/account/password'&&verb==='POST')return json(auth.changePassword(userId,await body(request)),200,{'Set-Cookie':cookie('',request,true)});
+    if(path==='/api/onboarding'&&verb==='POST')return json(saas.onboard(userId,await body(request)),201);
+    if (path === "/api/businesses" && verb === "POST") return json(saas.createAdditionalBusiness(userId, await body(request)), 201);
+    const match = path.match(/^\/api\/businesses\/([a-f0-9-]{36})\/([a-z-]+)(?:\/([a-f0-9-]{36})(?:\/([a-z]+))?)?$/);
     if (!match) throw new DomainError("NOT_FOUND", "Endpoint not found.", 404);
     const [, businessId, action, recordId, subAction] = match;
     store.assertMember(userId, businessId);
@@ -91,9 +103,18 @@ export async function handleRequest(request: Request, store: Store = getStore())
       const photo = store.readAttachment(userId, businessId, recordId);
       return new Response(new Uint8Array(photo.bytes), { headers: { "Content-Type": photo.metadata.mime, "Content-Length": String(photo.bytes.length), "Cache-Control": "private, no-store", "X-Content-Type-Options": "nosniff", "Content-Disposition": `inline; filename="${photo.metadata.id}.${photo.metadata.mime === "image/jpeg" ? "jpg" : photo.metadata.mime.split("/")[1]}"`, "Content-Security-Policy": "default-src 'none'; sandbox" } });
     }
-    if (action === "state" && !recordId && verb === "GET") return json(store.state(userId, businessId));
+    if (action === "state" && !recordId && verb === "GET") return json(saas.state(userId, businessId));
+    if(action==='catalogue-import'&&!recordId&&verb==='POST')return json(saas.importCatalogue(userId,businessId,await body(request)),201);
+    if(action==='configuration'&&!recordId)return json(verb==='GET'?saas.configuration(userId,businessId):saas.saveConfiguration(userId,businessId,await body(request)));
+    if(action==='team'){if(!recordId)return json(verb==='GET'?saas.team(userId,businessId):await auth.invite(userId,businessId,await body(request)));if(verb==='POST'&&!subAction)return json(saas.updateMember(userId,businessId,recordId,await body(request)));}
+    if(action==='demands'){
+      if(verb==='GET'){if(recordId&&subAction==='message')return json(saas.message(userId,businessId,recordId));if(recordId&&!subAction)return json(saas.request(userId,businessId,recordId));if(!recordId)return json(saas.summary(userId,businessId));}
+      if(verb==='POST'){if(!recordId)return json(saas.createDemand(userId,businessId,await body(request)),201);const input=await body(request);switch(subAction){case 'status':return json(saas.transition(userId,businessId,recordId,input));case 'associate':return json(saas.associate(userId,businessId,recordId,input));case 'consent':return json(saas.consent(userId,businessId,recordId,input));case 'followup':return json(saas.followUp(userId,businessId,recordId,input));case 'convert':return json(saas.convert(userId,businessId,recordId,input));}}
+    }
+    if(action==='suggestions'&&!recordId&&verb==='POST')return json(saas.dismiss(userId,businessId,await body(request)));
+    if(action==='reorders'){if(!recordId)return json(verb==='GET'?saas.orders(userId,businessId):saas.reorder(userId,businessId,await body(request)),verb==='POST'?201:200);if(verb==='POST'&&subAction==='receive')return json(saas.receiveOrder(userId,businessId,recordId,await body(request)));if(verb==='POST'&&subAction==='cancel')return json(saas.cancelOrder(userId,businessId,recordId,await body(request)));}
     if (action === "export" && !recordId && verb === "GET") return json(store.export(userId, businessId), 200, { "Content-Disposition": `attachment; filename="dukaanset-${businessId}.json"` });
-    if (action === "ai" && !recordId && (verb === "GET" || verb === "POST")) return json({ available: false, provider: null, message: "AI assistance is not connected. Dashboard tasks are calculated from your records; they are not AI-generated." });
+    if(action==='ai'&&!recordId){const assistant=new AssistantService(store);if(verb==='GET')return json(assistant.status(userId,businessId));if(verb==='POST'){throttle(`ai:${userId}`,5,60000);return json(await assistant.ask(userId,businessId,await body(request)));}}
     if (action === "customers" && recordId && subAction === "statement" && verb === "GET") return json(store.customerStatement(userId, businessId, recordId));
     if (verb !== "POST") throw new DomainError("METHOD_NOT_ALLOWED", "This operation requires POST.", 405);
     if (action === "invoices" && recordId && subAction === "cancel") return json(store.cancelInvoice(userId, businessId, recordId));

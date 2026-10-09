@@ -1,15 +1,14 @@
 # DukaanSet
 
-DukaanSet — **Apni Dukaan, Sab Set.** — is a mobile-first workspace for bills, stock and customer payments. This repository contains a runnable development vertical slice with a real local backend; the full commercial product remains staged work.
+**Apni Dukaan, Sab Set.** A mobile-first, three-language workspace for sales, stock, customer dues and missed demand. V3 adds verified account setup, recovery, staff permissions, configurable modules and DemandPulse to the existing transactional V2 application.
 
-Repository: [Daksh009739/DukaanSet](https://github.com/Daksh009739/DukaanSet).
+Source: [Daksh009739/DukaanSet](https://github.com/Daksh009739/DukaanSet). See the [V3 implementation and limits](docs/v3-implementation.md), [QA report](docs/v3-test-report.md) and preserved [V3 brief](docs/briefs/v3-master.md).
 
 ## Run locally
 
-Use **Node.js 24 or newer** and npm. Native `node:sqlite` is required; no separate database server or paid provider is needed for the local slice. Run these commands from the repository root in PowerShell:
+Use **Node.js 24+** and npm. Native `node:sqlite` is required. No paid provider or separate database server is needed for the local workflows.
 
 ```powershell
-node --version
 npm ci
 if (-not (Test-Path -LiteralPath .env.local)) {
   Copy-Item -LiteralPath .env.example -Destination .env.local
@@ -17,65 +16,52 @@ if (-not (Test-Path -LiteralPath .env.local)) {
 npm run dev
 ```
 
-Open [http://127.0.0.1:3000](http://127.0.0.1:3000). Choose the clearly labelled demo to explore fictional grocery, hardware, vegetable and Fashion shops, or register a real local account to start with an empty business. Registration asks for name, email, a password of at least 10 characters, business name, category and language. Email verification and password recovery are not implemented.
+Open [http://127.0.0.1:3000](http://127.0.0.1:3000). Choose the labelled demo for fictional grocery, hardware, vegetable and Fashion shops. Fashion includes an unavailable XL shirt with recorded demand; hardware and grocery include other demand scenarios. Demo reset is explicit and refuses real/shared business data.
 
-The development server binds to `127.0.0.1`. To choose another local port, use `npm run dev -- --port 3002`. The script runner checks the Node version; on Windows it can find Node 24+ at `C:\Program Files\nodejs\node.exe`. If another Node executable must be selected, set `DUKAANSET_NODE` to its absolute path before running a script.
+For a new account, register name, email, confirmed password and language, then confirm the verification link before setting up the shop. With local `AUTH_EMAIL_MODE=file`, links are written to the **private** `.data/dukaanset.sqlite.mail/` outbox, not sent by email. Open the matching JSON file locally and visit its `url`; tokens must remain private. Verification links expire after 24 hours and reset links after 30 minutes. Onboarding offers Add Product, reviewed CSV import, a separate fictional demo, or Skip. Existing accounts and records survive the upgrade; legacy email addresses are not falsely marked verified.
 
-## Persistence and configuration
+The development server binds to loopback. Use `npm run dev -- --port 3002` for another port and set `AUTH_BASE_URL` to that local origin for correct links. The script runner can select installed Windows Node 24 at `C:\Program Files\nodejs\node.exe`; `DUKAANSET_NODE` accepts another absolute executable path.
 
-The server creates `.data/dukaanset.sqlite` on first use, with SQLite WAL journaling. Accounts, sessions and business records survive ordinary refreshes and server restarts while that database remains in place. `DATABASE_PATH` selects another server-side path; keep it on writable, durable local storage. This file contains private business records and password hashes. It is ignored by Git, so pushing code does **not** back up merchant data.
+## Persistence and providers
 
-[.env.example](.env.example) documents configuration without credentials. `NEXT_PUBLIC_SITE_URL` controls public metadata/canonical URLs. `OPENAI_API_KEY` and `DATABASE_URL` are future integration boundaries: setting them does not activate an AI provider or a PostgreSQL adapter. Never place secrets in `NEXT_PUBLIC_*` variables or commit `.env.local`, database files, WAL/journal files, backups, dependency folders or generated output.
+The default database is `.data/dukaanset.sqlite`, with SQLite WAL journaling. `DATABASE_PATH` chooses durable private storage. Business data, tokens, password hashes, private photos, local outbox files and backups are ignored by Git. A Git push preserves **source**, not merchant data. Never expose them through `public/` or commit `.env.local`.
 
-## Current scope
+The additive schema migration opens existing version 1/2 databases at version 3 and rejects newer versions. Run `npm run backup` before upgrading; the command creates a SQLite-consistent snapshot under `.data/backups/` and checks integrity/foreign keys. Keep a protected copy elsewhere and restore only with the application stopped and the matching source revision. No scheduled backup service is included.
 
-The code connects owner account/session access, business switching, English/Hindi/Hinglish app copy, category dashboards, products and stock movements, customers and dues, ordinary invoices, cash/manual UPI/split receipts, private item photos, downloadable invoice/customer-statement PDFs, partial customer repayments, supplier stock receipts, expenses, daily tasks, daily cash closing, product editing/aliases, reviewed voice stock batches, demo reset, read-only business summaries, print views and stock CSV/business JSON export. Financial totals are calculated on the server using integer paise and quantities in thousandths; related invoice/payment/stock writes are transactional.
+[.env.example](.env.example) documents server-only configuration. Production account email requires `AUTH_EMAIL_MODE=resend`, a trusted HTTPS `AUTH_BASE_URL`, `AUTH_EMAIL_FROM` and `RESEND_API_KEY`. File delivery is disabled in production. Live delivery through a verified sender still requires an operational test.
 
-The slice has deliberate limits: supplier purchase payments are cash-only; customer repayments allocate oldest-first; full cancellation refuses invoices with later repayments; expiry belongs to a product rather than a stock batch; access is owner-only. Manual UPI entries are merchant records, not provider-verified settlement. The invoice is not a government-registered e-invoice. Advanced tax/accounting, staff roles, recovery/OTP, partial returns, full batch/variant matrices, transactional CSV import, automated messaging, OCR, hosted transcription and live AI, subscriptions and offline financial synchronization remain future work.
+The optional read-only AI adapter activates only when `AI_PROVIDER=openai`, `OPENAI_API_KEY` and an explicit `OPENAI_MODEL` are configured. It sends a permitted, reduced business snapshot only after the user asks a question; it cannot write stock, orders, invoices or messages. Unconfigured/provider failures remain visible and the rules-based summaries continue working. Provider retention terms apply. `DATABASE_URL` is still unused; it does not switch the app to PostgreSQL.
 
-Original replaceable brand assets, public marketing pages, metadata/sitemap/robots, a manifest and a narrow offline fallback are included. Only selected public assets are cached; authenticated records and API responses are excluded. Installation, accessibility, responsive coverage and production operation require their own validation. See [progress](docs/progress.md) for implementation status and [requirements](docs/requirements.md) for the full brief.
+## Connected workflows
 
-## V2 notes and private backups
+- Sales: reviewed ordinary invoices, cash/manual UPI/split receipts, credit, private product photos, Unicode invoice/statement PDFs, customer repayments and explicit full cancellation with signed refunds.
+- Inventory: products/aliases/descriptive variants, compatible reviewed stock conversions, purchases, stock history, product expiry, waste adjustments and atomic CSV catalogue import with opening stock. CSV import adds products and refuses conflicting SKUs.
+- DemandPulse: catalogue or free-text requests, exact product/variant matching, separate quantity/customer/visitor counts, grouped demand, reviewed reorder drafts, actual purchase receipts, consent-aware message preparation, manual contact records and explicit attribution to saved invoice quantities. Cancellation reverses attributed revenue and reopens the remaining demand.
+- SaaS: progressive onboarding, account profile/password, one-use verification/reset/invitation links, owner/manager/staff roles, permission overrides, business switching, persisted category defaults and module/notification settings with server enforcement.
+- Assistance: permission-aware dashboards, grouped daily tasks and demand reports; editable browser voice drafts in English/Hindi/Hinglish; optional configured AI questions. Voice never saves automatically or converts visitor counts into requested units.
 
-See [implementation and limits](docs/v2-implementation.md), [voice workflow](docs/v2-voice.md) and [audit](docs/v2-audit.md). New Sale keeps product, quantity, customer and payment together; only **Save Sale** writes the ledgers. Voice input always requires an editable review and explicit stock confirmation. Browser speech recognition may use the vendor’s servers, depends on browser support and has a manual fallback. The read-only business summary uses rules over saved records; an LLM is not connected.
+Money uses integer paise and quantities use thousandths. Financial writes are transactional and retry protected. Demand capture, suggestions, message preparation and order drafts do not change stock or financial ledgers. No messages are sent automatically, and a receipt alone does not count as recovered revenue.
 
-The additive schema migration runs automatically when the database opens. Before future upgrades use `npm run backup` to create a SQLite-consistent snapshot under the ignored `.data/backups/` directory. It checks SQLite integrity and foreign keys. Use `npm run backup -- path/to/database.sqlite` for another source, keep a protected copy away from the working machine, and stop the application before restoring it with the matching source revision. A manually verified current V2 local snapshot was created during this delivery; this is not an automatic backup service or a pre-V2 snapshot.
+## Limits
 
-Invoice and statement PDFs are actual paginated PDFs with locally rendered Unicode fonts and protected item photos. Text is rasterized for Hindi shaping, so PDF text search is unavailable. Native file sharing requires browser support; the user prepares the file and chooses its destination explicitly. No invoice access URL is published or sent automatically.
+This is a tested local application, not a completed commercial deployment. It runs on a persistent single-process Node/SQLite server. Supplier purchase payments are cash-only; repayments allocate oldest-first; full cancellation refuses invoices with later repayments. Partial returns, stock-batch expiry, full variant matrices, supplier repayment, PostgreSQL/multi-process operation, subscriptions, verified payment settlement, government e-invoicing, OCR/hosted transcription and offline financial synchronization remain future work. Nearby merchant networking is expressly a future phase.
 
-## Development checks
+Browser speech support/accuracy depends on the browser and may use its vendor's services. Manual entry remains available. PDFs rasterize text for Hindi shaping, so text search is unavailable. Public PWA assets have a narrow offline fallback; private records/API responses are excluded. Physical-device, screen-reader, HTTPS installation, live provider and merchant acceptance checks remain separate gates.
+
+## Verification and branches
 
 ```powershell
 npm run typecheck
 npm test
-npm run build
 npm run test:e2e
+npm run build
+# In another terminal after building:
+npm start -- --port 3002
+npm run test:production -- http://127.0.0.1:3002
 ```
 
-The V2 verification results are recorded in the [V2 QA report](docs/v2-test-report.md). Unit/API tests cover transaction and tenant boundaries, migrations, retries, split refunds, private photos, full-ledger aggregates and voice parsing. Browser checks exercise real workflows, phone layouts, PDF files and microphone failures. The [V1 QA report](docs/test-report.md) remains historical evidence.
+Browser tests use a separate `.data/e2e.sqlite`, private test outbox and `.next-e2e` server on port 3001. Windows uses installed Edge; other platforms need Playwright Chromium installed. Use fictional records and free the test port first. The [V3 QA report](docs/v3-test-report.md) records actual results and rendered evidence; [V2](docs/v2-test-report.md) and [V1](docs/test-report.md) remain historical reports.
 
-Playwright starts its own development server at `http://127.0.0.1:3001`, uses `.data/e2e.sqlite` and `.next-e2e`, and requires port 3001 to be free. Windows runs use an installed Microsoft Edge. On other platforms install the Playwright browser first with `npx playwright install chromium`. Use fictional test records and a separate database. The default runner starts a fresh managed server for each spec, isolating browser mocks and process-local rate counters without changing production throttles. Explicit file arguments run together. Reports/traces/screenshots are ignored by Git and contain fictional test records.
+`dev` contains active work; `staging` is for reviewed release candidates and `production` for explicitly approved stable releases. Branches do not deploy the app. This delivery saves V3 on `dev`; promotion and hosting are separate actions.
 
-`npm run build` validates the production bundle. `npm start` runs that bundle after a build; authenticated production operation requires HTTPS because production cookies always carry `Secure`. See [deployment preparation](docs/deployment.md) before operating it outside local development. No live deployment is part of this delivery.
-
-## Branch workflow
-
-- `dev`: active development and new work.
-- `staging`: reviewed candidate changes for testing before release.
-- `production`: code approved for a stable release after its gates are met.
-
-Promote reviewed changes from `dev` to `staging`, then from `staging` to `production`.
-The local workspace uses `dev`. A branch name or Git push does not deploy an application or prove production readiness. Keep code, documentation and project assets in this repository; commit and push reviewed work to preserve source history, while retaining separate protected backups of local business data.
-
-## Project documents
-
-- [Original master brief](docs/master-brief.md): the complete user-provided product specification.
-- [Competitor research](docs/research.md): official sources, observed features and merchant validation questions.
-- [Requirements](docs/requirements.md): full scope and acceptance contracts.
-- [Architecture](docs/architecture.md): storage, transactions, money/quantity and provider boundaries.
-- [Design system](docs/design-system.md): shared identity, tokens, components and phone behavior.
-- [Roadmap](docs/roadmap.md): implementation phases and release gates.
-- [Progress](docs/progress.md): delivered, limited and remaining work.
-- [V2 QA report](docs/v2-test-report.md): final commands, tested workflows and rendered evidence; [V1 QA](docs/test-report.md) records the earlier baseline.
-- [Deployment preparation](docs/deployment.md): local persistence and future operation requirements.
-- [Server security boundary](src/lib/server/SECURITY.md): cookies, trusted Host/origin and runtime storage.
+Other project documents: [progress](docs/progress.md), [architecture](docs/architecture.md), [design system](docs/design-system.md), [requirements](docs/requirements.md), [roadmap](docs/roadmap.md), [deployment preparation](docs/deployment.md), [server security boundary](src/lib/server/SECURITY.md), [V2 implementation](docs/v2-implementation.md) and [voice workflow](docs/v2-voice.md).

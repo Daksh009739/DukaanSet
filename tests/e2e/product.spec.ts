@@ -1,6 +1,7 @@
 import { test, expect, type Page } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 import type { BusinessState, Session } from '../../src/lib/contracts';
+import { privateMail } from './auth-helper';
 const origin='http://127.0.0.1:3001';
 async function session(page:Page):Promise<Session>{return (await page.request.get('/api/session')).json();}
 async function state(page:Page,businessId:string):Promise<BusinessState>{return (await page.request.get(`/api/businesses/${businessId}/state`)).json();}
@@ -16,7 +17,7 @@ test('public pages have real routes, SEO and phone layouts',async({page})=>{
 });
 test('merchant onboarding, partial bill and repayment persist through refresh',async({page})=>{
   const email=`merchant-${Date.now()}@example.test`;await page.goto('/register');
-  await page.getByLabel('Name',{exact:true}).fill('Test Merchant');await page.getByLabel('Email',{exact:true}).fill(email);await page.getByLabel('Password',{exact:true}).fill('Test-only-passphrase-2026');await page.getByLabel('Shop name',{exact:true}).fill('Test Kirana');await page.getByRole('button',{name:'Set up my shop',exact:true}).click();await expect(page).toHaveURL(/\/app$/);
+  await page.getByLabel('Name',{exact:true}).fill('Test Merchant');await page.getByLabel('Email',{exact:true}).fill(email);await page.getByLabel('Password',{exact:true}).fill('Test-only-passphrase-2026');await page.getByLabel('Confirm password',{exact:true}).fill('Test-only-passphrase-2026');await page.getByRole('button',{name:'Get started free',exact:true}).click();await expect(page).toHaveURL(/\/verify-email$/);await page.goto(privateMail(email,'verification').url);await page.getByRole('button',{name:'Confirm email verification',exact:true}).click();await expect(page).toHaveURL(/\/onboarding\/setup$/);await page.getByRole('button',{name:'English',exact:true}).click();await page.getByLabel('Shop name',{exact:true}).fill('Test Kirana');await page.getByRole('button',{name:'Create my shop',exact:true}).click();await page.getByRole('link',{name:'Open dashboard',exact:true}).click();await expect(page).toHaveURL(/\/app$/);
   await expect(page.getByText('Your first bill starts here',{exact:true})).toBeVisible();const user=await session(page);const id=user.businesses[0].id;
   await page.goto('/app/stock');await page.getByRole('button',{name:'Add product',exact:true}).first().click();const sheet=page.getByRole('dialog');await sheet.getByLabel('Product name',{exact:true}).fill('Test Rice');await sheet.getByLabel('SKU',{exact:true}).fill('TEST-RICE');await sheet.getByLabel('Selling price (₹)',{exact:true}).fill('1000');await sheet.getByLabel('Cost price (₹)',{exact:true}).fill('600');await sheet.getByLabel('Quantity',{exact:true}).fill('10');await sheet.getByLabel('Low-stock level',{exact:true}).fill('2');await sheet.getByRole('button',{name:'Save',exact:true}).click();await expect(sheet).toBeHidden();
   await page.goto('/app/customers');await page.getByRole('button',{name:'Add customer',exact:true}).first().click();await page.getByRole('dialog').getByLabel('Name',{exact:true}).fill('Riya Test');await page.getByRole('dialog').getByRole('button',{name:'Save',exact:true}).click();await expect(page.getByRole('dialog')).toBeHidden();const before=await state(page,id);const product=before.products[0];const customer=before.customers[0];

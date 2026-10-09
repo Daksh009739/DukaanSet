@@ -5,6 +5,7 @@ import type { Product, Category } from '@/lib/contracts';
 import { money, quantity } from '@/lib/client';
 import { useState } from 'react';
 import { useSalesCopy } from './sales-copy';
+import { DemandButton } from '../demand/capture';
 
 export function ProductThumbnail({ category, name, photo }: { category?: Category; name: string; photo?: string }) {
   return <span className={`sale-thumbnail ${category === 'clothing' ? 'sale-thumbnail-fashion' : ''}`}>
@@ -25,12 +26,13 @@ export function ProductSelector({ products, category, selected, onAdd, disabled,
     <p className="sale-section-hint">{t('productHint')}</p>
     <label className="sale-search"><Search size={19} aria-hidden /><span className="sr-only">{t('searchProducts')}</span><input type="search" aria-label={t('searchProducts')} value={search} placeholder={t('searchProducts')} onChange={event => setSearch(event.target.value)} /></label>
     <div className="sale-product-grid">
-      {filtered.map(product => <button key={product.id} type="button" className={`sale-product pick-product ${selected[product.id] ? 'sale-product-selected' : ''}`} onClick={() => onAdd(product.id)} disabled={disabled || product.quantityMilli <= 0}>
+      {filtered.map(product => <div className="sale-product-option" key={product.id}><button type="button" className={`sale-product pick-product ${selected[product.id] ? 'sale-product-selected' : ''}`} onClick={() => onAdd(product.id)} disabled={disabled || product.quantityMilli <= 0}>
         <ProductThumbnail category={category} name={product.name} />
         <span className="sale-product-name"><b>{product.name}</b>{product.variation && <small>{product.variation}</small>}<small>{product.quantityMilli > 0 ? t('available', { count: quantity(product.quantityMilli), unit: product.unit }) : t('outOfStock')}</small>{frequentIds.includes(product.id) && <span className="sale-frequent-label">{t('frequent')}</span>}</span>
         <span className="sale-product-bottom"><strong>{money(product.pricePaise)}</strong><span className="sale-product-add"><Plus size={18} aria-hidden /></span></span>
-      </button>)}
+      </button>{product.quantityMilli<=0&&<DemandButton product={product} compact/>}</div>)}
     </div>
     {!filtered.length && <p className="sale-inline-empty">{t('noResults')}</p>}
+    <div className="below-card"><DemandButton/></div>
   </section>;
 }

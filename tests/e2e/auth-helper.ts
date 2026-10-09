@@ -1,0 +1,2 @@
+import { readdirSync,readFileSync } from 'node:fs';
+export function privateMail(email:string,kind:string):{url:string}{const messages=readdirSync('.data/e2e-mail').map(name=>JSON.parse(readFileSync(`.data/e2e-mail/${name}`,'utf8'))).filter(row=>row.to===email&&row.kind===kind).sort((a,b)=>b.createdAt.localeCompare(a.createdAt));if(!messages[0])throw new Error('Expected private QA mail was not delivered');return messages[0];}

@@ -3,16 +3,18 @@ import { createContext, useContext, useEffect, useState, useCallback, useRef, ty
 import { useRouter } from 'next/navigation';
 import { I18nextProvider } from 'react-i18next';
 import i18n from '@/lib/i18n';
+import '@/lib/v3-i18n';
+import type { V3State } from '@/lib/v3-contracts';
 import { api, RequestError } from '@/lib/client';
 import type { BusinessState, Language, Session } from '@/lib/contracts';
 
-interface Context { session:Session|null; state:BusinessState|null; businessId:string; selectBusiness:(id:string)=>void; refresh:()=>Promise<void>; resetDemo:()=>Promise<void>; resetEpoch:number; changeLanguage:(language:Language)=>Promise<void>; notify:(message:string)=>void; online:boolean; mutation:<T>(path:string,body:unknown)=>Promise<T>; errorText:(error:unknown)=>string; loading:boolean; error:string; logout:()=>Promise<void>; writing:boolean }
+interface Context { session:Session|null; state:V3State|null; businessId:string; selectBusiness:(id:string)=>void; refresh:()=>Promise<void>; resetDemo:()=>Promise<void>; resetEpoch:number; changeLanguage:(language:Language)=>Promise<void>; notify:(message:string)=>void; online:boolean; mutation:<T>(path:string,body:unknown)=>Promise<T>; errorText:(error:unknown)=>string; loading:boolean; error:string; logout:()=>Promise<void>; writing:boolean }
 const AppContext=createContext<Context|null>(null);
 export function useApp() {const context=useContext(AppContext);if(!context) throw new Error('Missing application provider');return context;}
 
 function Provider({children}: {children:ReactNode}) {
   const router=useRouter();const routerRef=useRef(router);routerRef.current=router;
-  const [session,setSession]=useState<Session|null>(null);const [state,setState]=useState<BusinessState|null>(null);const [businessId,setBusinessId]=useState('');const [loading,setLoading]=useState(true);const [resetEpoch,setResetEpoch]=useState(0);const [error,setError]=useState('');const [toast,setToast]=useState('');const [online,setOnline]=useState(true);const epoch=useRef(0);const currentBusiness=useRef('');const activeLoad=useRef<AbortController|null>(null);const mounted=useRef(false);const writes=useRef(0);const [writing,setWriting]=useState(false);
+  const [session,setSession]=useState<Session|null>(null);const [state,setState]=useState<V3State|null>(null);const [businessId,setBusinessId]=useState('');const [loading,setLoading]=useState(true);const [resetEpoch,setResetEpoch]=useState(0);const [error,setError]=useState('');const [toast,setToast]=useState('');const [online,setOnline]=useState(true);const epoch=useRef(0);const currentBusiness=useRef('');const activeLoad=useRef<AbortController|null>(null);const mounted=useRef(false);const writes=useRef(0);const [writing,setWriting]=useState(false);
   const errorText=useCallback((error:unknown)=>{
     if(error instanceof RequestError) {
       if(error.status===401) return i18n.t('sessionExpired');
@@ -29,7 +31,7 @@ function Provider({children}: {children:ReactNode}) {
     mounted.current=true;const controller=new AbortController();
     api<Session>('/session',undefined,controller.signal).then(value=>{
       if(controller.signal.aborted)return;
-      setSession(value);if(i18n.language!==value.user.language)void i18n.changeLanguage(value.user.language);
+      setSession(value);if(value.user.verificationRequired&&!value.user.emailVerified){routerRef.current.replace('/verify-email');return;}if(!value.businesses.length){routerRef.current.replace('/onboarding/setup');return;}if(i18n.language!==value.user.language)void i18n.changeLanguage(value.user.language);
       let remembered:string|null=null;try{remembered=sessionStorage.getItem(`ds-business-${value.user.id}`);}catch{}
       const selected=value.businesses.some(b=>b.id===remembered)?remembered!:value.businesses[0]?.id||'';
       currentBusiness.current=selected;setBusinessId(selected);
@@ -46,7 +48,7 @@ function Provider({children}: {children:ReactNode}) {
     const requestEpoch=++epoch.current;activeLoad.current?.abort();const controller=new AbortController();activeLoad.current=controller;
     setLoading(true);setError('');
     try{
-      const next=await api<BusinessState>(`/businesses/${selected}/state`,undefined,controller.signal);
+      const next=await api<V3State>(`/businesses/${selected}/state`,undefined,controller.signal);
       if(mounted.current&&!controller.signal.aborted&&requestEpoch===epoch.current&&currentBusiness.current===selected)setState(next);
     }catch(error){
       if(mounted.current&&!controller.signal.aborted&&requestEpoch===epoch.current&&currentBusiness.current===selected){setError(errorText(error));if(error instanceof RequestError&&error.status===401)routerRef.current.replace('/login');}
@@ -66,10 +68,11 @@ function Provider({children}: {children:ReactNode}) {
     // Keep unresolved writes so the same account can retry the original request after signing in.
     // Draft keys include both account and business; ordinary drafts and voice transcripts are cleared.
     try{
+      const writeRecoveryPrefix=session?`ds-v3-write-${session.user.id}-`:'';
       const recoveryPrefix=session?`ds-draft-${session.user.id}-`:'';
       for(let index=sessionStorage.length-1;index>=0;index--){
         const key=sessionStorage.key(index);if(!key)continue;
-        let keep=false;
+        let keep=Boolean(writeRecoveryPrefix&&key.startsWith(writeRecoveryPrefix));
         if(recoveryPrefix&&key.startsWith(recoveryPrefix)){
           const raw=sessionStorage.getItem(key);
           if(raw){if(key.endsWith('-customer'))keep=true;else{try{const value=JSON.parse(raw);keep=Boolean(value?.pendingSale||value?.recoveryBlocked);}catch{keep=true;}}}
@@ -84,7 +87,7 @@ function Provider({children}: {children:ReactNode}) {
     writes.current++;setWriting(true);
     try{
       const next=await api<Session>('/auth/demo/reset',{});setSession(next);
-      try{for(let index=sessionStorage.length-1;index>=0;index--){const key=sessionStorage.key(index);if(key&&(key.startsWith(`ds-draft-${next.user.id}-`)||key.startsWith(`ds-voice-draft-${next.user.id}-`)))sessionStorage.removeItem(key);}}catch{}
+      try{for(let index=sessionStorage.length-1;index>=0;index--){const key=sessionStorage.key(index);if(key&&(key.startsWith(`ds-draft-${next.user.id}-`)||key.startsWith(`ds-voice-draft-${next.user.id}-`)||key.startsWith(`ds-v3-write-${next.user.id}-`)))sessionStorage.removeItem(key);}}catch{}
       if(!next.businesses.some(b=>b.id===currentBusiness.current)){currentBusiness.current=next.businesses[0]?.id||'';setBusinessId(currentBusiness.current);}
       await refresh();setResetEpoch(value=>value+1);
     }finally{writes.current--;if(mounted.current)setWriting(writes.current>0);}

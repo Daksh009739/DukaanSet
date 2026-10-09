@@ -1,0 +1,35 @@
+{
+  "checkedAt": "2026-10-09T11:18:49.929Z",
+  "runs": [
+    {
+      "suite": [
+        "tests/e2e/product.spec.ts"
+      ],
+      "exitCode": 0
+    },
+    {
+      "suite": [
+        "tests/e2e/v2-business.spec.ts"
+      ],
+      "exitCode": 0
+    },
+    {
+      "suite": [
+        "tests/e2e/v2-sales.spec.ts"
+      ],
+      "exitCode": 0
+    },
+    {
+      "suite": [
+        "tests/e2e/v2-voice.spec.ts"
+      ],
+      "exitCode": 0
+    },
+    {
+      "suite": [
+        "tests/e2e/v3-demand.spec.ts"
+      ],
+      "exitCode": 0
+    }
+  ]
+}

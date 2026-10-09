@@ -64,14 +64,14 @@ function OperationSheet({ action, data, onClose }: { action: Action | null; data
     const value = (name: string) => String(form.get(name) ?? '').trim();
     try {
       if (action === 'business') {
-        await api('/businesses', { name: value('businessName'), category: value('category') as Category });
+        await api('/businesses', { name: value('businessName'), category: value('category') as Category, idempotencyKey });
         window.location.reload(); return;
       }
       let path: string;
       let body: unknown;
       if (action === 'product') {
         path = '/products';
-        body = { name: value('name'), sku: value('sku'), unit: value('unit'), pricePaise: minorUnits(value('price')), costPaise: minorUnits(value('cost')), quantityMilli: minorUnits(value('quantity'), 3), minStockMilli: minorUnits(value('minStock'), 3), expiryDate: value('expiry') || null };
+        body = { name: value('name'), sku: value('sku'), unit: value('unit'), pricePaise: minorUnits(value('price')), costPaise: minorUnits(value('cost')), quantityMilli: minorUnits(value('quantity'), 3), minStockMilli: minorUnits(value('minStock'), 3), expiryDate: value('expiry') || null,variation:value('variation') };
       } else if (action === 'customer' || action === 'supplier') {
         path = action === 'customer' ? '/customers' : '/suppliers';
         body = { name: value('name'), phone: value('phone') };
@@ -101,12 +101,13 @@ function OperationSheet({ action, data, onClose }: { action: Action | null; data
         </>}
         {action === 'product' && <>
           <Field label={t('sku')} name="sku" maxLength={64} />
+          {state.configuration.features.variants&&<Field label={t('v3:variant')} name="variation" maxLength={100}/>}
           <div className="field-pair"><Field label={t('price')} name="price" inputMode="decimal" required defaultValue="0" /><Field label={t('cost')} name="cost" inputMode="decimal" required defaultValue="0" /></div>
           <Select label={t('sellingUnit')} name="unit" defaultValue={state.business.category === 'vegetables' ? 'kg' : 'piece'}>
             <option value="piece">{t('pieces')}</option><option value="kg">{t('kilograms')}</option><option value="metre">{t('metres')}</option><option value="packet">{t('packets')}</option><option value="box">{t('boxes')}</option>
           </Select>
           <div className="field-pair"><Field label={t('qty')} name="quantity" inputMode="decimal" required defaultValue="0" /><Field label={t('minStock')} name="minStock" inputMode="decimal" required defaultValue="5" /></div>
-          {(state.business.category === 'grocery' || state.business.category === 'vegetables') && <Field label={t('expiry')} name="expiry" type="date" />}
+          {state.configuration.features.expiryTracking && <Field label={t('expiry')} name="expiry" type="date" />}
           <p className="form-note">{t('quantityPrecision')}</p>
         </>}
         {action === 'payment' && <>
@@ -121,7 +122,7 @@ function OperationSheet({ action, data, onClose }: { action: Action | null; data
             {!state.products.length && <option value="">{t('selectProduct')}</option>}{state.products.map(item => <option key={item.id} value={item.id}>{item.name}</option>)}
           </Select>
           {product && <div className="inline-summary"><span>{t('stockQty')}</span><b>{quantity(product.quantityMilli)} {product.unit}</b></div>}
-          <Select label={t('reason')} value={reason} onChange={event => setReason(event.target.value as typeof reason)}><option value="receipt">{t('receipt')}</option><option value="wastage">{t('wastage')}</option><option value="correction">{t('correction')}</option></Select>
+          <Select label={t('reason')} value={reason} onChange={event => setReason(event.target.value as typeof reason)}><option value="receipt">{t('receipt')}</option>{state.configuration.features.wastageTracking&&<option value="wastage">{t('wastage')}</option>}<option value="correction">{t('correction')}</option></Select>
           <Field label={t('qty')} name="quantity" inputMode={reason === 'correction' ? 'text' : 'decimal'} required /><p className="form-note">{t('quantityPrecision')}</p>
         </>}
         {action === 'expense' && <><Field label={t('expenseDescription')} name="description" required maxLength={200} autoFocus /><Field label={t('amount')} name="amount" required inputMode="decimal" /><PaymentSelect /></>}

@@ -75,7 +75,7 @@ try {
     assert.ok(homepageHeaders, 'Homepage headers are unavailable.');
     assert.equal(homepageHeaders['x-content-type-options'], 'nosniff');
     assert.equal(homepageHeaders['x-frame-options'], 'DENY');
-    assert.equal(homepageHeaders['referrer-policy'], 'strict-origin-when-cross-origin');
+    assert.equal(homepageHeaders['referrer-policy'], 'no-referrer');
     assert.match(homepageHeaders['permissions-policy'] || '', /camera=\(self\)/);
     assert.match(homepageHeaders['permissions-policy'] || '', /microphone=\(self\)/);
     assert.match(homepageHeaders['permissions-policy'] || '', /geolocation=\(\)/);

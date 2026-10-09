@@ -4,24 +4,26 @@ import { mkdirSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import type { Business, BusinessState, Customer, CustomerStatement, InventoryEntry, Invoice, InvoiceItem, Payment, Product, Purchase, SaleAttachment, Session, Supplier, User } from "../contracts";
 import { schema } from "./schema";
-import { migrationV2 } from "./migrations";
+import { migrationV2, migrationV3 } from "./migrations";
+import { access, authorize } from './access';
+import type { ModuleKey, Permission } from '../v3-contracts';
 import { DomainError, aliases, assertWholeUnit, businessDay, category, convertQuantity, date, email, fingerprint, integer, items, keys, language, lineTotal, method, object, oneOf, password, string, unit as validateUnit } from "./validation";
 
 type Row = Record<string, string | number | null>;
 const stamp = () => new Date().toISOString();
 const uid = () => randomUUID();
 const status = (paid: number, total: number) => paid >= total ? "paid" : paid > 0 ? "partial" : "unpaid";
-function hashPassword(value: string): string {
+export function hashPassword(value: string): string {
   const salt = randomBytes(16).toString("hex");
   return `${salt}:${scryptSync(value, salt, 64).toString("hex")}`;
 }
-function verifyPassword(value: string, encoded: string): boolean {
+export function verifyPassword(value: string, encoded: string): boolean {
   const [salt, hash] = encoded.split(":");
   const actual = scryptSync(value, salt, 64);
   const expected = Buffer.from(hash, "hex");
   return expected.length === actual.length && timingSafeEqual(expected, actual);
 }
-function asUser(row: Row): User { return { id: String(row.id), name: String(row.name), email: String(row.email), language: row.language as User["language"], demo: Boolean(row.demo) }; }
+function asUser(row: Row): User { return { id: String(row.id), name: String(row.name), email: String(row.email), language: row.language as User["language"], demo: Boolean(row.demo), emailVerified: Boolean(row.email_verified), verificationRequired: Boolean(row.verification_required) }; }
 function asBusiness(row: Row): Business { return { id: String(row.id), name: String(row.name), category: row.category as Business["category"] }; }
 function asProduct(row: Row): Product { return { id: String(row.id), name: String(row.name), sku: String(row.sku), unit: String(row.unit), pricePaise: Number(row.price_paise), costPaise: Number(row.cost_paise), quantityMilli: Number(row.quantity_milli), minStockMilli: Number(row.min_stock_milli), expiryDate: row.expiry_date as string | null, aliases: JSON.parse(String(row.aliases_json)), barcode: String(row.barcode), variation: String(row.variation), packSize: row.pack_size === null ? null : Number(row.pack_size) }; }
 function asInvoice(row: Row, payments: Payment[] = []): Invoice { return { id: String(row.id), number: String(row.number), date: String(row.date), customerId: row.customer_id as string | null, customerName: String(row.customer_name), items: JSON.parse(String(row.items_json)), subtotalPaise: Number(row.subtotal_paise), discountPaise: Number(row.discount_paise), totalPaise: Number(row.total_paise), paidPaise: row.status === "cancelled" ? 0 : Number(row.paid_paise), balancePaise: row.status === "cancelled" ? 0 : Number(row.balance_paise), paymentMethod: row.payment_method as Invoice["paymentMethod"], payments, status: row.status as Invoice["status"], dueDate: row.due_date as string | null }; }
@@ -30,8 +32,8 @@ function asAttachment(row: Row): SaleAttachment { return { id: String(row.id), u
 
 export class Store {
   readonly db: DatabaseSync;
-  readonly schemaVersion = 2;
-  readonly runtimeRevision = "v2.1";
+  readonly schemaVersion = 3;
+  readonly runtimeRevision = "v3.0";
   private transactionDepth = 0;
   constructor(path = process.env.DATABASE_PATH || resolve(process.cwd(), ".data", "dukaanset.sqlite")) {
     // Runtime database directories are external mutable data, never bundle assets.
@@ -39,10 +41,11 @@ export class Store {
     this.db = new DatabaseSync(path);
     this.db.exec("PRAGMA foreign_keys = ON; PRAGMA busy_timeout = 5000; PRAGMA journal_mode = WAL;");
     const version = Number((this.db.prepare("PRAGMA user_version").get() as Row).user_version);
-    if (version > 2) { this.db.close(); throw new Error("Database schema is newer than this application."); }
+    if (version > 3) { this.db.close(); throw new Error("Database schema is newer than this application."); }
     this.transaction(() => {
       if (version === 0) this.db.exec(schema);
       if (version < 2) this.db.exec(migrationV2);
+      if (version < 3) this.db.exec(migrationV3);
     });
     this.db.prepare("DELETE FROM sessions WHERE expires_at < ?").run(stamp());
     this.db.prepare("DELETE FROM attachments WHERE invoice_id IS NULL AND date < ?").run(new Date(Date.now() - 86_400_000).toISOString());
@@ -51,7 +54,7 @@ export class Store {
   private row(sql: string, ...args: (string | number | null)[]): Row | undefined { return this.db.prepare(sql).get(...args) as Row | undefined; }
   private rows(sql: string, ...args: (string | number | null)[]): Row[] { return this.db.prepare(sql).all(...args) as Row[]; }
   private run(sql: string, ...args: (string | number | null)[]) { return this.db.prepare(sql).run(...args); }
-  private transaction<T>(work: () => T): T {
+  transaction<T>(work: () => T): T {
     const level = this.transactionDepth, savepoint = `work_${level}`;
     this.db.exec(level ? `SAVEPOINT ${savepoint}` : "BEGIN IMMEDIATE");
     this.transactionDepth++;
@@ -60,14 +63,16 @@ export class Store {
     finally { this.transactionDepth--; }
   }
   private invoice(businessId: string, invoiceId: string): Invoice { return asInvoice(this.entity("invoices", businessId, invoiceId), this.rows("SELECT * FROM payments WHERE business_id=? AND invoice_id=? ORDER BY date,id", businessId, invoiceId).map(asPayment)); }
-  private audit(userId: string, businessId: string, action: string, detail: string, at = stamp()) {
+  audit(userId: string, businessId: string, action: string, detail: string, at = stamp()) {
     this.run("INSERT INTO audit VALUES(?,?,?,?,?,?)", uid(), businessId, userId, action, detail, at);
   }
   assertMember(userId: string, businessId: string): Business {
+    access(this.db,userId,businessId);
     const row = this.row("SELECT b.* FROM businesses b JOIN memberships m ON m.business_id=b.id WHERE m.user_id=? AND b.id=?", userId, businessId);
     if (!row) throw new DomainError("NOT_FOUND", "Business not found.", 404);
     return asBusiness(row);
   }
+  assertPermission(userId:string,businessId:string,permission:Permission,feature?:ModuleKey){return authorize(this.db,userId,businessId,permission,feature);}
   private entity(table: "products" | "customers" | "suppliers" | "invoices", businessId: string, id: string): Row {
     const row = this.row(`SELECT * FROM ${table} WHERE id=? AND business_id=?`, id, businessId);
     if (!row) throw new DomainError("NOT_FOUND", "Record not found in this business.", 404);
@@ -85,12 +90,12 @@ export class Store {
     return { user: asUser(user), businesses: this.rows("SELECT b.* FROM businesses b JOIN memberships m ON m.business_id=b.id WHERE m.user_id=? ORDER BY b.created_at,b.id", userId).map(asBusiness) };
   }
   register(raw: unknown): Session {
-    const input = object(raw), name = string(input.name, "Name", 100), address = email(input.email), secret = password(input.password), businessName = string(input.businessName, "Business name", 100), businessCategory = category(input.category), preference = language(input.language);
+    const input = object(raw), name = string(input.name, "Name", 100), address = email(input.email), secret = password(input.password), businessName = string(input.businessName, "Business name", 100,true), businessCategory = category(input.category), preference = language(input.language);
     if (this.row("SELECT id FROM users WHERE email=?", address)) throw new DomainError("EMAIL_EXISTS", "An account already uses this email address.", 409);
     const userId = uid(), encoded = hashPassword(secret);
     this.transaction(() => {
-      this.run("INSERT INTO users VALUES(?,?,?,?,?,?,?)", userId, name, address, encoded, preference, 0, stamp());
-      this.createBusinessRows(userId, businessName, businessCategory);
+      this.run("INSERT INTO users(id,name,email,password_hash,language,demo,created_at) VALUES(?,?,?,?,?,?,?)", userId, name, address, encoded, preference, 0, stamp());
+      if(businessName)this.createBusinessRows(userId, businessName, businessCategory);
     });
     return this.session(userId);
   }
@@ -118,19 +123,24 @@ export class Store {
   private createBusinessRows(userId: string, name: string, kind: Business["category"]): Business {
     const id = uid();
     this.run("INSERT INTO businesses VALUES(?,?,?,?)", id, name, kind, stamp());
-    this.run("INSERT INTO memberships VALUES(?,?,?)", userId, id, "owner");
+    this.run("INSERT INTO memberships(user_id,business_id,role) VALUES(?,?,?)", userId, id, "owner");
     this.audit(userId, id, "business.created", name);
     return { id, name, category: kind };
   }
   createBusiness(userId: string, raw: unknown): Business {
+    const account=this.session(userId).user;if(account.verificationRequired&&!account.emailVerified)throw new DomainError('EMAIL_UNVERIFIED','Verify your email before creating a shop.',403);
     const input = object(raw), name = string(input.name ?? input.businessName, "Business name", 100), kind = category(input.category);
     if (this.session(userId).businesses.length >= 20) throw new DomainError("LIMIT_REACHED", "A workspace supports up to 20 businesses.", 409);
     return this.transaction(() => this.createBusinessRows(userId, name, kind));
   }
   createProduct(userId: string, businessId: string, raw: unknown): Product {
+    this.assertPermission(userId,businessId,"inventory");
     this.assertMember(userId, businessId); this.limitEntities("products", businessId);
     const input = object(raw), id = uid(), name = string(input.name, "Product name", 100), sku = string(input.sku, "SKU", 64, true), unit = validateUnit(input.unit), price = integer(input.pricePaise, "Selling price"), cost = integer(input.costPaise ?? 0, "Cost price"), quantity = integer(input.quantityMilli ?? 0, "Stock quantity"), minimum = integer(input.minStockMilli ?? 5000, "Minimum stock"), expiry = date(input.expiryDate), names = aliases(input.aliases), barcode = string(input.barcode, "Barcode", 80, true), variation = string(input.variation, "Variation", 100, true), packSize = input.packSize === undefined || input.packSize === null ? null : integer(input.packSize, "Pack size", 1, 100000);
     keys(input, ["name", "sku", "unit", "pricePaise", "costPaise", "quantityMilli", "minStockMilli", "expiryDate", "aliases", "barcode", "variation", "packSize"]);
+    if(variation)this.assertPermission(userId,businessId,'inventory','variants');
+    if(expiry)this.assertPermission(userId,businessId,'inventory','expiryTracking');
+    if(packSize)this.assertPermission(userId,businessId,'inventory','unitConversion');
     assertWholeUnit(unit, quantity);
     lineTotal(cost, quantity);
     if (sku && this.row("SELECT id FROM products WHERE business_id=? AND sku=?", businessId, sku)) throw new DomainError("SKU_EXISTS", "This SKU already exists in this business.", 409);
@@ -142,12 +152,16 @@ export class Store {
     return asProduct(this.entity("products", businessId, id));
   }
   editProduct(userId: string, businessId: string, productId: string, raw: unknown): Product {
+    this.assertPermission(userId,businessId,"inventory");
     this.assertMember(userId, businessId);
     const input = object(raw);
     keys(input, ["name", "sku", "unit", "pricePaise", "costPaise", "minStockMilli", "expiryDate", "aliases", "barcode", "variation", "packSize"]);
     return this.transaction(() => {
       const prior = asProduct(this.entity("products", businessId, productId));
       const next = { ...prior, name: input.name === undefined ? prior.name : string(input.name, "Product name", 100), sku: input.sku === undefined ? prior.sku : string(input.sku, "SKU", 64, true), unit: input.unit === undefined ? prior.unit : validateUnit(input.unit), pricePaise: input.pricePaise === undefined ? prior.pricePaise : integer(input.pricePaise, "Selling price"), costPaise: input.costPaise === undefined ? prior.costPaise : integer(input.costPaise, "Cost price"), minStockMilli: input.minStockMilli === undefined ? prior.minStockMilli : integer(input.minStockMilli, "Minimum stock"), expiryDate: input.expiryDate === undefined ? prior.expiryDate : date(input.expiryDate), aliases: input.aliases === undefined ? prior.aliases : aliases(input.aliases), barcode: input.barcode === undefined ? prior.barcode : string(input.barcode, "Barcode", 80, true), variation: input.variation === undefined ? prior.variation : string(input.variation, "Variation", 100, true), packSize: input.packSize === undefined ? prior.packSize : input.packSize === null ? null : integer(input.packSize, "Pack size", 1, 100000) };
+      if(next.variation&&next.variation!==prior.variation)this.assertPermission(userId,businessId,'inventory','variants');
+      if(next.expiryDate&&next.expiryDate!==prior.expiryDate)this.assertPermission(userId,businessId,'inventory','expiryTracking');
+      if(next.packSize&&next.packSize!==prior.packSize)this.assertPermission(userId,businessId,'inventory','unitConversion');
       if (next.unit !== prior.unit && this.row("SELECT id FROM movements WHERE business_id=? AND product_id=? LIMIT 1", businessId, productId)) throw new DomainError("UNIT_LOCKED", "A product's unit cannot change after stock movements. Create a separate product with the new unit.", 409);
       if (next.sku && this.row("SELECT id FROM products WHERE business_id=? AND sku=? AND id!=?", businessId, next.sku, productId)) throw new DomainError("SKU_EXISTS", "This SKU already exists in this business.", 409);
       lineTotal(next.costPaise, next.quantityMilli);
@@ -157,6 +171,7 @@ export class Store {
     });
   }
   createContact(userId: string, businessId: string, table: "customers" | "suppliers", raw: unknown): Customer | Supplier {
+    this.assertPermission(userId,businessId,table==='suppliers'?'purchases':'customers');
     this.assertMember(userId, businessId);
     const input = object(raw), name = string(input.name, "Name", 100), phone = string(input.phone, "Phone", 30, true);
     keys(input, ["name", "phone", "idempotencyKey"]);
@@ -173,6 +188,7 @@ export class Store {
     return this.rows(`SELECT c.*,COALESCE((SELECT SUM(i.balance_paise) FROM invoices i WHERE i.customer_id=c.id AND i.business_id=c.business_id AND i.status!='cancelled'),0) balance_paise, COALESCE((SELECT SUM(i.total_paise) FROM invoices i WHERE i.customer_id=c.id AND i.business_id=c.business_id AND i.status!='cancelled'),0) total_sales_paise, COALESCE((SELECT SUM(CASE WHEN p.kind='refund' THEN -p.amount_paise ELSE p.amount_paise END) FROM payments p WHERE p.customer_id=c.id AND p.business_id=c.business_id),0) net_received_paise FROM customers c WHERE c.business_id=?${customerId ? " AND c.id=?" : ""} ORDER BY c.name`, businessId, ...(customerId ? [customerId] : [])).map(row => ({ id: String(row.id), name: String(row.name), phone: String(row.phone), balancePaise: Number(row.balance_paise), totalSalesPaise: Number(row.total_sales_paise), netReceivedPaise: Number(row.net_received_paise) }));
   }
   customerStatement(userId: string, businessId: string, customerId: string): CustomerStatement {
+    this.assertPermission(userId,businessId,"customers");
     this.assertMember(userId, businessId); this.entity("customers", businessId, customerId);
     return this.transaction(() => {
       const invoiceUsage = this.row("SELECT COUNT(*) count,COALESCE(SUM(length(items_json)),0) size FROM invoices WHERE business_id=? AND customer_id=?", businessId, customerId)!;
@@ -186,8 +202,10 @@ export class Store {
     });
   }
   adjustStock(userId: string, businessId: string, raw: unknown): Product {
+    this.assertPermission(userId,businessId,"inventory");
     this.assertMember(userId, businessId);
     const input = object(raw), productId = string(input.productId, "Product ID", 80), reason = string(input.reason, "Reason", 20);
+    if(reason==='wastage')this.assertPermission(userId,businessId,'inventory','wastageTracking');
     if (!["receipt", "wastage", "correction"].includes(reason)) throw new DomainError("INVALID_INPUT", "Choose receipt, wastage, or correction.");
     const quantity = integer(input.quantityMilli, "Stock change", reason === "correction" ? -1_000_000_000 : 1);
     if (!quantity) throw new DomainError("INVALID_INPUT", "Stock change cannot be zero.");
@@ -218,8 +236,10 @@ export class Store {
     });
   }
   receiveStockBatch(userId: string, businessId: string, raw: unknown): InventoryEntry {
+    this.assertPermission(userId,businessId,"inventory");
     this.assertMember(userId, businessId);
     const input = object(raw), requested = items(input.items), source = oneOf(input.source, "Entry source", ["voice", "manual", "mixed"]);
+    if(source!=='manual')this.assertPermission(userId,businessId,'inventory','voiceStock');
     keys(input, ["idempotencyKey", "source", "items"]);
     return this.once(businessId, "stockbatch", input, () => {
       const aggregate = new Map<string, { product: Product; quantity: number }>();
@@ -227,6 +247,7 @@ export class Store {
         keys(item, ["productId", "quantityMilli", "unit"]);
         const productId = string(item.productId, "Product ID", 80), product = asProduct(this.entity("products", businessId, productId)), quantity = integer(item.quantityMilli, "Quantity", 1), from = item.unit === undefined ? product.unit : validateUnit(item.unit);
         assertWholeUnit(from, quantity);
+        if(from!==product.unit)this.assertPermission(userId,businessId,'inventory','unitConversion');
         const converted = convertQuantity(quantity, from, product.unit, product.packSize);
         assertWholeUnit(product.unit, converted);
         aggregate.set(productId, { product, quantity: (aggregate.get(productId)?.quantity ?? 0) + converted });
@@ -249,6 +270,8 @@ export class Store {
   }
   /** Only decoded, normalized images from the router enter this private blob table. */
   createAttachment(userId: string, businessId: string, productId: string, mime: SaleAttachment["mime"], bytes: Buffer, requestKey: string, originalHash: string): SaleAttachment {
+    this.assertPermission(userId,businessId,"sales");
+    this.assertPermission(userId,businessId,'sales','photoSales');
     this.assertMember(userId, businessId);
     const input = { idempotencyKey: string(requestKey, "Idempotency key", 120), productId: string(productId, "Product ID", 80), mime, originalHash };
     if (bytes.length < 1 || bytes.length > 2097152) throw new DomainError("BODY_TOO_LARGE", "Photos must be at most 2 MB.", 413);
@@ -264,12 +287,14 @@ export class Store {
     });
   }
   readAttachment(userId: string, businessId: string, attachmentId: string): { metadata: SaleAttachment; bytes: Uint8Array } {
+    const photoAccess=access(this.db,userId,businessId);if(!photoAccess.permissions.sales&&!photoAccess.permissions.customers)throw new DomainError('FORBIDDEN','Your role cannot view invoice photos.',403);
     this.assertMember(userId, businessId);
     const result = this.db.prepare("SELECT * FROM attachments WHERE id=? AND business_id=?").get(attachmentId, businessId) as (Row & { bytes: Uint8Array }) | undefined;
     if (!result || (!result.invoice_id && String(result.date) < new Date(Date.now() - 86_400_000).toISOString())) throw new DomainError("NOT_FOUND", "Photo not found in this business.", 404);
     return { metadata: asAttachment(result), bytes: result.bytes };
   }
   deleteAttachment(userId: string, businessId: string, attachmentId: string): { ok: true } {
+    this.assertPermission(userId,businessId,"sales");
     this.assertMember(userId, businessId);
     return this.transaction(() => {
       const row = this.row("SELECT invoice_id FROM attachments WHERE id=? AND business_id=?", attachmentId, businessId);
@@ -280,6 +305,7 @@ export class Store {
     });
   }
   createInvoice(userId: string, businessId: string, raw: unknown): Invoice {
+    this.assertPermission(userId,businessId,"sales");
     this.assertMember(userId, businessId);
     const input = object(raw), requested = items(input.items), discount = integer(input.discountPaise ?? 0, "Discount"), dueDate = date(input.dueDate), customerId = string(input.customerId, "Customer ID", 80, true) || null;
     keys(input, ["idempotencyKey", "items", "discountPaise", "paidPaise", "paymentMethod", "payments", "customerId", "dueDate"]);
@@ -309,6 +335,7 @@ export class Store {
         const id = string(item.productId, "Product ID", 80), qty = integer(item.quantityMilli, "Quantity", 1);
         if (item.attachmentIds !== undefined && (!Array.isArray(item.attachmentIds) || item.attachmentIds.length > 3)) throw new DomainError("INVALID_INPUT", "Use at most three photos per item.");
         const photos = ((item.attachmentIds ?? []) as unknown[]).map(value => string(value, "Photo ID", 80));
+        if(photos.length)this.assertPermission(userId,businessId,'sales','photoSales');
         for (const photo of photos) { if (seenPhotos.has(photo)) throw new DomainError("DUPLICATE_ATTACHMENT", "Each photo can be attached once."); seenPhotos.add(photo); }
         const prior = aggregated.get(id);
         aggregated.set(id, { quantity: (prior?.quantity ?? 0) + qty, attachmentIds: [...(prior?.attachmentIds ?? []), ...photos] });
@@ -346,6 +373,7 @@ export class Store {
     });
   }
   receivePayment(userId: string, businessId: string, raw: unknown): { payments: Payment[]; amountPaise: number; customerId: string } {
+    this.assertPermission(userId,businessId,"payments");
     this.assertMember(userId, businessId);
     const input = object(raw), customerId = string(input.customerId, "Customer ID", 80), amount = integer(input.amountPaise, "Payment amount", 1), paymentMethod = method(input.method);
     return this.once(businessId, "payment", input, () => {
@@ -365,6 +393,7 @@ export class Store {
     });
   }
   createPurchase(userId: string, businessId: string, raw: unknown): Purchase {
+    this.assertPermission(userId,businessId,"purchases");
     this.assertMember(userId, businessId);
     const input = object(raw), supplierId = string(input.supplierId, "Supplier ID", 80), requested = items(input.items), paid = integer(input.paidPaise ?? 0, "Amount paid");
     return this.once(businessId, "purchase", input, () => {
@@ -391,6 +420,7 @@ export class Store {
     });
   }
   cancelInvoice(userId: string, businessId: string, invoiceId: string): Invoice {
+    this.assertPermission(userId,businessId,"sales");
     this.assertMember(userId, businessId);
     return this.transaction(() => {
       const row = this.entity("invoices", businessId, invoiceId), invoice = this.invoice(businessId, invoiceId);
@@ -413,6 +443,7 @@ export class Store {
     });
   }
   createExpense(userId: string, businessId: string, raw: unknown) {
+    this.assertPermission(userId,businessId,"reports");
     this.assertMember(userId, businessId);
     const input = object(raw), description = string(input.description, "Description", 200), amount = integer(input.amountPaise, "Expense amount", 1), paymentMethod = method(input.method), id = uid(), at = stamp();
     const work = () => {
@@ -424,6 +455,8 @@ export class Store {
     return input.idempotencyKey === undefined ? this.transaction(work) : this.once(businessId, "expense", input, work);
   }
   createClosing(userId: string, businessId: string, raw: unknown) {
+    this.assertPermission(userId,businessId,"reports");
+    this.assertPermission(userId,businessId,'reports','dailyClosing');
     this.assertMember(userId, businessId);
     const input = object(raw), opening = integer(input.openingCashPaise ?? 0, "Opening cash"), actual = integer(input.actualCashPaise, "Actual cash"), id = uid(), at = stamp(), day = businessDay(at);
     return this.transaction(() => {
@@ -462,16 +495,17 @@ export class Store {
       activity: this.rows("SELECT * FROM audit WHERE business_id=? ORDER BY date DESC,id DESC LIMIT 100", businessId).map(r => ({ id: String(r.id), action: String(r.action), detail: String(r.detail), date: String(r.date) })) };
   }
   export(userId: string, businessId: string) {
+    this.assertPermission(userId,businessId,"settings");
     this.assertMember(userId, businessId);
-    const data: Record<string, unknown> = { version: 2, exportedAt: stamp(), business: this.assertMember(userId, businessId), currency: "INR", quantityScale: 1000 };
-    for (const table of ["products", "customers", "suppliers", "invoices", "payments", "movements", "inventory_entries", "purchases", "expenses", "closings", "audit"] as const) data[table] = this.rows(`SELECT * FROM ${table} WHERE business_id=?`, businessId);
+    const data: Record<string, unknown> = { version: 3, exportedAt: stamp(), business: this.assertMember(userId, businessId), currency: "INR", quantityScale: 1000 };
+    for (const table of ["products", "customers", "suppliers", "invoices", "payments", "movements", "inventory_entries", "purchases", "expenses", "closings", "audit", "business_settings", "demand_requests", "demand_followups", "demand_conversions", "reorder_drafts", "demand_dismissals"] as const) data[table] = this.rows(`SELECT * FROM ${table} WHERE business_id=?`, businessId);
     data.attachments = this.rows("SELECT id,business_id,product_id,invoice_id,mime,size,sha256,date FROM attachments WHERE business_id=?", businessId);
     return data;
   }
   demo(): Session {
     return this.transaction(() => {
     const userId = uid(), at = stamp(), baseline = new Date(Date.parse(at) - 7 * 86_400_000).toISOString();
-    this.run("INSERT INTO users VALUES(?,?,?,?,?,?,?)", userId, "Aarav Sharma", `demo-${userId}@example.invalid`, hashPassword(randomBytes(32).toString("hex")), "hinglish", 1, baseline);
+    this.run("INSERT INTO users(id,name,email,password_hash,language,demo,created_at) VALUES(?,?,?,?,?,?,?)", userId, "Aarav Sharma", `demo-${userId}@example.invalid`, hashPassword(randomBytes(32).toString("hex")), "hinglish", 1, baseline);
     return this.seedDemo(userId);
     });
   }
@@ -481,7 +515,8 @@ export class Store {
       if (!session.user.demo) throw new DomainError("DEMO_ONLY", "Only an isolated demo workspace can be reset.", 403);
       for (const business of session.businesses) {
         if (this.row("SELECT user_id FROM memberships WHERE business_id=? AND user_id!=? LIMIT 1", business.id, userId)) throw new DomainError("DEMO_ONLY", "A shared business cannot be reset as demo data.", 403);
-        for (const table of ["attachments", "idempotency", "payments", "movements", "inventory_entries", "purchases", "invoices", "expenses", "closings", "audit", "products", "customers", "suppliers"]) this.run(`DELETE FROM ${table} WHERE business_id=?`, business.id);
+        for (const table of ["demand_followups", "demand_conversions", "reorder_drafts", "demand_dismissals", "demand_requests", "attachments", "idempotency", "payments", "movements", "inventory_entries", "purchases", "invoices", "expenses", "closings", "audit", "products", "customers", "suppliers"]) this.run(`DELETE FROM ${table} WHERE business_id=?`, business.id);
+        this.run('DELETE FROM business_settings WHERE business_id=?',business.id);
       }
       const result = this.seedDemo(userId, session.businesses);
       for (const business of result.businesses) this.audit(userId, business.id, "demo.reset", "Fictional demo workspace reset");
@@ -507,6 +542,10 @@ export class Store {
       this.run("UPDATE businesses SET created_at=? WHERE id=?", new Date(Date.parse(baseline) + index).toISOString(), business.id);
       this.run("UPDATE movements SET date=? WHERE business_id=? AND reason='opening'", baseline, business.id);
       this.run("UPDATE audit SET date=? WHERE business_id=?", baseline, business.id);
+      const demandProduct=definition.category==='clothing'?this.createProduct(userId,business.id,{name:'Blue Shirt',sku:'CLO-XL',unit:'piece',pricePaise:99900,costPaise:60000,quantityMilli:0,variation:'XL',minStockMilli:2000}):definition.category==='hardware'?this.createProduct(userId,business.id,{name:'PVC Pipe',sku:'HAR-2IN',unit:'pcs',pricePaise:24000,costPaise:17500,quantityMilli:0,variation:'2-inch',minStockMilli:5000}):null;
+      if(definition.category==='clothing')this.createProduct(userId,business.id,{name:'White Shirt',sku:'CLO-WM',unit:'piece',pricePaise:89900,costPaise:55000,quantityMilli:3000,variation:'M',minStockMilli:2000});
+      if(demandProduct){for(let n=0;n<2;n++)this.run('INSERT INTO demand_requests VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)',uid(),business.id,demandProduct.id,demandProduct.name,demandProduct.variation,(n+1)*1000,demandProduct.unit,n===0?customers[0].id:null,n===0?1:0,null,'open','Fictional demo request',at,userId);}
+      if(definition.category==='grocery')this.run('INSERT INTO demand_requests VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)',uid(),business.id,null,'Specific Brand Tea','500g',1000,'packet',null,0,null,'open','Fictional uncatalogued demo request',at,userId);
       if (definition.category === "clothing") continue;
       for (let day = 6; day >= 0; day--) {
         const p = products[day % 3], quantity = p.unit === "pcs" ? 1000 : 2000, total = lineTotal(p.pricePaise, quantity), paid = day % 3 === 0 ? Math.floor(total / 2) : total, customer = customers[day % 4];
@@ -525,6 +564,6 @@ export class Store {
 
 declare global { var dukaanStore: Store | undefined; }
 export function getStore(): Store {
-  if (globalThis.dukaanStore && globalThis.dukaanStore.runtimeRevision !== "v2.1") { globalThis.dukaanStore.close(); globalThis.dukaanStore = undefined; }
+  if (globalThis.dukaanStore && globalThis.dukaanStore.runtimeRevision !== "v3.0") { globalThis.dukaanStore.close(); globalThis.dukaanStore = undefined; }
   return globalThis.dukaanStore ??= new Store();
 }
