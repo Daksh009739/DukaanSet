@@ -1,0 +1,29 @@
+{
+  "checkedAt": "2026-10-09T21:09:31.351Z",
+  "environment": "local production build · isolated QA database",
+  "checks": [
+    "7 existing production smoke checks passed",
+    "/hi renders at 390px",
+    "/hinglish renders at 390px",
+    "/en/business-types renders at 390px",
+    "/en/features renders at 390px",
+    "/en/how-it-works renders at 390px",
+    "/en/pricing renders at 390px",
+    "/en/help renders at 390px",
+    "/login renders at 390px",
+    "/register renders at 390px",
+    "/forgot-password renders at 390px",
+    "No browser runtime errors",
+    "Private workspace indexing rule retained"
+  ],
+  "performance": {
+    "navigationMs": 489,
+    "lcpMs": 576,
+    "cls": 0.0006842077184606481,
+    "htmlTransferBytes": 12345,
+    "resourceTransferBytes": 484322,
+    "jsTransferBytes": 279760,
+    "externalResources": [],
+    "note": "One local cold browser load on this Windows host. Not a hosted field benchmark or Lighthouse score."
+  }
+}

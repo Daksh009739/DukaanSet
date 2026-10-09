@@ -1,5 +1,5 @@
 /* A deliberately narrow offline fallback. Never cache merchant records. */
-const CACHE_NAME = "dukaanset-public-v5";
+const CACHE_NAME = "dukaanset-public-v8";
 const PUBLIC_ASSETS = ["/offline.html", "/icon.svg", "/manifest.webmanifest", "/brand/icon-192.png", "/brand/icon-512.png", "/brand/maskable-512.png"];
 
 self.addEventListener("install", event => {

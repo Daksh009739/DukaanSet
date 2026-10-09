@@ -147,30 +147,21 @@
       "title": "Read-only AI assistance and availability",
       "description": "Recorded-data summaries and an optional configured read-only AI adapter, with explicit business permissions and live provider limits.",
       "eyebrow": "Useful assistance. Clear limits.",
-      "headline": "Ask a better question\nabout your business.",
-      "intro": "The AI direction is practical: explain an authorised business summary, surface relevant stock attention and help a merchant understand the records. It must stay grounded in the data.",
+      "headline": "Just speak. Start with a clear draft.",
+      "intro": "Prepare a bill or stock entry in natural speech. Check products, quantities and payments, then confirm the real action.",
       "note": "The optional read-only adapter requires provider credentials and live validation. Homepage answers are illustrative examples.",
       "sections": [
         {
-          "title": "Questions worth helping with",
-          "body": "The proposed assistant can help explain today’s sales, outstanding customer balances or products below minimum stock. A useful answer should cite the underlying business summary instead of inventing a recommendation.",
-          "items": [
-            "What sold today?",
-            "Which products are low in stock?",
-            "How much customer credit remains unpaid?"
-          ]
+          "title": "Draft for review",
+          "body": "This preview does not use your microphone. In the app, speech support depends on your browser; AI interpretation requires configuration."
         },
         {
-          "title": "The business context matters",
-          "body": "A request must use the signed-in user’s active business and permissions. Client-supplied business IDs cannot be used as a shortcut to another business’s records."
+          "title": "Remember what customers wanted.",
+          "body": "An unavailable item is useful information. Record the request, spot patterns and decide what deserves a place on your shelf."
         },
         {
-          "title": "Read-only by default",
-          "body": "The assistant boundary is designed for read-only summaries. Creating or changing invoices, stock, payments and customer messages is outside this release’s AI permissions."
-        },
-        {
-          "title": "Honest availability",
-          "body": "An optional read-only model adapter is implemented. It needs an explicitly configured provider and credentials; live provider quality remains unverified. Recorded-data summaries remain available without it."
+          "title": "One sale. Everything falls into place.",
+          "body": "Follow a fictional sale from the bill to the dashboard. In your workspace, records update only after you review and confirm."
         }
       ]
     },
@@ -363,28 +354,40 @@
       "intro": "Start with these practical guides. If a workflow fails, preserve what you entered, read the message and retry only after checking whether the record was saved.",
       "sections": [
         {
-          "title": "I am opening the app for the first time",
-          "body": "Choose the demo for fictional examples, or register for a fresh account. Finish business setup, add a product with stock and create a small test bill you can identify clearly. The demo is separate from your real records."
+          "title": "Getting started",
+          "body": "Create an account, verify your email, choose a business type and add your shop essentials. Begin with a few products, then review your first sale."
         },
         {
-          "title": "My bill did not save",
-          "body": "Check your connection and the inline error. A quantity must be positive, stock must be available and a credit sale needs a customer. Do not assume a failed confirmation created an invoice; review bill history before retrying."
+          "title": "Billing and split payments",
+          "body": "Add items to a sale and check quantities and prices. Record cash and UPI amounts separately. Confirm only after checking the customer and remaining balance."
         },
         {
-          "title": "My customer paid later",
-          "body": "Open the customer record and record a repayment for the amount actually received. Confirm the payment method and date. A repayment changes the balance and collections, not the original sale total."
+          "title": "Stock and units",
+          "body": "Use the correct unit for each product. Receive purchases to add stock; record adjustments with a reason. Review the movement history to understand changes."
         },
         {
-          "title": "I switched businesses",
-          "body": "The active business controls the dashboard, catalogue, customers and reports. Check the selected shop before entering records. If your session expires, sign in again before continuing."
+          "title": "Customer accounts and Udhaar",
+          "body": "Open a customer profile for invoices, receipts and outstanding balances. Choose a period for the complete statement. Payment receipts describe recorded payments, not bank verification."
         },
         {
-          "title": "I am offline or AI is unavailable",
-          "body": "Online confirmation is required for financial records. The offline page is a safe fallback, not an offline database. Live AI is not connected in this build and needs a tested provider adapter plus credentials. The core records remain available without it."
+          "title": "VoiceOS drafts",
+          "body": "Speak or type a command. Speech support depends on the browser; AI services require configuration. Review matched products, quantities and amounts before confirming. No financial action happens just from speaking."
         },
         {
-          "title": "I need to report a problem",
-          "body": "Use the project’s GitHub issue tracker. Include the page, the action and the error text, but omit passwords, customer phone numbers and financial exports. Support response times are not yet defined."
+          "title": "DemandPulse requests",
+          "body": "Record a requested product that was unavailable. Review patterns and consider restocking. Get appropriate permission before contacting customers. A request becomes a sale only after a real sale is confirmed."
+        },
+        {
+          "title": "Invoices, PDF and sharing",
+          "body": "Open a saved invoice in Invoice Studio. Generate and preview the PDF, then download or print it. Manual WhatsApp sharing requires attaching the file; official delivery needs an authorised sender and approved templates."
+        },
+        {
+          "title": "Accounts and password recovery",
+          "body": "Use Forgot Password on the login page. Open the recovery link from your email and choose a new unique password. If a link has expired, request a fresh one. Local file email mode is for development only."
+        },
+        {
+          "title": "Language settings",
+          "body": "Choose English, Hindi or Hinglish using the language selector. Active form values stay in place. Saved product and customer names remain source records rather than being silently translated."
         }
       ]
     },
@@ -554,9 +557,9 @@
   "personal": "Your shop is personal. Your software should be, too.",
   "inDevelopment": "A product in development.",
   "heroEyebrow": "A little more clarity. Every day.",
-  "heroFirst": "Your shop,",
+  "heroFirst": "Your shop. Your people.",
   "heroSecond": "All set.",
-  "heroDescription": "Bills, stock and customer payments. All together, all understandable. Less busywork. More time for your business.",
+  "heroDescription": "Sales, stock and customer payments, connected in one simple workspace. Less time on manual records. More time for your business.",
   "phoneBuilt": "Built for your phone",
   "languages": "English · Hindi · Hinglish",
   "findBusiness": "Find your kind of business",
@@ -678,11 +681,27 @@
     {
       "question": "Are UPI transfers verified?",
       "answer": "UPI receipts are manually recorded. Bank verification and subscription checkout are not connected."
+    },
+    {
+      "question": "Does speaking save a sale immediately?",
+      "answer": "No. VoiceOS prepares a draft. You review its products and payment details before confirming the action."
+    },
+    {
+      "question": "Can I track products that were unavailable?",
+      "answer": "Yes. DemandPulse records requests for review and restocking decisions. Requests do not count as completed sales or revenue."
+    },
+    {
+      "question": "How do I recover my password?",
+      "answer": "Use Forgot Password on the login page, then follow the email link. Request another link if the old one expires."
+    },
+    {
+      "question": "Can invoices be sent directly on WhatsApp?",
+      "answer": "You can share the downloaded PDF manually. Official direct delivery requires an authorised Meta sender, approved templates and explicit send confirmation."
     }
   ],
   "plans": [
     {
-      "name": "Trial",
+      "name": "Starter",
       "eyebrow": "Get familiar",
       "description": "Explore the core business flow.",
       "items": [
@@ -692,24 +711,206 @@
       ]
     },
     {
-      "name": "Starter",
+      "name": "Growing Business",
       "eyebrow": "Everyday essentials",
       "description": "Proposed plan for everyday operations.",
       "items": [
-        "Billing and product catalogue",
-        "Stock and customer records",
-        "English, Hindi and Hinglish"
+        "Customer 360° and period statements",
+        "Branded PDF invoices and receipts",
+        "DemandPulse and daily reports"
       ]
     },
     {
-      "name": "AI Pro",
+      "name": "AI & Voice",
       "eyebrow": "More assistance",
       "description": "Proposed plan for configured AI tools.",
       "items": [
-        "Billing and product catalogue",
-        "Stock and customer records",
-        "English, Hindi and Hinglish"
+        "Voice drafts with browser-dependent speech",
+        "AI interpretation when configured",
+        "Review and confirm before saving"
       ]
     }
-  ]
+  ],
+  "v8": {
+    "heroFirst": "Your shop. Your people.",
+    "heroSecond": "All set.",
+    "heroDescription": "Sales, stock and customer payments, connected in one simple workspace. Less time on manual records. More time for your business.",
+    "eyebrow": "MADE FOR YOUR EVERYDAY BUSINESS",
+    "status": "Working product · fictional previews below",
+    "saleTag": "ONE SALE. SEVEN CONNECTED RECORDS.",
+    "saleTitle": "One sale. Everything falls into place.",
+    "saleHint": "Follow a fictional sale from the bill to the dashboard. In your workspace, records update only after you review and confirm.",
+    "fictional": "Interactive demonstration · fictional records",
+    "play": "Play the workflow",
+    "pause": "Pause demonstration",
+    "resume": "Resume demonstration",
+    "replay": "Replay demonstration",
+    "ready": "Ready to explore",
+    "complete": "Demonstration complete. No business records changed.",
+    "saleSaved": "Sale saved",
+    "invoiceMade": "Invoice prepared",
+    "stockUpdated": "Stock updated",
+    "customerUpdated": "Customer history updated",
+    "paymentRecorded": "Payment recorded",
+    "balanceAdded": "Outstanding added",
+    "dashboardUpdated": "Dashboard updated",
+    "sampleShop": "Everyday Threads · sample shop",
+    "blueShirt": "Blue shirt",
+    "customer": "Customer",
+    "rahul": "Rahul · fictional customer",
+    "quantity": "Quantity",
+    "total": "Invoice total",
+    "received": "Received",
+    "pending": "Outstanding",
+    "inventory": "Available stock",
+    "before": "Before",
+    "after": "After",
+    "cash": "Cash",
+    "upi": "UPI",
+    "problemTag": "FROM DAILY FRICTION TO A CLEARER DAY",
+    "problemTitle": "Your shop moves fast. Your records should keep up.",
+    "problemHint": "Keep the small details connected, so the important things are easier to see.",
+    "manual": "Bills in one book. Dues in another.",
+    "connected": "One bill links sales, stock and payments.",
+    "stockProblem": "Guessing what is still on the shelf.",
+    "stockSolution": "See stock movements and low-stock alerts.",
+    "demandProblem": "Requests you forget when the customer leaves.",
+    "demandSolution": "Capture missed demand. Make informed restocking choices.",
+    "voiceTag": "VOICEOS · REVIEW BEFORE YOU SAVE",
+    "voiceTitle": "Just speak. Start with a clear draft.",
+    "voiceHint": "Prepare a bill or stock entry in natural speech. Check products, quantities and payments, then confirm the real action.",
+    "command": "“Sold Rahul 2 shirts at 899 each. Received 1000 cash and 500 by UPI.”",
+    "voiceDemo": "Show the example draft",
+    "voiceReset": "Reset the example",
+    "voiceDisclaimer": "This preview does not use your microphone. In the app, speech support depends on your browser; AI interpretation requires configuration.",
+    "draft": "Draft for review",
+    "stockVoice": "Speak a stock entry",
+    "demandTag": "DEMANDPULSE · LISTEN BEYOND THE SALE",
+    "demandTitle": "Remember what customers wanted.",
+    "demandHint": "An unavailable item is useful information. Record the request, spot patterns and decide what deserves a place on your shelf.",
+    "requested": "Customer request",
+    "unavailable": "Unavailable today",
+    "recorded": "Demand recorded",
+    "reorder": "Consider restocking",
+    "available": "Stock available",
+    "possible": "A possible future sale",
+    "demandSample": "Blue shirt · XL · 3 fictional requests",
+    "demandDisclaimer": "Requests are not revenue. A sale counts only after it is confirmed; contacting a customer requires appropriate permission.",
+    "next": "Next step",
+    "back": "Previous step",
+    "customerTag": "CUSTOMER 360° · A CLEARER HISAAB",
+    "customerTitle": "Know the person. Keep the account clear.",
+    "customerHint": "Open a customer profile to see saved sales, payment receipts and their complete period statement together.",
+    "purchaseHistory": "Purchase history",
+    "accountClear": "A saved invoice, split payment and the remaining ₹298 — all traceable.",
+    "invoiceTag": "SMART INVOICE STUDIO",
+    "invoiceTitle": "Good records. A professional finish.",
+    "invoiceHint": "Preview a branded PDF from a saved invoice. Download, print or share the actual file. Keep your shop identity on every document.",
+    "invoice": "Sales invoice · sample",
+    "documentFlow": "Saved invoice → PDF preview → download, print or share",
+    "manualShare": "Manual WhatsApp sharing",
+    "directShare": "Official direct delivery requires an authorised sender and approved templates.",
+    "industryTag": "DIFFERENT SHOPS. A FAMILIAR WORKSPACE.",
+    "industryTitle": "Made for the way you trade.",
+    "industryHint": "Choose a shop type. Explore its products, units and everyday workflow using fictional records.",
+    "typical": "A typical day",
+    "languageTag": "YOUR LANGUAGE. YOUR BUSINESS.",
+    "languageTitle": "Feels familiar from the first click.",
+    "languageHint": "English, Hindi or Hinglish — switch the interface while your business records stay intact. Try the preview below.",
+    "journeyTag": "FROM ACCOUNT TO EVERYDAY CONFIDENCE",
+    "journeyTitle": "Start small. Get your shop set.",
+    "journeyHint": "Start with the essentials. Bring in smarter tools when you need them.",
+    "featureTitle": "Less repeated work. More clarity.",
+    "featureHint": "Five everyday outcomes, powered by connected records. Explore the previews, then try the actual workspace.",
+    "sell": "Sell faster",
+    "sellHint": "Prepare a bill, record a split payment and keep the invoice linked to stock.",
+    "stock": "Manage stock",
+    "stockHint": "Track quantities, units, purchases and adjustments. Prepare entries by voice, then review.",
+    "people": "Know your customers",
+    "peopleHint": "See sales, receipts and outstanding balances in one customer profile.",
+    "opportunities": "Capture missed opportunities",
+    "opportunitiesHint": "Remember unavailable product requests and make informed restocking choices.",
+    "understand": "Understand your business",
+    "understandHint": "Use today’s work, saved reports and daily closing to see what needs attention.",
+    "working": "Available in the workspace",
+    "helpTitle": "A little help. A clearer day.",
+    "searchHelp": "Search help topics",
+    "noHelp": "No matching topics. Try a shorter search.",
+    "guides": "Practical guides",
+    "faq": "Questions, answered clearly.",
+    "pricingTitle": "Clear plans start with honest details.",
+    "pricingHint": "Commercial plans are being finalised. These are proposed categories, not a paid checkout. Explore the working demo first.",
+    "earlyAccess": "Create an early-access account",
+    "finalTitle": "Your next working day, a little more set.",
+    "finalHint": "Explore fictional shops in the demo, or create an account and start with your own products.",
+    "authTitle": "Less busywork. More business.",
+    "authHint": "Your sales, stock and customer records, connected in one simple workspace.",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
+    "passwordShort": "Use at least 10 characters. A longer, unique passphrase is better.",
+    "passwordOkay": "Length requirement met. Use a unique password for this account.",
+    "passwordStrong": "Longer passphrase. Keep it unique to this account.",
+    "passwordMismatch": "Passwords do not match.",
+    "passwordMatch": "Passwords match.",
+    "acceptTerms": "I have read the Terms and Privacy information.",
+    "terms": "Terms",
+    "privacy": "Privacy",
+    "authDemo": "Explore first with fictional shops",
+    "journey": [
+      {
+        "title": "Create your account",
+        "hint": "Use your name, email and a unique password."
+      },
+      {
+        "title": "Choose your business",
+        "hint": "Select the shop type closest to yours."
+      },
+      {
+        "title": "Set up your shop",
+        "hint": "Add your shop name, language and essentials."
+      },
+      {
+        "title": "Add your products",
+        "hint": "Start with names, units, prices and stock."
+      },
+      {
+        "title": "Make your first sale",
+        "hint": "Review the bill, customer and payment before confirming."
+      },
+      {
+        "title": "See records connect",
+        "hint": "Sales, stock and customer balances update together."
+      },
+      {
+        "title": "Find your daily rhythm",
+        "hint": "Bring in voice drafts, demand tracking and reports as needed."
+      }
+    ],
+    "industries": {
+      "grocery": {
+        "hint": "Packets, kilograms and daily dues.",
+        "workflow": "Receive stock → bill items → review low stock"
+      },
+      "hardware": {
+        "hint": "Pieces, metres and supplier purchases.",
+        "workflow": "Receive purchases → sell units → track balances"
+      },
+      "vegetables": {
+        "hint": "Weight-based bills for a busy counter.",
+        "workflow": "Add fresh stock → bill by weight → record wastage"
+      },
+      "mobile": {
+        "hint": "Accessories, units and customer history.",
+        "workflow": "Add accessories → make a bill → open customer history"
+      },
+      "clothing": {
+        "hint": "Size and colour in your product records.",
+        "workflow": "Set up variants → sell pieces → capture missing sizes"
+      },
+      "general": {
+        "hint": "Everyday items, clear units and simple bills.",
+        "workflow": "Add items → sell together → review the day"
+      }
+    }
+  }
 }

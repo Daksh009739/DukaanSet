@@ -1,0 +1,653 @@
+{
+  "checkedAt": "2026-10-09T21:10:15.917Z",
+  "origin": "http://127.0.0.1:3002",
+  "results": [
+    {
+      "name": "home",
+      "route": "/en",
+      "status": 200,
+      "accessibility": [],
+      "widths": [
+        {
+          "width": 320,
+          "overflow": false,
+          "issues": []
+        },
+        {
+          "width": 360,
+          "overflow": false,
+          "issues": []
+        },
+        {
+          "width": 375,
+          "overflow": false,
+          "issues": []
+        },
+        {
+          "width": 390,
+          "overflow": false,
+          "issues": []
+        },
+        {
+          "width": 412,
+          "overflow": false,
+          "issues": []
+        },
+        {
+          "width": 430,
+          "overflow": false,
+          "issues": []
+        },
+        {
+          "width": 768,
+          "overflow": false,
+          "issues": []
+        },
+        {
+          "width": 1024,
+          "overflow": false,
+          "issues": []
+        },
+        {
+          "width": 1440,
+          "overflow": false,
+          "issues": []
+        },
+        {
+          "width": 1920,
+          "overflow": false,
+          "issues": []
+        }
+      ]
+    },
+    {
+      "name": "business",
+      "route": "/en/business-types",
+      "status": 200,
+      "accessibility": [],
+      "widths": [
+        {
+          "width": 320,
+          "overflow": false,
+          "issues": []
+        },
+        {
+          "width": 360,
+          "overflow": false,
+          "issues": []
+        },
+        {
+          "width": 375,
+          "overflow": false,
+          "issues": []
+        },
+        {
+          "width": 390,
+          "overflow": false,
+          "issues": []
+        },
+        {
+          "width": 412,
+          "overflow": false,
+          "issues": []
+        },
+        {
+          "width": 430,
+          "overflow": false,
+          "issues": []
+        },
+        {
+          "width": 768,
+          "overflow": false,
+          "issues": []
+        },
+        {
+          "width": 1024,
+          "overflow": false,
+          "issues": []
+        },
+        {
+          "width": 1440,
+          "overflow": false,
+          "issues": []
+        },
+        {
+          "width": 1920,
+          "overflow": false,
+          "issues": []
+        }
+      ]
+    },
+    {
+      "name": "features",
+      "route": "/en/features",
+      "status": 200,
+      "accessibility": [],
+      "widths": [
+        {
+          "width": 320,
+          "overflow": false,
+          "issues": []
+        },
+        {
+          "width": 360,
+          "overflow": false,
+          "issues": []
+        },
+        {
+          "width": 375,
+          "overflow": false,
+          "issues": []
+        },
+        {
+          "width": 390,
+          "overflow": false,
+          "issues": []
+        },
+        {
+          "width": 412,
+          "overflow": false,
+          "issues": []
+        },
+        {
+          "width": 430,
+          "overflow": false,
+          "issues": []
+        },
+        {
+          "width": 768,
+          "overflow": false,
+          "issues": []
+        },
+        {
+          "width": 1024,
+          "overflow": false,
+          "issues": []
+        },
+        {
+          "width": 1440,
+          "overflow": false,
+          "issues": []
+        },
+        {
+          "width": 1920,
+          "overflow": false,
+          "issues": []
+        }
+      ]
+    },
+    {
+      "name": "journey",
+      "route": "/en/how-it-works",
+      "status": 200,
+      "accessibility": [],
+      "widths": [
+        {
+          "width": 320,
+          "overflow": false,
+          "issues": []
+        },
+        {
+          "width": 360,
+          "overflow": false,
+          "issues": []
+        },
+        {
+          "width": 375,
+          "overflow": false,
+          "issues": []
+        },
+        {
+          "width": 390,
+          "overflow": false,
+          "issues": []
+        },
+        {
+          "width": 412,
+          "overflow": false,
+          "issues": []
+        },
+        {
+          "width": 430,
+          "overflow": false,
+          "issues": []
+        },
+        {
+          "width": 768,
+          "overflow": false,
+          "issues": []
+        },
+        {
+          "width": 1024,
+          "overflow": false,
+          "issues": []
+        },
+        {
+          "width": 1440,
+          "overflow": false,
+          "issues": []
+        },
+        {
+          "width": 1920,
+          "overflow": false,
+          "issues": []
+        }
+      ]
+    },
+    {
+      "name": "pricing",
+      "route": "/en/pricing",
+      "status": 200,
+      "accessibility": [],
+      "widths": [
+        {
+          "width": 320,
+          "overflow": false,
+          "issues": []
+        },
+        {
+          "width": 360,
+          "overflow": false,
+          "issues": []
+        },
+        {
+          "width": 375,
+          "overflow": false,
+          "issues": []
+        },
+        {
+          "width": 390,
+          "overflow": false,
+          "issues": []
+        },
+        {
+          "width": 412,
+          "overflow": false,
+          "issues": []
+        },
+        {
+          "width": 430,
+          "overflow": false,
+          "issues": []
+        },
+        {
+          "width": 768,
+          "overflow": false,
+          "issues": []
+        },
+        {
+          "width": 1024,
+          "overflow": false,
+          "issues": []
+        },
+        {
+          "width": 1440,
+          "overflow": false,
+          "issues": []
+        },
+        {
+          "width": 1920,
+          "overflow": false,
+          "issues": []
+        }
+      ]
+    },
+    {
+      "name": "help",
+      "route": "/en/help",
+      "status": 200,
+      "accessibility": [],
+      "widths": [
+        {
+          "width": 320,
+          "overflow": false,
+          "issues": []
+        },
+        {
+          "width": 360,
+          "overflow": false,
+          "issues": []
+        },
+        {
+          "width": 375,
+          "overflow": false,
+          "issues": []
+        },
+        {
+          "width": 390,
+          "overflow": false,
+          "issues": []
+        },
+        {
+          "width": 412,
+          "overflow": false,
+          "issues": []
+        },
+        {
+          "width": 430,
+          "overflow": false,
+          "issues": []
+        },
+        {
+          "width": 768,
+          "overflow": false,
+          "issues": []
+        },
+        {
+          "width": 1024,
+          "overflow": false,
+          "issues": []
+        },
+        {
+          "width": 1440,
+          "overflow": false,
+          "issues": []
+        },
+        {
+          "width": 1920,
+          "overflow": false,
+          "issues": []
+        }
+      ]
+    },
+    {
+      "name": "login",
+      "route": "/login",
+      "status": 200,
+      "accessibility": [],
+      "widths": [
+        {
+          "width": 320,
+          "overflow": false,
+          "issues": []
+        },
+        {
+          "width": 360,
+          "overflow": false,
+          "issues": []
+        },
+        {
+          "width": 375,
+          "overflow": false,
+          "issues": []
+        },
+        {
+          "width": 390,
+          "overflow": false,
+          "issues": []
+        },
+        {
+          "width": 412,
+          "overflow": false,
+          "issues": []
+        },
+        {
+          "width": 430,
+          "overflow": false,
+          "issues": []
+        },
+        {
+          "width": 768,
+          "overflow": false,
+          "issues": []
+        },
+        {
+          "width": 1024,
+          "overflow": false,
+          "issues": []
+        },
+        {
+          "width": 1440,
+          "overflow": false,
+          "issues": []
+        },
+        {
+          "width": 1920,
+          "overflow": false,
+          "issues": []
+        }
+      ]
+    },
+    {
+      "name": "register",
+      "route": "/register",
+      "status": 200,
+      "accessibility": [],
+      "widths": [
+        {
+          "width": 320,
+          "overflow": false,
+          "issues": []
+        },
+        {
+          "width": 360,
+          "overflow": false,
+          "issues": []
+        },
+        {
+          "width": 375,
+          "overflow": false,
+          "issues": []
+        },
+        {
+          "width": 390,
+          "overflow": false,
+          "issues": []
+        },
+        {
+          "width": 412,
+          "overflow": false,
+          "issues": []
+        },
+        {
+          "width": 430,
+          "overflow": false,
+          "issues": []
+        },
+        {
+          "width": 768,
+          "overflow": false,
+          "issues": []
+        },
+        {
+          "width": 1024,
+          "overflow": false,
+          "issues": []
+        },
+        {
+          "width": 1440,
+          "overflow": false,
+          "issues": []
+        },
+        {
+          "width": 1920,
+          "overflow": false,
+          "issues": []
+        }
+      ]
+    },
+    {
+      "name": "recovery",
+      "route": "/forgot-password",
+      "status": 200,
+      "accessibility": [],
+      "widths": [
+        {
+          "width": 320,
+          "overflow": false,
+          "issues": []
+        },
+        {
+          "width": 360,
+          "overflow": false,
+          "issues": []
+        },
+        {
+          "width": 375,
+          "overflow": false,
+          "issues": []
+        },
+        {
+          "width": 390,
+          "overflow": false,
+          "issues": []
+        },
+        {
+          "width": 412,
+          "overflow": false,
+          "issues": []
+        },
+        {
+          "width": 430,
+          "overflow": false,
+          "issues": []
+        },
+        {
+          "width": 768,
+          "overflow": false,
+          "issues": []
+        },
+        {
+          "width": 1024,
+          "overflow": false,
+          "issues": []
+        },
+        {
+          "width": 1440,
+          "overflow": false,
+          "issues": []
+        },
+        {
+          "width": 1920,
+          "overflow": false,
+          "issues": []
+        }
+      ]
+    },
+    {
+      "name": "reset",
+      "route": "/reset-password",
+      "status": 200,
+      "accessibility": [],
+      "widths": [
+        {
+          "width": 320,
+          "overflow": false,
+          "issues": []
+        },
+        {
+          "width": 360,
+          "overflow": false,
+          "issues": []
+        },
+        {
+          "width": 375,
+          "overflow": false,
+          "issues": []
+        },
+        {
+          "width": 390,
+          "overflow": false,
+          "issues": []
+        },
+        {
+          "width": 412,
+          "overflow": false,
+          "issues": []
+        },
+        {
+          "width": 430,
+          "overflow": false,
+          "issues": []
+        },
+        {
+          "width": 768,
+          "overflow": false,
+          "issues": []
+        },
+        {
+          "width": 1024,
+          "overflow": false,
+          "issues": []
+        },
+        {
+          "width": 1440,
+          "overflow": false,
+          "issues": []
+        },
+        {
+          "width": 1920,
+          "overflow": false,
+          "issues": []
+        }
+      ]
+    },
+    {
+      "name": "verify",
+      "route": "/verify-email",
+      "status": 200,
+      "accessibility": [],
+      "widths": [
+        {
+          "width": 320,
+          "overflow": false,
+          "issues": []
+        },
+        {
+          "width": 360,
+          "overflow": false,
+          "issues": []
+        },
+        {
+          "width": 375,
+          "overflow": false,
+          "issues": []
+        },
+        {
+          "width": 390,
+          "overflow": false,
+          "issues": []
+        },
+        {
+          "width": 412,
+          "overflow": false,
+          "issues": []
+        },
+        {
+          "width": 430,
+          "overflow": false,
+          "issues": []
+        },
+        {
+          "width": 768,
+          "overflow": false,
+          "issues": []
+        },
+        {
+          "width": 1024,
+          "overflow": false,
+          "issues": []
+        },
+        {
+          "width": 1440,
+          "overflow": false,
+          "issues": []
+        },
+        {
+          "width": 1920,
+          "overflow": false,
+          "issues": []
+        }
+      ]
+    },
+    {
+      "locale": "hi",
+      "accessibility": []
+    },
+    {
+      "locale": "hinglish",
+      "accessibility": []
+    }
+  ],
+  "errors": []
+}

@@ -21,7 +21,7 @@ export function compareDictionary(en,value,language,namespace){const issues=[];f
  // Every plural family must include the language's supported one/other pair.
  if(key.endsWith('_one')&&!Object.hasOwn(value,key.replace(/_one$/,'_other'))||key.endsWith('_other')&&!Object.hasOwn(value,key.replace(/_other$/,'_one')))issues.push(key+': missing plural sibling');
 }return issues.map(issue=>`${language}/${namespace}: ${issue}`);}
-const approvedVisible=new Set(['Dukaan','Set','.','DukaanSet','DukaanSet.','DukaanSet /','VoiceOS','DEMANDPULSE','D','English','हिंदी','Hinglish','AK']);
+const approvedVisible=new Set(['Dukaan','Set','.','DukaanSet','DukaanSet.','DukaanSet /','DemandPulse','VoiceOS','DEMANDPULSE','D','English','हिंदी','Hinglish','AK']);
 const translationKeys=new Set(namespaces.flatMap(ns=>Object.keys(flatten(JSON.parse(fs.readFileSync(`src/locales/en/${ns}.json`,'utf8'))))));
 export function visibleTextIssues(source,file){const issues=[],ast=babel.parser().parse(source,{sourceType:'module',plugins:['typescript','jsx']});const add=(value,node)=>{const text=value.trim();if(/[A-Za-z\u0900-\u097f]/.test(text)&&!approvedVisible.has(text))issues.push(`${file}:${node.loc.start.line}: hardcoded visible text ${text}`);};
  function expression(n){if(!n)return;if(n.type==='StringLiteral')add(n.value,n);else if(n.type==='TemplateLiteral')n.quasis.forEach(part=>add(part.value.cooked||'',part));else if(n.type==='ConditionalExpression'){expression(n.consequent);expression(n.alternate);}else if(n.type==='LogicalExpression')expression(n.right);else if(n.type==='BinaryExpression'){expression(n.left);expression(n.right);}}
