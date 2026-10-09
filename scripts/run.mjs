@@ -15,7 +15,7 @@ const commands = {
   build: ['node_modules/next/dist/bin/next', 'build'],
   start: ['node_modules/next/dist/bin/next', 'start', '--hostname', '127.0.0.1'],
   typecheck: ['node_modules/typescript/bin/tsc', '--noEmit'],
-  test: ['--import', 'tsx', '--test', 'tests/backend.test.ts', 'tests/client.test.ts', 'tests/voice.test.ts', 'tests/v3.test.ts', 'tests/deployment.test.ts'],
+  test: ['--import', 'tsx', '--test', 'tests/backend.test.ts', 'tests/client.test.ts', 'tests/voice.test.ts', 'tests/v3.test.ts', 'tests/deployment.test.ts', 'tests/voiceos.test.ts'],
   e2e: ['scripts/run-e2e.mjs'],
   backup: ['scripts/backup-database.mjs'],
   smoke: ['scripts/check-production.mjs'],

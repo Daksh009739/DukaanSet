@@ -2,7 +2,7 @@ import { DatabaseSync } from "node:sqlite";
 import { createHash, randomBytes, randomUUID, scryptSync, timingSafeEqual } from "node:crypto";
 import { mkdirSync } from "node:fs";
 import { dirname, resolve } from "node:path";
-import type { Business, BusinessState, Customer, CustomerStatement, InventoryEntry, Invoice, InvoiceItem, Payment, Product, Purchase, SaleAttachment, Session, Supplier, User } from "../contracts";
+import type { Business, BusinessState, Customer, CustomerStatement, InventoryEntry, Invoice, InvoiceItem, Payment, Product, Purchase, SaleAttachment, Session, Supplier, User,VoiceReport } from "../contracts";
 import { schema } from "./schema";
 import { migrationV2, migrationV3 } from "./migrations";
 import { access, authorize } from './access';
@@ -33,7 +33,7 @@ function asAttachment(row: Row): SaleAttachment { return { id: String(row.id), u
 export class Store {
   readonly db: DatabaseSync;
   readonly schemaVersion = 3;
-  readonly runtimeRevision = "v3.1";
+  readonly runtimeRevision = "v4.0";
   private transactionDepth = 0;
   constructor(path = process.env.DATABASE_PATH || resolve(process.cwd(), ".data", "dukaanset.sqlite")) {
     // Runtime database directories are external mutable data, never bundle assets.
@@ -174,8 +174,10 @@ export class Store {
     this.assertPermission(userId,businessId,table==='suppliers'?'purchases':'customers');
     this.assertMember(userId, businessId);
     const input = object(raw), name = string(input.name, "Name", 100), phone = string(input.phone, "Phone", 30, true);
-    keys(input, ["name", "phone", "idempotencyKey"]);
+    keys(input, ["name", "phone", "idempotencyKey", "rejectDuplicate"]);
+    if(input.rejectDuplicate!==undefined&&typeof input.rejectDuplicate!=='boolean')throw new DomainError('INVALID_INPUT','Invalid contact duplicate policy.');
     const work = (): Customer | Supplier => {
+      if(input.rejectDuplicate){const label=(value:string)=>value.normalize('NFKC').toLowerCase().trim().replace(/\s+/g,' ');if(this.rows(`SELECT name,phone FROM ${table} WHERE business_id=?`,businessId).some(row=>label(String(row.name))===label(name)||(phone&&String(row.phone).replace(/\D/g,'')===phone.replace(/\D/g,''))))throw new DomainError('CONTACT_EXISTS','A matching contact already exists. Choose it or deliberately create a separate contact.',409);}
       this.limitEntities(table, businessId);
       const id = uid();
       this.run(`INSERT INTO ${table} VALUES(?,?,?,?)`, id, businessId, name, phone);
@@ -347,18 +349,20 @@ export class Store {
     return this.once(businessId, "invoice", input, () => {
       this.assertDayOpen(businessId);
       const customer = customerId ? this.entity("customers", businessId, customerId) : null;
-      const aggregated = new Map<string, { quantity: number; attachmentIds: string[] }>(), seenPhotos = new Set<string>();
+      const aggregated = new Map<string, { quantity: number; attachmentIds: string[]; pricePaise?:number }>(), seenPhotos = new Set<string>();
       for (const item of requested) {
-        keys(item, ["productId", "quantityMilli", "attachmentIds"]);
+        keys(item, ["productId", "quantityMilli", "attachmentIds", "pricePaise"]);
+        const pricePaise=item.pricePaise===undefined?undefined:integer(item.pricePaise,'Unit selling price');
         const id = string(item.productId, "Product ID", 80), qty = integer(item.quantityMilli, "Quantity", 1);
         if (item.attachmentIds !== undefined && (!Array.isArray(item.attachmentIds) || item.attachmentIds.length > 3)) throw new DomainError("INVALID_INPUT", "Use at most three photos per item.");
         const photos = ((item.attachmentIds ?? []) as unknown[]).map(value => string(value, "Photo ID", 80));
         if(photos.length)this.assertPermission(userId,businessId,'sales','photoSales');
         for (const photo of photos) { if (seenPhotos.has(photo)) throw new DomainError("DUPLICATE_ATTACHMENT", "Each photo can be attached once."); seenPhotos.add(photo); }
         const prior = aggregated.get(id);
-        aggregated.set(id, { quantity: (prior?.quantity ?? 0) + qty, attachmentIds: [...(prior?.attachmentIds ?? []), ...photos] });
+        if(prior&&prior.pricePaise!==pricePaise)throw new DomainError('INVALID_INPUT','Repeated invoice lines must use the same unit price.');
+        aggregated.set(id, { quantity: (prior?.quantity ?? 0) + qty, attachmentIds: [...(prior?.attachmentIds ?? []), ...photos],pricePaise });
       }
-      const lines: InvoiceItem[] = [...aggregated].map(([id, { quantity, attachmentIds }]) => {
+      const lines: InvoiceItem[] = [...aggregated].map(([id, { quantity, attachmentIds,pricePaise }]) => {
         integer(quantity, "Combined quantity", 1);
         const p = asProduct(this.entity("products", businessId, id));
         assertWholeUnit(p.unit, quantity);
@@ -371,7 +375,8 @@ export class Store {
           if (photo.invoice_id) throw new DomainError("ATTACHMENT_LOCKED", "This photo is already saved with an invoice.", 409);
           return asAttachment(photo);
         });
-        return { productId: id, name: p.name, unit: p.unit, quantityMilli: quantity, pricePaise: p.pricePaise, totalPaise: lineTotal(p.pricePaise, quantity), ...(p.variation ? { variation: p.variation } : {}), ...(attachments.length ? { attachmentIds, attachments } : {}) };
+        const sellingPrice=pricePaise??p.pricePaise;
+        return { productId: id, name: p.name, unit: p.unit, quantityMilli: quantity, pricePaise: sellingPrice, totalPaise: lineTotal(sellingPrice, quantity), ...(p.variation ? { variation: p.variation } : {}), ...(attachments.length ? { attachmentIds, attachments } : {}) };
       });
       const subtotal = integer(lines.reduce((sum, item) => sum + item.totalPaise, 0), "Invoice subtotal", 0, 1_000_000_000_000);
       if (discount > subtotal) throw new DomainError("INVALID_DISCOUNT", "Discount cannot exceed the subtotal.");
@@ -512,6 +517,19 @@ export class Store {
       metrics: { salesTodayPaise: todayInvoices.reduce((sum, i) => sum + i.totalPaise, 0), collectedTodayPaise: todayPayments.reduce((sum, p) => sum + p.amountPaise, 0), outstandingPaise: active.reduce((sum, i) => sum + i.balancePaise, 0), lowStockCount: low.length, billsToday: todayInvoices.length, stockValuePaise: products.reduce((sum, p) => sum + lineTotal(p.costPaise, p.quantityMilli), 0) }, weeklySales, tasks,
       activity: this.rows("SELECT * FROM audit WHERE business_id=? ORDER BY date DESC,id DESC LIMIT 100", businessId).map(r => ({ id: String(r.id), action: String(r.action), detail: String(r.detail), date: String(r.date) })) };
   }
+  voiceReport(userId:string,businessId:string,periodValue:string):VoiceReport {
+    this.assertPermission(userId,businessId,'reports','voiceStock');
+    const period=oneOf(periodValue,'Report period',['today','week','all']),today=businessDay(),start=period==='all'?'0000-01-01T00:00:00.000Z':new Date(`${period==='week'?businessDay(new Date(Date.now()-6*86400000).toISOString()):today}T00:00:00+05:30`).toISOString(),end=new Date(Date.parse(`${today}T00:00:00+05:30`)+86400000).toISOString();
+    return this.transaction(()=>{
+      const sales=this.row("SELECT COALESCE(SUM(total_paise),0) amount,COUNT(*) count FROM invoices WHERE business_id=? AND status!='cancelled' AND date>=? AND date<?",businessId,start,end)!;
+      const cash=this.row("SELECT COALESCE(SUM(CASE WHEN kind='refund' THEN -amount_paise ELSE amount_paise END),0) amount FROM payments WHERE business_id=? AND method='cash' AND date>=? AND date<?",businessId,start,end)!;
+      const upi=this.row("SELECT COALESCE(SUM(CASE WHEN kind='refund' THEN -amount_paise ELSE amount_paise END),0) amount FROM payments WHERE business_id=? AND method='upi' AND date>=? AND date<?",businessId,start,end)!;
+      const expenses=this.row('SELECT COALESCE(SUM(amount_paise),0) amount FROM expenses WHERE business_id=? AND date>=? AND date<?',businessId,start,end)!;
+      const products=new Map<string,VoiceReport['topProducts'][number]>();
+      for(const invoice of this.rows("SELECT items_json FROM invoices WHERE business_id=? AND status!='cancelled' AND date>=? AND date<?",businessId,start,end))for(const item of JSON.parse(String(invoice.items_json)) as InvoiceItem[]){const previous=products.get(item.productId);products.set(item.productId,{id:item.productId,name:item.name,unit:item.unit,quantityMilli:(previous?.quantityMilli||0)+item.quantityMilli});}
+      return {period,salesPaise:Number(sales.amount),bills:Number(sales.count),cashPaise:Number(cash.amount),upiPaise:Number(upi.amount),expensesPaise:Number(expenses.amount),topProducts:[...products.values()].sort((a,b)=>b.quantityMilli-a.quantityMilli).slice(0,20)};
+    });
+  }
   export(userId: string, businessId: string) {
     this.assertPermission(userId,businessId,"settings");
     this.assertMember(userId, businessId);
@@ -547,7 +565,7 @@ export class Store {
       { name: "Sharma Kirana Store", category: "grocery", products: [["Basmati Rice", "kg", 12500, 9800, 82000], ["Aashirvaad Atta", "kg", 5800, 4400, 125000], ["Tata Salt", "pcs", 2800, 2200, 68000], ["Milk", "packet", 3200, 2800, 8000], ["Dal", "kg", 16500, 13200, 34000], ["Fortune Oil", "pcs", 14500, 12100, 25000], ["Biscuit", "packet", 1000, 750, 43000], ["Sugar", "kg", 4500, 3900, 42000], ["Red Chilli Powder", "kg", 28000, 21000, 18000], ["Brooke Bond Tea", "pcs", 14500, 11800, 12000], ["Maggi Noodles", "pcs", 1400, 1050, 4000], ["Surf Excel", "pcs", 12500, 10300, 22000], ["Onion", "kg", 4200, 3000, 75000], ["Potato", "kg", 3200, 2200, 92000]] },
       { name: "Sharma Hardware", category: "hardware", products: [["Cement Bag 50kg", "pcs", 38000, 34000, 42000], ["Steel Nails", "kg", 8500, 6200, 28000], ["PVC Pipe 1 inch", "pcs", 18500, 14000, 60000], ["Asian Paints White", "pcs", 285000, 236000, 14000], ["Door Handle", "pcs", 25000, 17000, 38000], ["Screwdriver Set", "pcs", 45000, 33000, 18000], ["Electrical Wire", "meter", 2400, 1600, 350000], ["Wall Putty 20kg", "pcs", 65000, 54000, 20000], ["Brass Tap", "pcs", 35000, 26000, 4000], ["Measuring Tape", "pcs", 18000, 11500, 16000]] },
       { name: "Sharma Fresh Vegetables", category: "vegetables", products: [["Fresh Tomatoes", "kg", 4500, 2900, 48000], ["Potatoes", "kg", 3200, 2200, 92000], ["Red Onions", "kg", 4200, 3000, 75000], ["Green Capsicum", "kg", 6500, 4300, 19000], ["Fresh Spinach", "kg", 3500, 1900, 4500], ["Carrots", "kg", 5500, 3500, 28000], ["Green Peas", "kg", 8500, 5800, 16000], ["Cauliflower", "kg", 4800, 3200, 33000], ["Ginger", "kg", 18000, 13000, 8000], ["Green Chillies", "kg", 8500, 4800, 11000]] },
-      { name: "Sharma Fashion Store", category: "clothing", products: [["Blue Casual Shirt", "piece", 89900, 55000, 4000], ["Black T-Shirt", "piece", 49900, 29000, 8000], ["Denim Jeans", "piece", 129900, 85000, 6000]] },
+      { name: "Sharma Fashion Store", category: "clothing", products: [["Blue Casual Shirt", "piece", 89900, 55000, 4000], ["Black T-Shirt", "piece", 49900, 29000, 8000], ["Denim Jeans", "piece", 129900, 85000, 7000]] },
     ];
     const aliasMap: Record<string, string[]> = { Milk: ["doodh", "दूध", "Amul Milk"], Dal: ["daal", "दाल", "Toor Dal"], Onion: ["pyaaz", "pyaz", "प्याज", "onions"], Potato: ["aloo", "आलू", "potatoes"], Biscuit: ["biscuits", "बिस्कुट", "Parle-G Biscuits"] };
     for (const [index, definition] of definitions.entries()) {
@@ -564,7 +582,16 @@ export class Store {
       if(definition.category==='clothing')this.createProduct(userId,business.id,{name:'White Shirt',sku:'CLO-WM',unit:'piece',pricePaise:89900,costPaise:55000,quantityMilli:3000,variation:'M',minStockMilli:2000});
       if(demandProduct){for(let n=0;n<2;n++)this.run('INSERT INTO demand_requests VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)',uid(),business.id,demandProduct.id,demandProduct.name,demandProduct.variation,(n+1)*1000,demandProduct.unit,n===0?customers[0].id:null,n===0?1:0,null,'open','Fictional demo request',at,userId);}
       if(definition.category==='grocery')this.run('INSERT INTO demand_requests VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)',uid(),business.id,null,'Specific Brand Tea','500g',1000,'packet',null,0,null,'open','Fictional uncatalogued demo request',at,userId);
-      if (definition.category === "clothing") continue;
+      if (definition.category === "clothing") {
+        // A real historical credit invoice makes the old-dues VoiceOS demo usable.
+        // Opening jeans stock includes this sale, leaving six units on hand.
+        const creditAt=new Date(Date.parse(baseline)+3600000).toISOString(),requestKey=uid(),invoice=this.createInvoice(userId,business.id,{idempotencyKey:requestKey,customerId:customers[0].id,items:[{productId:products[2].id,quantityMilli:1000}],payments:[]});
+        this.run('UPDATE invoices SET date=? WHERE id=?',creditAt,invoice.id);
+        this.run('UPDATE movements SET date=? WHERE reference_id=?',creditAt,invoice.id);
+        this.run("UPDATE audit SET date=? WHERE business_id=? AND action='invoice.created'",creditAt,business.id);
+        this.run("UPDATE idempotency SET result_json=?,created_at=? WHERE business_id=? AND operation='invoice' AND key=?",JSON.stringify(this.invoice(business.id,invoice.id)),creditAt,business.id,requestKey);
+        continue;
+      }
       for (let day = 6; day >= 0; day--) {
         const p = products[day % 3], quantity = p.unit === "pcs" ? 1000 : 2000, total = lineTotal(p.pricePaise, quantity), paid = day % 3 === 0 ? Math.floor(total / 2) : total, customer = customers[day % 4];
         const requestKey = uid(), invoice = this.createInvoice(userId, business.id, { idempotencyKey: requestKey, customerId: customer.id, items: [{ productId: p.id, quantityMilli: quantity }], discountPaise: 0, paidPaise: paid, paymentMethod: day % 2 ? "upi" : "cash", dueDate: new Date(Date.now() + 7 * 86_400_000).toISOString().slice(0, 10) });
@@ -583,6 +610,6 @@ export class Store {
 declare global { var dukaanStore: Store | undefined; }
 export function getStore(): Store {
   if (process.env.VERCEL === '1') throw new Error('DukaanSet SQLite requires a persistent backend. Deploy the Vercel gateway instead.');
-  if (globalThis.dukaanStore && globalThis.dukaanStore.runtimeRevision !== "v3.1") { globalThis.dukaanStore.close(); globalThis.dukaanStore = undefined; }
+  if (globalThis.dukaanStore && globalThis.dukaanStore.runtimeRevision !== "v4.0") { globalThis.dukaanStore.close(); globalThis.dukaanStore = undefined; }
   return globalThis.dukaanStore ??= new Store();
 }

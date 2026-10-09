@@ -34,3 +34,5 @@ jobs:
       - run: npx playwright install --with-deps chromium
       - name: Critical auth, isolation, inventory and sales browser checks
         run: npm run test:e2e -- tests/e2e/product.spec.ts
+      - name: VoiceOS financial and microphone browser checks
+        run: npm run test:e2e -- tests/e2e/voiceos.spec.ts

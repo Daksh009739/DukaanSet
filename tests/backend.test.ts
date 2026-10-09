@@ -304,7 +304,7 @@ test("demo snapshots reconcile dated stock movements, payments and localized tas
         assert.ok(state.movements.filter(m => m.referenceId === invoice.id).every(m => m.date === invoice.date));
         assert.ok(state.activity.some(a => a.action === "invoice.created" && a.detail.startsWith(invoice.number) && a.date === invoice.date));
       }
-      assert.equal(state.weeklySales.reduce((sum, day) => sum + day.salesPaise, 0), state.invoices.reduce((sum, i) => sum + i.totalPaise, 0));
+      assert.equal(state.weeklySales.reduce((sum, day) => sum + day.salesPaise, 0), state.invoices.filter(i => state.weeklySales.some(day => day.date === businessDay(i.date))).reduce((sum, i) => sum + i.totalPaise, 0));
       for (const task of state.tasks) {
         assert.ok(task.name);
         if (task.type === "stock") { assert.ok(task.productId); assert.equal(task.quantityMilli, state.products.find(p => p.id === task.productId)?.quantityMilli); assert.ok(task.unit); }
@@ -361,7 +361,7 @@ test("fashion split sale records two receipts, exact credit and stock once", () 
   try {
     const session = store.demo(), business = session.businesses.find(b => b.category === "clothing")!, before = store.state(session.user.id, business.id);
     const shirt = before.products.find(p => p.name === "Blue Casual Shirt")!, rahul = before.customers.find(c => c.name === "Rahul Sharma")!;
-    assert.equal(shirt.quantityMilli, 4000); assert.equal(shirt.pricePaise, 89900); assert.equal(rahul.balancePaise, 0); assert.equal(before.invoices.length, 0);
+    assert.equal(shirt.quantityMilli, 4000); assert.equal(shirt.pricePaise, 89900); assert.equal(rahul.balancePaise, 129900); assert.equal(before.invoices.length, 1);
     const input = { idempotencyKey: "shirt-split", customerId: rahul.id, items: [{ productId: shirt.id, quantityMilli: 2000 }], payments: [{ method: "cash", amountPaise: 100000 }, { method: "upi", amountPaise: 50000 }] };
     const bill = store.createInvoice(session.user.id, business.id, input);
     assert.equal(bill.totalPaise, 179800); assert.equal(bill.paidPaise, 150000); assert.equal(bill.balancePaise, 29800); assert.equal(bill.paymentMethod, "split"); assert.equal(bill.status, "partial");
@@ -369,9 +369,9 @@ test("fashion split sale records two receipts, exact credit and stock once", () 
     assert.deepEqual(bill.payments.map(p => [p.method, p.amountPaise]).sort(), [["cash", 100000], ["upi", 50000]]);
     assert.deepEqual(store.createInvoice(session.user.id, business.id, input), bill);
     const after = store.state(session.user.id, business.id);
-    assert.equal(after.products.find(p => p.id === shirt.id)!.quantityMilli, 2000); assert.equal(after.customers.find(c => c.id === rahul.id)!.balancePaise, 29800);
+    assert.equal(after.products.find(p => p.id === shirt.id)!.quantityMilli, 2000); assert.equal(after.customers.find(c => c.id === rahul.id)!.balancePaise, rahul.balancePaise + 29800);
     assert.equal(after.metrics.salesTodayPaise, 179800); assert.equal(after.metrics.collectedTodayPaise, 150000);
-    store.receivePayment(session.user.id, business.id, { idempotencyKey: "shirt-due", customerId: rahul.id, amountPaise: 29800, method: "upi" });
+    store.receivePayment(session.user.id, business.id, { idempotencyKey: "shirt-due", customerId: rahul.id, amountPaise: rahul.balancePaise + 29800, method: "upi" });
     const repaid = store.state(session.user.id, business.id);
     assert.equal(repaid.metrics.salesTodayPaise, 179800); assert.equal(repaid.customers[0].balancePaise, 0); assert.equal(repaid.invoices[0].payments.length, 3);
     throwsCode(() => store.cancelInvoice(session.user.id, business.id, bill.id), "REPAYMENT_EXISTS");
@@ -505,7 +505,7 @@ test("demo reset is transactional, retains session/language/business IDs and nev
     assert.equal(reset.user.id, demo.user.id); assert.equal(reset.user.language, "hi"); assert.equal(f.store.authenticate(token), demo.user.id);
     assert.deepEqual(reset.businesses.map(b => b.id), demo.businesses.map(b => b.id));
     const restored = f.store.state(demo.user.id, fashion.id);
-    assert.equal(restored.products.find(p => p.name === "Blue Casual Shirt")!.quantityMilli, 4000); assert.equal(restored.customers[0].balancePaise, 0); assert.equal(restored.invoices.length, 0);
+    assert.equal(restored.products.find(p => p.name === "Blue Casual Shirt")!.quantityMilli, 4000); assert.equal(restored.customers[0].balancePaise, 129900); assert.equal(restored.invoices.length, 1);
     assert.ok(restored.activity.some(a => a.action === "demo.reset"));
     assert.deepEqual(f.store.state(f.user, f.business), beforeReal); assert.deepEqual(other.businesses.map(b => f.store.state(other.user.id, b.id)), beforeOther);
     throwsCode(() => f.store.resetDemo(f.user), "DEMO_ONLY");

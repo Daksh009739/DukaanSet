@@ -1,8 +1,10 @@
 # DukaanSet
 
-**Apni Dukaan, Sab Set.** A mobile-first, three-language workspace for sales, stock, customer dues and missed demand. V3 adds verified account setup, recovery, staff permissions, configurable modules and DemandPulse to the existing transactional V2 application.
+**Apni Dukaan, Sab Set.** A mobile-first, three-language workspace for sales, stock, customer dues and missed demand. V4 adds one shared VoiceOS engine and global/contextual voice drafts to the transactional billing, inventory, payments and DemandPulse workflows.
 
 Source: [Daksh009739/DukaanSet](https://github.com/Daksh009739/DukaanSet). See the [V3 implementation and limits](docs/v3-implementation.md), [QA report](docs/v3-test-report.md) and preserved [V3 brief](docs/briefs/v3-master.md).
+
+For the latest feature, see [VoiceOS setup, architecture and demo A–E](docs/v4-voiceos.md), [V4 test results](docs/v4-test-report.md) and the [V4 brief](docs/briefs/v4-voiceos-master.md). Real browser speech recognition has typed fallback; device transcription accuracy and live staging remain explicit validation limits. Recognised commands fill reviewed forms; they do not automatically save or send messages.
 
 ## Run locally
 
@@ -64,7 +66,7 @@ npm run test:production -- http://127.0.0.1:3002
 
 Browser tests use a separate `.data/e2e.sqlite`, private test outbox and `.next-e2e` server on port 3001. Windows uses installed Edge; other platforms need Playwright Chromium installed. Use fictional records and free the test port first. The [V3 QA report](docs/v3-test-report.md) records actual results and rendered evidence; [V2](docs/v2-test-report.md) and [V1](docs/test-report.md) remain historical reports.
 
-`dev` contains active work; `staging` is for reviewed release candidates and `production` for explicitly approved stable releases. Branches do not deploy the app. This delivery saves V3 on `dev`; promotion and hosting are separate actions.
+`dev` contains active work; `staging` is for reviewed release candidates and `production` for explicitly approved stable releases. Branches do not deploy the app. This delivery saves V4 on `dev`; promotion and hosting are separate actions.
 
 Other project documents: [progress](docs/progress.md), [architecture](docs/architecture.md), [design system](docs/design-system.md), [requirements](docs/requirements.md), [roadmap](docs/roadmap.md), [deployment preparation](docs/deployment.md), [server security boundary](src/lib/server/SECURITY.md), [V2 implementation](docs/v2-implementation.md) and [voice workflow](docs/v2-voice.md).
 ## Staging preparation

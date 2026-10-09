@@ -19,6 +19,9 @@ import { SaleSummary } from './sale-summary';
 import { SaleSuccess } from './sale-success';
 import { removePendingPhoto } from './sale-photo-uploader';
 import { useTranslation } from 'react-i18next';
+import { VoicePanel } from '../voice/voice-panel';
+import { formVoiceContext,voiceQuantity,type VoiceCommand } from '@/lib/voice/os';
+import { osCopy } from '@/lib/voice/os-copy';
 
 export function NewSalePage() {
   const app = useApp();
@@ -29,6 +32,9 @@ export function NewSalePage() {
   const storageKey = `ds-draft-${app.session!.user.id}-${app.businessId}`;
   const { draft, setDraft, update, clear, complete, remember, freeze, reject, markConflict, hydrated, storageError } = useSaleDraft(storageKey, app.businessId);
   const [busy, setBusy] = useState(false);
+  const [voiceBlocked,setVoiceBlocked]=useState(false);
+  const [paymentReviewed,setPaymentReviewed]=useState(false);
+  const voiceCopy=osCopy(useTranslation().i18n.language);
   const [error, setError] = useState('');
   const [contextHint, setContextHint] = useState('');
   const [contextCustomer, setContextCustomer] = useState('');
@@ -57,7 +63,8 @@ export function NewSalePage() {
   const customer = state.customers.find(item => item.id === draft.customerId);
   const uploadsActive = Object.values(uploading).some(Boolean);
   const savedInvoice = saved || state.invoices.find(invoice => invoice.id === draft.savedInvoiceId);
-  const valid = hydrated && totals.items.length > 0 && totals.quantityValid && totals.discountValid && totals.paymentValid && !totals.overpaid && (totals.pending === 0 || Boolean(customer));
+  const valid = hydrated && !voiceBlocked && !draft.voiceNeedsPayment && totals.items.length > 0 && totals.quantityValid && totals.discountValid && totals.paymentValid && !totals.overpaid && (totals.pending === 0 || Boolean(customer));
+  const applyVoice=(command:VoiceCommand)=>{if(locked||!hydrated)return;if(command.changed.includes('mode'))setPaymentReviewed(true);setDraft(previous=>{const items={...previous.items},prices={...previous.prices};for(const id of command.removedProducts||[]){delete items[id];delete prices[id];}for(const item of command.items.filter(row=>command.changedItems.includes(row.id))){const qty=voiceQuantity(item,state.products);if(item.productId&&qty!==null){items[item.productId]=String(qty/1000);if(item.priceBasis==='unit')prices[item.productId]=item.price;}}const fields=Object.fromEntries(command.changed.filter(key=>['customerId','cash','upi','mode','discount'].includes(key)).map(key=>[key,command.fields[key]]));return {...previous,voiceNeedsPayment:!command.fields.mode&&!paymentReviewed,...!command.fields.mode&&!paymentReviewed?{mode:'split' as const,cash:'0',upi:'0'}:{},...fields,items,prices};});setError('');};
   const add = (id: string) => {
     if (locked || submitting.current) return;
     setError(''); setDraft(previous => {
@@ -72,7 +79,7 @@ export function NewSalePage() {
     setUploading(previous => { const next = { ...previous }; delete next[id]; return next; });
   };
   const attach = (id: string, attachment?: SaleAttachment) => setDraft(previous => ({ ...previous, attachments: { ...previous.attachments, [id]: attachment ? [attachment] : [] } }));
-  const clearSale = () => { if (locked || submitting.current) return; Object.values(draft.attachments).flat().forEach(photo => { void removePendingPhoto(app.businessId, photo.id).catch(() => {}); }); clear(); setError(''); setContextHint(''); setContextCustomer(''); setUploading({}); setSaved(null); };
+  const clearSale = () => { if (locked || submitting.current) return; Object.values(draft.attachments).flat().forEach(photo => { void removePendingPhoto(app.businessId, photo.id).catch(() => {}); }); clear();setPaymentReviewed(false); setError(''); setContextHint(''); setContextCustomer(''); setUploading({}); setSaved(null); };
   const save = async () => {
     if (submitting.current || draft.recoveryBlocked || draft.pendingSale?.conflict) return;
     setError('');
@@ -81,7 +88,7 @@ export function NewSalePage() {
     if (!app.online) { setError(t('offline')); return; }
     const pendingSale: PendingSale = draft.pendingSale || {
       request: { idempotencyKey: draft.key, customerId: draft.customerId || null,
-        items: totals.items.map(item => ({ productId: item.product.id, quantityMilli: item.quantityMilli, attachmentIds: (draft.attachments[item.product.id] || []).map(photo => photo.id) })),
+        items: totals.items.map(item => ({ productId: item.product.id, quantityMilli: item.quantityMilli, attachmentIds: (draft.attachments[item.product.id] || []).map(photo => photo.id),...draft.prices?.[item.product.id]!==undefined?{pricePaise:minorUnits(draft.prices[item.product.id])}:{} })),
         discountPaise: totals.discount, payments: [{ method: 'cash' as const, amountPaise: totals.cash }, { method: 'upi' as const, amountPaise: totals.upi }].filter(payment => payment.amountPaise > 0), dueDate: draft.dueDate || null },
       totals: { subtotal: totals.subtotal, discount: totals.discount, total: totals.total, cash: totals.cash, upi: totals.upi, paid: totals.paid, pending: totals.pending }, conflict: false,
     };
@@ -106,6 +113,8 @@ export function NewSalePage() {
   return <div className="sale-editor" data-sale-editor>
     <div className="sale-page-heading"><div><Link href="/app/sales" className="sale-back"><ArrowLeft size={17} />{t('back')}</Link><h1>{t('newSale')}</h1><p>{t('saleHint')}</p></div><button type="button" className="sale-draft-button" aria-label={t('saveDraft')} disabled={!hydrated || locked} onClick={() => { if (remember(draft)) app.notify(t('draftSaved')); }}><Save size={16} /><span>{t('saveDraft')}</span></button></div>
     <div className="sale-draft-status"><span><span className="sale-status-dot" />{draft.recoveryBlocked ? t('pendingTitle') : storageError ? t('draftWarning') : t('draftSaved')}</span><button type="button" disabled={locked || uploadsActive} onClick={clearSale}>{t('clearDraft')}</button></div>
+    <VoicePanel key={draft.key} intent="sale" onApply={applyVoice} disabled={locked||!hydrated} onBlockedChange={setVoiceBlocked} onCancel={clearSale} getContext={command=>formVoiceContext(command,{customerId:draft.customerId,cash:draft.cash,upi:draft.upi,mode:draft.voiceNeedsPayment?'':draft.mode,discount:draft.discount},Object.entries(draft.items).map(([productId,quantity])=>({productId,quantity,price:draft.prices?.[productId]})),state.products)}/>
+    {draft.voiceNeedsPayment&&<p role="status" className="sale-context-note">{voiceCopy.salePayment}</p>}
     {(draft.pendingSale || draft.recoveryBlocked) && <section className="sale-recovery" aria-labelledby="sale-recovery-title" role="status"><div><ShieldCheck size={22} /><div><h2 id="sale-recovery-title">{t('pendingTitle')}</h2><p>{t(draft.recoveryBlocked ? 'recoveryInvalid' : draft.pendingSale?.conflict ? 'conflictHint' : 'pendingHint')}</p></div></div><div className="sale-recovery-actions">{draft.pendingSale && !draft.pendingSale.conflict && <Button className="sale-recovery-retry" busy={busy} disabled={busy || !app.online} onClick={() => void save()}><RefreshCw size={17} />{t('retrySale')}</Button>}<Link href="/app/sales">{t('reviewHistory')}</Link></div></section>}
     {contextHint && <p className="sale-context-note" role="status"><Package size={17} />{t('productAdded', { name: contextHint })}</p>}
     {demand&&<p className="sale-context-note">{v('demandTitle')} · {demand.productName} {demand.variant} · {v('linkHint')}</p>}
@@ -114,11 +123,11 @@ export function NewSalePage() {
       <ProductSelector products={state.products} category={state.business.category} selected={draft.items} onAdd={add} disabled={locked || !hydrated} frequentIds={frequentIds} />
       <section className="sale-section sale-items" aria-labelledby="sale-items-heading"><div className="sale-section-heading"><div><span className="sale-section-number">02</span><h2 id="sale-items-heading">{t('selectedItems')}</h2></div><span className="sale-count">{totals.items.length}</span></div>
         {totals.items.length ? totals.items.map(item => <SelectedSaleItem key={item.product.id} product={item.product} value={item.value} total={item.totalPaise} error={draft.pendingSale ? '' : item.error} category={state.business.category} attachment={draft.attachments[item.product.id]?.[0]} disabled={locked}
-          onValue={value => update({ items: { ...draft.items, [item.product.id]: value } })} onIncrease={() => add(item.product.id)} onDecrease={() => { const next = Number(item.value) - 1; if (next > 0) update({ items: { ...draft.items, [item.product.id]: String(next) } }); else remove(item.product.id); }} onRemove={() => remove(item.product.id)} onAttachment={photo => attach(item.product.id, photo)} onUploading={value => setUploading(previous => ({ ...previous, [item.product.id]: value }))} />) : <div className="sale-empty"><ShoppingBag size={32} /><h3>{t('emptySale')}</h3><p>{t('emptyHint')}</p></div>}
+          price={draft.prices?.[item.product.id]} onPrice={value=>update({prices:{...draft.prices,[item.product.id]:value}})} onValue={value => update({ items: { ...draft.items, [item.product.id]: value } })} onIncrease={() => add(item.product.id)} onDecrease={() => { const next = Number(item.value) - 1; if (next > 0) update({ items: { ...draft.items, [item.product.id]: String(next) } }); else remove(item.product.id); }} onRemove={() => remove(item.product.id)} onAttachment={photo => attach(item.product.id, photo)} onUploading={value => setUploading(previous => ({ ...previous, [item.product.id]: value }))} />) : <div className="sale-empty"><ShoppingBag size={32} /><h3>{t('emptySale')}</h3><p>{t('emptyHint')}</p></div>}
       </section>
     </div><div className="sale-side-column">
       <CustomerSelector customers={state.customers} value={draft.customerId} onChange={customerId => update({ customerId })} disabled={locked} pending={preview.pending > 0} />
-      <PaymentSelector draft={draft} update={update} total={preview.total} pending={preview.pending} disabled={locked} invalid={!totals.paymentValid} overpaid={totals.overpaid} />
+      <PaymentSelector draft={draft} update={values=>{if('mode'in values||'cash'in values||'upi'in values||'received'in values)setPaymentReviewed(true);update({...values,voiceNeedsPayment:false});}} total={preview.total} pending={preview.pending} disabled={locked} invalid={!totals.paymentValid} overpaid={totals.overpaid} />
       <SaleSummary subtotal={preview.subtotal} discount={preview.discount} total={preview.total} paid={preview.paid} pending={preview.pending} discountValue={draft.discount} onDiscount={discount => update({ discount })} discountInvalid={!totals.discountValid} count={totals.items.length} busy={busy} locked={locked} disabled={locked || !valid || uploadsActive || !app.online} onSave={() => void save()} error={error} />
     </div></div>
     {uploadsActive && <p className="sale-field-error">{t('uploadingHint')}</p>}

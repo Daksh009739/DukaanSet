@@ -1,0 +1,71 @@
+{
+  "checkedAt": "2026-10-09T15:16:55.004Z",
+  "environment": {
+    "node": "24",
+    "next": "16.4.0",
+    "platform": "Windows",
+    "browser": "headless Edge",
+    "isolatedDatabase": ".data/e2e.sqlite",
+    "port": 3001
+  },
+  "unit": {
+    "passed": 116,
+    "failed": 0,
+    "voiceosTests": 16
+  },
+  "browser": {
+    "passed": 43,
+    "failed": 0,
+    "suites": [
+      {
+        "name": "product",
+        "passed": 7,
+        "exitCode": 0
+      },
+      {
+        "name": "v2-business",
+        "passed": 2,
+        "exitCode": 0
+      },
+      {
+        "name": "v2-sales",
+        "passed": 9,
+        "exitCode": 0
+      },
+      {
+        "name": "v2-voice",
+        "passed": 6,
+        "exitCode": 0
+      },
+      {
+        "name": "v3-demand",
+        "passed": 8,
+        "exitCode": 0
+      },
+      {
+        "name": "voice-products",
+        "passed": 3,
+        "exitCode": 0
+      },
+      {
+        "name": "voiceos",
+        "passed": 8,
+        "exitCode": 0
+      }
+    ]
+  },
+  "typecheck": "passed",
+  "build": "passed",
+  "voiceosViewportWidths": [
+    320,
+    360,
+    375,
+    390,
+    768,
+    1440
+  ],
+  "voiceosAxeViolations": 0,
+  "physicalMicrophoneVerified": false,
+  "liveStagingVerified": false,
+  "merchantDatabaseReset": false
+}

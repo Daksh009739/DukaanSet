@@ -72,7 +72,7 @@ async function noOverflow(page: Page) {
 test('Fashion mobile sale records two shirts, photo, split payments and exactly one stock deduction', async ({ page, baseURL }, testInfo) => {
   await page.setViewportSize({ width: 390, height: 844 });
   const { business, state: before, shirt, customer } = await fashionDemo(page, baseURL!);
-  expect(shirt.quantityMilli).toBe(4000); expect(shirt.pricePaise).toBe(89900); expect(customer.balancePaise).toBe(0);
+  expect(shirt.quantityMilli).toBe(4000); expect(shirt.pricePaise).toBe(89900); expect(customer.balancePaise).toBe(129900);
   const item = await selectShirt(page, shirt.id);
   await item.locator('summary').click();
   await item.getByLabel('Upload From Gallery Blue Casual Shirt', { exact: true }).setInputFiles(await photoFixture(page));
@@ -92,7 +92,7 @@ test('Fashion mobile sale records two shirts, photo, split payments and exactly 
   const invoice = after.invoices.find(record => !before.invoices.some(existing => existing.id === record.id))!;
   expect(invoice.totalPaise).toBe(179800); expect(invoice.paidPaise).toBe(150000); expect(invoice.balancePaise).toBe(29800); expect(invoice.status).toBe('partial');
   expect(after.products.find(product => product.id === shirt.id)?.quantityMilli).toBe(2000);
-  expect(after.customers.find(record => record.id === customer.id)?.balancePaise).toBe(29800);
+  expect(after.customers.find(record => record.id === customer.id)?.balancePaise).toBe(customer.balancePaise+29800);
   expect(invoice.payments.filter(payment => payment.kind === 'sale').map(payment => [payment.method, payment.amountPaise]).sort()).toEqual([['cash', 100000], ['upi', 50000]]);
   expect(after.movements.filter(movement => movement.referenceId === invoice.id && movement.productId === shirt.id)).toHaveLength(1);
   expect(invoice.items[0].attachments).toHaveLength(1); expect(invoice.items[0].variation).toBe(shirt.variation);

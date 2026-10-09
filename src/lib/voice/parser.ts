@@ -18,13 +18,14 @@ export function newProductDraft(row:VoiceRow):VoiceNewProduct {
 }
 
 const synonyms: Record<string, string> = {
+  'नीला':'blue','नीली':'blue','काला':'black','काली':'black','शर्ट':'shirt','शर्ट्स':'shirt','कमीज':'shirt','कमीज़':'shirt',shirts:'shirt',
   doodh:'milk', dudh:'milk', दूध:'milk', dal:'dal', daal:'dal', दाल:'dal', lentils:'dal', lentil:'dal',
   pyaz:'onion', pyaaz:'onion', प्याज:'onion', प्याज़:'onion', onions:'onion', aloo:'potato', alu:'potato', आलू:'potato', potatoes:'potato',
   chawal:'rice', चावल:'rice', atta:'flour', आटा:'flour', tamatar:'tomato', टमाटर:'tomato', tomatoes:'tomato',
   adrak:'ginger', अदरक:'ginger', lehsun:'garlic', lahsun:'garlic', लहसुन:'garlic',
   biscuits:'biscuit', बिस्कुट:'biscuit', चीनी:'sugar', cheeni:'sugar', chini:'sugar', नमक:'salt', namak:'salt',
 };
-const numbers: Record<string, number> = {
+export const numbers: Record<string, number> = {
   zero:0, one:1,two:2,three:3,four:4,five:5,six:6,seven:7,eight:8,nine:9,ten:10,eleven:11,twelve:12,thirteen:13,fourteen:14,fifteen:15,sixteen:16,seventeen:17,eighteen:18,nineteen:19,twenty:20,thirty:30,forty:40,fifty:50,sixty:60,seventy:70,eighty:80,ninety:90,hundred:100,
   ek:1,do:2,teen:3,char:4,chaar:4,panch:5,paanch:5,chhe:6,che:6,saat:7,aath:8,nau:9,das:10,gyarah:11,barah:12,bees:20,pachas:50,sau:100,
   शून्य:0,एक:1,दो:2,तीन:3,चार:4,पांच:5,पाँच:5,छह:6,सात:7,आठ:8,नौ:9,दस:10,ग्यारह:11,बारह:12,बीस:20,पचास:50,सौ:100,

@@ -5,7 +5,7 @@ export type SalePaymentMode = 'cash' | 'upi' | 'credit' | 'split';
 export interface SaleRequest {
   idempotencyKey: string;
   customerId: string | null;
-  items: { productId: string; quantityMilli: number; attachmentIds: string[] }[];
+  items: { productId: string; quantityMilli: number; attachmentIds: string[];pricePaise?:number }[];
   discountPaise: number;
   payments: { method: 'cash' | 'upi'; amountPaise: number }[];
   dueDate: string | null;
@@ -18,12 +18,14 @@ export interface PendingSale {
 export interface SaleDraft {
   version: 2;
   items: Record<string, string>;
+  prices?:Record<string,string>;
   customerId: string;
   discount: string;
   received: string;
   cash: string;
   upi: string;
   mode: SalePaymentMode;
+  voiceNeedsPayment?: boolean;
   dueDate: string;
   key: string;
   attachments: Record<string, SaleAttachment[]>;
@@ -32,7 +34,7 @@ export interface SaleDraft {
   recoveryBlocked: boolean;
 }
 
-export const freshDraft = (): SaleDraft => ({ version: 2, items: {}, customerId: '', discount: '0', received: '', cash: '', upi: '', mode: 'cash', dueDate: '', key: crypto.randomUUID(), attachments: {}, savedInvoiceId: '', pendingSale: null, recoveryBlocked: false });
+export const freshDraft = (): SaleDraft => ({ version: 2, items: {},prices:{}, customerId: '', discount: '0', received: '', cash: '', upi: '', mode: 'cash', dueDate: '', key: crypto.randomUUID(), attachments: {}, savedInvoiceId: '', pendingSale: null, recoveryBlocked: false });
 
 const record = (value: unknown): value is Record<string, unknown> => Boolean(value) && typeof value === 'object' && !Array.isArray(value);
 const uuid = (value: unknown): value is string => typeof value === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
@@ -55,11 +57,11 @@ function restorePendingSale(value: unknown, key: string): PendingSale | null {
   const productIds = new Set<string>(), photoIds = new Set<string>(), methods = new Set<string>();
   const items: SaleRequest['items'] = [];
   for (const item of request.items) {
-    if (!record(item) || !uuid(item.productId) || productIds.has(item.productId) || !integer(item.quantityMilli, 1) || !Array.isArray(item.attachmentIds) || item.attachmentIds.length > 3) return null;
+    if (!record(item) || !uuid(item.productId) || productIds.has(item.productId) || !integer(item.quantityMilli, 1) || (item.pricePaise!==undefined&&!integer(item.pricePaise)) || !Array.isArray(item.attachmentIds) || item.attachmentIds.length > 3) return null;
     productIds.add(item.productId);
     const attachmentIds: string[] = [];
     for (const id of item.attachmentIds) { if (!uuid(id) || photoIds.has(id)) return null; photoIds.add(id); attachmentIds.push(id); }
-    items.push({ productId: item.productId, quantityMilli: item.quantityMilli, attachmentIds });
+    items.push({ productId: item.productId, quantityMilli: item.quantityMilli, attachmentIds,...item.pricePaise!==undefined?{pricePaise:item.pricePaise as number}:{} });
   }
   const payments: SaleRequest['payments'] = [];
   for (const payment of request.payments) {
@@ -91,16 +93,19 @@ export function restoreDraft(raw: string | null, businessId: string): SaleDraft 
     if (valid.length) attachments[id] = [...new Map(valid.map(photo => [photo.id, photo])).values()];
   }
   const key = uuid(value.key) ? value.key : fresh.key;
+  const prices=record(value.prices)?Object.fromEntries(Object.entries(value.prices).filter(([id,price])=>Boolean(items[id])&&typeof price==='string'&&price.length<40)):{};
   const pendingSale = restorePendingSale(value.pendingSale, key);
   const recoveryBlocked = value.recoveryBlocked === true || Boolean(value.pendingSale && !pendingSale);
   const mode = value.mode || value.method;
   return { ...fresh, items: pendingSale ? Object.fromEntries(pendingSale.request.items.map(item => [item.productId, String(item.quantityMilli / 1000)])) : items,
+    prices:pendingSale?Object.fromEntries(pendingSale.request.items.filter(item=>item.pricePaise!==undefined).map(item=>[item.productId,String(item.pricePaise!/100)])):prices as Record<string,string>,
     customerId: pendingSale ? pendingSale.request.customerId || '' : uuid(value.customerId) ? value.customerId : '',
     discount: pendingSale ? String(pendingSale.totals.discount / 100) : typeof value.discount === 'string' ? value.discount : '0',
     received: pendingSale ? String(pendingSale.totals.paid / 100) : typeof value.received === 'string' ? value.received : '',
     cash: pendingSale ? String(pendingSale.totals.cash / 100) : typeof value.cash === 'string' ? value.cash : '',
     upi: pendingSale ? String(pendingSale.totals.upi / 100) : typeof value.upi === 'string' ? value.upi : '',
     mode: ['cash', 'upi', 'credit', 'split'].includes(mode || '') ? mode as SalePaymentMode : 'cash',
+    voiceNeedsPayment: value.voiceNeedsPayment === true,
     dueDate: pendingSale ? pendingSale.request.dueDate || '' : date(value.dueDate) ? value.dueDate : '', key, attachments,
     savedInvoiceId: !pendingSale && !recoveryBlocked && uuid(value.savedInvoiceId) ? value.savedInvoiceId : '',
     pendingSale, recoveryBlocked,
@@ -120,7 +125,8 @@ export function calculateSale(draft: SaleDraft, products: Product[]) {
       if (!quantityMilli) error = 'quantityInvalid';
       else if (isWholeQuantityUnit(row.product.unit) && quantityMilli % 1000) error = 'wholeQuantity';
       else if (quantityMilli > row.product.quantityMilli) error = 'stockShortage';
-      totalPaise = lineTotal(row.product.pricePaise, quantityMilli);
+      const sellingPrice=draft.prices?.[row.product.id]===undefined?row.product.pricePaise:minorUnits(draft.prices[row.product.id]);
+      totalPaise = lineTotal(sellingPrice, quantityMilli);
       if (!Number.isSafeInteger(totalPaise)) error = 'quantityInvalid';
     } catch { error = 'quantityInvalid'; }
     if (error) quantityValid = false;
