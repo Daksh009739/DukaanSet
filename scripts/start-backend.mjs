@@ -1,6 +1,8 @@
 import { spawn } from 'node:child_process';
 import { readFileSync, mkdirSync, accessSync, constants } from 'node:fs';
 import { backendSettings, verifyBackendBuild } from './deployment-config.mjs';
+// New database, WAL and auth files on the private volume belong to this user.
+process.umask(0o077);
 try {
   const settings = backendSettings(process.env);
   if (settings.environment !== 'local') {

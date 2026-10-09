@@ -4,9 +4,13 @@
 
 Repository: `Daksh009739/DukaanSet`. `dev` contains the application. `main` was created at the existing `production` baseline (`8a5f6a7ec117cac561ee9ac92ad4ea10f5935455`); no dev code was merged into it. Legacy `production` and `staging` were preserved. The initial baseline has no deployable application; the first production release requires a reviewed merge and separate production infrastructure.
 
-The Vercel project [dukaan-set](https://vercel.com/daksh009739s-projects/dukaan-set) was created after checking for an existing DukaanSet project. It is connected to `Daksh009739/DukaanSet`. Production Branch Tracking is **main**, verified in the saved environment settings; Preview is the non-production environment. Build/install overrides are `npm run build:vercel` / `npm ci --include=dev`, Node is 24.x, and the preset is Other. System build variables are enabled. No application credentials or production variables were copied; existing protection was retained. [Production tracking proof](qa/staging/vercel-production-main.jpg).
+The Vercel project [dukaan-set](https://vercel.com/daksh009739s-projects/dukaan-set) was created after checking for an existing DukaanSet project. It is connected to `Daksh009739/DukaanSet`. Production Branch Tracking is **main**, verified in the saved environment settings; Preview is the non-production environment. Automatic production-domain assignment is enabled following the user's explicit approval; no application release was promoted. Build/install overrides are `npm run build:vercel` / `npm ci --include=dev`, Node is 24.x, and the preset is Other. System build variables are enabled. No application credentials or production variables were copied; existing protection was retained. [Production tracking proof](qa/staging/vercel-production-main.jpg); [build settings](qa/staging/vercel-build-settings.jpg).
 
 **No verified stable staging URL is available yet.** Initial/automatic/external deployment acceptance is pending persistent backend provisioning and hosted email configuration. The project's dashboard/settings URL is not a live demo link.
+
+Native Git pushes were exercised. The initial attempt at `f417f67` exposed a stale mapping that classified dev as Production; the build's branch guard rejected it. Saving main explicitly corrected the mapping. The subsequent automatic attempt at `c71ae0d` is [a Preview deployment](https://vercel.com/daksh009739s-projects/dukaan-set/4hhqTz8RBB8hAfHJKQ9G7DGUoKLV), blocked with `DUKAANSET_BACKEND_ORIGIN must be a configured HTTPS origin.` The Vercel-reported dev branch alias is `dukaan-set-git-dev-daksh009739s-projects.vercel.app`; it is recorded for configuration, **not a working demonstration yet**. The [implementation's GitHub quality run](https://github.com/Daksh009739/DukaanSet/actions/runs/37933460056) passed on Ubuntu. [Preview failure proof](qa/staging/vercel-preview-blocked.jpg).
+
+`DUKAANSET_PUBLIC_ORIGIN` is now saved as a non-secret Config variable for **Preview → dev only**, using that reported branch alias. Production and Development were excluded. Backend origin and readiness token remain unset until actual infrastructure is available. [Variable scope proof](qa/staging/vercel-dev-origin.jpg).
 
 ## Hosting architecture
 
@@ -60,7 +64,7 @@ Use a host with a writable private mounted volume, HTTPS, Node 24 and Git automa
 
 Build metadata is written after a successful build. Native hosts may expose `RENDER_GIT_COMMIT`/`RENDER_GIT_BRANCH`; other hosts supply `DUKAANSET_GIT_SHA`/`DUKAANSET_GIT_BRANCH`. Docker builds require those two build arguments, plus `DUKAANSET_ENV` and `NEXT_PUBLIC_SITE_URL`. Use the checked-out full commit SHA, not a made-up revision. Mount the private volume with write access for the container's `node` user. Never pass email, AI or check-token secrets as Docker build arguments.
 
-Startup validates the origin, email setup, volume path and release branch. A path check cannot prove a hosting plan actually supplies persistent storage: verify the mount in the host and prove records survive a normal redeployment before signing off. Staging/prod use distinct services and volumes, not two SQLite files on a shared production mount.
+Startup validates the origin, email setup, volume path and release branch. It also sets a private Unix file-creation mask for new database, WAL and auth files. A path check cannot prove a hosting plan actually supplies persistent storage: verify the mount in the host and prove records survive a normal redeployment before signing off. Staging/prod use distinct services and volumes, not two SQLite files on a shared production mount.
 
 ## Authentication, API and upload checks
 
