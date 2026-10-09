@@ -6,13 +6,13 @@ import i18n from '@/lib/i18n';
 import { api, RequestError } from '@/lib/client';
 import type { BusinessState, Language, Session } from '@/lib/contracts';
 
-interface Context { session:Session|null; state:BusinessState|null; businessId:string; selectBusiness:(id:string)=>void; refresh:()=>Promise<void>; changeLanguage:(language:Language)=>Promise<void>; notify:(message:string)=>void; online:boolean; mutation:<T>(path:string,body:unknown)=>Promise<T>; errorText:(error:unknown)=>string; loading:boolean; error:string; logout:()=>Promise<void>; writing:boolean }
+interface Context { session:Session|null; state:BusinessState|null; businessId:string; selectBusiness:(id:string)=>void; refresh:()=>Promise<void>; resetDemo:()=>Promise<void>; resetEpoch:number; changeLanguage:(language:Language)=>Promise<void>; notify:(message:string)=>void; online:boolean; mutation:<T>(path:string,body:unknown)=>Promise<T>; errorText:(error:unknown)=>string; loading:boolean; error:string; logout:()=>Promise<void>; writing:boolean }
 const AppContext=createContext<Context|null>(null);
 export function useApp() {const context=useContext(AppContext);if(!context) throw new Error('Missing application provider');return context;}
 
 function Provider({children}: {children:ReactNode}) {
   const router=useRouter();const routerRef=useRef(router);routerRef.current=router;
-  const [session,setSession]=useState<Session|null>(null);const [state,setState]=useState<BusinessState|null>(null);const [businessId,setBusinessId]=useState('');const [loading,setLoading]=useState(true);const [error,setError]=useState('');const [toast,setToast]=useState('');const [online,setOnline]=useState(true);const epoch=useRef(0);const currentBusiness=useRef('');const activeLoad=useRef<AbortController|null>(null);const mounted=useRef(false);const writes=useRef(0);const [writing,setWriting]=useState(false);
+  const [session,setSession]=useState<Session|null>(null);const [state,setState]=useState<BusinessState|null>(null);const [businessId,setBusinessId]=useState('');const [loading,setLoading]=useState(true);const [resetEpoch,setResetEpoch]=useState(0);const [error,setError]=useState('');const [toast,setToast]=useState('');const [online,setOnline]=useState(true);const epoch=useRef(0);const currentBusiness=useRef('');const activeLoad=useRef<AbortController|null>(null);const mounted=useRef(false);const writes=useRef(0);const [writing,setWriting]=useState(false);
   const errorText=useCallback((error:unknown)=>{
     if(error instanceof RequestError) {
       if(error.status===401) return i18n.t('sessionExpired');
@@ -61,7 +61,34 @@ function Provider({children}: {children:ReactNode}) {
   const selectBusiness=(id:string)=>{if(writes.current||id===currentBusiness.current||!session?.businesses.some(b=>b.id===id))return;++epoch.current;activeLoad.current?.abort();currentBusiness.current=id;setState(null);setError('');setLoading(true);setBusinessId(id);try{sessionStorage.setItem(`ds-business-${session.user.id}`,id);}catch{}};
   const changeLanguage=async(language:Language)=>{await api('/account/language',{language});setSession(previous=>previous?{...previous,user:{...previous.user,language}}:previous);await i18n.changeLanguage(language);setToast(i18n.t('languageSaved'));};
   const mutation=async<T,>(path:string,body:unknown):Promise<T>=>{if(!navigator.onLine)throw new RequestError('OFFLINE',i18n.t('noConnection'),0);writes.current++;setWriting(true);try{const result=await api<T>(`/businesses/${businessId}${path}`,body);if(currentBusiness.current===businessId)await refresh();return result;}finally{writes.current--;if(mounted.current)setWriting(writes.current>0);}};
-  const logout=async()=>{await api('/auth/logout',{});try{sessionStorage.clear();}catch{}routerRef.current.replace('/login');};
-  return <AppContext.Provider value={{session,state,businessId,selectBusiness,refresh,changeLanguage,notify:setToast,online,mutation,errorText,loading,error,logout,writing}}>{children}<div className="toast-region" aria-live="polite" aria-atomic="true">{toast && <div className="toast">✓ {toast}</div>}</div></AppContext.Provider>;
+  const logout=async()=>{
+    await api('/auth/logout',{});
+    // Keep unresolved writes so the same account can retry the original request after signing in.
+    // Draft keys include both account and business; ordinary drafts and voice transcripts are cleared.
+    try{
+      const recoveryPrefix=session?`ds-draft-${session.user.id}-`:'';
+      for(let index=sessionStorage.length-1;index>=0;index--){
+        const key=sessionStorage.key(index);if(!key)continue;
+        let keep=false;
+        if(recoveryPrefix&&key.startsWith(recoveryPrefix)){
+          const raw=sessionStorage.getItem(key);
+          if(raw){if(key.endsWith('-customer'))keep=true;else{try{const value=JSON.parse(raw);keep=Boolean(value?.pendingSale||value?.recoveryBlocked);}catch{keep=true;}}}
+        }
+        if(!keep)sessionStorage.removeItem(key);
+      }
+    }catch{}
+    routerRef.current.replace('/login');
+  };
+  const resetDemo=async()=>{
+    if(!session?.user.demo||writes.current)throw new RequestError('DEMO_ONLY',i18n.t('invalidInput'),409);
+    writes.current++;setWriting(true);
+    try{
+      const next=await api<Session>('/auth/demo/reset',{});setSession(next);
+      try{for(let index=sessionStorage.length-1;index>=0;index--){const key=sessionStorage.key(index);if(key&&(key.startsWith(`ds-draft-${next.user.id}-`)||key.startsWith(`ds-voice-draft-${next.user.id}-`)))sessionStorage.removeItem(key);}}catch{}
+      if(!next.businesses.some(b=>b.id===currentBusiness.current)){currentBusiness.current=next.businesses[0]?.id||'';setBusinessId(currentBusiness.current);}
+      await refresh();setResetEpoch(value=>value+1);
+    }finally{writes.current--;if(mounted.current)setWriting(writes.current>0);}
+  };
+  return <AppContext.Provider value={{session,state,businessId,selectBusiness,refresh,resetDemo,resetEpoch,changeLanguage,notify:setToast,online,mutation,errorText,loading,error,logout,writing}}>{children}<div className="toast-region" aria-live="polite" aria-atomic="true">{toast && <div className="toast">✓ {toast}</div>}</div></AppContext.Provider>;
 }
 export function AppProvider({children}: {children:ReactNode}) {return <I18nextProvider i18n={i18n}><Provider>{children}</Provider></I18nextProvider>;}

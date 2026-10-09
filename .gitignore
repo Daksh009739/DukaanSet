@@ -36,3 +36,5 @@ playwright-report/
 *.tsbuildinfo
 .local/
 .next-e2e/
+
+.next-local/

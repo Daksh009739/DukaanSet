@@ -76,7 +76,9 @@ try {
     assert.equal(homepageHeaders['x-content-type-options'], 'nosniff');
     assert.equal(homepageHeaders['x-frame-options'], 'DENY');
     assert.equal(homepageHeaders['referrer-policy'], 'strict-origin-when-cross-origin');
-    assert.match(homepageHeaders['permissions-policy'] || '', /camera=\(\)/);
+    assert.match(homepageHeaders['permissions-policy'] || '', /camera=\(self\)/);
+    assert.match(homepageHeaders['permissions-policy'] || '', /microphone=\(self\)/);
+    assert.match(homepageHeaders['permissions-policy'] || '', /geolocation=\(\)/);
     const policy = homepageHeaders['content-security-policy'] || '';
     assert.match(policy, /default-src\s+'self'/);
     assert.match(policy, /frame-ancestors\s+'none'/);

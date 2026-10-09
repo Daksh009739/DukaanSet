@@ -1,12 +1,54 @@
 import { createHash } from "node:crypto";
 import type { Category, Language, PaymentMethod } from "../contracts";
+const DOMAIN_ERROR_BRAND: unique symbol = Symbol.for("dukaanset.domain-error");
 
 export class DomainError extends Error {
+  readonly [DOMAIN_ERROR_BRAND] = true;
   constructor(public code: string, message: string, public status = 400) { super(message); }
+}
+/** A private-symbol brand survives Next HMR without trusting JSON-shaped errors. */
+export function isDomainError(error: unknown): error is DomainError {
+  if (!(error instanceof Error)) return false;
+  const value = error as DomainError & Record<symbol, unknown>;
+  return value[DOMAIN_ERROR_BRAND] === true && typeof value.code === "string" && /^[A-Z_0-9]{1,60}$/.test(value.code) && Number.isInteger(value.status) && value.status >= 400 && value.status <= 599;
 }
 export function object(value: unknown): Record<string, unknown> {
   if (!value || typeof value !== "object" || Array.isArray(value)) throw new DomainError("INVALID_INPUT", "A JSON object is required.");
   return value as Record<string, unknown>;
+}
+export function keys(input: Record<string, unknown>, allowed: readonly string[]): void {
+  if (Object.keys(input).some(key => !allowed.includes(key))) throw new DomainError("INVALID_INPUT", "Request contains unsupported fields.");
+}
+export function aliases(value: unknown): string[] {
+  if (value === undefined) return [];
+  if (!Array.isArray(value) || value.length > 20) throw new DomainError("INVALID_INPUT", "Use at most 20 product aliases.");
+  return [...new Map(value.map(alias => { const v = string(alias, "Alias", 100); return [v.normalize("NFKC").toLowerCase(), v] as const; })).values()];
+}
+export function unit(value: unknown): string {
+  const v = string(value ?? "pcs", "Unit", 20).toLowerCase();
+  if (!["pcs", "piece", "pieces", "unit", "pair", "box", "bottle", "packet", "pack", "kg", "g", "gram", "grams", "kilogram", "litre", "liter", "l", "ml", "meter", "metre", "m"].includes(v)) throw new DomainError("INVALID_UNIT", "Choose a supported piece, weight, volume, or length unit.");
+  return v;
+}
+/** Exact compatible unit conversion; quantities remain integer thousandths. */
+export function convertQuantity(quantityMilli: number, from: string, to: string, packSize: number | null = null): number {
+  const groups: Record<string, [string, bigint]> = {
+    kg: ["weight", 1000n], kilogram: ["weight", 1000n], g: ["weight", 1n], gram: ["weight", 1n], grams: ["weight", 1n],
+    litre: ["volume", 1000n], liter: ["volume", 1000n], l: ["volume", 1000n], ml: ["volume", 1n],
+    meter: ["length", 1n], metre: ["length", 1n], m: ["length", 1n],
+    pcs: ["piece", 1n], piece: ["piece", 1n], pieces: ["piece", 1n], unit: ["piece", 1n],
+  };
+  const a = from.toLowerCase(), b = to.toLowerCase();
+  if (a === b) return integer(quantityMilli, "Quantity", 1);
+  let numerator = BigInt(quantityMilli), denominator = 1n;
+  if (["box", "pack"].includes(a) && packSize && !["box", "pack"].includes(b)) numerator *= BigInt(packSize);
+  else {
+    if (!groups[a] || !groups[b] || groups[a][0] !== groups[b][0]) throw new DomainError("INVALID_UNIT", "These units cannot be converted for this product.");
+    numerator *= groups[a][1]; denominator = groups[b][1];
+  }
+  if (numerator % denominator !== 0n) throw new DomainError("QUANTITY_PRECISION", "Quantity cannot be represented accurately in this product's unit.");
+  const result = integer(Number(numerator / denominator), "Converted quantity", 1);
+  assertWholeUnit(to, result);
+  return result;
 }
 export function string(value: unknown, name: string, max = 160, optional = false): string {
   if (optional && (value === undefined || value === null || value === "")) return "";

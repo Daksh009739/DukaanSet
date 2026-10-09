@@ -1,6 +1,6 @@
 # DukaanSet implementation progress
 
-9 October 2026. This is a code-backed local vertical slice, not completion of the full master brief. Status below describes implemented source and its limits. Final local checks passed: 26 backend/client tests, 7 browser scenarios, TypeScript, the production build and 7 production smoke checks. The [QA report](test-report.md) records evidence and coverage limits.
+9 October 2026. This is a code-backed local vertical slice, not completion of the full master brief. Current V2 checks passed: 58 unit/API tests, 24 browser scenarios, TypeScript, the production build and 7 production smoke checks. The [V2 QA report](v2-test-report.md) records evidence and coverage limits. The baseline tables below describe V1; the V2 update near the end records the new implementation and supersedes its earlier gap list.
 
 ## Current delivery
 
@@ -57,3 +57,18 @@ Representative browser scenarios in source cover public pages/SEO/phone layout, 
 6. Add full offline synchronization and evaluate Android distribution as dedicated phases. Validate with merchants, accessibility/device/performance evidence and appropriate legal/tax review before publication.
 
 Detailed acceptance gates remain in [requirements](requirements.md), [roadmap](roadmap.md), [architecture](architecture.md) and [deployment preparation](deployment.md). The project has not been deployed, and the larger master product is unfinished.
+
+## V2 update · 9 October 2026
+
+The sections above record the V1 delivery checkpoint. V2 now implements several previously listed gaps; this update describes the actual new scope. The [V2 audit](v2-audit.md) records the preserved baseline, and [V2 implementation](v2-implementation.md) documents API, migration, reset and storage limits. The three supplied V2 briefs are saved verbatim in [docs/briefs](briefs/v2-master.md).
+
+- Sales support distinct cash and manual UPI receipts on the same invoice, remaining customer credit, product-linked private photos and explicit confirmation. Cancellation records a signed refund per original method so cash closing excludes UPI. The Fashion demo has four Blue Casual Shirts at ₹899 and Rahul with no prior due; two shirts, ₹1,000 cash and ₹500 UPI produce ₹1,798 total, ₹298 due and two shirts left.
+- Product editing, aliases, descriptive variations, barcode text and configured pack sizes are available. Existing invoices preserve item snapshots. Reviewed stock batches support compatible gram/kilogram and millilitre/litre conversion, metre and piece units, configured pack receipt conversion, atomic rollback, idempotent retry and entry history. Product-level expiry attention is available; batch expiry and advanced selling conversion matrices are still future work.
+- Voice inventory uses deliberate browser speech activation where supported, English/Hindi/Hinglish matching and editable review before receipt confirmation. Typed/manual fallback remains available. No remote STT or LLM service is connected, and the backend retains neither raw audio nor transcript text. Physical-device microphone support and recognition accuracy still require validation.
+- Customer totals and daily/business reports now use complete-ledger server aggregates. Authenticated customer statements have an explicit download limit rather than silent truncation. The app generates ordinary invoice and statement PDFs locally and exports product CSV; no CSV import or GST portal integration is claimed.
+- SQLite migration v1→v2 preserves existing accounts, sessions and business ledgers. Demo reset is transactional and limited to the authenticated isolated demo, retains user/language/session and existing business IDs, and adds Fashion to an older three-business demo. Product/contact identities are reseeded. Real or shared business data is refused. Fresh demos contain grocery, hardware, vegetables and Fashion.
+- Invoice photos are authenticated private database blobs outside public assets, with actual image decoding, metadata removal, bounded uploads, tenant checks and immutable saved-invoice attachments. Local sale/voice drafts are scoped to user and business. Final browser QA must verify acknowledgement-loss retry and reset behavior against the final source.
+
+Contact creation now also accepts an optional retry key for customer/supplier attempts, returning the original contact after an acknowledgement loss while preserving deliberate duplicate creation with a new key. The V2 backend/client checkpoint passed 58 tests with zero failures, and TypeScript passed after the public-copy and contact changes. The root task records final source checks, build and browser results in the [V2 test report](v2-test-report.md); these checkpoint results do not imply device, live hosting or HTTPS installation verification.
+
+Owner-only permissions, Node/SQLite persistence and online transaction confirmation remain the operating boundaries. PostgreSQL, staff roles, account recovery, supplier repayment, partial returns, offline financial sync and production operation remain later work. Live AI needs a provider adapter to be implemented and tested as well as credentials; `OPENAI_API_KEY` is currently unused. No deployment or commercial readiness is claimed.
