@@ -1,3 +1,4 @@
+import {text as localText} from '../locale';
 import { createHash, randomBytes, randomUUID } from 'node:crypto';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { resolve,sep } from 'node:path';
@@ -22,8 +23,8 @@ export class AuthenticationService {
   private find(raw:unknown,kind:TokenKind){const token=string(raw,'Link token',100);if(!/^[A-Za-z0-9_-]{43}$/.test(token))throw new DomainError('INVALID_TOKEN','This link is invalid or expired.',400);const row=this.store.db.prepare('SELECT * FROM auth_tokens WHERE token_hash=? AND kind=? AND expires_at>? AND used_at IS NULL').get(digest(token),kind,new Date().toISOString()) as TokenRow|undefined;if(!row)throw new DomainError('INVALID_TOKEN','This link is invalid, used or expired.',400);return row;}
   private async deliver(userId:string,kind:TokenKind,token:string){
     this.deliveryReady();const user=this.store.session(userId).user;const route=kind==='verification'?'/verify-email':kind==='reset'?'/reset-password':'/accept-invite';const url=new URL(route,this.base);url.searchParams.set('token',token);
-    const subject=kind==='verification'?'Verify your DukaanSet email':kind==='reset'?'Reset your DukaanSet password':'Your DukaanSet team invitation';
-    const text=`${subject}\n\nOpen this one-use link and confirm the action:\n${url.href}\n\nThis link expires ${kind==='reset'?'in 30 minutes':'in 24 hours'}. If you did not request this, ignore it. Never share this link.`;
+    const subject=localText(user.language,'v3',kind==='verification'?'emailVerifySubject':kind==='reset'?'emailResetSubject':'emailInviteSubject');
+    const text=[subject,localText(user.language,'v3','emailInstruction'),url.href,localText(user.language,'v3',kind==='reset'?'emailExpiryReset':'emailExpiryOther'),localText(user.language,'v3','emailSafety')].join('\n\n');
     if(this.deliveryMode()==='file'){const directory=this.outbox();mkdirSync(directory,{recursive:true});writeFileSync(resolve(directory,`${Date.now()}-${randomUUID()}.json`),JSON.stringify({to:user.email,kind,url:url.href,subject,text,createdAt:new Date().toISOString()},null,2),{mode:0o600});return;}
     try{const response=await fetch('https://api.resend.com/emails',{method:'POST',headers:{Authorization:`Bearer ${process.env.RESEND_API_KEY}`,'Content-Type':'application/json','Idempotency-Key':`auth-${digest(token)}`},body:JSON.stringify({from:process.env.AUTH_EMAIL_FROM,to:[user.email],subject,text}),signal:AbortSignal.timeout(15000)});if(!response.ok)throw new Error('Delivery rejected');}catch{throw new DomainError('EMAIL_DELIVERY_UNAVAILABLE','Email delivery could not be confirmed. Try requesting a new link.',503);}
   }

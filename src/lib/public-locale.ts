@@ -1,0 +1,5 @@
+import type {Metadata} from 'next';
+import {copy,locale,locales,type Locale} from '@/locales/registry';
+export const publicPageKeys=Object.keys(copy('marketing','en').pages);
+export function publicRoute(slug:string[]){const prefix=locales.includes(slug[0] as Locale);return {language:prefix?locale(slug[0]):'en' as Locale,key:slug.slice(prefix?1:0).join('/')};}
+export function publicMetadata(language:Locale,key=''):Metadata{const data=copy('marketing',language),page=data.pages[key as keyof typeof data.pages],home=!key,title=home?'DukaanSet — '+data.heroFirst+' '+data.heroSecond:page?.title||'DukaanSet',description=home?data.heroDescription:page?.description||data.heroDescription;return {title:{absolute:home?title:title+' | DukaanSet'},description,alternates:{canonical:'/'+language+(key?'/'+key:''),languages:Object.fromEntries([...locales.map(l=>[l==='hinglish'?'hi-Latn':l,'/'+l+(key?'/'+key:'')]),['x-default','/en'+(key?'/'+key:'')]])},openGraph:{title,description,locale:language==='hi'?'hi_IN':'en_IN',images:['/social.png']}};}

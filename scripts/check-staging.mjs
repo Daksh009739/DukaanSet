@@ -28,13 +28,18 @@ try {
     assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), `Homepage overflows at ${width}px.`);
   }
   report.checks.push('HTTPS homepage, staging label, noindex and 320/360/375/390px layouts');
+  for(const language of ['en','hi','hinglish'])for(const route of ['', '/features', '/pricing']){
+    const response=await context.request.get(`/${language}${route}`,{headers});assert.equal(response.status(),200);
+    assert.ok((await response.text()).includes(`lang="${language==='hinglish'?'hi-Latn':language}"`));
+  }
+  report.checks.push('English, Hindi and Hinglish public server-rendered routes');
   await page.goto('/app'); assert.match(page.url(), /\/login/);
   assert.equal((await context.request.get('/api/session', { headers })).status(), 401);
   assert.equal((await context.request.get('/api/deployment', { headers })).status(), 401);
   assert.deepEqual(await (await context.request.get('/api/health', { headers })).json(), { ok: true });
   const robots = await context.request.get('/robots.txt', { headers }); assert.match(await robots.text(), /Disallow: \/(?:\r?\n|$)/);
   report.checks.push('Protected dashboard, private build information, database health and robots');
-  const demo = await context.request.post('/api/auth/demo', { headers, data: {} }); assert.equal(demo.status(), 201);
+  const demo = await context.request.post('/api/auth/demo', { headers, data: {language:'en'} }); assert.equal(demo.status(), 201);
   assert.match(demo.headers()['set-cookie'] || '', /HttpOnly/); assert.match(demo.headers()['set-cookie'] || '', /Secure/);
   const session = await demo.json(); assert.equal(session.user.demo, true);
   const info = await (await context.request.get('/api/deployment', { headers })).json();
@@ -48,7 +53,17 @@ try {
   }
   await page.reload(); assert.ok((await context.request.get('/api/session', { headers })).ok());
   report.checks.push('Isolated fictional demo, stock and invoice records, app routes and reload persistence');
-  assert.equal((await context.request.get(`/api/businesses/${crypto.randomUUID()}/state`, { headers })).status(), 403);
+  for(const language of ['en','hi','hinglish']){
+    assert.ok((await context.request.post('/api/account/language',{headers,data:{language}})).ok());
+    for(const pathname of ['/app/stock','/app/stock/voice','/app/demand']){
+      await page.goto(pathname);await page.locator('main h1').first().waitFor();assert.equal(await page.locator('html').getAttribute('lang'),language==='hinglish'?'hi-Latn':language);
+    }
+    await page.goto('/app/sales/'+state.invoices[0].id);const dictionary=JSON.parse((await import('node:fs')).readFileSync(`src/locales/${language}/common.json`,'utf8'));
+    const pending=page.waitForEvent('download');await page.getByRole('button',{name:dictionary.pdfDownload,exact:true}).click();const download=await pending;
+    assert.ok((await import('node:fs')).readFileSync(await download.path()).subarray(0,5).equals(Buffer.from('%PDF-')));
+  }
+  report.checks.push('Saved account locale, VoiceOS/DemandPulse routes and PDF downloads in all three languages');
+  assert.equal((await context.request.get(`/api/businesses/${crypto.randomUUID()}/state`, { headers })).status(), 404);
   assert.ok((await context.request.post('/api/auth/logout', { headers, data: {} })).ok());
   assert.equal((await context.request.get('/api/session', { headers })).status(), 401);
   report.checks.push('Foreign workspace rejection and session revocation on logout');

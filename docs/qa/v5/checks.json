@@ -1,0 +1,60 @@
+{
+  "checkedAt": "2026-10-09T18:07:42.428Z",
+  "baseline": "d647a55a37e314e9f46d7c1de3d07bdf5dc9d0a4",
+  "locales": [
+    "en",
+    "hi",
+    "hinglish"
+  ],
+  "keysPerLocale": 1543,
+  "keyAndVariableParity": "100%",
+  "detectedHardcodedJsx": 0,
+  "unitTests": {
+    "passed": 125,
+    "failed": 0
+  },
+  "browserSuites": [
+    {
+      "name": "localization",
+      "passed": 9
+    },
+    {
+      "name": "product",
+      "passed": 7
+    },
+    {
+      "name": "v2-business",
+      "passed": 2
+    },
+    {
+      "name": "v2-sales",
+      "passed": 9
+    },
+    {
+      "name": "v2-voice",
+      "passed": 6
+    },
+    {
+      "name": "v3-demand",
+      "passed": 8
+    },
+    {
+      "name": "voice-products",
+      "passed": 3
+    },
+    {
+      "name": "voiceos",
+      "passed": 8
+    }
+  ],
+  "uniqueBrowserTests": 52,
+  "productionSmoke": {
+    "passed": 7,
+    "failed": 0
+  },
+  "limitations": [
+    "Live hosted staging depends on its durable backend and verified mail sender.",
+    "Physical speech recognition, screen-reader review and live provider language quality remain unverified.",
+    "AST/string/script checks are guards and do not certify natural-language quality."
+  ]
+}

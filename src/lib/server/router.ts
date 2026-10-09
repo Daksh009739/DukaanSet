@@ -1,6 +1,6 @@
 import type { Store } from "./store";
 import { getStore } from "./store";
-import { DomainError, isDomainError } from "./validation";
+import { DomainError, isDomainError, object, keys, language } from "./validation";
 import { createHash } from "node:crypto";
 import { decodePhoto, MAX_IMAGE_BYTES } from "./images";
 import { SaaSService } from './saas';
@@ -80,7 +80,8 @@ export async function handleRequest(request: Request, store: Store = getStore())
       }
       if (action === "demo") {
         throttle("demo:global", 10, 600_000);
-        const session = store.demo(), secret = store.issueSession(session.user.id);
+        const input=object(await body(request)); keys(input,["language"]);
+        const session = store.demo(input.language===undefined?"hinglish":language(input.language)), secret = store.issueSession(session.user.id);
         return json(session, 201, { "Set-Cookie": cookie(secret, request) });
       }
       if(action==='verify'){const session=auth.verify(await body(request));return json(session,200,{'Set-Cookie':cookie(store.issueSession(session.user.id),request)});}
@@ -117,7 +118,7 @@ export async function handleRequest(request: Request, store: Store = getStore())
     if(action==='configuration'&&!recordId)return json(verb==='GET'?saas.configuration(userId,businessId):saas.saveConfiguration(userId,businessId,await body(request)));
     if(action==='team'){if(!recordId)return json(verb==='GET'?saas.team(userId,businessId):await auth.invite(userId,businessId,await body(request)));if(verb==='POST'&&!subAction)return json(saas.updateMember(userId,businessId,recordId,await body(request)));}
     if(action==='demands'){
-      if(verb==='GET'){if(recordId&&subAction==='message')return json(saas.message(userId,businessId,recordId));if(recordId&&!subAction)return json(saas.request(userId,businessId,recordId));if(!recordId)return json(saas.summary(userId,businessId));}
+      if(verb==='GET'){if(recordId&&subAction==='message')return json(saas.message(userId,businessId,recordId,url.searchParams.get('locale')||undefined));if(recordId&&!subAction)return json(saas.request(userId,businessId,recordId));if(!recordId)return json(saas.summary(userId,businessId));}
       if(verb==='POST'){if(!recordId)return json(saas.createDemand(userId,businessId,await body(request)),201);const input=await body(request);switch(subAction){case 'status':return json(saas.transition(userId,businessId,recordId,input));case 'associate':return json(saas.associate(userId,businessId,recordId,input));case 'consent':return json(saas.consent(userId,businessId,recordId,input));case 'followup':return json(saas.followUp(userId,businessId,recordId,input));case 'convert':return json(saas.convert(userId,businessId,recordId,input));}}
     }
     if(action==='suggestions'&&!recordId&&verb==='POST')return json(saas.dismiss(userId,businessId,await body(request)));
@@ -151,7 +152,7 @@ export async function handleRequest(request: Request, store: Store = getStore())
       default: throw new DomainError("NOT_FOUND", "Endpoint not found.", 404);
     }
   } catch (error) {
-    if (isDomainError(error)) return json({ error: { code: error.code, message: error.message } }, error.status, error.status === 429 ? { "Retry-After": "60" } : undefined);
+    if (isDomainError(error)) return json({ error: { code: error.code, ...(error.details?{details:error.details}:{}) } }, error.status, error.status === 429 ? { "Retry-After": "60" } : undefined);
     if (error instanceof Error && /UNIQUE constraint failed/.test(error.message)) return json({ error: { code: "CONFLICT", message: "A record with these details already exists." } }, 409);
     console.error("DukaanSet API operation failed", error instanceof Error ? error.name : "UnknownError");
     return json({ error: { code: "INTERNAL_ERROR", message: "The operation could not be completed. Please try again." } }, 500);

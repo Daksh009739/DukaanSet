@@ -1,2 +1,4 @@
+'use client';
 import Link from 'next/link';
-export default function NotFound(){return <main className="standalone-state"><h1>This page isn’t here.</h1><p>Your business is just a step away.</p><Link href="/" className="btn btn-primary">Back to DukaanSet</Link></main>;}
+import {useTranslation} from 'react-i18next';
+export default function NotFound(){const {t}=useTranslation();return <main className='standalone-state'><h1>{t('notFound')}</h1><p>{t('notFoundHint')}</p><Link href='/' className='btn btn-primary'>{t('websiteBack')}</Link></main>;}

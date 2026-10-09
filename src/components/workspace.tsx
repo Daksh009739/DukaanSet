@@ -18,6 +18,7 @@ import type { Permission,ModuleKey } from '@/lib/v3-contracts';
 import './v3.css';
 import { VoiceOSProvider } from './voice/voice-os-provider';
 import type { ReactNode } from 'react';
+import type { Locale } from '@/lib/locale';
 
 function Screen({slug}: {slug:string[]}) {
   const app=useApp();const {t}=useTranslation();const search=useSearchParams();const [section,id]=slug;
@@ -30,5 +31,5 @@ function Screen({slug}: {slug:string[]}) {
   return <div key={`${app.businessId}-${app.resetEpoch}-${slug.join('/')}-${search.toString()}`}>{denied?<Empty icon={<CircleHelp/>} title={v(module&&configuration&&!configuration.features[module]?'featureDisabled':'permissionDenied')} action={<Link href="/app">{v('returnHome')}</Link>}/>:section==='demand'?<DemandPage/>:section==='settings'?<SaaSSettings section={id}/>:screen}</div>;
 }
 function WorkspaceScope({children}:{children:ReactNode}){const app=useApp(),scope=`${app.session?.user.id}-${app.businessId}-${app.resetEpoch}`;return <VoiceOSProvider key={scope}><DemandWrites key={scope}><OperationsProvider key={scope}><AppShell><WriteRecoveryNotice/>{children}</AppShell></OperationsProvider></DemandWrites></VoiceOSProvider>;}
-export function WorkspaceLayout({children}:{children:ReactNode}){return <AppProvider><WorkspaceScope>{children}</WorkspaceScope></AppProvider>;}
+export function WorkspaceLayout({children,initialLanguage}:{children:ReactNode;initialLanguage:Locale}){return <AppProvider initialLanguage={initialLanguage}><WorkspaceScope>{children}</WorkspaceScope></AppProvider>;}
 export function Workspace({slug}: {slug:string[]}) {return <Screen slug={slug}/>;}

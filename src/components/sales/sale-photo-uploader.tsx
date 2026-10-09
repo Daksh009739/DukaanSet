@@ -1,4 +1,5 @@
 'use client';
+import {SystemText} from '@/components/localized-data';
 
 import { useEffect, useRef, useState, type ChangeEvent } from 'react';
 import { Camera, Check, ImagePlus, RefreshCw, X } from 'lucide-react';
@@ -122,7 +123,7 @@ export function SalePhotoUploader({ product, attachment, disabled, onAttachment,
     <input ref={gallery} className="sr-only" type="file" accept="image/jpeg,image/png,image/webp" aria-label={`${t('uploadPhoto')} ${product.name}`} onChange={choose} tabIndex={-1} disabled={disabled || busy} />
     {(preview || attachment?.url) && <div className="sale-photo-preview"><img src={preview || attachment!.url} alt={t('photoPreview', { name: product.name })} /><button type="button" className="icon-btn" aria-label={`${t('removePhoto')} ${product.name}`} disabled={disabled} onClick={() => void remove()}><X size={17} /></button></div>}
     {busy ? <div className="sale-upload-progress" role="status"><p>{t('uploading', { progress })}</p><progress value={progress} max={100} aria-label={t('photo')} /></div> : <div className="sale-photo-actions"><button type="button" disabled={disabled} onClick={() => camera.current?.click()}><Camera size={16} />{t('takePhoto')}</button><button type="button" disabled={disabled} onClick={() => gallery.current?.click()}><ImagePlus size={16} />{t(attachment ? 'replacePhoto' : 'uploadPhoto')}</button></div>}
-    {error && <div className="sale-photo-error"><p role="alert">{error}</p>{pending && <div><button type="button" disabled={busy || disabled} onClick={() => void upload(pending)}><RefreshCw size={15} />{t('photoRetry')}</button><button type="button" disabled={busy || disabled} onClick={() => { setPending(null); setError(''); }}>{t('withoutPhoto')}</button></div>}</div>}
+    {error && <div className="sale-photo-error"><p role="alert"><SystemText value={error}/></p>{pending && <div><button type="button" disabled={busy || disabled} onClick={() => void upload(pending)}><RefreshCw size={15} />{t('photoRetry')}</button><button type="button" disabled={busy || disabled} onClick={() => { setPending(null); setError(''); }}>{t('withoutPhoto')}</button></div>}</div>}
     {!attachment && !pending && <p className="sale-photo-hint">{t('photoHint')}</p>}
   </details>;
 }

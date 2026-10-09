@@ -1,3 +1,6 @@
+import {RestoreLocale} from '@/components/locale-provider';
+import {serverLocale} from '@/lib/server/locale';
+import {text} from '@/lib/locale';
 import { Auth } from '@/components/auth';
-export const metadata={title:'Verify email',robots:{index:false,follow:false}};
-export default function Verify(){return <Auth mode="verify"/>;}
+export async function generateMetadata(){return {title:text(await serverLocale(),'v3','verifyEmail'),robots:{index:false,follow:false}};}
+export default async function Verify(){return <><RestoreLocale language={await serverLocale()}/><Auth mode="verify"/></>;}

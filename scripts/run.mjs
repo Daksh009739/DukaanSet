@@ -1,6 +1,7 @@
 import { spawn, spawnSync } from 'node:child_process';
 import { existsSync } from 'node:fs';
 import path from 'node:path';
+import './offline-locales.mjs';
 import { writeBuildInfo } from './build-info.mjs';
 
 let runtime = process.env.DUKAANSET_NODE || process.execPath;
@@ -15,7 +16,9 @@ const commands = {
   build: ['node_modules/next/dist/bin/next', 'build'],
   start: ['node_modules/next/dist/bin/next', 'start', '--hostname', '127.0.0.1'],
   typecheck: ['node_modules/typescript/bin/tsc', '--noEmit'],
-  test: ['--import', 'tsx', '--test', 'tests/backend.test.ts', 'tests/client.test.ts', 'tests/voice.test.ts', 'tests/v3.test.ts', 'tests/deployment.test.ts', 'tests/voiceos.test.ts'],
+  lint: ['scripts/lint-source.mjs'],
+  locales: ['scripts/check-locales.mjs'],
+  test: ['--import', 'tsx', '--test', 'tests/backend.test.ts', 'tests/client.test.ts', 'tests/voice.test.ts', 'tests/v3.test.ts', 'tests/deployment.test.ts', 'tests/voiceos.test.ts', 'tests/localization.test.ts'],
   e2e: ['scripts/run-e2e.mjs'],
   backup: ['scripts/backup-database.mjs'],
   smoke: ['scripts/check-production.mjs'],

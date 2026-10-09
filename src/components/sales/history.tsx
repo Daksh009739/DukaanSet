@@ -1,4 +1,5 @@
 'use client';
+import {LocalizedDate} from '@/components/localized-data';
 
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
@@ -41,7 +42,7 @@ export function SalesHistory() {
     </section>
     {invoices.length ? <div className="sale-history-list">{invoices.map(invoice => <Link href={`/app/sales/${invoice.id}`} className={`sale-history-card ${invoice.status === 'cancelled' ? 'sale-history-cancelled' : ''}`} key={invoice.id}>
       <div className="sale-history-card-top"><div><span>{invoice.number}</span><h2>{invoice.customerName || t('walkIn')}</h2></div><span className={`sale-status sale-status-${invoice.status}`}>{t(invoice.status)}</span></div>
-      <time dateTime={invoice.date}>{new Date(invoice.date).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', day: 'numeric', month: 'short', year: 'numeric', hour: 'numeric', minute: '2-digit' })}</time>
+      <time dateTime={invoice.date}><LocalizedDate value={invoice.date} options={{ timeZone: 'Asia/Kolkata', day: 'numeric', month: 'short', year: 'numeric', hour: 'numeric', minute: '2-digit' }}/></time>
       <p className="sale-history-products">{invoice.items.slice(0, 2).map(item => item.name).join(' · ')}{invoice.items.length > 2 ? ` +${invoice.items.length - 2}` : ''}</p>
       <dl><div><dt>{t('total')}</dt><dd>{money(invoice.totalPaise)}</dd></div><div><dt>{t('moneyReceived')}</dt><dd>{money(invoice.paidPaise)}</dd></div><div><dt>{t('moneyPending')}</dt><dd>{money(invoice.balancePaise)}</dd></div></dl>
       <span className="sale-history-open">{t('viewInvoice')}<ArrowUpRight size={16} /></span>

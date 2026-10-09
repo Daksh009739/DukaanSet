@@ -1,5 +1,5 @@
 /* A deliberately narrow offline fallback. Never cache merchant records. */
-const CACHE_NAME = "dukaanset-public-v1";
+const CACHE_NAME = "dukaanset-public-v5";
 const PUBLIC_ASSETS = ["/offline.html", "/icon.svg", "/manifest.webmanifest", "/brand/icon-192.png", "/brand/icon-512.png", "/brand/maskable-512.png"];
 
 self.addEventListener("install", event => {
@@ -16,7 +16,7 @@ self.addEventListener("fetch", event => {
   if (url.pathname.startsWith("/api/")) return;
   if (event.request.mode === "navigate") {
     // Network only: no authenticated HTML, customer data or financial responses enter Cache Storage.
-    event.respondWith(fetch(event.request).catch(async () => (await caches.match("/offline.html")) || new Response("You are offline. Reconnect to open DukaanSet. No business records have been cached.", { headers: { "Content-Type": "text/plain; charset=utf-8" } })));
+    event.respondWith(fetch(event.request).catch(async () => (await caches.match("/offline.html")) || new Response(`<!doctype html><html><meta charset="utf-8"><title>DukaanSet</title><body><h1>DukaanSet</h1><p lang="en">Reconnect to open your shop.</p><p lang="hi">दुकान खोलने के लिए इंटरनेट से जुड़ें।</p><p lang="hi-Latn">Dukaan kholne ke liye internet se judein.</p></body></html>`, { headers: { "Content-Type": "text/html; charset=utf-8" } })));
     return;
   }
   if (PUBLIC_ASSETS.includes(url.pathname) && !url.search) {

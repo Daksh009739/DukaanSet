@@ -29,3 +29,8 @@ CREATE INDEX reorder_business ON reorder_drafts(business_id,status);
 CREATE TABLE demand_dismissals (business_id TEXT NOT NULL REFERENCES businesses(id),group_key TEXT NOT NULL,date TEXT NOT NULL,PRIMARY KEY(business_id,group_key));
 PRAGMA user_version=3;
 `;
+
+export const migrationV4 = `
+ALTER TABLE products ADD COLUMN display_names_json TEXT NOT NULL DEFAULT '{}';
+PRAGMA user_version=4;
+`;

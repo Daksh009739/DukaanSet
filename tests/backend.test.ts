@@ -344,7 +344,7 @@ test("V1 file migration preserves merchant ledgers, sessions and product stock a
     }
     old.close();
     upgraded = new Store(path);
-    assert.equal(upgraded.db.prepare("PRAGMA user_version").get()?.user_version, 3);
+    assert.equal(upgraded.db.prepare("PRAGMA user_version").get()?.user_version, 4);
     assert.equal(upgraded.authenticate(token), f.user);
     const state = upgraded.state(f.user, f.business);
     assert.equal(state.products[0].quantityMilli, 19000); assert.deepEqual(state.products[0].aliases, []);

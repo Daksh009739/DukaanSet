@@ -8,7 +8,7 @@ async function state(page:Page,businessId:string):Promise<BusinessState>{return 
 async function demo(page:Page){await page.goto('/');await page.getByRole('button',{name:'Take a look inside',exact:true}).click();await expect(page).toHaveURL(/\/app$/);await expect(page.locator('.greeting h1')).toBeVisible();await page.getByRole('combobox',{name:/^(Language|Bhasha|भाषा)$/}).selectOption('en');await expect(page.getByLabel('Your business',{exact:true})).toBeVisible();await expect(page.locator('.greeting h1')).toBeVisible();}
 async function noOverflow(page:Page){expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth+1)).toBe(true);}
 test('public pages have real routes, SEO and phone layouts',async({page})=>{
-  await page.goto('/');await expect(page).toHaveTitle(/Apni Dukaan/);await expect(page.locator('meta[name="description"]')).toHaveAttribute('content',/Sales|Bills|billing|business/i);
+  await page.goto('/');await expect(page).toHaveTitle(/Your shop/);await expect(page.locator('meta[name="description"]')).toHaveAttribute('content',/Sales|Bills|billing|business/i);
   for(const width of [320,360,375,390,412,430,768,1024,1440]){await page.setViewportSize({width,height:900});await noOverflow(page);}
   await page.setViewportSize({width:1440,height:1000});
   for(const path of ['/features','/features/billing','/features/inventory','/features/udhar','/features/ai','/business-types/grocery','/business-types/hardware','/business-types/vegetables','/pricing','/help','/contact','/about','/privacy','/terms','/hi']){const response=await page.goto(path);expect(response?.status()).toBe(200);await expect(page.locator('h1')).toBeVisible();}

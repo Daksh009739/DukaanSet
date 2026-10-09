@@ -1,3 +1,6 @@
+import {RestoreLocale} from '@/components/locale-provider';
+import {serverLocale} from '@/lib/server/locale';
+import {text} from '@/lib/locale';
 import { Auth } from '@/components/auth';
-export const metadata={title:'Account recovery',robots:{index:false,follow:false}};
-export default function Recovery(){return <Auth mode="reset"/>;}
+export async function generateMetadata(){return {title:text(await serverLocale(),'v3','reset'),robots:{index:false,follow:false}};}
+export default async function Recovery(){return <><RestoreLocale language={await serverLocale()}/><Auth mode="reset"/></>;}

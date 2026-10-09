@@ -4,7 +4,7 @@ const DOMAIN_ERROR_BRAND: unique symbol = Symbol.for("dukaanset.domain-error");
 
 export class DomainError extends Error {
   readonly [DOMAIN_ERROR_BRAND] = true;
-  constructor(public code: string, message: string, public status = 400) { super(message); }
+  constructor(public code: string, message: string, public status = 400, public details?: {name:string;quantityMilli:number;unit:string}) { super(message); }
 }
 /** A private-symbol brand survives Next HMR without trusting JSON-shaped errors. */
 export function isDomainError(error: unknown): error is DomainError {
@@ -102,3 +102,9 @@ export function fingerprint(value: unknown): string {
   return createHash("sha256").update(JSON.stringify(canonical(value))).digest("hex");
 }
 export function businessDay(timestamp = new Date().toISOString()): string { return new Date(Date.parse(timestamp) + 19_800_000).toISOString().slice(0, 10); }
+
+/** Explicitly merchant-reviewed display names; never inferred or used to rewrite invoice snapshots. */
+export function displayNames(value: unknown): Partial<Record<Language,string>> {
+ if(value===undefined)return {};const input=object(value);keys(input,['en','hi','hinglish']);
+ const result:Partial<Record<Language,string>>={};for(const key of Object.keys(input) as Language[]){const name=string(input[key],'Approved display name',100,true);if(name)result[key]=name;}return result;
+}

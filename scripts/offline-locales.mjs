@@ -1,0 +1,5 @@
+import fs from 'node:fs';
+const copies=Object.fromEntries(['en','hi','hinglish'].map(language=>{const dictionary=JSON.parse(fs.readFileSync(`src/locales/${language}/common.json`,'utf8'));return [language,Object.fromEntries(['offlineTitle','offlineEyebrow','offlineHint','offlineNote','retry'].map(key=>[key,dictionary[key]]))];}));
+const file='public/offline.html',html=fs.readFileSync(file,'utf8').replace(/<script id="locale-copy">[\s\S]*?<\/script>/,'');
+const script=`<script id="locale-copy">(()=>{const copies=${JSON.stringify(copies).replaceAll('<','\\u003c')};const saved=document.cookie.split('; ').find(c=>c.startsWith('ds_locale='))?.split('=')[1];const language=Object.hasOwn(copies,saved)?saved:'en';document.documentElement.lang=language==='hinglish'?'hi-Latn':language;const copy=copies[language];document.title=copy.offlineTitle+' | DukaanSet';for(const [selector,key]of [['small','offlineEyebrow'],['h1','offlineTitle'],['p:not(.note)','offlineHint'],['.note','offlineNote'],['a','retry']])document.querySelector(selector).textContent=copy[key];})();</script>`;
+fs.writeFileSync(file,html.replace('</body>',script+'</body>'));

@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { chromium } from 'playwright';
+import {readFileSync} from 'node:fs';
 
 // Start the production server separately, then run:
 // node scripts/check-production.mjs http://127.0.0.1:3002
@@ -139,13 +140,14 @@ try {
   });
   await check('offline navigation renders the public fallback', async () => {
     assert.ok(workerReady, 'Service worker was not ready.');
-    await context.setOffline(true);
-    await page.goto(`${origin}/app?production-smoke-offline=1`, { waitUntil: 'domcontentloaded' });
-    await page.locator('h1').waitFor();
-    assert.match(await page.title(), /offline/i);
-    assert.match(await page.locator('h1').innerText(), /connection took a break/i);
-    assert.equal(await page.locator('.workspace').count(), 0);
-    assert.match(await page.locator('body').innerText(), /does not contain customer data|No business records have been cached/i);
+    for(const language of ['en','hi','hinglish']){
+      await context.addCookies([{name:'ds_locale',value:language,url:origin}]);await context.setOffline(true);
+      await page.goto(origin+'/app?production-smoke-offline='+language,{waitUntil:'domcontentloaded'});await page.locator('h1').waitFor();
+      const copy=JSON.parse(readFileSync('src/locales/'+language+'/common.json','utf8'));assert.equal(await page.title(),copy.offlineTitle+' | DukaanSet');
+      assert.equal(await page.locator('html').getAttribute('lang'),language==='hinglish'?'hi-Latn':language);
+      assert.equal(await page.locator('h1').innerText(),copy.offlineTitle);assert.equal(await page.locator('.workspace').count(),0);
+      assert.ok((await page.locator('body').innerText()).includes(copy.offlineNote));
+    }
     const offlineApi = await page.evaluate(async () => {
       try { return (await fetch('/api/session', { cache: 'no-store' })).status; } catch { return null; }
     });

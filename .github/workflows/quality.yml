@@ -28,6 +28,8 @@ jobs:
           node-version: '24.x'
           cache: npm
       - run: npm ci
+      - run: npm run test:locales
+      - run: npm run lint
       - run: npm run typecheck
       - run: npm test
       - run: npm run build
@@ -36,3 +38,6 @@ jobs:
         run: npm run test:e2e -- tests/e2e/product.spec.ts
       - name: VoiceOS financial and microphone browser checks
         run: npm run test:e2e -- tests/e2e/voiceos.spec.ts
+
+      - name: Multilingual drafts, PDFs, SEO and responsive browser checks
+        run: npm run test:e2e -- tests/e2e/localization.spec.ts

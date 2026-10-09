@@ -120,7 +120,7 @@ test('quick customer, stock validation and all three languages preserve the same
   await page.setViewportSize({ width: 320, height: 568 });
   const { business, shirt } = await fashionDemo(page, baseURL!);
   const item = await selectShirt(page, shirt.id);
-  await item.locator('.sale-quantity-control input').fill('6'); await expect(item).toContainText(`Only 4 ${shirt.unit} are available.`); await expect(page.getByRole('button', { name: 'Save Sale', exact: true })).toBeDisabled();
+  await item.locator('.sale-quantity-control input').fill('6'); await expect(item).toContainText(`Only 4 pieces are available.`); await expect(page.getByRole('button', { name: 'Save Sale', exact: true })).toBeDisabled();
   await item.locator('.sale-quantity-control input').fill('2');
   await page.getByRole('button', { name: 'Split payment', exact: true }).click(); await page.getByLabel('Cash received (₹)', { exact: true }).fill('1000'); await page.getByLabel('Online / UPI recorded (₹)', { exact: true }).fill('500');
   await page.getByRole('button', { name: 'Add a new customer', exact: true }).click();
@@ -174,7 +174,7 @@ test('multi-item credit sale and paid walk-in UPI sale validate money without ma
   await page.getByRole('button', { name: 'Online / UPI', exact: true }).click();
   await page.getByLabel('Received (₹)', { exact: true }).fill('1400'); await expect(page.getByText('Received money cannot exceed the sale total.', { exact: true })).toBeVisible(); await expect(page.getByRole('button', { name: 'Save Sale', exact: true })).toBeDisabled();
   await page.getByLabel('Received (₹)', { exact: true }).fill('1398'); await expect(page.getByRole('button', { name: 'Save Sale', exact: true })).toBeEnabled();
-  await page.getByRole('button', { name: 'Udhaar', exact: true }).click(); await expect(page.getByRole('button', { name: 'Save Sale', exact: true })).toBeDisabled();
+  await page.getByRole('button', { name: 'Credit', exact: true }).click(); await expect(page.getByRole('button', { name: 'Save Sale', exact: true })).toBeDisabled();
   await page.getByRole('combobox', { name: 'Customer', exact: true }).selectOption(customer.id); await page.getByRole('button', { name: 'Save Sale', exact: true }).click(); await expect(page.getByRole('heading', { name: 'Sale saved successfully', exact: true })).toBeVisible();
   const creditState = await businessState(page, business.id); const credit = creditState.invoices.find(invoice => !before.invoices.some(old => old.id === invoice.id))!;
   expect(credit.items).toHaveLength(2); expect(credit.totalPaise).toBe(139800); expect(credit.paidPaise).toBe(0); expect(credit.status).toBe('unpaid'); expect(credit.payments).toHaveLength(0);

@@ -1,7 +1,7 @@
 import type { ApiError } from './contracts';
 
 export class RequestError extends Error {
-  constructor(public code: string, message: string, public status: number) { super(message); }
+  constructor(public code: string, message: string, public status: number,public details?: {name:string;quantityMilli:number;unit:string}) { super(message); }
 }
 export async function api<T>(path: string, body?: unknown, signal?: AbortSignal): Promise<T> {
   const response = await fetch(`/api${path}`, {
@@ -12,7 +12,7 @@ export async function api<T>(path: string, body?: unknown, signal?: AbortSignal)
   const data = await response.json();
   if (!response.ok) {
     const error = data as ApiError;
-    throw new RequestError(error.error?.code || 'UNKNOWN', error.error?.message || 'Please try again.', response.status);
+    throw new RequestError(error.error?.code || 'UNKNOWN', error.error?.message || 'Please try again.', response.status,error.error?.details);
   }
   return data as T;
 }
@@ -27,7 +27,7 @@ export function minorUnits(value: string, precision = 2, signed = false): number
   return negative ? -amount : amount;
 }
 export function money(paise: number, language = 'en'): string {
-  return new Intl.NumberFormat(language === 'hi' ? 'hi-IN' : 'en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: paise % 100 ? 2 : 0 }).format(paise / 100);
+  return new Intl.NumberFormat(language === 'hi' ? 'hi-IN-u-nu-latn' : 'en-IN-u-nu-latn', { style: 'currency', currency: 'INR', maximumFractionDigits: paise % 100 ? 2 : 0 }).format(paise / 100);
 }
 export function quantity(milli: number): string {
   return new Intl.NumberFormat('en-IN', { maximumFractionDigits: 3 }).format(milli / 1000);

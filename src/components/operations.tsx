@@ -1,4 +1,5 @@
 'use client';
+import {LocalizedUnit} from '@/components/localized-data';
 
 import { createContext, useContext, useRef, useState, type FormEvent, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -139,7 +140,7 @@ function OperationSheet({ action, data, onClose }: { action: Action | null; data
           <Select label={t('product')} value={productId} required onChange={event => setProductId(event.target.value)}>
             {!state.products.length && <option value="">{t('selectProduct')}</option>}{state.products.map(item => <option key={item.id} value={item.id}>{item.name}</option>)}
           </Select>
-          {product && <div className="inline-summary"><span>{t('stockQty')}</span><b>{quantity(product.quantityMilli)} {product.unit}</b></div>}
+          {product && <div className="inline-summary"><span>{t('stockQty')}</span><b>{quantity(product.quantityMilli)} <LocalizedUnit value={product.unit}/></b></div>}
           <Select label={t('reason')} value={reason} onChange={event => setReason(event.target.value as typeof reason)}><option value="receipt">{t('receipt')}</option>{state.configuration.features.wastageTracking&&<option value="wastage">{t('wastage')}</option>}<option value="correction">{t('correction')}</option></Select>
           <Field label={t('qty')} name="quantity" inputMode={reason === 'correction' ? 'text' : 'decimal'} required /><p className="form-note">{t('quantityPrecision')}</p>
         </>}

@@ -4,10 +4,10 @@ import { mkdirSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import type { Business, BusinessState, Customer, CustomerStatement, InventoryEntry, Invoice, InvoiceItem, Payment, Product, Purchase, SaleAttachment, Session, Supplier, User,VoiceReport } from "../contracts";
 import { schema } from "./schema";
-import { migrationV2, migrationV3 } from "./migrations";
+import { migrationV2, migrationV3, migrationV4 } from "./migrations";
 import { access, authorize } from './access';
 import type { ModuleKey, Permission } from '../v3-contracts';
-import { DomainError, aliases, assertWholeUnit, businessDay, category, convertQuantity, date, email, fingerprint, integer, items, keys, language, lineTotal, method, object, oneOf, password, string, unit as validateUnit } from "./validation";
+import { DomainError, displayNames, aliases, assertWholeUnit, businessDay, category, convertQuantity, date, email, fingerprint, integer, items, keys, language, lineTotal, method, object, oneOf, password, string, unit as validateUnit } from "./validation";
 
 type Row = Record<string, string | number | null>;
 const stamp = () => new Date().toISOString();
@@ -25,15 +25,15 @@ export function verifyPassword(value: string, encoded: string): boolean {
 }
 function asUser(row: Row): User { return { id: String(row.id), name: String(row.name), email: String(row.email), language: row.language as User["language"], demo: Boolean(row.demo), emailVerified: Boolean(row.email_verified), verificationRequired: Boolean(row.verification_required) }; }
 function asBusiness(row: Row): Business { return { id: String(row.id), name: String(row.name), category: row.category as Business["category"] }; }
-function asProduct(row: Row): Product { return { id: String(row.id), name: String(row.name), sku: String(row.sku), unit: String(row.unit), pricePaise: Number(row.price_paise), costPaise: Number(row.cost_paise), quantityMilli: Number(row.quantity_milli), minStockMilli: Number(row.min_stock_milli), expiryDate: row.expiry_date as string | null, aliases: JSON.parse(String(row.aliases_json)), barcode: String(row.barcode), variation: String(row.variation), packSize: row.pack_size === null ? null : Number(row.pack_size) }; }
+function asProduct(row: Row): Product { return { id: String(row.id), name: String(row.name), sku: String(row.sku), unit: String(row.unit), pricePaise: Number(row.price_paise), costPaise: Number(row.cost_paise), quantityMilli: Number(row.quantity_milli), minStockMilli: Number(row.min_stock_milli), expiryDate: row.expiry_date as string | null, aliases: JSON.parse(String(row.aliases_json)), barcode: String(row.barcode), variation: String(row.variation), displayNames: JSON.parse(String(row.display_names_json || "{}")), packSize: row.pack_size === null ? null : Number(row.pack_size) }; }
 function asInvoice(row: Row, payments: Payment[] = []): Invoice { return { id: String(row.id), number: String(row.number), date: String(row.date), customerId: row.customer_id as string | null, customerName: String(row.customer_name), items: JSON.parse(String(row.items_json)), subtotalPaise: Number(row.subtotal_paise), discountPaise: Number(row.discount_paise), totalPaise: Number(row.total_paise), paidPaise: row.status === "cancelled" ? 0 : Number(row.paid_paise), balancePaise: row.status === "cancelled" ? 0 : Number(row.balance_paise), paymentMethod: row.payment_method as Invoice["paymentMethod"], payments, status: row.status as Invoice["status"], dueDate: row.due_date as string | null }; }
 function asPayment(row: Row): Payment { return { id: String(row.id), customerId: row.customer_id as string | null, invoiceId: row.invoice_id as string | null, amountPaise: (row.kind === "refund" ? -1 : 1) * Number(row.amount_paise), method: row.method as Payment["method"], date: String(row.date), kind: row.kind as Payment["kind"] }; }
 function asAttachment(row: Row): SaleAttachment { return { id: String(row.id), url: `/api/businesses/${row.business_id}/attachments/${row.id}`, productId: String(row.product_id), mime: row.mime as SaleAttachment["mime"], size: Number(row.size), date: String(row.date) }; }
 
 export class Store {
   readonly db: DatabaseSync;
-  readonly schemaVersion = 3;
-  readonly runtimeRevision = "v4.0";
+  readonly schemaVersion = 4;
+  readonly runtimeRevision = "v5.0";
   private transactionDepth = 0;
   constructor(path = process.env.DATABASE_PATH || resolve(process.cwd(), ".data", "dukaanset.sqlite")) {
     // Runtime database directories are external mutable data, never bundle assets.
@@ -41,11 +41,12 @@ export class Store {
     this.db = new DatabaseSync(path);
     this.db.exec("PRAGMA foreign_keys = ON; PRAGMA busy_timeout = 5000; PRAGMA journal_mode = WAL;");
     const version = Number((this.db.prepare("PRAGMA user_version").get() as Row).user_version);
-    if (version > 3) { this.db.close(); throw new Error("Database schema is newer than this application."); }
+    if (version > 4) { this.db.close(); throw new Error("Database schema is newer than this application."); }
     this.transaction(() => {
       if (version === 0) this.db.exec(schema);
       if (version < 2) this.db.exec(migrationV2);
       if (version < 3) this.db.exec(migrationV3);
+      if (version < 4) this.db.exec(migrationV4);
     });
     this.db.prepare("DELETE FROM sessions WHERE expires_at < ?").run(stamp());
     this.db.prepare("DELETE FROM attachments WHERE invoice_id IS NULL AND date < ?").run(new Date(Date.now() - 86_400_000).toISOString());
@@ -137,7 +138,7 @@ export class Store {
     this.assertPermission(userId,businessId,"inventory");
     this.assertMember(userId, businessId); this.limitEntities("products", businessId);
     const input = object(raw), id = uid(), name = string(input.name, "Product name", 100), sku = string(input.sku, "SKU", 64, true), unit = validateUnit(input.unit), price = integer(input.pricePaise, "Selling price"), cost = integer(input.costPaise ?? 0, "Cost price"), quantity = integer(input.quantityMilli ?? 0, "Stock quantity"), minimum = integer(input.minStockMilli ?? 5000, "Minimum stock"), expiry = date(input.expiryDate), names = aliases(input.aliases), barcode = string(input.barcode, "Barcode", 80, true), variation = string(input.variation, "Variation", 100, true), packSize = input.packSize === undefined || input.packSize === null ? null : integer(input.packSize, "Pack size", 1, 100000);
-    keys(input, ["name", "sku", "unit", "pricePaise", "costPaise", "quantityMilli", "minStockMilli", "expiryDate", "aliases", "barcode", "variation", "packSize"]);
+    keys(input, ["name", "sku", "unit", "pricePaise", "costPaise", "quantityMilli", "minStockMilli", "expiryDate", "aliases", "barcode", "variation", "packSize", "displayNames"]);
     if(variation)this.assertPermission(userId,businessId,'inventory','variants');
     if(expiry)this.assertPermission(userId,businessId,'inventory','expiryTracking');
     if(packSize)this.assertPermission(userId,businessId,'inventory','unitConversion');
@@ -145,7 +146,7 @@ export class Store {
     lineTotal(cost, quantity);
     if (sku && this.row("SELECT id FROM products WHERE business_id=? AND sku=?", businessId, sku)) throw new DomainError("SKU_EXISTS", "This SKU already exists in this business.", 409);
     this.transaction(() => {
-      this.run("INSERT INTO products VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)", id, businessId, name, sku, unit, price, cost, quantity, minimum, expiry, JSON.stringify(names), barcode, variation, packSize);
+      this.run("INSERT INTO products VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", id, businessId, name, sku, unit, price, cost, quantity, minimum, expiry, JSON.stringify(names), barcode, variation, packSize, JSON.stringify(displayNames(input.displayNames)));
       if (quantity) this.run("INSERT INTO movements VALUES(?,?,?,?,?,?,?)", uid(), businessId, id, quantity, "opening", stamp(), null);
       this.audit(userId, businessId, "product.created", name);
     });
@@ -155,17 +156,17 @@ export class Store {
     this.assertPermission(userId,businessId,"inventory");
     this.assertMember(userId, businessId);
     const input = object(raw);
-    keys(input, ["name", "sku", "unit", "pricePaise", "costPaise", "minStockMilli", "expiryDate", "aliases", "barcode", "variation", "packSize"]);
+    keys(input, ["name", "sku", "unit", "pricePaise", "costPaise", "minStockMilli", "expiryDate", "aliases", "barcode", "variation", "packSize", "displayNames"]);
     return this.transaction(() => {
       const prior = asProduct(this.entity("products", businessId, productId));
-      const next = { ...prior, name: input.name === undefined ? prior.name : string(input.name, "Product name", 100), sku: input.sku === undefined ? prior.sku : string(input.sku, "SKU", 64, true), unit: input.unit === undefined ? prior.unit : validateUnit(input.unit), pricePaise: input.pricePaise === undefined ? prior.pricePaise : integer(input.pricePaise, "Selling price"), costPaise: input.costPaise === undefined ? prior.costPaise : integer(input.costPaise, "Cost price"), minStockMilli: input.minStockMilli === undefined ? prior.minStockMilli : integer(input.minStockMilli, "Minimum stock"), expiryDate: input.expiryDate === undefined ? prior.expiryDate : date(input.expiryDate), aliases: input.aliases === undefined ? prior.aliases : aliases(input.aliases), barcode: input.barcode === undefined ? prior.barcode : string(input.barcode, "Barcode", 80, true), variation: input.variation === undefined ? prior.variation : string(input.variation, "Variation", 100, true), packSize: input.packSize === undefined ? prior.packSize : input.packSize === null ? null : integer(input.packSize, "Pack size", 1, 100000) };
+      const next = { ...prior, displayNames: input.displayNames===undefined?prior.displayNames:displayNames(input.displayNames), name: input.name === undefined ? prior.name : string(input.name, "Product name", 100), sku: input.sku === undefined ? prior.sku : string(input.sku, "SKU", 64, true), unit: input.unit === undefined ? prior.unit : validateUnit(input.unit), pricePaise: input.pricePaise === undefined ? prior.pricePaise : integer(input.pricePaise, "Selling price"), costPaise: input.costPaise === undefined ? prior.costPaise : integer(input.costPaise, "Cost price"), minStockMilli: input.minStockMilli === undefined ? prior.minStockMilli : integer(input.minStockMilli, "Minimum stock"), expiryDate: input.expiryDate === undefined ? prior.expiryDate : date(input.expiryDate), aliases: input.aliases === undefined ? prior.aliases : aliases(input.aliases), barcode: input.barcode === undefined ? prior.barcode : string(input.barcode, "Barcode", 80, true), variation: input.variation === undefined ? prior.variation : string(input.variation, "Variation", 100, true), packSize: input.packSize === undefined ? prior.packSize : input.packSize === null ? null : integer(input.packSize, "Pack size", 1, 100000) };
       if(next.variation&&next.variation!==prior.variation)this.assertPermission(userId,businessId,'inventory','variants');
       if(next.expiryDate&&next.expiryDate!==prior.expiryDate)this.assertPermission(userId,businessId,'inventory','expiryTracking');
       if(next.packSize&&next.packSize!==prior.packSize)this.assertPermission(userId,businessId,'inventory','unitConversion');
       if (next.unit !== prior.unit && this.row("SELECT id FROM movements WHERE business_id=? AND product_id=? LIMIT 1", businessId, productId)) throw new DomainError("UNIT_LOCKED", "A product's unit cannot change after stock movements. Create a separate product with the new unit.", 409);
       if (next.sku && this.row("SELECT id FROM products WHERE business_id=? AND sku=? AND id!=?", businessId, next.sku, productId)) throw new DomainError("SKU_EXISTS", "This SKU already exists in this business.", 409);
       lineTotal(next.costPaise, next.quantityMilli);
-      this.run("UPDATE products SET name=?,sku=?,unit=?,price_paise=?,cost_paise=?,min_stock_milli=?,expiry_date=?,aliases_json=?,barcode=?,variation=?,pack_size=? WHERE id=? AND business_id=?", next.name, next.sku, next.unit, next.pricePaise, next.costPaise, next.minStockMilli, next.expiryDate, JSON.stringify(next.aliases), next.barcode, next.variation, next.packSize, productId, businessId);
+      this.run("UPDATE products SET name=?,sku=?,unit=?,price_paise=?,cost_paise=?,min_stock_milli=?,expiry_date=?,aliases_json=?,barcode=?,variation=?,pack_size=?,display_names_json=? WHERE id=? AND business_id=?", next.name, next.sku, next.unit, next.pricePaise, next.costPaise, next.minStockMilli, next.expiryDate, JSON.stringify(next.aliases), next.barcode, next.variation, next.packSize, JSON.stringify(next.displayNames || {}), productId, businessId);
       this.audit(userId, businessId, "product.updated", next.name);
       return next;
     });
@@ -366,7 +367,7 @@ export class Store {
         integer(quantity, "Combined quantity", 1);
         const p = asProduct(this.entity("products", businessId, id));
         assertWholeUnit(p.unit, quantity);
-        if (p.quantityMilli < quantity) throw new DomainError("INSUFFICIENT_STOCK", `Only ${p.quantityMilli / 1000} ${p.unit} of ${p.name} is available.`, 409);
+        if (p.quantityMilli < quantity) throw new DomainError("INSUFFICIENT_STOCK", "Requested quantity exceeds available stock.", 409, {name:p.name,quantityMilli:p.quantityMilli,unit:p.unit});
         if (attachmentIds.length > 3) throw new DomainError("INVALID_INPUT", "Use at most three photos per item.");
         const attachments = attachmentIds.map(photoId => {
           const photo = this.row("SELECT id,business_id,product_id,invoice_id,mime,size,date FROM attachments WHERE id=? AND business_id=? AND product_id=?", photoId, businessId, id);
@@ -517,8 +518,8 @@ export class Store {
       metrics: { salesTodayPaise: todayInvoices.reduce((sum, i) => sum + i.totalPaise, 0), collectedTodayPaise: todayPayments.reduce((sum, p) => sum + p.amountPaise, 0), outstandingPaise: active.reduce((sum, i) => sum + i.balancePaise, 0), lowStockCount: low.length, billsToday: todayInvoices.length, stockValuePaise: products.reduce((sum, p) => sum + lineTotal(p.costPaise, p.quantityMilli), 0) }, weeklySales, tasks,
       activity: this.rows("SELECT * FROM audit WHERE business_id=? ORDER BY date DESC,id DESC LIMIT 100", businessId).map(r => ({ id: String(r.id), action: String(r.action), detail: String(r.detail), date: String(r.date) })) };
   }
-  voiceReport(userId:string,businessId:string,periodValue:string):VoiceReport {
-    this.assertPermission(userId,businessId,'reports','voiceStock');
+  voiceReport(userId:string,businessId:string,periodValue:string,feature: "voiceStock"|"assistant"="voiceStock"):VoiceReport {
+    this.assertPermission(userId,businessId,'reports',feature);
     const period=oneOf(periodValue,'Report period',['today','week','all']),today=businessDay(),start=period==='all'?'0000-01-01T00:00:00.000Z':new Date(`${period==='week'?businessDay(new Date(Date.now()-6*86400000).toISOString()):today}T00:00:00+05:30`).toISOString(),end=new Date(Date.parse(`${today}T00:00:00+05:30`)+86400000).toISOString();
     return this.transaction(()=>{
       const sales=this.row("SELECT COALESCE(SUM(total_paise),0) amount,COUNT(*) count FROM invoices WHERE business_id=? AND status!='cancelled' AND date>=? AND date<?",businessId,start,end)!;
@@ -533,15 +534,15 @@ export class Store {
   export(userId: string, businessId: string) {
     this.assertPermission(userId,businessId,"settings");
     this.assertMember(userId, businessId);
-    const data: Record<string, unknown> = { version: 3, exportedAt: stamp(), business: this.assertMember(userId, businessId), currency: "INR", quantityScale: 1000 };
+    const data: Record<string, unknown> = { version: 4, exportedAt: stamp(), business: this.assertMember(userId, businessId), currency: "INR", quantityScale: 1000 };
     for (const table of ["products", "customers", "suppliers", "invoices", "payments", "movements", "inventory_entries", "purchases", "expenses", "closings", "audit", "business_settings", "demand_requests", "demand_followups", "demand_conversions", "reorder_drafts", "demand_dismissals"] as const) data[table] = this.rows(`SELECT * FROM ${table} WHERE business_id=?`, businessId);
     data.attachments = this.rows("SELECT id,business_id,product_id,invoice_id,mime,size,sha256,date FROM attachments WHERE business_id=?", businessId);
     return data;
   }
-  demo(): Session {
+  demo(preference: User["language"] = "hinglish"): Session {
     return this.transaction(() => {
     const userId = uid(), at = stamp(), baseline = new Date(Date.parse(at) - 7 * 86_400_000).toISOString();
-    this.run("INSERT INTO users(id,name,email,password_hash,language,demo,created_at) VALUES(?,?,?,?,?,?,?)", userId, "Aarav Sharma", `demo-${userId}@example.invalid`, hashPassword(randomBytes(32).toString("hex")), "hinglish", 1, baseline);
+    this.run("INSERT INTO users(id,name,email,password_hash,language,demo,created_at) VALUES(?,?,?,?,?,?,?)", userId, "Aarav Sharma", `demo-${userId}@example.invalid`, hashPassword(randomBytes(32).toString("hex")), preference, 1, baseline);
     return this.seedDemo(userId);
     });
   }
@@ -610,6 +611,6 @@ export class Store {
 declare global { var dukaanStore: Store | undefined; }
 export function getStore(): Store {
   if (process.env.VERCEL === '1') throw new Error('DukaanSet SQLite requires a persistent backend. Deploy the Vercel gateway instead.');
-  if (globalThis.dukaanStore && globalThis.dukaanStore.runtimeRevision !== "v4.0") { globalThis.dukaanStore.close(); globalThis.dukaanStore = undefined; }
+  if (globalThis.dukaanStore && globalThis.dukaanStore.runtimeRevision !== "v5.0") { globalThis.dukaanStore.close(); globalThis.dukaanStore = undefined; }
   return globalThis.dukaanStore ??= new Store();
 }

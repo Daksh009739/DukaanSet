@@ -1,10 +1,10 @@
+'use client';
 import Link from "next/link";
+import {useTranslation} from 'react-i18next';
 
 /** Change brand assets and copy here when an official identity is introduced. */
 export const brand = {
   name: "DukaanSet",
-  tagline: "Apni Dukaan, Sab Set.",
-  description: "Your business. All in one place.",
   colors: { teal: "#103B36", mint: "#22C99D", amber: "#F5B942", background: "#F7FAF8" },
   assets: { symbol: "/brand/symbol.svg", horizontal: "/brand/logo.svg", dark: "/brand/logo-dark.svg", monochrome: "/brand/logo-mono.svg" },
 } as const;
@@ -20,7 +20,7 @@ export function BrandSymbol({ className = "", title }: { className?: string; tit
 }
 
 export function Logo({ compact = false, inverted = false, className = "", href = "/" }: { compact?: boolean; inverted?: boolean; className?: string; href?: string }) {
-  return <Link href={href} className={`brand-logo ${inverted ? "brand-inverted" : ""} ${className}`} aria-label="DukaanSet home">
+  const {t}=useTranslation();return <Link href={href} className={`brand-logo ${inverted ? "brand-inverted" : ""} ${className}`} aria-label={t('brandHome')}>
     <BrandSymbol />
     {!compact && <span>Dukaan<span className="brand-set">Set</span><span className="brand-dot">.</span></span>}
   </Link>;
