@@ -5,7 +5,7 @@ export interface User { id: string; name: string; email: string; language: Langu
 export interface Business { id: string; name: string; category: Category }
 export interface Session { user: User; businesses: Business[] }
 export interface Product { displayNames?: Partial<Record<Language,string>>; id: string; name: string; sku: string; unit: string; pricePaise: number; costPaise: number; quantityMilli: number; minStockMilli: number; expiryDate: string | null; aliases: string[]; barcode: string; variation: string; packSize: number | null }
-export interface Customer { id: string; name: string; phone: string; balancePaise: number; totalSalesPaise: number; netReceivedPaise: number }
+export interface Customer { purchaseCount?:number; lastPurchase?:string|null; lastPayment?:string|null; id: string; name: string; phone: string; balancePaise: number; totalSalesPaise: number; netReceivedPaise: number }
 export interface CustomerStatement { customer: Customer; invoices: Invoice[]; payments: Payment[] }
 export interface Supplier { id: string; name: string; phone: string; balancePaise: number }
 export interface SaleAttachment { id: string; url: string; productId: string; mime: "image/jpeg" | "image/png" | "image/webp"; size: number; date: string }

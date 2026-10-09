@@ -1,0 +1,11 @@
+{
+  "checkedAt": "2026-10-09T19:55:13.844Z",
+  "runs": [
+    {
+      "suite": [
+        "tests/e2e/invoice-studio.spec.ts"
+      ],
+      "exitCode": 0
+    }
+  ]
+}

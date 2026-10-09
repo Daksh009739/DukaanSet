@@ -63,5 +63,22 @@
   "INVOICE_CANCELLED": "Cancelled bill demand ki sale nahi ban sakta.",
   "CONTACT_EXISTS": "In details ka contact pehle se hai. Uska account dekho.",
   "CUSTOMER_MISMATCH": "Is bill ke customer ko chuno.",
-  "PRODUCT_EXISTS": "Yeh product pehle se hai. Catalogue se chuno."
+  "PRODUCT_EXISTS": "Yeh product pehle se hai. Catalogue se chuno.",
+  "DOCUMENT_COLOUR": "Padhne layak text ke liye dark accent colour chunein.",
+  "DOCUMENT_RANGE": "Aaj ya pehle khatam hone wali sahi date range chunein.",
+  "DOCUMENT_INCOMPLETE": "Records adhoore hain. Document se pehle ledger check karein.",
+  "DOCUMENT_LIMIT": "Document bahut bada hai. Chhoti avadhi chunein.",
+  "DOCUMENT_EXPIRED": "PDF expire ho gaya. Nayi presentation copy banayein.",
+  "WHATSAPP_NUMBER": "Sahi international WhatsApp number dalein.",
+  "WHATSAPP_CONSENT": "Transaction permission aur source save karein; customer ke mana karne ka dhyan rakhein.",
+  "WHATSAPP_CONFIRMATION": "Share karne se pehle recipient confirm karein.",
+  "WHATSAPP_RECIPIENT": "Pehle is customer ka sahi WhatsApp number save karein.",
+  "WHATSAPP_NOT_CONNECTED": "Official WhatsApp sending connected nahi hai. Manual sharing karein.",
+  "WHATSAPP_TEMPLATE": "Settings mein is bhasha ka approved document template check karein.",
+  "WHATSAPP_LANGUAGE": "Pehle selected message bhasha mein PDF banayein.",
+  "WHATSAPP_PENDING": "Pehle wale submission ka status check karein. Abhi doosri copy mat bhejein.",
+  "WHATSAPP_RATE_LIMIT": "WhatsApp ne request limit ki. Ruk kar dobara check karein.",
+  "WHATSAPP_CREDENTIALS": "Business sender ko administrator ki madad chahiye. Manual share kar sakte hain.",
+  "WHATSAPP_REJECTED": "WhatsApp ne document request reject ki. Recipient aur connection check karein.",
+  "WHATSAPP_TIMEOUT": "Provider ka response ruk gaya. Retry se pehle recorded status check karein."
 }

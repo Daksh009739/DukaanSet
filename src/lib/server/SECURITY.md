@@ -1,6 +1,6 @@
 # Request and storage boundaries
 
-All POST operations require an exact matching Origin and reject `Sec-Fetch-Site: cross-site`. The target authority comes from the validated incoming HTTP Host, because Next.js normalizes loopback request URLs to localhost. Forwarded-host headers are ignored. Host-less synthetic requests use their URL authority; actual HTTP requests supply Host.
+Account and business POST operations require an exact matching Origin and reject `Sec-Fetch-Site: cross-site`. The specific official `/api/whatsapp/webhook` callback instead requires a valid HMAC signature over its raw bytes plus matching WABA/phone, recipient and delivery identity; it does not use a user session or Origin. The target authority for other operations comes from the validated incoming HTTP Host, because Next.js normalizes loopback request URLs to localhost. Forwarded-host headers are ignored. Host-less synthetic requests use their URL authority; actual HTTP requests supply Host.
 
 A deployment must restrict accepted public hosts at its trusted ingress, preserve the validated public Host, terminate HTTPS, and present the correct scheme to Next.js. Arbitrary client-controlled proxy headers must not become trusted routing input. `NEXT_PUBLIC_SITE_URL` sets public metadata; it is not an origin authorization policy. HTTPS and ingress configuration need deployment review before public use.
 

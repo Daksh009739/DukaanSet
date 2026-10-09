@@ -2,10 +2,10 @@
 import {LocalizedUnit,LocalizedDate} from '@/components/localized-data';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState,useEffect } from 'react';
 import { ArrowLeft, ReceiptText, XCircle } from 'lucide-react';
 import type { Invoice, Payment } from '@/lib/contracts';
-import { money, quantity } from '@/lib/client';
+import { api,money, quantity } from '@/lib/client';
 import { useApp } from '../app-provider';
 import { Button, Empty, FormError, Sheet } from '../ui';
 import { useSalesCopy } from './sales-copy';
@@ -27,10 +27,12 @@ export function InvoiceDocument({ invoice, businessName, payments }: { invoice: 
 export function SaleInvoicePage({ id }: { id: string }) {
   const { t } = useSalesCopy();
   const app = useApp();
-  const invoice = app.state!.invoices.find(item => item.id === id);
+  const [historical,setHistorical]=useState<Invoice|null>(null);
+  const invoice = app.state!.invoices.find(item => item.id === id)||historical;
   const [confirm, setConfirm] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
+  useEffect(()=>{setHistorical(null);const c=new AbortController();if(!app.state!.invoices.some(i=>i.id===id))void api<Invoice>(`/businesses/${app.businessId}/invoices/${id}`,undefined,c.signal).then(setHistorical).catch(cause=>{if(!c.signal.aborted)setError(app.errorText(cause));});return()=>c.abort();},[id,app.businessId]);
   if (!invoice) return <Empty icon={<ReceiptText />} title={t('noInvoice')} action={<Link className="btn btn-secondary" href="/app/sales">{t('back')}</Link>} />;
   const payments = invoice.payments || app.state!.payments.filter(payment => payment.invoiceId === id);
   const reverse = async () => {

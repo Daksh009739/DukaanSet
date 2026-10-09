@@ -63,5 +63,22 @@
   "INVOICE_CANCELLED": "A cancelled invoice cannot recover demand.",
   "CONTACT_EXISTS": "A matching contact already exists. Review its account.",
   "CUSTOMER_MISMATCH": "Select the customer linked to this invoice.",
-  "PRODUCT_EXISTS": "This product already exists. Choose it from the catalogue."
+  "PRODUCT_EXISTS": "This product already exists. Choose it from the catalogue.",
+  "DOCUMENT_COLOUR": "Choose a darker accent colour for readable text.",
+  "DOCUMENT_RANGE": "Choose a valid date range ending today or earlier.",
+  "DOCUMENT_INCOMPLETE": "Records are incomplete. Review the ledger before generating this document.",
+  "DOCUMENT_LIMIT": "This document exceeds the supported size. Choose a shorter period.",
+  "DOCUMENT_EXPIRED": "This PDF expired. Generate a new presentation copy.",
+  "WHATSAPP_NUMBER": "Enter a valid international WhatsApp number.",
+  "WHATSAPP_CONSENT": "Save transactional permission and its source; respect customer opt-outs.",
+  "WHATSAPP_CONFIRMATION": "Confirm the recipient before sharing.",
+  "WHATSAPP_RECIPIENT": "Save the intended WhatsApp number for this customer first.",
+  "WHATSAPP_NOT_CONNECTED": "Official WhatsApp sending is not connected. Use manual sharing.",
+  "WHATSAPP_TEMPLATE": "Check an approved document template for this language in settings.",
+  "WHATSAPP_LANGUAGE": "Generate the PDF in the selected message language first.",
+  "WHATSAPP_PENDING": "An earlier submission needs a status check. Do not send another copy yet.",
+  "WHATSAPP_RATE_LIMIT": "WhatsApp limited this request. Wait and review before retrying.",
+  "WHATSAPP_CREDENTIALS": "The business sender needs administrator attention. You can share manually.",
+  "WHATSAPP_REJECTED": "WhatsApp rejected this document request. Review the recipient and connection.",
+  "WHATSAPP_TIMEOUT": "The provider response was interrupted. Check the recorded status before retrying."
 }

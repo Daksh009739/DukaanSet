@@ -7,6 +7,8 @@ import { SaaSService } from './saas';
 import { AuthenticationService } from './authentication';
 import { authorize } from './access';
 import { AssistantService } from './assistant';
+import { DocumentService } from './documents';
+import { DeliveryService } from './whatsapp';
 
 const COOKIE = "dukaanset_session";
 const buckets = new Map<string, { count: number; expires: number }>();
@@ -48,9 +50,9 @@ export function requireSameOrigin(request: Request): void {
   }
   if (!origin || origin !== targetOrigin || request.headers.get("sec-fetch-site") === "cross-site") throw new DomainError("CSRF_REJECTED", "Request origin was rejected. Open DukaanSet on the same site and try again.", 403);
 }
-async function body(request: Request): Promise<unknown> {
+async function body(request: Request, max = 65_536): Promise<unknown> {
   if (request.headers.get("content-type")?.split(";")[0].trim().toLowerCase() !== "application/json") throw new DomainError("INVALID_CONTENT_TYPE", "Send application/json.", 415);
-  const bytes = await readBody(request, 65_536);
+  const bytes = await readBody(request, max);
   try { return JSON.parse(bytes.toString("utf8")); } catch { throw new DomainError("INVALID_JSON", "Request body contains invalid JSON."); }
 }
 async function readBody(request: Request, max: number): Promise<Buffer> {
@@ -68,6 +70,7 @@ export async function handleRequest(request: Request, store: Store = getStore())
   try {
     const url = new URL(request.url), path = url.pathname.replace(/\/$/, ""), verb = request.method, saas=new SaaSService(store), auth=new AuthenticationService(store);
     if (!["GET", "POST"].includes(verb)) return json({ error: { code: "METHOD_NOT_ALLOWED", message: "Method not supported." } }, 405, { Allow: "GET, POST" });
+    if(path==='/api/whatsapp/webhook') { const delivery=new DeliveryService(store); if(verb==='GET')return new Response(delivery.verifyWebhook(url),{headers:{'Cache-Control':'no-store'}});const bytes=await readBody(request,262144);return json(delivery.webhook(bytes,request.headers.get('x-hub-signature-256')||'')); }
     if (verb === "POST") requireSameOrigin(request);
     if (path.startsWith("/api/auth/") && verb === "POST") {
       throttle("auth:global", 40);
@@ -108,6 +111,24 @@ export async function handleRequest(request: Request, store: Store = getStore())
     if (!match) throw new DomainError("NOT_FOUND", "Endpoint not found.", 404);
     const [, businessId, action, recordId, subAction] = match;
     store.assertMember(userId, businessId);
+    const documents=new DocumentService(store),delivery=new DeliveryService(store);
+    if(action==='invoice-branding'&&!recordId)return json(verb==='GET'?documents.getBranding(userId,businessId):await documents.saveBranding(userId,businessId,await body(request,600000)));
+    if(action==='whatsapp-connection'&&!recordId)return json(verb==='GET'?delivery.connection(userId,businessId):await delivery.configure(userId,businessId,await body(request)));
+    if(action==='documents'){
+      if(recordId&&!subAction&&verb==='GET')return json(documents.metadata(userId,businessId,recordId));
+      if(!recordId&&verb==='POST'){throttle(`pdf:${userId}`,12);return json(await documents.prepare(userId,businessId,await body(request)),201);}
+      if(recordId&&verb==='GET'&&subAction==='pdf'){const d=documents.read(userId,businessId,recordId);return new Response(new Uint8Array(d.bytes),{headers:{'Content-Type':'application/pdf','Content-Length':String(d.bytes.length),'Cache-Control':'private, no-store','X-Content-Type-Options':'nosniff','Content-Disposition':`inline; filename="${d.filename}"`}});}
+      if(recordId&&verb==='GET'&&subAction==='preview')return json(delivery.preview(userId,businessId,recordId,language(url.searchParams.get('language')||'en')));
+    }
+    if(action==='invoices'&&recordId&&!subAction&&verb==='GET')return json(documents.model(userId,businessId,{kind:'invoice',sourceId:recordId,language:'en',format:'a4'}).invoice);
+    if(action==='deliveries'&&!recordId&&verb==='POST'){throttle(`delivery:${userId}`,8);return json(await delivery.send(userId,businessId,await body(request)),201);}
+    if(action==='customers'&&recordId){
+      if(subAction==='edit'&&verb==='POST')return json(store.editCustomer(userId,businessId,recordId,await body(request)));
+      if(subAction==='ledger'&&verb==='GET')return json(documents.ledger(userId,businessId,recordId,url.searchParams.get('start')||'1970-01-01',url.searchParams.get('end')||new Date(Date.now()+19800000).toISOString().slice(0,10)));
+      if(subAction==='communication')return json(verb==='GET'?delivery.preferences(userId,businessId,recordId):delivery.savePreferences(userId,businessId,recordId,await body(request)));
+      if(subAction==='deliveries'&&verb==='GET')return json(delivery.history(userId,businessId,recordId));
+      if(subAction==='documents'&&verb==='GET')return json(documents.list(userId,businessId,recordId));
+    }
     if (action === "attachments" && recordId && !subAction && verb === "GET") {
       const photo = store.readAttachment(userId, businessId, recordId);
       return new Response(new Uint8Array(photo.bytes), { headers: { "Content-Type": photo.metadata.mime, "Content-Length": String(photo.bytes.length), "Cache-Control": "private, no-store", "X-Content-Type-Options": "nosniff", "Content-Disposition": `inline; filename="${photo.metadata.id}.${photo.metadata.mime === "image/jpeg" ? "jpg" : photo.metadata.mime.split("/")[1]}"`, "Content-Security-Policy": "default-src 'none'; sandbox" } });

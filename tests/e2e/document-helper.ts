@@ -1,0 +1,2 @@
+import { getDocument } from 'pdfjs-dist/legacy/build/pdf.mjs';
+export async function pdfText(bytes:Uint8Array){const task=getDocument({data:new Uint8Array(bytes)});try{const pdf=await task.promise,text:string[]=[];for(let i=1;i<=pdf.numPages;i++){const page=await pdf.getPage(i);text.push((await page.getTextContent()).items.map(item=>'str'in item?item.str:'').join(' '));}return text.join('\n');}finally{await task.destroy();}}

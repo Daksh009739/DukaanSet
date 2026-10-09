@@ -4,7 +4,8 @@ import { mkdirSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import type { Business, BusinessState, Customer, CustomerStatement, InventoryEntry, Invoice, InvoiceItem, Payment, Product, Purchase, SaleAttachment, Session, Supplier, User,VoiceReport } from "../contracts";
 import { schema } from "./schema";
-import { migrationV2, migrationV3, migrationV4 } from "./migrations";
+import { migrationV2, migrationV3, migrationV4, migrationV5, migrationV6 } from "./migrations";
+import { captureIssued } from './document-snapshots';
 import { access, authorize } from './access';
 import type { ModuleKey, Permission } from '../v3-contracts';
 import { DomainError, displayNames, aliases, assertWholeUnit, businessDay, category, convertQuantity, date, email, fingerprint, integer, items, keys, language, lineTotal, method, object, oneOf, password, string, unit as validateUnit } from "./validation";
@@ -32,8 +33,8 @@ function asAttachment(row: Row): SaleAttachment { return { id: String(row.id), u
 
 export class Store {
   readonly db: DatabaseSync;
-  readonly schemaVersion = 4;
-  readonly runtimeRevision = "v5.0";
+  readonly schemaVersion = 6;
+  readonly runtimeRevision = "v7.1";
   private transactionDepth = 0;
   constructor(path = process.env.DATABASE_PATH || resolve(process.cwd(), ".data", "dukaanset.sqlite")) {
     // Runtime database directories are external mutable data, never bundle assets.
@@ -41,12 +42,14 @@ export class Store {
     this.db = new DatabaseSync(path);
     this.db.exec("PRAGMA foreign_keys = ON; PRAGMA busy_timeout = 5000; PRAGMA journal_mode = WAL;");
     const version = Number((this.db.prepare("PRAGMA user_version").get() as Row).user_version);
-    if (version > 4) { this.db.close(); throw new Error("Database schema is newer than this application."); }
+    if (version > 6) { this.db.close(); throw new Error("Database schema is newer than this application."); }
     this.transaction(() => {
       if (version === 0) this.db.exec(schema);
       if (version < 2) this.db.exec(migrationV2);
       if (version < 3) this.db.exec(migrationV3);
       if (version < 4) this.db.exec(migrationV4);
+      if (version < 5) this.db.exec(migrationV5);
+      if (version < 6) this.db.exec(migrationV6);
     });
     this.db.prepare("DELETE FROM sessions WHERE expires_at < ?").run(stamp());
     this.db.prepare("DELETE FROM attachments WHERE invoice_id IS NULL AND date < ?").run(new Date(Date.now() - 86_400_000).toISOString());
@@ -187,8 +190,12 @@ export class Store {
     };
     return input.idempotencyKey === undefined ? this.transaction(work) : this.once(businessId, `contact.${table}`, input, work);
   }
+  editCustomer(userId:string,businessId:string,customerId:string,raw:unknown) {
+    this.assertPermission(userId,businessId,'customers');const input=object(raw);keys(input,['name','phone','previousName','previousPhone']);const name=string(input.name,'Name',100),phone=string(input.phone,'Phone',30,true);
+    return this.transaction(()=>{const current=this.entity('customers',businessId,customerId);if(current.name!==input.previousName||current.phone!==input.previousPhone)throw new DomainError('CONFLICT','Customer details changed.',409);this.run('UPDATE customers SET name=?,phone=? WHERE business_id=? AND id=?',name,phone,businessId,customerId);this.audit(userId,businessId,'customer.updated',customerId);return this.customers(businessId,customerId)[0];});
+  }
   private customers(businessId: string, customerId?: string): Customer[] {
-    return this.rows(`SELECT c.*,COALESCE((SELECT SUM(i.balance_paise) FROM invoices i WHERE i.customer_id=c.id AND i.business_id=c.business_id AND i.status!='cancelled'),0) balance_paise, COALESCE((SELECT SUM(i.total_paise) FROM invoices i WHERE i.customer_id=c.id AND i.business_id=c.business_id AND i.status!='cancelled'),0) total_sales_paise, COALESCE((SELECT SUM(CASE WHEN p.kind='refund' THEN -p.amount_paise ELSE p.amount_paise END) FROM payments p WHERE p.customer_id=c.id AND p.business_id=c.business_id),0) net_received_paise FROM customers c WHERE c.business_id=?${customerId ? " AND c.id=?" : ""} ORDER BY c.name`, businessId, ...(customerId ? [customerId] : [])).map(row => ({ id: String(row.id), name: String(row.name), phone: String(row.phone), balancePaise: Number(row.balance_paise), totalSalesPaise: Number(row.total_sales_paise), netReceivedPaise: Number(row.net_received_paise) }));
+    return this.rows(`SELECT c.*,(SELECT MAX(i.date) FROM invoices i WHERE i.business_id=c.business_id AND i.customer_id=c.id AND i.status!='cancelled') last_purchase,(SELECT MAX(p.date) FROM payments p WHERE p.business_id=c.business_id AND p.customer_id=c.id AND p.kind!='refund') last_payment,(SELECT COUNT(*) FROM invoices n WHERE n.business_id=c.business_id AND n.customer_id=c.id AND n.status!='cancelled') purchase_count,COALESCE((SELECT SUM(i.balance_paise) FROM invoices i WHERE i.customer_id=c.id AND i.business_id=c.business_id AND i.status!='cancelled'),0) balance_paise, COALESCE((SELECT SUM(i.total_paise) FROM invoices i WHERE i.customer_id=c.id AND i.business_id=c.business_id AND i.status!='cancelled'),0) total_sales_paise, COALESCE((SELECT SUM(CASE WHEN p.kind='refund' THEN -p.amount_paise ELSE p.amount_paise END) FROM payments p WHERE p.customer_id=c.id AND p.business_id=c.business_id),0) net_received_paise FROM customers c WHERE c.business_id=?${customerId ? " AND c.id=?" : ""} ORDER BY c.name`, businessId, ...(customerId ? [customerId] : [])).map(row => ({ id: String(row.id), name: String(row.name), phone: String(row.phone), balancePaise: Number(row.balance_paise), totalSalesPaise: Number(row.total_sales_paise), netReceivedPaise: Number(row.net_received_paise),purchaseCount:Number(row.purchase_count),lastPurchase:row.last_purchase as string|null,lastPayment:row.last_payment as string|null }));
   }
   customerStatement(userId: string, businessId: string, customerId: string): CustomerStatement {
     this.assertPermission(userId,businessId,"customers");
@@ -385,13 +392,13 @@ export class Store {
       if (paid > total) throw new DomainError("OVERPAYMENT", "Payment cannot exceed the bill total.");
       if (paid < total && !customer) throw new DomainError("CUSTOMER_REQUIRED", "Select a customer for a credit bill.");
       const id = uid(), at = stamp(), count = Number(this.row("SELECT COUNT(*) AS count FROM invoices WHERE business_id=?", businessId)!.count), number = `DS-${String(count + 1).padStart(5, "0")}`;
-      this.run("INSERT INTO invoices VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", id, businessId, number, at, customerId, customer ? String(customer.name) : "Walk-in customer", JSON.stringify(lines), subtotal, discount, total, paid, paid, total - paid, paymentMethod, status(paid, total), dueDate);
+      this.run("INSERT INTO invoices(id,business_id,number,date,customer_id,customer_name,items_json,subtotal_paise,discount_paise,total_paise,paid_paise,original_paid_paise,balance_paise,payment_method,status,due_date,issued_json) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", id, businessId, number, at, customerId, customer ? String(customer.name) : "Walk-in customer", JSON.stringify(lines), subtotal, discount, total, paid, paid, total - paid, paymentMethod, status(paid, total), dueDate, JSON.stringify(captureIssued(this.db,businessId,customerId,customer ? String(customer.name) : "Walk-in customer")));
       for (const item of lines) {
         this.run("UPDATE products SET quantity_milli=quantity_milli-? WHERE id=? AND business_id=?", item.quantityMilli, item.productId, businessId);
         this.run("INSERT INTO movements VALUES(?,?,?,?,?,?,?)", uid(), businessId, item.productId, -item.quantityMilli, "sale", at, id);
         for (const photoId of item.attachmentIds ?? []) this.run("UPDATE attachments SET invoice_id=? WHERE id=? AND business_id=?", id, photoId, businessId);
       }
-      for (const receipt of receipts) this.run("INSERT INTO payments VALUES(?,?,?,?,?,?,?,?)", uid(), businessId, customerId, id, receipt.amountPaise, receipt.method, at, "sale");
+      for (const receipt of receipts) { const paymentId=uid(); this.run("INSERT INTO payments VALUES(?,?,?,?,?,?,?,?,?)", paymentId, businessId, customerId, id, receipt.amountPaise, receipt.method, at, "sale", paymentId); }
       this.audit(userId, businessId, "invoice.created", `${number} · ₹${(total / 100).toFixed(2)}`, at);
       return this.invoice(businessId, id);
     });
@@ -404,12 +411,12 @@ export class Store {
       this.assertDayOpen(businessId);
       const customer = this.entity("customers", businessId, customerId), invoices = this.rows("SELECT * FROM invoices WHERE business_id=? AND customer_id=? AND balance_paise>0 AND status!='cancelled' ORDER BY date,id", businessId, customerId), outstanding = invoices.reduce((sum, row) => sum + Number(row.balance_paise), 0);
       if (amount > outstanding) throw new DomainError("OVERPAYMENT", "Payment cannot exceed this customer's outstanding balance.", 409);
-      let remaining = amount; const at = stamp(), result: Payment[] = [];
+      let remaining = amount; const at = stamp(), receiptId=uid(), result: Payment[] = [];
       for (const invoice of invoices) {
         if (!remaining) break;
         const allocated = Math.min(remaining, Number(invoice.balance_paise)), id = uid(), paid = Number(invoice.paid_paise) + allocated, total = Number(invoice.total_paise);
         this.run("UPDATE invoices SET paid_paise=?,balance_paise=?,status=? WHERE id=? AND business_id=?", paid, total - paid, status(paid, total), String(invoice.id), businessId);
-        this.run("INSERT INTO payments VALUES(?,?,?,?,?,?,?,?)", id, businessId, customerId, String(invoice.id), allocated, paymentMethod, at, "repayment");
+        this.run("INSERT INTO payments VALUES(?,?,?,?,?,?,?,?,?)", id, businessId, customerId, String(invoice.id), allocated, paymentMethod, at, "repayment",receiptId);
         result.push(asPayment(this.row("SELECT * FROM payments WHERE id=?", id)!)); remaining -= allocated;
       }
       this.audit(userId, businessId, "payment.received", `${customer.name}: ₹${(amount / 100).toFixed(2)}`, at);
@@ -459,7 +466,7 @@ export class Store {
         this.run("UPDATE products SET quantity_milli=quantity_milli+? WHERE id=? AND business_id=?", item.quantityMilli, item.productId, businessId);
         this.run("INSERT INTO movements VALUES(?,?,?,?,?,?,?)", uid(), businessId, item.productId, item.quantityMilli, "cancellation", at, invoiceId);
       }
-      for (const receipt of invoice.payments.filter(payment => payment.kind === "sale")) this.run("INSERT INTO payments VALUES(?,?,?,?,?,?,?,?)", uid(), businessId, invoice.customerId, invoiceId, receipt.amountPaise, receipt.method, at, "refund");
+      for (const receipt of invoice.payments.filter(payment => payment.kind === "sale")) { const paymentId=uid(); this.run("INSERT INTO payments VALUES(?,?,?,?,?,?,?,?,?)", paymentId, businessId, invoice.customerId, invoiceId, receipt.amountPaise, receipt.method, at, "refund",paymentId); }
       // Historical invoice amounts remain intact; cancelled invoices are excluded from receivables and sales.
       this.run("UPDATE invoices SET status='cancelled' WHERE id=? AND business_id=?", invoiceId, businessId);
       this.audit(userId, businessId, "invoice.cancelled", `${invoice.number}: stock returned; original payment refunded`, at);
@@ -534,8 +541,10 @@ export class Store {
   export(userId: string, businessId: string) {
     this.assertPermission(userId,businessId,"settings");
     this.assertMember(userId, businessId);
-    const data: Record<string, unknown> = { version: 4, exportedAt: stamp(), business: this.assertMember(userId, businessId), currency: "INR", quantityScale: 1000 };
-    for (const table of ["products", "customers", "suppliers", "invoices", "payments", "movements", "inventory_entries", "purchases", "expenses", "closings", "audit", "business_settings", "demand_requests", "demand_followups", "demand_conversions", "reorder_drafts", "demand_dismissals"] as const) data[table] = this.rows(`SELECT * FROM ${table} WHERE business_id=?`, businessId);
+    const data: Record<string, unknown> = { version: this.schemaVersion, exportedAt: stamp(), business: this.assertMember(userId, businessId), currency: "INR", quantityScale: 1000 };
+    for (const table of ["products", "customers", "suppliers", "invoices", "payments", "movements", "inventory_entries", "purchases", "expenses", "closings", "audit", "business_settings", "demand_requests", "demand_followups", "demand_conversions", "reorder_drafts", "demand_dismissals", "invoice_branding", "communication_preferences", "whatsapp_connections"] as const) data[table] = this.rows(`SELECT * FROM ${table} WHERE business_id=?`, businessId);
+    data.documents=this.rows("SELECT id,business_id,customer_id,kind,source_id,model_json,filename,pages,created_at,expires_at FROM documents WHERE business_id=?",businessId);
+    data.deliveries=this.rows("SELECT * FROM deliveries WHERE business_id=?",businessId);
     data.attachments = this.rows("SELECT id,business_id,product_id,invoice_id,mime,size,sha256,date FROM attachments WHERE business_id=?", businessId);
     return data;
   }
@@ -552,7 +561,8 @@ export class Store {
       if (!session.user.demo) throw new DomainError("DEMO_ONLY", "Only an isolated demo workspace can be reset.", 403);
       for (const business of session.businesses) {
         if (this.row("SELECT user_id FROM memberships WHERE business_id=? AND user_id!=? LIMIT 1", business.id, userId)) throw new DomainError("DEMO_ONLY", "A shared business cannot be reset as demo data.", 403);
-        for (const table of ["demand_followups", "demand_conversions", "reorder_drafts", "demand_dismissals", "demand_requests", "attachments", "idempotency", "payments", "movements", "inventory_entries", "purchases", "invoices", "expenses", "closings", "audit", "products", "customers", "suppliers"]) this.run(`DELETE FROM ${table} WHERE business_id=?`, business.id);
+        this.run('DELETE FROM delivery_events WHERE delivery_id IN (SELECT id FROM deliveries WHERE business_id=?)',business.id);
+        for (const table of ["deliveries","documents","communication_preferences","whatsapp_inbound","whatsapp_connections","invoice_branding","demand_followups", "demand_conversions", "reorder_drafts", "demand_dismissals", "demand_requests", "attachments", "idempotency", "payments", "movements", "inventory_entries", "purchases", "invoices", "expenses", "closings", "audit", "products", "customers", "suppliers"]) this.run(`DELETE FROM ${table} WHERE business_id=?`, business.id);
         this.run('DELETE FROM business_settings WHERE business_id=?',business.id);
       }
       const result = this.seedDemo(userId, session.businesses);
@@ -611,6 +621,6 @@ export class Store {
 declare global { var dukaanStore: Store | undefined; }
 export function getStore(): Store {
   if (process.env.VERCEL === '1') throw new Error('DukaanSet SQLite requires a persistent backend. Deploy the Vercel gateway instead.');
-  if (globalThis.dukaanStore && globalThis.dukaanStore.runtimeRevision !== "v5.0") { globalThis.dukaanStore.close(); globalThis.dukaanStore = undefined; }
+  if (globalThis.dukaanStore && globalThis.dukaanStore.runtimeRevision !== "v7.1") { globalThis.dukaanStore.close(); globalThis.dukaanStore = undefined; }
   return globalThis.dukaanStore ??= new Store();
 }

@@ -338,13 +338,14 @@ test("V1 file migration preserves merchant ledgers, sessions and product stock a
     old.exec(schema);
     for (const table of ["users", "businesses", "memberships", "sessions", "products", "customers", "suppliers", "invoices", "payments", "movements", "audit", "idempotency"]) {
       for (const row of f.store.db.prepare(`SELECT * FROM ${table}`).all()) {
-        const values = Object.values(row).slice(0, table === "products" ? 10 : table === 'users' ? 7 : table === 'memberships' ? 3 : undefined);
+        const columns=old.prepare(`PRAGMA table_info(${table})`).all().map(column=>String(column.name));
+        const values = columns.map(column=>row[column]);
         old.prepare(`INSERT INTO ${table} VALUES(${values.map(() => "?").join(",")})`).run(...values);
       }
     }
     old.close();
     upgraded = new Store(path);
-    assert.equal(upgraded.db.prepare("PRAGMA user_version").get()?.user_version, 4);
+    assert.equal(upgraded.db.prepare("PRAGMA user_version").get()?.user_version, 6);
     assert.equal(upgraded.authenticate(token), f.user);
     const state = upgraded.state(f.user, f.business);
     assert.equal(state.products[0].quantityMilli, 19000); assert.deepEqual(state.products[0].aliases, []);

@@ -4,7 +4,7 @@ import type { Permission, V3State } from '../v3-contracts';
 import { businessDay, minorUnits, money, quantity } from '../client';
 import { canonicalUnit, matchProducts, normalize, numbers, validateRow } from './parser';
 
-export const voiceIntents = ['sale','stock','customer','payment','demand','purchase','supplier','expense','closing','report','reorder','followup','open','cancel','unknown'] as const;
+export const voiceIntents = ['sale','stock','customer','payment','document','demand','purchase','supplier','expense','closing','report','reorder','followup','open','cancel','unknown'] as const;
 export type VoiceIntent = typeof voiceIntents[number];
 export interface VoiceItem { id:string; query:string; productId:string; candidates:string[]; quantity:string; unit:string; price:string; priceBasis:''|'unit'|'total'|'unclear' }
 export interface VoiceCommand { intent:VoiceIntent; transcript:string; fields:Record<string,string>; items:VoiceItem[]; changed:string[]; changedItems:string[]; warnings:string[]; removedProducts?:string[] }
@@ -57,6 +57,7 @@ function permission(intent:VoiceIntent):Permission|undefined{return({sale:'sales
 export function voiceAllowed(intent:VoiceIntent,state:V3State):boolean {
   if(!state.configuration.features.voiceStock)return false;
   const p=permission(intent);if(p&&!state.configuration.permissions[p])return false;
+  if(intent==='document'&&!state.configuration.permissions.customers)return false;
   if(['demand','reorder','followup'].includes(intent)&&(!state.configuration.features.demandPulse||!state.configuration.permissions.demand))return false;
   if(intent==='closing'&&!state.configuration.features.dailyClosing)return false;
   return true;
@@ -64,6 +65,7 @@ export function voiceAllowed(intent:VoiceIntent,state:V3State):boolean {
 export function detectIntent(raw:string,context?:VoiceIntent):VoiceIntent {
   const t=spokenText(raw);
   if(/^(?:cancel|discard|radd|रद्द)(?:\s+(?:draft|ड्राफ्ट))?$/.test(t))return'cancel';
+  if(/pdf|statement|whatsapp|पीडीएफ|व्हाट्सएप|रसीद.*(?:बना|दिखा)|receipt.*(?:generate|show|bana)|hisaab.*(?:bana|dikha)|हिसाब.*(?:बना|दिखा)/.test(t))return'document';
   if(/\b(?:open|kholo)\b|खोलो|खोलें/.test(t)&&!/\b(?:add|sold|banao|karo)\b|बनाओ|जोड़ो/.test(t))return'open';
   if(/reorder|re order|order draft|ऑर्डर|रीऑर्डर/.test(t))return'reorder';
   if(/message|sandesh|संदेश|मैसेज/.test(t))return'followup';
@@ -122,8 +124,14 @@ export function interpretVoice(raw:string,state:V3State,context?:VoiceIntent,pre
   if(detected!==intent&&detected!=='unknown'&&detected!=='cancel'&&context){result.warnings.push('wrongWorkflow');return result;}
   if(intent==='cancel')return result;
   const correction=Boolean(previous&&/\b(?:quantity|qty|badlo|change|correct|nahi|nahin|instead|actually)\b|मात्रा|बदलो|नहीं/.test(text)&&!(intent==='demand'&&/available|उपलब्ध/.test(text)));
-  if(['sale','payment','demand','open'].includes(intent)||intent==='report'&&/udhaar|dues|outstanding|baaki|उधार|बाकी/.test(text)){
+  if(['sale','payment','demand','open','document'].includes(intent)||intent==='report'&&/udhaar|dues|outstanding|baaki|उधार|बाकी/.test(text)){
     const query=entityQuery(text,'customer');if(query&&!/^\d+\s+(?:customers?|grahak|ग्राहक)$/.test(query)&&(!resolveVoiceProduct(query,state.products).exact||resolveContact(query,state.customers).length)){set('customerQuery',query);const matches=resolveContact(query,state.customers);set('customerId',matches.length===1?matches[0]:'');if(matches.length!==1)result.warnings.push('customer');}
+  }
+  if(intent==='document'){
+    set('documentKind',/hisaab|statement|हिसाब/.test(text)?'statement':/receipt|raseed|रसीद/.test(text)?'receipt':'invoice');
+    set('share',/whatsapp|व्हाट्सएप/.test(text)?'true':'false');
+    set('period',/last month|pichhle mahine|पिछले महीने/.test(text)?'lastMonth':/yesterday|kal|कल/.test(text)?'yesterday':/last 7|week|hafte|हफ्ते/.test(text)?'week':/financial|वित्तीय/.test(text)?'year':'month');
+    set('latest',/last|latest|aakhri|आखिरी|पिछला/.test(text)?'true':'false');return result;
   }
   if(intent==='sale'){
     const cash=receipt(text,cashWords), upi=receipt(text,onlineWords);set('cash',cash);set('upi',upi);

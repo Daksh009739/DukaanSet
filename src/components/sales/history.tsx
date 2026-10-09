@@ -7,13 +7,16 @@ import { useState } from 'react';
 import { ArrowUpRight, Plus, ReceiptText, Search, SlidersHorizontal } from 'lucide-react';
 import { businessDay, money } from '@/lib/client';
 import { useApp } from '../app-provider';
-import { Empty, Field, Select } from '../ui';
+import {DocumentStudio} from '../documents/document-studio';
+import {useTranslation} from 'react-i18next';
+import { Empty, Field, Select,Button } from '../ui';
 import { useSalesCopy } from './sales-copy';
 
 export function SalesHistory() {
   const { state } = useApp();
   const { t } = useSalesCopy();
   const params = useSearchParams();
+  const [documentInvoice,setDocumentInvoice]=useState<{id:string;customerId:string}|null>(null);const d=useTranslation('documents').t;
   const [query, setQuery] = useState('');
   const [status, setStatus] = useState('all');
   const [customer, setCustomer] = useState(params.get('customer') || '');
@@ -40,12 +43,13 @@ export function SalesHistory() {
       <div className="sale-filter-footer"><span><SlidersHorizontal size={14} />{t('saleCount', { count: invoices.length })}</span><button type="button" className="text-link" onClick={clear}>{t('clearFilters')}</button></div>
       {invalidRange && <p role="alert" className="sale-field-error">{t('dateRangeInvalid')}</p>}
     </section>
-    {invoices.length ? <div className="sale-history-list">{invoices.map(invoice => <Link href={`/app/sales/${invoice.id}`} className={`sale-history-card ${invoice.status === 'cancelled' ? 'sale-history-cancelled' : ''}`} key={invoice.id}>
+    {invoices.length ? <div className="sale-history-list">{invoices.map(invoice => <div className="sale-history-record" key={invoice.id}><Link href={`/app/sales/${invoice.id}`} className={`sale-history-card ${invoice.status === 'cancelled' ? 'sale-history-cancelled' : ''}`} key={invoice.id}>
       <div className="sale-history-card-top"><div><span>{invoice.number}</span><h2>{invoice.customerName || t('walkIn')}</h2></div><span className={`sale-status sale-status-${invoice.status}`}>{t(invoice.status)}</span></div>
       <time dateTime={invoice.date}><LocalizedDate value={invoice.date} options={{ timeZone: 'Asia/Kolkata', day: 'numeric', month: 'short', year: 'numeric', hour: 'numeric', minute: '2-digit' }}/></time>
       <p className="sale-history-products">{invoice.items.slice(0, 2).map(item => item.name).join(' · ')}{invoice.items.length > 2 ? ` +${invoice.items.length - 2}` : ''}</p>
       <dl><div><dt>{t('total')}</dt><dd>{money(invoice.totalPaise)}</dd></div><div><dt>{t('moneyReceived')}</dt><dd>{money(invoice.paidPaise)}</dd></div><div><dt>{t('moneyPending')}</dt><dd>{money(invoice.balancePaise)}</dd></div></dl>
       <span className="sale-history-open">{t('viewInvoice')}<ArrowUpRight size={16} /></span>
-    </Link>)}</div> : <div className="sale-section"><Empty icon={<ReceiptText />} title={t(state!.invoices.length ? 'noSalesMatch' : 'noSales')} detail={t('noSalesHint')} action={state!.configuration.permissions.sales?<Link href="/app/sales/new" className="btn btn-secondary">{t('newSaleAction')}</Link>:undefined} /></div>}
+    </Link>{invoice.customerId&&<Button className="whatsapp-action" onClick={()=>setDocumentInvoice({id:invoice.id,customerId:invoice.customerId!})}>{d('whatsapp')}</Button>}</div>)}</div> : <div className="sale-section"><Empty icon={<ReceiptText />} title={t(state!.invoices.length ? 'noSalesMatch' : 'noSales')} detail={t('noSalesHint')} action={state!.configuration.permissions.sales?<Link href="/app/sales/new" className="btn btn-secondary">{t('newSaleAction')}</Link>:undefined} /></div>}
+    {documentInvoice&&<DocumentStudio open onClose={()=>setDocumentInvoice(null)} kind="invoice" sourceId={documentInvoice.id} customerId={documentInvoice.customerId} shareFirst/>}
   </div>;
 }

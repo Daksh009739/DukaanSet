@@ -28,7 +28,7 @@ The development server binds to loopback. Use `npm run dev -- --port 3002` for a
 
 The default database is `.data/dukaanset.sqlite`, with SQLite WAL journaling. `DATABASE_PATH` chooses durable private storage. Business data, tokens, password hashes, private photos, local outbox files and backups are ignored by Git. A Git push preserves **source**, not merchant data. Never expose them through `public/` or commit `.env.local`.
 
-The additive schema migration opens existing version 1/2 databases at version 3 and rejects newer versions. Run `npm run backup` before upgrading; the command creates a SQLite-consistent snapshot under `.data/backups/` and checks integrity/foreign keys. Keep a protected copy elsewhere and restore only with the application stopped and the matching source revision. No scheduled backup service is included.
+The additive schema migrations upgrade earlier databases to version 6 and reject newer versions. Run `npm run backup` before upgrading; the command creates a SQLite-consistent snapshot under `.data/backups/` and checks integrity/foreign keys. Keep a protected copy elsewhere and restore only with the application stopped and the matching source revision. No scheduled backup service is included.
 
 [.env.example](.env.example) documents server-only configuration. Production account email requires `AUTH_EMAIL_MODE=resend`, a trusted HTTPS `AUTH_BASE_URL`, `AUTH_EMAIL_FROM` and `RESEND_API_KEY`. File delivery is disabled in production. Live delivery through a verified sender still requires an operational test.
 
@@ -78,3 +78,9 @@ Vercel staging uses a checked HTTPS gateway plus a persistent Node 24 backend. C
 ## V5 multilingual experience
 
 The public site and workspace share complete English, Devanagari Hindi and Roman Hinglish resources, saved account preference, localized errors/units/dates, invoice and statement labels, and independent spoken/message language choices. Switching display language preserves open forms and drafts. Reviewed catalogue display names retain canonical merchant records. Supported recorded-total AI questions use full-ledger templates; other questions still need the configured provider. See the [localization guide](docs/LOCALIZATION.md), [audit](docs/v5-localization-audit.md) and [V5 verification](docs/v5-test-report.md).
+
+## V6 Invoice Studio and V7 WhatsApp delivery
+
+Saved invoices, complete Customer Hisaab statements and existing payment receipts share a private server PDF renderer, actual-PDF preview, A4/monochrome/58 mm/80 mm formats and three languages. Owners can configure branding; issued invoice details remain frozen. Customer profiles include full-period running balances, generated/shared document history and current contact editing. VoiceOS prepares saved documents for review.
+
+WhatsApp actions prepare the actual PDF and require recipient confirmation. Native file sharing has a truthful download/chat fallback. The official Cloud API adapter supports configured senders, approved utility document templates, opt-in/opt-out, durable duplicate prevention and signed delivery callbacks. Live Meta delivery and hosted staging remain pending external configuration. See [Invoice Studio](docs/INVOICE-STUDIO.md), [WhatsApp setup](docs/WHATSAPP-DELIVERY.md) and the [V6/V7 test report](docs/v6-v7-test-report.md).

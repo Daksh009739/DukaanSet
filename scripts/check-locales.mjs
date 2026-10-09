@@ -4,8 +4,8 @@ import {createRequire} from 'node:module';
 import {fileURLToPath} from 'node:url';
 const require=createRequire(import.meta.url),babel=require('next/dist/compiled/babel');
 export const locales=['en','hi','hinglish'];
-export const namespaces=['common','errors','retail','saas','sales','inventoryVoice','voiceos','marketing'];
-const hindiTechnical=new Set('AI CSV DemandPulse DukaanSet GST GitHub HTTPS IMEI IRN ISO JPEG KB MB OTP OpenAI PDF PIN PNG Pro SKU SMS SOC Starter Trial UPI VoiceOS WebP WhatsApp en-IN hi-IN localhost'.split(' '));
+export const namespaces=['common','errors','retail','saas','sales','inventoryVoice','voiceos','marketing','documents'];
+const hindiTechnical=new Set('A4 AI CSV DemandPulse DukaanSet GST GitHub HTTPS IMEI IRN ISO JPEG KB MB OTP OpenAI PDF PIN PNG Pro SKU SMS SOC Starter Trial UPI VoiceOS WebP WhatsApp en-IN hi-IN localhost'.split(' '));
 // Approved Roman retail vocabulary. Full sentences may not use this exception.
 const sharedTerms=new Set('Home Bills Stock Customers Suppliers Reports Settings Payments DukaanSet AI Email Password Dashboard Product SKU Quantity Unit Customer Cash Subtotal Total Bill Date Status Supplier Download Hardware / Electrical optional Actions Security Team Privacy History Plan Available Environment Branch Commit Version piece pack bottle gram litre metre Packet Piece Kilogram Gram Box Litre Millilitre Dozen Metre Voice Manual Refresh Features Pricing Help Contact English · Hindi Hinglish Trial Starter Pro Refund Notes Requests Role Owner Manager Staff Draft VoiceOS DemandPulse Payment Online UPI Udhaar Discount Invoice Cancel'.split(' '));
 const sourceKeys=new Set(['marketing:pages.business-types/grocery.business','marketing:pages.business-types/hardware.business','marketing:pages.business-types/vegetables.business','marketing:pages.business-types/mobile.business']);

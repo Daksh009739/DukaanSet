@@ -1,0 +1,59 @@
+{
+  "checkedAt": "2026-10-09T19:38:39.133Z",
+  "runs": [
+    {
+      "suite": [
+        "tests/e2e/invoice-studio.spec.ts"
+      ],
+      "exitCode": 0
+    },
+    {
+      "suite": [
+        "tests/e2e/localization.spec.ts"
+      ],
+      "exitCode": 0
+    },
+    {
+      "suite": [
+        "tests/e2e/product.spec.ts"
+      ],
+      "exitCode": 0
+    },
+    {
+      "suite": [
+        "tests/e2e/v2-business.spec.ts"
+      ],
+      "exitCode": 0
+    },
+    {
+      "suite": [
+        "tests/e2e/v2-sales.spec.ts"
+      ],
+      "exitCode": 0
+    },
+    {
+      "suite": [
+        "tests/e2e/v2-voice.spec.ts"
+      ],
+      "exitCode": 0
+    },
+    {
+      "suite": [
+        "tests/e2e/v3-demand.spec.ts"
+      ],
+      "exitCode": 0
+    },
+    {
+      "suite": [
+        "tests/e2e/voice-products.spec.ts"
+      ],
+      "exitCode": 0
+    },
+    {
+      "suite": [
+        "tests/e2e/voiceos.spec.ts"
+      ],
+      "exitCode": 0
+    }
+  ]
+}

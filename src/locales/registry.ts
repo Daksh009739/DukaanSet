@@ -1,3 +1,6 @@
+import enDocuments from './en/documents.json';
+import hiDocuments from './hi/documents.json';
+import hlDocuments from './hinglish/documents.json';
 import enCommon from './en/common.json';
 import enErrors from './en/errors.json';
 import enRetail from './en/retail.json';
@@ -26,9 +29,9 @@ export const locales=['en','hi','hinglish'] as const;
 export type Locale=typeof locales[number];
 export function locale(value:unknown):Locale{return value==='hi'||value==='hinglish'?value:'en';}
 export const messages={
- en:{translation:{...enCommon,errors:enErrors},v2:enRetail,v3:enSaas,sales:enSales,voice:enVoice,voiceos:enVoiceOS,marketing:enMarketing},
- hi:{translation:{...hiCommon,errors:hiErrors},v2:hiRetail,v3:hiSaas,sales:hiSales,voice:hiVoice,voiceos:hiVoiceOS,marketing:hiMarketing},
- hinglish:{translation:{...hlCommon,errors:hlErrors},v2:hlRetail,v3:hlSaas,sales:hlSales,voice:hlVoice,voiceos:hlVoiceOS,marketing:hlMarketing},
+ en:{translation:{...enCommon,errors:enErrors},v2:enRetail,v3:enSaas,sales:enSales,voice:enVoice,voiceos:enVoiceOS,marketing:enMarketing,documents:enDocuments},
+ hi:{translation:{...hiCommon,errors:hiErrors},v2:hiRetail,v3:hiSaas,sales:hiSales,voice:hiVoice,voiceos:hiVoiceOS,marketing:hiMarketing,documents:hiDocuments},
+ hinglish:{translation:{...hlCommon,errors:hlErrors},v2:hlRetail,v3:hlSaas,sales:hlSales,voice:hlVoice,voiceos:hlVoiceOS,marketing:hlMarketing,documents:hlDocuments},
 };
 export type Namespace=keyof typeof messages.en;
 export function copy<N extends Namespace>(namespace:N,language:string):typeof messages.en[N]{return messages[locale(language)][namespace] as typeof messages.en[N];}

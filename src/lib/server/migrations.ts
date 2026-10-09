@@ -34,3 +34,31 @@ export const migrationV4 = `
 ALTER TABLE products ADD COLUMN display_names_json TEXT NOT NULL DEFAULT '{}';
 PRAGMA user_version=4;
 `;
+
+export const migrationV5 = `
+CREATE TABLE invoice_branding (business_id TEXT PRIMARY KEY REFERENCES businesses(id),data_json TEXT NOT NULL,revision INTEGER NOT NULL);
+ALTER TABLE invoices ADD COLUMN issued_json TEXT;
+ALTER TABLE payments ADD COLUMN receipt_id TEXT;
+UPDATE payments SET receipt_id=id;
+CREATE INDEX payments_receipt ON payments(business_id,receipt_id);
+CREATE TABLE documents (id TEXT PRIMARY KEY,business_id TEXT NOT NULL REFERENCES businesses(id),customer_id TEXT REFERENCES customers(id),kind TEXT NOT NULL,source_id TEXT NOT NULL,model_json TEXT NOT NULL,pdf BLOB,filename TEXT NOT NULL,pages INTEGER NOT NULL,hash TEXT NOT NULL,created_at TEXT NOT NULL,expires_at TEXT NOT NULL,actor_id TEXT NOT NULL REFERENCES users(id));
+CREATE INDEX documents_customer ON documents(business_id,customer_id,created_at);
+CREATE TABLE communication_preferences (business_id TEXT NOT NULL REFERENCES businesses(id),customer_id TEXT NOT NULL REFERENCES customers(id),data_json TEXT NOT NULL,PRIMARY KEY(business_id,customer_id));
+CREATE TABLE whatsapp_connections (business_id TEXT PRIMARY KEY REFERENCES businesses(id),enabled INTEGER NOT NULL DEFAULT 0,verified_at TEXT,templates_json TEXT NOT NULL DEFAULT '{}');
+CREATE TABLE deliveries (id TEXT PRIMARY KEY,business_id TEXT NOT NULL REFERENCES businesses(id),document_id TEXT NOT NULL REFERENCES documents(id),customer_id TEXT NOT NULL REFERENCES customers(id),destination TEXT NOT NULL,language TEXT NOT NULL,mode TEXT NOT NULL,status TEXT NOT NULL,error_code TEXT NOT NULL DEFAULT '',provider_id TEXT,request_key TEXT NOT NULL,fingerprint TEXT NOT NULL,created_at TEXT NOT NULL,updated_at TEXT NOT NULL,actor_id TEXT NOT NULL REFERENCES users(id),UNIQUE(business_id,request_key));
+CREATE UNIQUE INDEX deliveries_provider ON deliveries(provider_id) WHERE provider_id IS NOT NULL;
+CREATE INDEX deliveries_customer ON deliveries(business_id,customer_id,created_at);
+CREATE UNIQUE INDEX deliveries_pending ON deliveries(business_id,document_id,destination) WHERE status IN ('preparing','submitting');
+CREATE TABLE whatsapp_inbound (business_id TEXT NOT NULL REFERENCES businesses(id),number TEXT NOT NULL,received_at TEXT NOT NULL,PRIMARY KEY(business_id,number));
+CREATE TABLE delivery_events (id TEXT PRIMARY KEY,delivery_id TEXT NOT NULL REFERENCES deliveries(id),status TEXT NOT NULL,provider_at TEXT NOT NULL,received_at TEXT NOT NULL);
+PRAGMA user_version=5;
+`;
+
+export const migrationV6 = `
+ALTER TABLE documents ADD COLUMN cache_key TEXT NOT NULL DEFAULT '';
+CREATE INDEX documents_cache ON documents(business_id,cache_key);
+ALTER TABLE deliveries ADD COLUMN document_key TEXT NOT NULL DEFAULT '';
+UPDATE deliveries SET document_key=(SELECT kind||':'||source_id FROM documents WHERE documents.id=deliveries.document_id);
+CREATE UNIQUE INDEX deliveries_source_pending ON deliveries(business_id,document_key,destination) WHERE status IN ('preparing','submitting','unknown');
+PRAGMA user_version=6;
+`;

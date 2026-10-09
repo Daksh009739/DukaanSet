@@ -1,0 +1,47 @@
+{
+  "fictional": true,
+  "samples": [
+    {
+      "path": "output/pdf/dukaanset-invoice-en.pdf",
+      "pages": 1,
+      "reference": "DS-00001"
+    },
+    {
+      "path": "output/pdf/dukaanset-hisaab-hi.pdf",
+      "pages": 1,
+      "reference": "HS-5c949d01-2026-10-01-2026-10-10"
+    },
+    {
+      "path": "output/pdf/dukaanset-receipt-hinglish.pdf",
+      "pages": 1,
+      "reference": "PR-71aed7ad-f6dc-4255-ac7e-57da3b8c4036"
+    }
+  ],
+  "stress": [
+    {
+      "path": ".local/pdf-qa-v7/long-invoice-hi-a4.pdf",
+      "pages": 11,
+      "reference": "DS-00002"
+    },
+    {
+      "path": ".local/pdf-qa-v7/long-invoice-en-mono.pdf",
+      "pages": 11,
+      "reference": "DS-00002"
+    },
+    {
+      "path": ".local/pdf-qa-v7/long-invoice-hi-58mm.pdf",
+      "pages": 13,
+      "reference": "DS-00002"
+    },
+    {
+      "path": ".local/pdf-qa-v7/long-invoice-hinglish-80mm.pdf",
+      "pages": 10,
+      "reference": "DS-00002"
+    },
+    {
+      "path": ".local/pdf-qa-v7/long-statement-hi-a4.pdf",
+      "pages": 6,
+      "reference": "HS-5c949d01-1970-01-01-2026-10-10"
+    }
+  ]
+}

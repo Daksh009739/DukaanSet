@@ -1,0 +1,73 @@
+{
+  "origin": "http://127.0.0.1:3002",
+  "browser": "headless Edge",
+  "checks": [
+    {
+      "name": "public homepage",
+      "ok": true,
+      "details": {
+        "status": 200
+      }
+    },
+    {
+      "name": "security headers",
+      "ok": true
+    },
+    {
+      "name": "manifest and public icons",
+      "ok": true,
+      "details": {
+        "icons": 3
+      }
+    },
+    {
+      "name": "anonymous private-route redirect",
+      "ok": true
+    },
+    {
+      "name": "service worker registration and control",
+      "ok": true
+    },
+    {
+      "name": "cache contains only public offline assets",
+      "ok": true,
+      "details": [
+        {
+          "name": "dukaanset-public-v5",
+          "paths": [
+            "/brand/icon-192.png",
+            "/brand/icon-512.png",
+            "/brand/maskable-512.png",
+            "/icon.svg",
+            "/manifest.webmanifest",
+            "/offline.html"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "offline navigation renders the public fallback",
+      "ok": true,
+      "details": {
+        "privateRecordsCached": false,
+        "offlineApiAvailable": false
+      }
+    },
+    {
+      "name": "Real private PDF preview/download under production CSP without changing finance",
+      "ok": true,
+      "details": {
+        "viewport": 390,
+        "pdfHeader": "%PDF-",
+        "pageErrors": 0
+      }
+    }
+  ],
+  "limitations": [
+    "This checks a local production server. Real HTTPS deployment and PWA installation are not tested.",
+    "Official WhatsApp and physical native file sharing were not tested on a live provider/device."
+  ],
+  "ok": true,
+  "passed": 8,
+  "failed": 0
+}
