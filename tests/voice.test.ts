@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { parseVoiceTranscript, validateRow, matchProducts, TranscriptCollector, draftStorageKey, type VoiceProduct } from '../src/lib/voice/parser';
+import { parseVoiceTranscript, restoreVoiceRow, validateRow, newProductDraft, voicePricePaise, matchProducts, TranscriptCollector, draftStorageKey, type VoiceProduct } from '../src/lib/voice/parser';
 import { configureRecognition, speechProblem, type RecognitionLike } from '../src/lib/voice/speech';
 import { SAMPLE_COMMAND, voiceCopy } from '../src/lib/voice/copy';
 import { Store } from '../src/lib/server/store';
@@ -66,5 +66,58 @@ test('voice batch API commits linked history once, rejects foreign IDs and rolls
   const owner=store.register({name:'Voice Test',email:'voice-test@example.test',password:'Voice-test-secret-2026',businessName:'Voice Shop',category:'grocery',language:'en'});const userId=owner.user.id,businessId=owner.businesses[0].id;const first=store.createProduct(userId,businessId,{name:'Onion',aliases:['pyaz'],unit:'kg',pricePaise:4000,quantityMilli:1000});const second=store.createProduct(userId,businessId,{name:'Milk',aliases:['doodh'],unit:'packet',pricePaise:3000,quantityMilli:2000});const other=store.createBusiness(userId,{name:'Other Shop',category:'general'});const foreign=store.createProduct(userId,other.id,{name:'Foreign',unit:'piece',pricePaise:100});const secret=store.issueSession(userId);const call=(body:unknown)=>handleRequest(new Request(`http://localhost/api/businesses/${businessId}/stockbatch`,{method:'POST',headers:{Origin:'http://localhost','Content-Type':'application/json',Cookie:`dukaanset_session=${secret}`},body:JSON.stringify(body)}),store);
   const body={idempotencyKey:'voice-batch-retry',source:'voice',items:[{productId:first.id,quantityMilli:500},{productId:second.id,quantityMilli:4000}]};const saved=await call(body);assert.equal(saved.status,201);const entry=await saved.json();const retry=await call(body);assert.equal(retry.status,201);assert.equal((await retry.json()).id,entry.id);const state=store.state(userId,businessId);assert.equal(state.products.find(p=>p.id===first.id)!.quantityMilli,1500);assert.equal(state.products.find(p=>p.id===second.id)!.quantityMilli,6000);assert.equal(state.inventoryEntries.length,1);assert.equal(entry.items.length,2);for(const line of entry.items)assert.ok(state.movements.some(m=>m.id===line.movementId&&m.referenceId===entry.id));assert.ok(!('transcript' in entry));
   const denied=await call({idempotencyKey:'foreign-attempt',source:'voice',items:[{productId:first.id,quantityMilli:1000},{productId:foreign.id,quantityMilli:1000}]});assert.equal(denied.status,404);assert.equal(store.state(userId,businessId).products.find(p=>p.id===first.id)!.quantityMilli,1500);const bad=await call({idempotencyKey:'invalid-attempt',source:'mixed',items:[{productId:first.id,quantityMilli:1000},{productId:second.id,quantityMilli:500}]});assert.equal(bad.status,400);assert.equal(store.state(userId,businessId).inventoryEntries.length,1);assert.equal(store.state(userId,businessId).products.find(p=>p.id===first.id)!.quantityMilli,1500);const changed=await call({...body,items:[{productId:first.id,quantityMilli:2000}]});assert.equal(changed.status,409);
+ }finally{store.close();}
+});
+
+test('unmatched speech becomes a reviewed new-product draft without inventing its selling price',()=>{
+ const row=parseVoiceTranscript('10 kilo adrak',catalog)[0],details=newProductDraft(row);
+ assert.deepEqual(details,{name:'adrak',unit:'kg',price:'',cost:'',sku:'',variation:''});
+ assert.ok(validateRow({...row,newProduct:details},catalog).issues.includes('productDetails'));
+ const reviewed=validateRow({...row,newProduct:{...details,price:'80.25',cost:'40'}},catalog);
+ assert.deepEqual(reviewed.issues,[]);assert.equal(reviewed.quantityMilli,10000);
+ assert.equal(voicePricePaise('80.25'),8025);assert.equal(voicePricePaise('0'),0);assert.equal(voicePricePaise('1.999'),null);assert.equal(voicePricePaise('-2'),null);
+ assert.ok(validateRow({...row,newProduct:{...details,price:'80'}},[product('ginger','adrak','kg')]).issues.includes('duplicateProduct'));
+});
+
+test('Hindi and Hinglish adrak match an existing Ginger product without creating a duplicate',()=>{
+ for(const transcript of ['10 kilo adrak','१० किलो अदरक']){
+  const row=parseVoiceTranscript(transcript,[product('ginger','Ginger','kg')])[0];
+  assert.equal(row.productId,'ginger');assert.equal(row.quantityMilli,10000);assert.deepEqual(row.issues,[]);
+ }
+ const prior=parseVoiceTranscript('10 kilo adrak',[])[0];
+ assert.equal(restoreVoiceRow(prior,[product('ginger','Ginger','kg')]).productId,'ginger');
+ const reviewed={...prior,newProduct:{...newProductDraft(prior),price:'80'}};
+ assert.equal(restoreVoiceRow(reviewed,[product('ginger','Ginger','kg')]).productId,'');
+});
+
+test('voice stock creates reviewed products and receives stock atomically, aggregates repeats and replays once',()=>{
+ const store=new Store(':memory:');try{
+  const owner=store.register({name:'Voice owner',email:'create-voice@example.test',password:'Voice-test-secret-2026',businessName:'Voice shop'}),user=owner.user.id,business=owner.businesses[0].id;
+  const existing=store.createProduct(user,business,{name:'Milk',unit:'packet',pricePaise:3000,quantityMilli:1000});
+  const details={name:'Adrak',unit:'kg',pricePaise:8025,costPaise:4000,sku:'ADR',variation:''};
+  const input={idempotencyKey:'new-voice',source:'voice',items:[{newProduct:details,quantityMilli:2000},{newProduct:details,quantityMilli:3000},{productId:existing.id,quantityMilli:1000}]};
+  const entry=store.receiveStockBatch(user,business,input);assert.equal(store.receiveStockBatch(user,business,input).id,entry.id);
+  const state=store.state(user,business);assert.equal(state.products.length,2);assert.equal(state.products.find(item=>item.name==='Adrak')!.quantityMilli,5000);assert.equal(state.products.find(item=>item.id===existing.id)!.quantityMilli,2000);
+  assert.equal(state.inventoryEntries.length,1);assert.equal(entry.items.length,2);assert.equal(state.totals.salesPaise,0);
+  const newId=state.products.find(item=>item.name==='Adrak')!.id;
+  assert.equal(state.movements.filter(item=>item.productId===newId).length,1);assert.equal(state.movements.find(item=>item.productId===newId)!.reason,'receipt');
+  assert.throws(()=>store.receiveStockBatch(user,business,{...input,idempotencyKey:'repeat-new'}),/already exists/);
+  assert.throws(()=>store.receiveStockBatch(user,business,{...input,items:[{newProduct:{...details,pricePaise:9000},quantityMilli:2000}]}),/different/);
+ }finally{store.close();}
+});
+
+test('a bad mixed voice batch rolls back new products, stock, audit, movements and retry records',()=>{
+ const store=new Store(':memory:');try{
+  const owner=store.register({name:'Voice owner',email:'rollback-voice@example.test',password:'Voice-test-secret-2026',businessName:'Voice shop'}),user=owner.user.id,business=owner.businesses[0].id;
+  const second=store.createBusiness(user,{name:'Other shop'}),foreign=store.createProduct(user,second.id,{name:'Foreign',unit:'piece',pricePaise:100});
+  const count=(table:string)=>Number(store.db.prepare(`SELECT COUNT(*) n FROM ${table} WHERE business_id=?`).get(business)!.n);
+  const tables=['products','movements','audit','inventory_entries','idempotency'],before=tables.map(count);
+  const details={name:'Dragonfruit',unit:'kg',pricePaise:12000,costPaise:6000,sku:'DF',variation:''};
+  const input={idempotencyKey:'rollback-new',source:'voice',items:[{newProduct:details,quantityMilli:2000},{productId:foreign.id,quantityMilli:1000}]};
+  assert.throws(()=>store.receiveStockBatch(user,business,input),/not found/);assert.deepEqual(tables.map(count),before);
+  assert.throws(()=>store.receiveStockBatch(user,business,{...input,items:[{newProduct:details,quantityMilli:2000},{newProduct:{...details,name:'Other fruit'},quantityMilli:1000}]}),/SKU/);assert.deepEqual(tables.map(count),before);
+  assert.throws(()=>store.receiveStockBatch(user,business,{...input,items:[{newProduct:details,quantityMilli:2000},{newProduct:{...details,pricePaise:13000},quantityMilli:1000}]}),/same product details/);assert.deepEqual(tables.map(count),before);
+  assert.throws(()=>store.receiveStockBatch(user,business,{...input,items:[{newProduct:{...details,quantityMilli:9000},quantityMilli:2000}]}),/unsupported/);assert.deepEqual(tables.map(count),before);
+  const saved=store.receiveStockBatch(user,business,{...input,items:[{newProduct:details,quantityMilli:2000}]});assert.equal(saved.items[0].quantityMilli,2000);assert.equal(count('products'),1);
  }finally{store.close();}
 });

@@ -40,6 +40,8 @@ The optional read-only AI adapter activates only when `AI_PROVIDER=openai`, `OPE
 - SaaS: progressive onboarding, account profile/password, one-use verification/reset/invitation links, owner/manager/staff roles, permission overrides, business switching, persisted category defaults and module/notification settings with server enforcement.
 - Assistance: permission-aware dashboards, grouped daily tasks and demand reports; editable browser voice drafts in English/Hindi/Hinglish; optional configured AI questions. Voice never saves automatically or converts visitor counts into requested units.
 
+Stock's highlighted voice card appears at the top. Voice review can create an unmatched product inline after its name/unit/price are reviewed, then save the product and stock in one confirmation. Ginger also matches `adrak`/`अदरक`; saved unresolved drafts revisit exact matches. See the [voice product fix and QA](docs/voice-product-fix.md).
+
 Money uses integer paise and quantities use thousandths. Financial writes are transactional and retry protected. Demand capture, suggestions, message preparation and order drafts do not change stock or financial ledgers. No messages are sent automatically, and a receipt alone does not count as recovered revenue.
 
 ## Limits

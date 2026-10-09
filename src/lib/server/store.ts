@@ -33,7 +33,7 @@ function asAttachment(row: Row): SaleAttachment { return { id: String(row.id), u
 export class Store {
   readonly db: DatabaseSync;
   readonly schemaVersion = 3;
-  readonly runtimeRevision = "v3.0";
+  readonly runtimeRevision = "v3.1";
   private transactionDepth = 0;
   constructor(path = process.env.DATABASE_PATH || resolve(process.cwd(), ".data", "dukaanset.sqlite")) {
     // Runtime database directories are external mutable data, never bundle assets.
@@ -243,9 +243,27 @@ export class Store {
     keys(input, ["idempotencyKey", "source", "items"]);
     return this.once(businessId, "stockbatch", input, () => {
       const aggregate = new Map<string, { product: Product; quantity: number }>();
+      const created = new Map<string, { product: Product; fingerprint: string }>();
       for (const item of requested) {
-        keys(item, ["productId", "quantityMilli", "unit"]);
-        const productId = string(item.productId, "Product ID", 80), product = asProduct(this.entity("products", businessId, productId)), quantity = integer(item.quantityMilli, "Quantity", 1), from = item.unit === undefined ? product.unit : validateUnit(item.unit);
+        keys(item, ["productId", "newProduct", "quantityMilli", "unit"]);
+        if ((item.productId !== undefined) === (item.newProduct !== undefined)) throw new DomainError('INVALID_INPUT','Choose an existing product or supply reviewed new-product details.');
+        let product: Product;
+        if (item.newProduct !== undefined) {
+          const details=object(item.newProduct);
+          keys(details,['name','unit','pricePaise','costPaise','sku','variation']);
+          const name=string(details.name,'Product name',100), variation=string(details.variation,'Variation',100,true), unit=validateUnit(details.unit);
+          const label=(value:string)=>value.normalize('NFKC').trim().replace(/\s+/g,' ').toLowerCase();
+          const unitAliases:Record<string,string>={pcs:'piece',pieces:'piece',unit:'piece',kilogram:'kg',gram:'g',grams:'g',liter:'litre',l:'litre',meter:'metre',m:'metre'};
+          const canonical=(value:string)=>unitAliases[value]||value;
+          const identity=JSON.stringify([label(name),label(variation),canonical(unit)]), digest=fingerprint(details), prior=created.get(identity);
+          if(prior){if(prior.fingerprint!==digest)throw new DomainError('INVALID_INPUT','Repeated new-product rows must have the same product details.');product=prior.product;}
+          else {
+            if(this.rows('SELECT name,variation,unit FROM products WHERE business_id=?',businessId).some(row=>label(String(row.name))===label(name)&&label(String(row.variation))===label(variation)&&canonical(String(row.unit))===canonical(unit)))throw new DomainError('PRODUCT_EXISTS','This product already exists. Choose it from the catalogue.',409);
+            product=this.createProduct(userId,businessId,{...details,name,variation,unit,quantityMilli:0});
+            created.set(identity,{product,fingerprint:digest});
+          }
+        } else product=asProduct(this.entity('products',businessId,string(item.productId,'Product ID',80)));
+        const productId=product.id, quantity = integer(item.quantityMilli, "Quantity", 1), from = item.unit === undefined ? product.unit : validateUnit(item.unit);
         assertWholeUnit(from, quantity);
         if(from!==product.unit)this.assertPermission(userId,businessId,'inventory','unitConversion');
         const converted = convertQuantity(quantity, from, product.unit, product.packSize);
@@ -564,6 +582,6 @@ export class Store {
 
 declare global { var dukaanStore: Store | undefined; }
 export function getStore(): Store {
-  if (globalThis.dukaanStore && globalThis.dukaanStore.runtimeRevision !== "v3.0") { globalThis.dukaanStore.close(); globalThis.dukaanStore = undefined; }
+  if (globalThis.dukaanStore && globalThis.dukaanStore.runtimeRevision !== "v3.1") { globalThis.dukaanStore.close(); globalThis.dukaanStore = undefined; }
   return globalThis.dukaanStore ??= new Store();
 }

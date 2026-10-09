@@ -1,14 +1,27 @@
-import type { Product } from '../contracts';
+import type { Product, StockBatchItem } from '../contracts';
 
 export type VoiceProduct = Product;
-export type RowIssue = 'unknown' | 'ambiguous' | 'quantity' | 'unit' | 'conversion' | 'whole' | 'limit' | 'correction';
-export interface VoiceRow { id: string; query: string; productId: string; candidates: string[]; quantity: string; unit: string; quantityMilli: number | null; issues: RowIssue[]; source: 'voice' | 'manual' }
-export interface VoiceDraft { version: 1; key: string; transcript: string; applied: string; rows: VoiceRow[]; updatedAt: number; submitted?: { source:'voice'|'manual'|'mixed'; items:{productId:string;quantityMilli:number}[] } }
+export type RowIssue = 'unknown' | 'ambiguous' | 'quantity' | 'unit' | 'conversion' | 'whole' | 'limit' | 'correction' | 'productDetails' | 'duplicateProduct';
+export interface VoiceNewProduct { name: string; unit: string; price: string; cost: string; sku: string; variation: string }
+export interface VoiceRow { id: string; query: string; productId: string; candidates: string[]; quantity: string; unit: string; quantityMilli: number | null; issues: RowIssue[]; source: 'voice' | 'manual'; newProduct?: VoiceNewProduct }
+export interface VoiceDraft { version: 1; key: string; transcript: string; applied: string; rows: VoiceRow[]; updatedAt: number; submitted?: { source:'voice'|'manual'|'mixed'; items:StockBatchItem[]; rowIds?:string[] } }
+export const catalogueUnits = ['piece','packet','box','kg','g','litre','ml','metre'] as const;
+export function voicePricePaise(value: string): number | null {
+  if (!/^\d{1,8}(?:\.\d{1,2})?$/.test(value)) return null;
+  const [whole, fraction=''] = value.split('.');
+  const paise = Number(BigInt(whole) * 100n + BigInt(fraction.padEnd(2,'0')));
+  return Number.isSafeInteger(paise) && paise <= 1_000_000_000 ? paise : null;
+}
+export function newProductDraft(row:VoiceRow):VoiceNewProduct {
+  const unit=canonicalUnit(row.unit);
+  return {name:row.query,unit:catalogueUnits.includes(unit as typeof catalogueUnits[number])?unit:'piece',price:'',cost:'',sku:'',variation:''};
+}
 
 const synonyms: Record<string, string> = {
   doodh:'milk', dudh:'milk', दूध:'milk', dal:'dal', daal:'dal', दाल:'dal', lentils:'dal', lentil:'dal',
   pyaz:'onion', pyaaz:'onion', प्याज:'onion', प्याज़:'onion', onions:'onion', aloo:'potato', alu:'potato', आलू:'potato', potatoes:'potato',
   chawal:'rice', चावल:'rice', atta:'flour', आटा:'flour', tamatar:'tomato', टमाटर:'tomato', tomatoes:'tomato',
+  adrak:'ginger', अदरक:'ginger', lehsun:'garlic', lahsun:'garlic', लहसुन:'garlic',
   biscuits:'biscuit', बिस्कुट:'biscuit', चीनी:'sugar', cheeni:'sugar', chini:'sugar', नमक:'salt', namak:'salt',
 };
 const numbers: Record<string, number> = {
@@ -53,6 +66,15 @@ export function matchProducts(query:string, products:VoiceProduct[]):{ids:string
   return{ids:fuzzy,exact:false};
 }
 
+/** Revisit only unresolved restored rows; preserve reviewed creation plans and deliberate choices. */
+export function restoreVoiceRow(row:VoiceRow, products:VoiceProduct[]):VoiceRow {
+  if(!row.productId&&!row.newProduct&&row.query&&!row.issues.includes('correction')){
+    const match=matchProducts(row.query,products);
+    if(match.exact&&match.ids.length===1)return validateRow({...row,productId:match.ids[0],candidates:match.ids},products);
+  }
+  return validateRow(row,products);
+}
+
 function extractNumber(tokens:string[]):{value:string;indices:number[]} {
   // A correction such as "2 se 3 kilo" uses the clear new value after se/from.
   const separator=tokens.findIndex(token=>token==='se'||token==='से'||token==='to');
@@ -72,7 +94,13 @@ function extractNumber(tokens:string[]):{value:string;indices:number[]} {
   return{value:'',indices:[]};
 }
 export function validateRow(row:VoiceRow, products:VoiceProduct[]):VoiceRow {
-  const issues:RowIssue[]=[];const product=products.find(item=>item.id===row.productId);
+  const issues:RowIssue[]=[];let product:Pick<Product,'unit'|'packSize'>|undefined=products.find(item=>item.id===row.productId);
+  if(row.newProduct){
+    const details=row.newProduct, label=(value:string)=>value.normalize('NFKC').trim().replace(/\s+/g,' ').toLowerCase();
+    if(!details.name.trim()||details.name.trim().length>100||!catalogueUnits.includes(details.unit as typeof catalogueUnits[number])||voicePricePaise(details.price)===null||(details.cost!==''&&voicePricePaise(details.cost)===null)||details.sku.trim().length>64||details.variation.trim().length>100)issues.push('productDetails');
+    if(products.some(item=>label(item.name)===label(details.name)&&label(item.variation)===label(details.variation)&&canonicalUnit(item.unit)===canonicalUnit(details.unit)))issues.push('duplicateProduct');
+    product={unit:details.unit,packSize:null};
+  }
   if(!product)issues.push(row.candidates.length?'ambiguous':'unknown');
   if(!/^\d+(?:\.\d{1,3})?$/.test(row.quantity)||Number(row.quantity)<=0)issues.push('quantity');
   if(!row.unit)issues.push('unit');
