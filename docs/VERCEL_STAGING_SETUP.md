@@ -4,7 +4,7 @@
 
 Repository: `Daksh009739/DukaanSet`. `dev` contains the application. `main` was created at the existing `production` baseline (`8a5f6a7ec117cac561ee9ac92ad4ea10f5935455`); no dev code was merged into it. Legacy `production` and `staging` were preserved. The initial baseline has no deployable application; the first production release requires a reviewed merge and separate production infrastructure.
 
-The Vercel project [dukaan-set](https://vercel.com/daksh009739s-projects/dukaan-set) was created after checking for an existing DukaanSet project. It is connected to `Daksh009739/DukaanSet`. Production Branch Tracking is **main**, verified in the saved environment settings; Preview is the non-production environment. Build/install overrides are `npm run build:vercel` / `npm ci`, Node is 24.x, and the preset is Other. System build variables are enabled. No application credentials or production variables were copied; existing protection was retained. [Production tracking proof](qa/staging/vercel-production-main.jpg).
+The Vercel project [dukaan-set](https://vercel.com/daksh009739s-projects/dukaan-set) was created after checking for an existing DukaanSet project. It is connected to `Daksh009739/DukaanSet`. Production Branch Tracking is **main**, verified in the saved environment settings; Preview is the non-production environment. Build/install overrides are `npm run build:vercel` / `npm ci --include=dev`, Node is 24.x, and the preset is Other. System build variables are enabled. No application credentials or production variables were copied; existing protection was retained. [Production tracking proof](qa/staging/vercel-production-main.jpg).
 
 **No verified stable staging URL is available yet.** Initial/automatic/external deployment acceptance is pending persistent backend provisioning and hosted email configuration. The project's dashboard/settings URL is not a live demo link.
 
@@ -22,7 +22,7 @@ Do not copy the developer's merchant database, local outbox or backups into stag
 
 1. Reuse the project prepared for this task; search the account before creating any additional project.
 2. Connect the existing GitHub repository through its already authorised Vercel Git integration.
-3. Root directory: repository root. Framework: Other. Node: 24.x. Install: `npm ci`. Build: `npm run build:vercel`. Output: Build Output API `.vercel/output`, not `.next` or a static export.
+3. Root directory: repository root. Framework: Other. Node: 24.x. Install: `npm ci --include=dev`. Build: `npm run build:vercel`. Output: Build Output API `.vercel/output`, not `.next` or a static export.
 4. Settings → Environments → Production → Branch Tracking: **main**. Verify this before allowing any deploy. `dev` remains Preview. Native [Git deployments](https://vercel.com/docs/git) are the deployment mechanism; Actions never runs a second Vercel deployment.
 5. Set these [branch-specific Preview variables](https://vercel.com/docs/environment-variables) for `dev` only:
 
@@ -40,7 +40,7 @@ Generate a token with a cryptographic random generator (32 bytes, base64url). Co
 
 ## Persistent backend configuration
 
-Use a host with a writable private mounted volume, HTTPS, Node 24 and Git automatic deployment. Native Node commands: install `npm ci`; validate `npm run typecheck` and `npm test`; build `npm run build`; start **`npm run start:backend`**. Configure a health check at `/api/health`. Build and runtime must both receive the staging environment and correct site URL because static pages contain the staging label and SEO settings.
+Use a host with a writable private mounted volume, HTTPS, Node 24 and Git automatic deployment. Native Node commands: install `npm ci --include=dev`; validate `npm run typecheck` and `npm test`; build `npm run build`; start **`npm run start:backend`**. Configure a health check at `/api/health`. Build and runtime must both receive the staging environment and correct site URL because static pages contain the staging label and SEO settings.
 
 | Variable | Staging backend value |
 | --- | --- |
