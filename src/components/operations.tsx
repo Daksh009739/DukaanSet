@@ -15,7 +15,7 @@ import { VoicePanel } from './voice/voice-panel';
 import { useDemandWrite } from './demand/write-provider';
 
 export type Action = 'product' | 'customer' | 'supplier' | 'payment' | 'stock' | 'expense' | 'purchase' | 'business';
-type ActionData = { productId?: string; customerId?: string; voiceCommand?:VoiceCommand };
+type ActionData = { productId?: string; customerId?: string; supplierId?:string; invoiceId?:string; voiceCommand?:VoiceCommand };
 type PurchaseDraft = { productId: string; quantity: string; cost: string };
 const Operations = createContext<(action: Action, data?: ActionData) => void>(() => {});
 export const useOperations = () => useContext(Operations);
@@ -37,7 +37,7 @@ function OperationSheet({ action, data, onClose }: { action: Action | null; data
   const { t } = useTranslation();
   const app = useApp();
   const write=useDemandWrite(),copy=osCopy(useTranslation().i18n.language);
-  const [values,setValues]=useState<Record<string,string>>({});
+  const [values,setValues]=useState<Record<string,string>>({supplierId:data.supplierId||''});
   const [voiceBlocked,setVoiceBlocked]=useState(false),[voiceUsed,setVoiceUsed]=useState(Boolean(data.voiceCommand)),[allowDuplicate,setAllowDuplicate]=useState(false);
   const [busy, setBusy] = useState(false);
   const submitting = useRef(false);
@@ -92,7 +92,7 @@ function OperationSheet({ action, data, onClose }: { action: Action | null; data
         path = action === 'customer' ? '/customers' : '/suppliers';
         body = { name: value('name'), phone: value('phone'),idempotencyKey,...voiceUsed&&!allowDuplicate?{rejectDuplicate:true}:{} };
       } else if (action === 'payment') {
-        path = '/payments'; body = { customerId, amountPaise: minorUnits(value('amount')), method: value('method'), idempotencyKey };
+        path = '/payments'; body = { customerId, ...(data.invoiceId?{invoiceId:data.invoiceId}:{}), amountPaise: minorUnits(value('amount')), method: value('method'), idempotencyKey };
       } else if (action === 'stock') {
         path = '/stock'; body = { productId, quantityMilli: minorUnits(value('quantity'), 3, reason === 'correction'), reason, idempotencyKey };
       } else if (action === 'expense') {
@@ -130,7 +130,7 @@ function OperationSheet({ action, data, onClose }: { action: Action | null; data
           <p className="form-note">{t('quantityPrecision')}</p>
         </>}
         {action === 'payment' && <>
-          <Select label={t('customer')} value={customerId} required onChange={event => setCustomerId(event.target.value)}>
+          <Select label={t('customer')} value={customerId} required disabled={Boolean(data.invoiceId)} onChange={event => setCustomerId(event.target.value)}>
             <option value="">{t('selectCustomer')}</option>{creditCustomers.map(item => <option key={item.id} value={item.id}>{item.name} · {money(item.balancePaise)}</option>)}
           </Select>
           {customer && <div className="inline-summary"><span>{t('balance')}</span><b>{money(customer.balancePaise)}</b></div>}

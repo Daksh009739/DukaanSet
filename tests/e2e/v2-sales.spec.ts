@@ -25,7 +25,7 @@ async function fashionDemo(page: Page, baseURL: string) {
   const business = session.businesses.find(item => item.name === 'Sharma Fashion Store');
   expect(business).toBeTruthy();
   await page.locator('#business-select').selectOption(business!.id);
-  await expect(page.locator('.greeting h1')).toBeVisible();
+  await expect(page.locator('.dashboard-welcome h1')).toBeVisible();
   const state = await businessState(page, business!.id);
   return { business: business!, state, shirt: state.products.find(item => item.name === 'Blue Casual Shirt')!, customer: state.customers.find(item => item.name === 'Rahul Sharma')! };
 }
@@ -102,7 +102,7 @@ test('Fashion mobile sale records two shirts, photo, split payments and exactly 
   expect(replay.ok()).toBeTruthy(); expect((await replay.json()).id).toBe(invoice.id);
   expect((await businessState(page, business.id)).products.find(product => product.id === shirt.id)?.quantityMilli).toBe(2000);
   await page.getByRole('link', { name: 'View Invoice', exact: true }).click();
-  await expect(page.locator('[data-invoice-document]')).toBeVisible();
+  await page.locator('summary').filter({hasText:'Financial details & audit'}).click();await expect(page.locator('[data-invoice-document]')).toBeVisible();
   await expect(page.locator('.sale-invoice-photos img')).toBeVisible();
   await expect(page.locator('.sale-invoice-payments')).toContainText('₹1,000'); await expect(page.locator('.sale-invoice-payments')).toContainText('₹500');
   const axe = await new AxeBuilder({ page }).include('.workspace').withTags(['wcag2a', 'wcag2aa', 'wcag22aa']).analyze(); expect(axe.violations).toEqual([]);

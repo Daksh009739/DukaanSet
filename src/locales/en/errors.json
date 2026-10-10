@@ -25,7 +25,7 @@
   "CUSTOMER_REQUIRED": "Select a customer for an unpaid or partially paid bill.",
   "IDEMPOTENCY_CONFLICT": "This attempt was already saved with different details. Check your records before starting a new entry.",
   "REPAYMENT_EXISTS": "This bill has later repayments. Cancellation needs a reviewed adjustment, which is not available yet.",
-  "DAY_CLOSED": "Today’s closing is confirmed. Record new money entries on the next business day.",
+  "DAY_CLOSED": "These accounts are closed. Confirm the opening cash in Start Today’s Business before recording another transaction.",
   "ALREADY_CLOSED": "Today’s closing is already saved. Refresh to view the confirmed summary.",
   "NOT_FOUND": "This record is unavailable in the selected business. Refresh and try again.",
   "LIMIT_REACHED": "This local workspace has reached its supported record limit.",
@@ -80,5 +80,12 @@
   "WHATSAPP_RATE_LIMIT": "WhatsApp limited this request. Wait and review before retrying.",
   "WHATSAPP_CREDENTIALS": "The business sender needs administrator attention. You can share manually.",
   "WHATSAPP_REJECTED": "WhatsApp rejected this document request. Review the recipient and connection.",
-  "WHATSAPP_TIMEOUT": "The provider response was interrupted. Check the recorded status before retrying."
+  "WHATSAPP_TIMEOUT": "The provider response was interrupted. Check the recorded status before retrying.",
+  "STALE_PREVIEW": "Records changed since your review. Check the refreshed totals and confirm again.",
+  "CASH_COUNT_REQUIRED": "Enter the physical cash you counted. This shop requires a cash count.",
+  "ACKNOWLEDGEMENT_REQUIRED": "Review and acknowledge the difference or pending items before closing.",
+  "SESSION_ACTIVE": "An accounting session is open. Close it before changing the business cutoff or opening another session.",
+  "INVALID_TIME": "Check the session time and timezone. The next session must start after the last closing.",
+  "ACCOUNTING_LIMIT": "The financial total exceeds the supported range. Export your records and contact support.",
+  "CORRECTION_SOURCE": "Choose a transaction recorded after this closing. Existing entries are already included in the frozen totals."
 }

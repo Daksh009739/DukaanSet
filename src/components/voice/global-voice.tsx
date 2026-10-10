@@ -30,6 +30,7 @@ export function GlobalVoiceLauncher(){
  function route(){if(!command||!voiceAllowed(command.intent,state))return;
   const intent=command.intent;if(intent==='unknown'){setError(copy.unknown);return;}
   if(intent==='cancel'){close();return;}
+  if(intent==='closing'&&command.fields.closingAction&&command.fields.closingAction!=='review'){router.push('/app/reports/closings?period='+command.fields.closingPeriod);close();return;}
   if(intent==='document'){
    const customerId=command.fields.customerId||chosen||choices.length===1&&choices[0].id;if(!customerId){setError(copy.noResults);return;}
    const kind=(command.fields.documentKind||'statement') as DocumentKind;if(kind==='invoice'&&!state.configuration.permissions.sales||kind==='receipt'&&!state.configuration.permissions.payments){setError(copy.permission);return;}

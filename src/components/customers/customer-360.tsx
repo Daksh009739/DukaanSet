@@ -1,49 +1,44 @@
 'use client';
-import {CustomerDocuments} from '../documents/customer-documents';
-import type {PreparedDocument} from '@/lib/document-contracts';
-import {fetchPdf} from '../documents/document-studio';
-
-import '@/lib/v2-i18n';
 import Link from 'next/link';
-import { useEffect,useRef,useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { Wallet, Plus, Download, MessageSquare, ReceiptText, Pencil } from 'lucide-react';
-import type { Customer } from '@/lib/contracts';
+import {useEffect,useState} from 'react';
+import {useTranslation} from 'react-i18next';
+import {Wallet,Plus,FileText,Pencil,MessageSquare} from 'lucide-react';
+import type {Customer} from '@/lib/contracts';
+import type {DocumentKind} from '@/lib/document-contracts';
+import type {InvoiceHistoryResult} from '@/lib/record-contracts';
+import {api,money} from '@/lib/client';
 import {dateText,text,locale,languageTags,type Locale} from '@/lib/locale';
-import { api, money, today } from '@/lib/client';
-import { downloadBlob } from '@/lib/browser-documents';
-import { useApp } from '../app-provider';
-import { useOperations } from '../operations';
-import { PageHeading } from '../dashboard';
+import {useApp} from '../app-provider';
+import {useOperations} from '../operations';
+import {Button,Sheet,FormError,Select,Field,Empty} from '../ui';
+import {DetailHeader,DetailMetrics,DetailTabs,Disclosure} from '../detail-patterns';
+import {RecordHistoryCard} from '../record-details';
+import {InvoiceList} from '../dashboard';
 import {LanguageOptions} from '../locale-provider';
-import { Button, CardTitle, Sheet, FormError,Select,Field } from '../ui';
-import { CustomerDemand } from '../demand/demand-page';
+import {CustomerDemand} from '../demand/demand-page';
+import {CustomerDocuments} from '../documents/customer-documents';
+import {DocumentStudio,statementPeriod} from '../documents/document-studio';
 
-export function Customer360({ customer }: { customer: Customer }) {
-  const { t, i18n } = useTranslation(); const v = useTranslation('v2').t; const app = useApp(); const state = app.state!; const open = useOperations();
-  const [editing,setEditing]=useState(false),[name,setName]=useState(customer.name),[phone,setPhone]=useState(customer.phone);
-  const [reminder, setReminder] = useState(false); const [error, setError] = useState(''); const [busy, setBusy] = useState(false);
-  const statementVersion=useRef(0);
-  useEffect(()=>{statementVersion.current++;setBusy(false);return()=>{statementVersion.current++;};},[customer.id,app.businessId,i18n.language]);
-  const invoices = state.invoices.filter(i => i.customerId === customer.id);
-
-  const shopping = customer.totalSalesPaise;
-  const paid = customer.netReceivedPaise;
-  const photos = invoices.filter(i => i.status !== 'cancelled').flatMap(invoice => invoice.items.flatMap(item => (item.attachments || []).map(photo => ({ photo, item, invoice }))));
-  const [messageLocale,setMessageLocale]=useState<Locale>(()=>locale(i18n.language));
-  const draft = text(messageLocale,'v2','reminderText', { name: customer.name, business: state.business.name, amount: money(customer.balancePaise, messageLocale) });
-  async function statement() {
-    const version=++statementVersion.current;setBusy(true);setError('');
-    try { const document=await api<PreparedDocument>('/businesses/'+app.businessId+'/documents',{kind:'statement',sourceId:customer.id,language:locale(i18n.language),format:'a4',start:'1970-01-01',end:today(),detailed:true});if(version!==statementVersion.current)return;const blob=await fetchPdf(document);if(version===statementVersion.current)downloadBlob(blob,document.filename); }catch(cause){if(version===statementVersion.current)setError(app.errorText(cause));}finally{if(version===statementVersion.current)setBusy(false);}
-  }
-  async function saveCustomer(){setBusy(true);setError('');try{await app.mutation('/customers/'+customer.id+'/edit',{name,phone,previousName:customer.name,previousPhone:customer.phone});setEditing(false);app.notify(text(i18n.language,'documents','saved'));}catch(cause){setError(app.errorText(cause));}finally{setBusy(false);}}
-  return <><PageHeading title={customer.name} subtitle={customer.phone || t('customer')} action={<div className="button-row">{state.configuration.permissions.sales&&<Link className="btn btn-primary" href={`/app/sales/new?customer=${customer.id}`}><Plus size={17}/>{v('newSale')}</Link>}{state.configuration.permissions.payments&&<Button onClick={() => open('payment', { customerId: customer.id })} disabled={customer.balancePaise <= 0}><Wallet size={17}/>{t('addPayment')}</Button>}</div>}/>
-    <div className="small-metrics"><div><span>{v('shopping')}</span><b>{money(shopping, i18n.language)}</b></div><div><span>{v('netPayments')}</span><b>{money(paid, i18n.language)}</b></div><div><span>{t('balance')}</span><b>{money(customer.balancePaise, i18n.language)}</b></div><div><span>{text(i18n.language,'documents','purchaseCount')}</span><b>{customer.purchaseCount || 0}</b></div></div>
-    <p>{text(i18n.language,'documents','lastPurchase')}: {customer.lastPurchase?dateText(customer.lastPurchase,i18n.language):'—'} · {text(i18n.language,'documents','lastPayment')}: {customer.lastPayment?dateText(customer.lastPayment,i18n.language):'—'}</p>
-    <div className="button-row below-card customer-actions">{state.configuration.permissions.customers&&<Button variant="secondary" onClick={()=>{setName(customer.name);setPhone(customer.phone);setError('');setEditing(true);}}><Pencil size={17}/>{text(i18n.language,'documents','editCustomer')}</Button>}<Link className="btn btn-secondary" href={`/app/sales?customer=${customer.id}`}><ReceiptText size={17}/>{v('bills')}</Link><Button variant="secondary" onClick={() => setReminder(true)} disabled={customer.balancePaise <= 0}><MessageSquare size={17}/>{v('reminder')}</Button><Button variant="secondary" busy={busy} onClick={statement}><Download size={17}/>{v('statement')}</Button></div><FormError message={error}/>
-    <CustomerDocuments customerId={customer.id}/>
-    {photos.length > 0 && <section className="card below-card"><CardTitle>{v('photos')}</CardTitle><div className="customer-photos">{photos.map(({ photo, item, invoice }) => <Link key={`${invoice.id}-${photo.id}`} href={`/app/sales/${invoice.id}`}><img src={photo.url} alt={item.name} loading="lazy" width="160" height="120"/><b>{item.name}</b><small>{invoice.number}</small></Link>)}</div></section>}
-    <CustomerDemand customerId={customer.id}/><Link href="/app/customers" className="text-link below-card">{t('back')}</Link>
-    <Sheet open={editing} onOpenChange={value=>{if(!busy)setEditing(value);}} title={text(i18n.language,'documents','editCustomer')}><div className="sheet-body"><Field label={text(i18n.language,'documents','contactName')} value={name} disabled={busy} maxLength={100} onChange={e=>setName(e.target.value)}/><Field label={text(i18n.language,'documents','contactPhone')} type="tel" value={phone} disabled={busy} maxLength={30} onChange={e=>setPhone(e.target.value)}/><FormError message={error}/><Button busy={busy} disabled={!name.trim()} onClick={()=>void saveCustomer()}>{text(i18n.language,'documents','saveCustomer')}</Button></div></Sheet>
-    <Sheet open={reminder} onOpenChange={setReminder} title={v('reminder')}><div className="sheet-body"><p>{v('reminderHint')}</p><Select label={t('communicationLanguage')} value={messageLocale} onChange={event=>setMessageLocale(locale(event.target.value))}><LanguageOptions/></Select><label className="field"><span>{v('reminder')}</span><textarea lang={languageTags[messageLocale]} data-communication-preview readOnly rows={5} value={draft}/></label><Button onClick={async () => { try { await navigator.clipboard.writeText(draft); app.notify(v('copied')); } catch { app.notify(t('loadError')); } }}>{v('copy')}</Button></div></Sheet></>;
+export function Customer360({customer}:{customer:Customer}) {
+ const {t,i18n}=useTranslation(),w=useTranslation('workspace').t,d=useTranslation('documents').t,app=useApp(),state=app.state!,open=useOperations();
+ const [tab,setTab]=useState('activity'),[editing,setEditing]=useState(false),[name,setName]=useState(customer.name),[phone,setPhone]=useState(customer.phone),[reminder,setReminder]=useState(false),[error,setError]=useState(''),[busy,setBusy]=useState(false),[generate,setGenerate]=useState(false);
+ const [kind,setKind]=useState<DocumentKind>('statement'),[sourceId,setSourceId]=useState(''),[studio,setStudio]=useState<{kind:DocumentKind;id:string;period?:{start:string;end:string}}|null>(null),[range,setRange]=useState(statementPeriod('month'));
+ const [messageLocale,setMessageLocale]=useState<Locale>(()=>locale(i18n.language));
+ const invoices=state.invoices.filter(i=>i.customerId===customer.id),payments=state.payments.filter(p=>p.customerId===customer.id),photos=invoices.filter(i=>i.status!=='cancelled').flatMap(i=>i.items.flatMap(item=>(item.attachments||[]).map(photo=>({photo,item,invoice:i}))));
+ const draft=text(messageLocale,'v2','reminderText',{name:customer.name,business:state.business.name,amount:money(customer.balancePaise,messageLocale)}),p=state.configuration.permissions;
+ async function saveCustomer(){setBusy(true);setError('');try{await app.mutation('/customers/'+customer.id+'/edit',{name,phone,previousName:customer.name,previousPhone:customer.phone});setEditing(false);app.notify(d('saved'));}catch(cause){setError(app.errorText(cause));}finally{setBusy(false);}}
+ return <div className="customer-detail"><DetailHeader title={customer.name} subtitle={customer.phone||t('customer')} back="/app/customers" status={<span className={`badge badge-${customer.balancePaise>0?'partial':'paid'}`}>{t(customer.balancePaise>0?'due':'paid')}</span>} actions={<>{p.payments&&customer.balancePaise>0&&<Button onClick={()=>open('payment',{customerId:customer.id})}><Wallet size={17}/>{t('addPayment')}</Button>}{p.sales&&<Link className={`btn btn-${customer.balancePaise>0?'secondary':'primary'}`} href={`/app/sales/new?customer=${customer.id}`}><Plus size={17}/>{t('v2:newSale')}</Link>}<Button variant="secondary" onClick={()=>setGenerate(true)}><FileText size={17}/>{d('generate')}</Button></>}/>
+  <DetailMetrics items={[{label:t('v2:shopping'),value:money(customer.totalSalesPaise)},{label:t('v2:netPayments'),value:money(customer.netReceivedPaise)},{label:w('currentBalance'),value:money(customer.balancePaise),primary:customer.balancePaise>0}]}/>
+  <DetailTabs tabs={[{id:'activity',label:w('activityTab')},{id:'bills',label:w('billsTab')},{id:'hisaab',label:w('hisaabTab')}]} value={tab} onChange={setTab}>{tab==='activity'?<RecordHistoryCard id={customer.id} type="customer" compact/>:tab==='bills'?<CustomerBills id={customer.id} onPdf={id=>setStudio({kind:'invoice',id})}/>:<CustomerDocuments customerId={customer.id}/>}</DetailTabs>
+  <Disclosure title={w('advanced')}><p>{d('purchaseCount')}: {customer.purchaseCount||0}</p><p>{d('lastPurchase')}: {customer.lastPurchase?dateText(customer.lastPurchase,i18n.language):'—'} · {d('lastPayment')}: {customer.lastPayment?dateText(customer.lastPayment,i18n.language):'—'}</p><div className="button-row">{p.customers&&<Button variant="secondary" onClick={()=>{setName(customer.name);setPhone(customer.phone);setError('');setEditing(true);}}><Pencil size={16}/>{d('editCustomer')}</Button>}{customer.balancePaise>0&&<Button variant="secondary" onClick={()=>setReminder(true)}><MessageSquare size={16}/>{t('v2:reminder')}</Button>}</div>{photos.length>0&&<div className="customer-photos">{photos.map(({photo,item,invoice})=><Link key={invoice.id+photo.id} href={'/app/sales/'+invoice.id}><img src={photo.url} alt={item.name} loading="lazy" width="160" height="120"/><b>{item.name}</b><small>{invoice.number}</small></Link>)}</div>}<CustomerDemand customerId={customer.id}/></Disclosure>
+  <Sheet open={editing} onOpenChange={value=>{if(!busy)setEditing(value);}} title={d('editCustomer')}><form className="sheet-body" onSubmit={e=>{e.preventDefault();void saveCustomer();}}><Field label={d('contactName')} value={name} disabled={busy} required maxLength={100} onChange={e=>setName(e.target.value)}/><Field label={d('contactPhone')} type="tel" value={phone} disabled={busy} maxLength={30} onChange={e=>setPhone(e.target.value)}/><FormError message={error}/><Button busy={busy} type="submit">{d('saveCustomer')}</Button></form></Sheet>
+  <Sheet open={reminder} onOpenChange={setReminder} title={t('v2:reminder')}><div className="sheet-body"><p>{t('v2:reminderHint')}</p><Select label={t('communicationLanguage')} value={messageLocale} onChange={e=>setMessageLocale(locale(e.target.value))}><LanguageOptions/></Select><label className="field"><span>{t('v2:reminder')}</span><textarea lang={languageTags[messageLocale]} data-communication-preview readOnly rows={5} value={draft}/></label><Button onClick={async()=>{try{await navigator.clipboard.writeText(draft);app.notify(t('v2:copied'));}catch{app.notify(t('loadError'));}}}>{t('v2:copy')}</Button></div></Sheet>
+  <Sheet open={generate} onOpenChange={setGenerate} title={d('generate')}><form className="sheet-body" onSubmit={e=>{e.preventDefault();setGenerate(false);setStudio({kind,id:kind==='statement'?customer.id:sourceId,period:range});}}><Select label={d('documents')} value={kind} onChange={e=>{setKind(e.target.value as DocumentKind);setSourceId('');}}>{(['statement','invoice','receipt'] as const).filter(k=>k==='statement'||k==='invoice'&&p.sales||k==='receipt'&&p.payments).map(k=><option value={k} key={k}>{d(k)}</option>)}</Select>{kind==='statement'?<div className="field-pair"><Field label={d('start')} type="date" value={range.start} required max={range.end} onChange={e=>setRange({...range,start:e.target.value})}/><Field label={d('end')} type="date" value={range.end} required min={range.start} onChange={e=>setRange({...range,end:e.target.value})}/></div>:<Select label={d(kind)} value={sourceId} required onChange={e=>setSourceId(e.target.value)}><option value="">—</option>{(kind==='invoice'?invoices:payments).map(r=><option value={r.id} key={r.id}>{'number'in r?r.number:dateText(r.date,i18n.language)} · {money('totalPaise'in r?r.totalPaise:r.amountPaise)}</option>)}</Select>}<Button type="submit" disabled={kind!=='statement'&&!sourceId}>{d('preview')}</Button></form></Sheet>
+  {studio&&<DocumentStudio open onClose={()=>setStudio(null)} kind={studio.kind} sourceId={studio.id} customerId={customer.id} period={studio.period}/>}
+ </div>;
+}
+function CustomerBills({id,onPdf}:{id:string;onPdf:(id:string)=>void}) {
+ const app=useApp(),{t}=useTranslation(),w=useTranslation('workspace').t,[result,setResult]=useState<InvoiceHistoryResult|null>(null),[error,setError]=useState(''),[busy,setBusy]=useState(false);
+ useEffect(()=>{const c=new AbortController();void api<InvoiceHistoryResult>(`/businesses/${app.businessId}/invoice-history?customer=${id}`,undefined,c.signal).then(setResult).catch(cause=>{if(!c.signal.aborted)setError(app.errorText(cause));});return()=>c.abort();},[app.businessId,id,app.state]);
+ return <section className="card"><FormError message={error}/>{result?result.invoices.length?<><InvoiceList invoices={result.invoices}/>{app.state!.configuration.permissions.sales&&result.invoices.map(i=><Button variant="ghost" key={i.id} onClick={()=>onPdf(i.id)}>{t('pdfDownload')} · {i.number}</Button>)}{result.hasMore&&<Button variant="secondary" busy={busy} onClick={async()=>{setBusy(true);try{const next=await api<InvoiceHistoryResult>(`/businesses/${app.businessId}/invoice-history?customer=${id}&offset=${result.invoices.length}`);setResult({...next,invoices:[...result.invoices,...next.invoices]});}catch(cause){setError(app.errorText(cause));}finally{setBusy(false);}}}>{w('completeHistory')} · {result.total}</Button>}</>:<Empty icon={<FileText/>} title={t('noBills')}/>:<p role="status">{w('loadingRecord')}</p>}</section>;
 }

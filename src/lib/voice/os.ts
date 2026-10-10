@@ -65,6 +65,8 @@ export function voiceAllowed(intent:VoiceIntent,state:V3State):boolean {
 export function detectIntent(raw:string,context?:VoiceIntent):VoiceIntent {
   const t=spokenText(raw);
   if(/^(?:cancel|discard|radd|रद्द)(?:\s+(?:draft|ड्राफ्ट))?$/.test(t))return'cancel';
+  if(/(?:closing|daily.*(?:hisaab|report)|shop.*report|दैनिक.*(?:हिसाब|रिपोर्ट)|दुकान.*हिसाब)/.test(t)&&/pdf|report|पीडीएफ|रिपोर्ट/.test(t))return'closing';
+  if(/(?:close|band|बंद).*(?:today|aaj|shop|dukaan|आज|दुकान)|(?:today|aaj|shop|dukaan|आज|दुकान).*(?:close|band|बंद)/.test(t))return'closing';
   if(/pdf|statement|whatsapp|पीडीएफ|व्हाट्सएप|रसीद.*(?:बना|दिखा)|receipt.*(?:generate|show|bana)|hisaab.*(?:bana|dikha)|हिसाब.*(?:बना|दिखा)/.test(t))return'document';
   if(/\b(?:open|kholo)\b|खोलो|खोलें/.test(t)&&!/\b(?:add|sold|banao|karo)\b|बनाओ|जोड़ो/.test(t))return'open';
   if(/reorder|re order|order draft|ऑर्डर|रीऑर्डर/.test(t))return'reorder';
@@ -152,7 +154,7 @@ export function interpretVoice(raw:string,state:V3State,context?:VoiceIntent,pre
     const name=(explicitName||(!previous?nameText:'')).replace(/\b(?:create|a|new|naya|naye|customer|supplier|add|karo|kar|do|naam|name|is)\b|नया|नए|ग्राहक|सप्लायर|जोड़ो|करो|कर|दो|नाम/gu,' ').replace(/\s+/g,' ').trim();if(name)set('name',name);
     if(result.fields.name&&resolveContact(result.fields.name,intent==='customer'?state.customers:state.suppliers).length)result.warnings.push('duplicateContact');
   }
-  if(intent==='closing'){set('actual',text.match(/(?:actual cash|actual|वास्तविक नकद)\s*(\d+(?:\.\d{1,2})?)/)?.[1]);set('opening',text.match(/(?:opening cash|opening|शुरुआती नकद)\s*(\d+(?:\.\d{1,2})?)/)?.[1]);}
+  if(intent==='closing'){set('actual',text.match(/(?:actual cash|actual|counted cash|cash count|gina cash|वास्तविक नकद|गिना नकद)\s*(\d+(?:\.\d{1,2})?)/)?.[1]);set('opening',text.match(/(?:opening cash|opening|शुरुआती नकद)\s*(\d+(?:\.\d{1,2})?)/)?.[1]);set('closingAction',/pdf|पीडीएफ/.test(text)?'pdf':/report|रिपोर्ट|yesterday|kal|कल/.test(text)?'history':'review');set('closingPeriod',/yesterday|kal|कल/.test(text)?'yesterday':'today');}
   if(intent==='purchase'){const query=entityQuery(text,'supplier');if(query){set('supplierQuery',query);const matches=resolveContact(query,state.suppliers);set('supplierId',matches.length===1?matches[0]:'');if(matches.length!==1)result.warnings.push('supplier');}set('paid',receipt(text,cashWords));if(new RegExp(onlineWords).test(text))result.warnings.push('cashPurchaseOnly');}
   if(['sale','stock','purchase','demand'].includes(intent)){
     let itemsText=text;
@@ -183,7 +185,7 @@ export function interpretVoice(raw:string,state:V3State,context?:VoiceIntent,pre
   }
   if(intent==='report'||intent==='open'||intent==='reorder'||intent==='followup'){
     set('query',text);set('period',/week|hafte|हफ्त|सप्ताह/.test(text)?'week':/all time|kul|कुल/.test(text)?'all':'today');
-    set('report',/demand|maang|मांग/.test(text)?/contact|सम्पर्क|संपर्क/.test(text)?'followups':/convert|recover|sale.*demand/.test(text)?'recovered':'demand':/low stock|kam stock|कम स्टॉक/.test(text)?'lowStock':/stock|bacha|बचा|स्टॉक/.test(text)?'stock':/udhaar|dues|outstanding|baaki|उधार|बाकी/.test(text)?'outstanding':/cash.*collect|cash.*mila|collection|collect|नकद|वसूली/.test(text)?'collections':/expense|kharcha|खर्च/.test(text)?'expenses':/sabse|most|top|सबसे/.test(text)?'topSales':'sales');
+    set('report',/(?:cash|nakad|नकद).*(?:balance|bacha|बचा|शेष)/.test(text)?'cashBalance':/demand|maang|मांग/.test(text)?/contact|सम्पर्क|संपर्क/.test(text)?'followups':/convert|recover|sale.*demand/.test(text)?'recovered':'demand':/low stock|kam stock|कम स्टॉक/.test(text)?'lowStock':/stock|bacha|बचा|स्टॉक/.test(text)?'stock':/udhaar|dues|outstanding|baaki|उधार|बाकी/.test(text)?'outstanding':/upi.*(?:payment|aayi|received)|cash.*collect|cash.*mila|collection|collect|नकद|वसूली/.test(text)?'collections':/expense|kharcha|खर्च/.test(text)?'expenses':/sabse|most|top|सबसे/.test(text)?'topSales':'sales');
   }
   if(intent==='open')set('screen',/account|khata|खाता/.test(text)?'customerAccount':/stock|inventory|स्टॉक/.test(text)?'stock':/customers?|ग्राहक/.test(text)?'customers':/suppliers?|सप्लायर/.test(text)?'suppliers':/purchase|खरीद/.test(text)?'purchases':/payment|भुगतान/.test(text)?'payments':/expense|kharcha|खर्च/.test(text)?'expenses':/closing|hisaab|हिसाब/.test(text)?'daily-closing':/demand|डिमांड/.test(text)?'demand':/reports?|रिपोर्ट/.test(text)?'reports':/bills?|sales|invoices?|बिल|बिक्री/.test(text)?'sales':/home|dashboard|डैशबोर्ड/.test(text)?'home':'');
   return result;
@@ -216,6 +218,7 @@ export function reportAnswer(command:VoiceCommand,state:V3State,language:string,
   const invoices=state.invoices.filter(i=>i.status!=='cancelled'&&inPeriod(i.date)), payments=state.payments.filter(p=>inPeriod(p.date));
   const report=command.fields.report;
   if(report==='sales')return[{label:text(language,'voiceos','report0'),value:money(stats?.salesPaise??(command.fields.period==='all'?state.totals.salesPaise:command.fields.period==='week'?state.weeklySales.reduce((sum,day)=>sum+day.salesPaise,0):state.metrics.salesTodayPaise),language)},{label:text(language,'voiceos','report1'),value:String(stats?.bills??(command.fields.period==='today'?state.metrics.billsToday:invoices.length))}];
+  if(report==='cashBalance')return[{label:text(language,'workspace','expectedCash'),value:stats?.expectedCashPaise===undefined?text(language,'workspace','loadingRecord'):money(stats.expectedCashPaise,language)}];
   if(report==='collections')return[{label:text(language,'voiceos','report2'),value:money(stats?.cashPaise??state.daily.cashPaise,language)},{label:text(language,'voiceos','report3'),value:money(stats?.upiPaise??state.daily.upiPaise,language)}];
   if(report==='outstanding'){const query=command.fields.customerQuery, ids=query?resolveContact(query,state.customers):[];if(query&&ids.length!==1)return[{label:text(language,'voiceos','report4'),value:query}];return[{label:text(language,'voiceos','report5'),value:money(query?state.customers.find(c=>c.id===ids[0])!.balancePaise:state.metrics.outstandingPaise,language)}];}
   if(report==='expenses')return[{label:text(language,'voiceos','report6'),value:money(stats?.expensesPaise??(command.fields.period==='all'?state.totals.expensesPaise:state.daily.expensesPaise),language)}];

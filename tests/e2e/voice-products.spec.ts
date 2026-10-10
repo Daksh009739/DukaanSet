@@ -84,7 +84,7 @@ test('a lost new-product acknowledgement survives reload and retries without dup
   expect(after.inventoryEntries).toHaveLength(before.inventoryEntries.length+1);
 });
 test('the highlighted entry and new-product review fit phones in all three languages',async({page})=>{
-  await setup(page);mkdirSync('docs/qa/voice-products',{recursive:true});
+  await setup(page);mkdirSync('.local/qa/voice-products',{recursive:true});
   for(const language of ['en','hi','hinglish']){
     await page.getByRole('combobox',{name:/^(Language|Bhasha|भाषा)$/}).selectOption(language);
     for(const width of [320,390,768,1440]){
@@ -94,10 +94,10 @@ test('the highlighted entry and new-product review fit phones in all three langu
     }
   }
   await page.getByRole('combobox',{name:/^(Language|Bhasha|भाषा)$/}).selectOption('en');
-  await page.setViewportSize({width:390,height:844});await expect(page.locator('.toast')).toHaveCount(0);await page.screenshot({path:'docs/qa/voice-products/stock-phone.png'});
+  await page.setViewportSize({width:390,height:844});await expect(page.locator('.toast')).toHaveCount(0);await page.screenshot({path:'.local/qa/voice-products/stock-phone.png'});
   await page.getByRole('link',{name:'Add stock by voice',exact:true}).click();await newRows(page);
   for(const width of [320,390,768,1440]){await page.setViewportSize({width,height:844});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);}
   const result=await new AxeBuilder({page}).include('.voice-page').withTags(['wcag2a','wcag2aa']).analyze();expect(result.violations).toEqual([]);
-  await page.setViewportSize({width:390,height:844});await page.getByTestId('voice-row').first().scrollIntoViewIfNeeded();await page.screenshot({path:'docs/qa/voice-products/new-product-phone.png'});
-  await page.setViewportSize({width:1440,height:1000});await page.evaluate(()=>scrollTo(0,0));await page.screenshot({path:'docs/qa/voice-products/voice-desktop.png',fullPage:true});
+  await page.setViewportSize({width:390,height:844});await page.getByTestId('voice-row').first().scrollIntoViewIfNeeded();await page.screenshot({path:'.local/qa/voice-products/new-product-phone.png'});
+  await page.setViewportSize({width:1440,height:1000});await page.evaluate(()=>scrollTo(0,0));await page.screenshot({path:'.local/qa/voice-products/voice-desktop.png',fullPage:true});
 });

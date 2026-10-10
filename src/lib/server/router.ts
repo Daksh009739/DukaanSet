@@ -9,6 +9,9 @@ import { authorize } from './access';
 import { AssistantService } from './assistant';
 import { DocumentService } from './documents';
 import { DeliveryService } from './whatsapp';
+import { ClosingService } from './closing';
+import { renderPdf } from './pdf-renderer';
+import { RecordService } from './records';
 
 const COOKIE = "dukaanset_session";
 const buckets = new Map<string, { count: number; expires: number }>();
@@ -83,8 +86,9 @@ export async function handleRequest(request: Request, store: Store = getStore())
       }
       if (action === "demo") {
         throttle("demo:global", 10, 600_000);
-        const input=object(await body(request)); keys(input,["language"]);
-        const session = store.demo(input.language===undefined?"hinglish":language(input.language)), secret = store.issueSession(session.user.id);
+        const input=object(await body(request)); keys(input,["language","scenario"]);
+        if(input.scenario!==undefined&&!['standard','closing'].includes(String(input.scenario)))throw new DomainError('INVALID_INPUT','Unknown demo scenario.');
+        const session = store.demo(input.language===undefined?"hinglish":language(input.language),input.scenario==='closing'?'closing':'standard'), secret = store.issueSession(session.user.id);
         return json(session, 201, { "Set-Cookie": cookie(secret, request) });
       }
       if(action==='verify'){const session=auth.verify(await body(request));return json(session,200,{'Set-Cookie':cookie(store.issueSession(session.user.id),request)});}
@@ -111,6 +115,27 @@ export async function handleRequest(request: Request, store: Store = getStore())
     if (!match) throw new DomainError("NOT_FOUND", "Endpoint not found.", 404);
     const [, businessId, action, recordId, subAction] = match;
     store.assertMember(userId, businessId);
+    const closing=new ClosingService(store);
+    if(action==='record-details'&&recordId&&verb==='GET')return json(new RecordService(store).detail(userId,businessId,recordId,url.searchParams.get('type')));
+    if(action==='invoice-history'&&!recordId&&verb==='GET')return json(new RecordService(store).invoiceHistory(userId,businessId,url.searchParams));
+    if(action==='supplier-dues'&&recordId&&verb==='GET')return json(new RecordService(store).supplierDues(userId,businessId,recordId));
+    if(action==='purchase-history'&&!recordId&&verb==='GET')return json(new RecordService(store).purchaseHistory(userId,businessId,Number(url.searchParams.get('offset')||0)));
+    if(action==='record-history'&&recordId&&verb==='GET')return json(new RecordService(store).history(userId,businessId,recordId,url.searchParams.get('type'),Number(url.searchParams.get('offset')||0)));
+    if(action==='closing-settings'&&!recordId)return json(verb==='GET'?(store.assertPermission(userId,businessId,'reports','dailyClosing'),closing.settings(businessId)):closing.saveSettings(userId,businessId,await body(request)));
+    if(action==='closing-review'&&!recordId&&verb==='GET')return json(closing.preview(userId,businessId));
+    if(action==='closing-sessions'&&!recordId&&verb==='POST')return json(closing.open(userId,businessId,await body(request)),201);
+    if(action==='closing-opening'&&!recordId&&verb==='POST')return json(closing.setOpening(userId,businessId,await body(request)),201);
+    if(action==='closing-reports'){
+      if(verb==='GET'&&recordId&&subAction==='pdf'){throttle(`pdf:${userId}`,12);const report=closing.report(userId,businessId,recordId,url.searchParams.has('version')?Number(url.searchParams.get('version')):undefined),selected=language(url.searchParams.get('language')||'en');const result=await renderPdf({kind:'statement',closingReport:report,sourceId:report.id,businessId,reference:report.reference,language:selected,format:'a4',detailed:true,generatedAt:report.asOf,merchant:report.merchant,customer:{id:null,name:'',phone:''},legacy:false});return new Response(new Uint8Array(result.bytes),{headers:{'Content-Type':'application/pdf','Cache-Control':'private, no-store','X-Content-Type-Options':'nosniff','Content-Disposition':`inline; filename="${report.reference}-v${report.version}-${selected}.pdf"`}});}
+      if(verb==='GET'&&!recordId)return json(closing.history(userId,businessId,url.searchParams.get('start')||undefined,url.searchParams.get('end')||undefined));
+      if(verb==='GET'&&recordId&&subAction==='versions')return json(closing.versions(userId,businessId,recordId));
+      if(verb==='GET'&&recordId&&!subAction)return json(closing.report(userId,businessId,recordId,url.searchParams.has('version')?Number(url.searchParams.get('version')):undefined));
+      if(verb==='POST'&&!recordId)return json(closing.close(userId,businessId,await body(request)),201);
+      if(verb==='POST'&&recordId&&subAction==='reconcile')return json(closing.reconcile(userId,businessId,recordId,await body(request)),201);
+      if(verb==='POST'&&recordId&&subAction==='correction')return json(closing.linkCorrection(userId,businessId,recordId,await body(request)),201);
+    }
+    if(action==='cash-movements'&&!recordId&&verb==='POST')return json(closing.cashMovement(userId,businessId,await body(request)),201);
+    if(action==='purchases'&&recordId&&subAction==='payment'&&verb==='POST')return json(closing.supplierPayment(userId,businessId,recordId,await body(request)),201);
     const documents=new DocumentService(store),delivery=new DeliveryService(store);
     if(action==='invoice-branding'&&!recordId)return json(verb==='GET'?documents.getBranding(userId,businessId):await documents.saveBranding(userId,businessId,await body(request,600000)));
     if(action==='whatsapp-connection'&&!recordId)return json(verb==='GET'?delivery.connection(userId,businessId):await delivery.configure(userId,businessId,await body(request)));
@@ -120,7 +145,8 @@ export async function handleRequest(request: Request, store: Store = getStore())
       if(recordId&&verb==='GET'&&subAction==='pdf'){const d=documents.read(userId,businessId,recordId);return new Response(new Uint8Array(d.bytes),{headers:{'Content-Type':'application/pdf','Content-Length':String(d.bytes.length),'Cache-Control':'private, no-store','X-Content-Type-Options':'nosniff','Content-Disposition':`inline; filename="${d.filename}"`}});}
       if(recordId&&verb==='GET'&&subAction==='preview')return json(delivery.preview(userId,businessId,recordId,language(url.searchParams.get('language')||'en')));
     }
-    if(action==='invoices'&&recordId&&!subAction&&verb==='GET')return json(documents.model(userId,businessId,{kind:'invoice',sourceId:recordId,language:'en',format:'a4'}).invoice);
+    if(action==='invoices'&&recordId&&!subAction&&verb==='GET')return json(documents.invoiceView(userId,businessId,recordId).invoice);
+    if(action==='invoices'&&recordId&&subAction==='snapshot'&&verb==='GET')return json(documents.invoiceView(userId,businessId,recordId));
     if(action==='deliveries'&&!recordId&&verb==='POST'){throttle(`delivery:${userId}`,8);return json(await delivery.send(userId,businessId,await body(request)),201);}
     if(action==='customers'&&recordId){
       if(subAction==='edit'&&verb==='POST')return json(store.editCustomer(userId,businessId,recordId,await body(request)));
@@ -143,7 +169,7 @@ export async function handleRequest(request: Request, store: Store = getStore())
       if(verb==='POST'){if(!recordId)return json(saas.createDemand(userId,businessId,await body(request)),201);const input=await body(request);switch(subAction){case 'status':return json(saas.transition(userId,businessId,recordId,input));case 'associate':return json(saas.associate(userId,businessId,recordId,input));case 'consent':return json(saas.consent(userId,businessId,recordId,input));case 'followup':return json(saas.followUp(userId,businessId,recordId,input));case 'convert':return json(saas.convert(userId,businessId,recordId,input));}}
     }
     if(action==='suggestions'&&!recordId&&verb==='POST')return json(saas.dismiss(userId,businessId,await body(request)));
-    if(action==='reorders'){if(!recordId)return json(verb==='GET'?saas.orders(userId,businessId):saas.reorder(userId,businessId,await body(request)),verb==='POST'?201:200);if(verb==='POST'&&subAction==='receive')return json(saas.receiveOrder(userId,businessId,recordId,await body(request)));if(verb==='POST'&&subAction==='cancel')return json(saas.cancelOrder(userId,businessId,recordId,await body(request)));}
+    if(action==='reorders'){if(!recordId)return json(verb==='GET'?saas.orders(userId,businessId):saas.reorder(userId,businessId,await body(request)),verb==='POST'?201:200);if(verb==='GET'&&!subAction){const order=saas.orders(userId,businessId).find(o=>o.id===recordId);if(!order)throw new DomainError('NOT_FOUND','Order not found.',404);return json(order);}if(verb==='POST'&&subAction==='receive')return json(saas.receiveOrder(userId,businessId,recordId,await body(request)));if(verb==='POST'&&subAction==='cancel')return json(saas.cancelOrder(userId,businessId,recordId,await body(request)));}
     if (action === "export" && !recordId && verb === "GET") return json(store.export(userId, businessId), 200, { "Content-Disposition": `attachment; filename="dukaanset-${businessId}.json"` });
     if(action==='ai'&&!recordId){const assistant=new AssistantService(store);if(verb==='GET')return json(assistant.status(userId,businessId));if(verb==='POST'){throttle(`ai:${userId}`,5,60000);return json(await assistant.ask(userId,businessId,await body(request)));}}
     if (action === "customers" && recordId && subAction === "statement" && verb === "GET") return json(store.customerStatement(userId, businessId, recordId));

@@ -102,4 +102,10 @@ Failed Vercel builds keep the earlier successful alias assignment. Inspect nativ
 
 ## Remaining access needed
 
+V10.1 automatic closing runs only on the persistent backend. `npm run start:backend` enables `DUKAANSET_CLOSING_WORKER=1`; ordinary development leaves it off and instrumentation refuses to run it inside Vercel. No browser timer or Vercel cron owns the SQLite jobs.
+
+The worker wakes every 30 seconds and resumes durable `closing_jobs` after restart. Each owner must still opt in through Settings → Shop timing & closing; defaults leave automatic closing disabled. Timing changes retime queued jobs. Failures retain retry/backoff state, log only an error name, and create an owner notice when notifications are enabled. Automatic reports retain a system actor, owner authorization, intended schedule, actual completion and pending physical cash verification. Late execution snapshots the observed records; next trading requires explicitly opening a session.
+
+After provisioning, test an opted-in fictional shop with the browser closed, normal backend restart and redeployment. Verify durable jobs/report versions, actual versus scheduled timestamps and owner failure/recovery notices. Do not use a real merchant's closing as a deployment test. See [V9/V10 accounting and verification](v9-v10-test-report.md).
+
 The Vercel project and Git connection are configured and Production tracks main. The blocking resources are an authorised persistent staging backend/volume (existing host or an approved hosting budget), and a configured verified email sender. After they are supplied, finish branch-scoped variables, obtain the actual stable dev alias, configure supported reviewer access and execute A/B/C/D. Production release and custom domain changes remain separate approvals.

@@ -3,6 +3,7 @@ import { randomUUID } from 'node:crypto';
 import type { Store } from './store';
 import type { InvoiceItem } from '../contracts';
 import { access, authorize, moduleKeys, permissionKeys, validateBooleans } from './access';
+import { ClosingService } from './closing';
 import { featureDefaults, equivalentUnits, rolePermissions, type BusinessConfiguration, type DemandGroup, type DemandRequest, type DemandStatus, type DemandSummary, type ReorderDraft, type Role, type TeamMember, type V3State } from '../v3-contracts';
 import { DomainError, assertWholeUnit, category, fingerprint, integer, keys, object, oneOf, string, unit } from './validation';
 type Row=Record<string,string|number|null>;
@@ -98,6 +99,8 @@ export class SaaSService {
     state.products=p.inventory||p.sales||p.demand?state.products.map(product=>({...product,costPaise:p.inventory||p.reports?product.costPaise:0})):[];if(!p.customers&&!p.payments)state.customers=[];if(!p.sales&&!p.customers&&!p.payments)state.invoices=[];if(!p.payments&&!p.customers)state.payments=[];if(!p.inventory){state.movements=[];state.inventoryEntries=[];}if(!p.purchases){state.suppliers=[];state.purchases=[];demand.orders=[];}if(!p.reports){state.expenses=[];state.closings=[];state.totals={salesPaise:0,receivedPaise:0,expensesPaise:0};state.daily={cashPaise:0,upiPaise:0,purchaseCount:0,expensesPaise:0,cashExpensesPaise:0,cashPurchasePaymentsPaise:0,creditSalesPaise:0,olderDuesReceivedPaise:0};state.weeklySales=state.weeklySales.map(day=>({...day,salesPaise:0}));state.metrics={salesTodayPaise:0,collectedTodayPaise:0,outstandingPaise:0,lowStockCount:state.products.filter(product=>product.quantityMilli<=product.minStockMilli).length,billsToday:p.sales?state.metrics.billsToday:0,stockValuePaise:p.inventory?state.metrics.stockValuePaise:0};state.activity=[];}
     state.tasks=f.todaysWork?state.tasks.filter(task=>task.type==='credit'?p.customers:p.inventory&&(task.type!=='expiry'||f.expiryTracking)):[];
     if(f.todaysWork&&f.demandPulse&&p.demand)for(const group of demand.groups.filter(group=>!group.dismissed&&(!group.matched||group.stockMilli>0||group.suggestedMilli>0)).slice(0,8))state.tasks.push({id:group.key,title:'DemandPulse',detail:group.productName,type:'demand',name:group.productName,productId:group.productId||undefined,quantityMilli:group.quantityMilli,unit:group.unit});
-    return {...state,configuration,demand};
+    const closingService=new ClosingService(this.store);
+    if(p.reports){const totals=closingService.calculate(businessId).totals;state.metrics.salesTodayPaise=totals.netSalesPaise;state.metrics.collectedTodayPaise=totals.collectionsPaise;state.metrics.billsToday=totals.billCount;state.daily.creditSalesPaise=totals.newCreditPaise;state.daily.cashPaise=totals.cashCollectionsPaise-totals.cashRefundsPaise;state.daily.upiPaise=totals.upiCollectionsPaise-totals.upiRefundsPaise;state.daily.expensesPaise=totals.expensesPaise;state.daily.cashExpensesPaise=totals.cashExpensesPaise;state.daily.cashPurchasePaymentsPaise=totals.cashSupplierPaymentsPaise;state.daily.olderDuesReceivedPaise=totals.olderDuesCollectionsPaise;state.daily.purchaseCount=totals.purchaseCount;}
+    return {...state,configuration,demand,closing:p.reports&&f.dailyClosing?closingService.overview(userId,businessId):null};
   }
 }
