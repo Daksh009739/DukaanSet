@@ -1,0 +1,46 @@
+{
+  "checkedAt": "2026-10-10T02:21:14.846Z",
+  "environment": "isolated local verification; fictional records",
+  "unit": {
+    "passed": 160,
+    "closingCases": 17
+  },
+  "browser": {
+    "passed": 66,
+    "suites": 11,
+    "method": "sequential suites and targeted reruns after navigation corrections"
+  },
+  "locale": {
+    "keysPerLanguage": 2010,
+    "languages": [
+      "en",
+      "hi",
+      "hinglish"
+    ]
+  },
+  "widths": [
+    320,
+    360,
+    375,
+    390,
+    412,
+    430,
+    768,
+    1024,
+    1440
+  ],
+  "typescript": "passed",
+  "lint": "passed",
+  "productionBuild": "passed",
+  "sourceVerification": {
+    "checkedAt": "2026-10-10T02:18:16.614Z",
+    "sourceFiles": 169,
+    "normalization": "line endings and terminal whitespace only",
+    "mismatches": []
+  },
+  "limits": [
+    "Hosted staging backend/private volume and verified sender are not provisioned",
+    "No production release or real provider messages",
+    "Physical-device, screen-reader and real speech acceptance remain separate"
+  ]
+}

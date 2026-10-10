@@ -6,6 +6,7 @@ import { branding, captureIssued } from './document-snapshots';
 import { DomainError, date, keys, language, object, oneOf, string } from './validation';
 import { businessDay } from '../client';
 import { renderPdf } from './pdf-renderer';
+import {access} from './access';
 import sharp from 'sharp';
 
 type Row = Record<string, string | number | null>;
@@ -62,10 +63,12 @@ export class DocumentService {
       return { customer, start, end, asOf, openingPaise, closingPaise: balance, debitsPaise, creditsPaise, rows, purchaseCount: rows.filter(r=>r.kind==='purchase').length, invoices: invoices.filter(r=>businessDay(String(r.date))>=start&&businessDay(String(r.date))<=end).map(r=>({id:String(r.id),number:String(r.number),date:String(r.date)})), receipts: [...receiptGroups.values()] };
     });
   }
-  model(userId: string, businessId: string, raw: unknown): DocumentModel {
+  model(userId:string,businessId:string,raw:unknown):DocumentModel{return this.buildModel(userId,businessId,raw);}
+  invoiceView(userId:string,businessId:string,id:string):DocumentModel {const p=access(this.store.db,userId,businessId).permissions;if(!p.sales&&!p.customers&&!p.payments)throw new DomainError('FORBIDDEN','Your role cannot view this invoice.',403);return this.buildModel(userId,businessId,{kind:'invoice',sourceId:id,language:'en',format:'a4'},true);}
+  private buildModel(userId: string, businessId: string, raw: unknown,view=false): DocumentModel {
     const input = object(raw); keys(input, ['kind', 'sourceId', 'language', 'format', 'start', 'end', 'detailed']);
     const kind = oneOf(input.kind, 'Document type', ['invoice','statement','receipt'] as const), sourceId = string(input.sourceId, 'Record', 80);
-    this.permit(userId, businessId, kind);
+    if(!view)this.permit(userId, businessId, kind);
     const selectedLanguage = language(input.language), format = oneOf(input.format || 'a4', 'Format', ['a4','mono','58mm','80mm'] as const);
     if(input.detailed!==undefined&&typeof input.detailed!=='boolean')throw new DomainError('INVALID_INPUT','Invalid detail setting.');
     return this.store.transaction(() => {

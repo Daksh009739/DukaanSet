@@ -38,6 +38,8 @@ jobs:
         run: npm run test:e2e -- tests/e2e/product.spec.ts
       - name: VoiceOS financial and microphone browser checks
         run: npm run test:e2e -- tests/e2e/voiceos.spec.ts
+      - name: Dashboard, closing concurrency, report versions and translated PDF checks
+        run: npm run test:e2e -- tests/e2e/closing-dashboard.spec.ts
 
       - name: Multilingual drafts, PDFs, SEO and responsive browser checks
         run: npm run test:e2e -- tests/e2e/localization.spec.ts
@@ -45,3 +47,6 @@ jobs:
         run: npm run test:e2e -- tests/e2e/invoice-studio.spec.ts
       - name: Premium website, multilingual auth and product demonstration browser checks
         run: npm run test:e2e -- tests/e2e/premium-website.spec.ts
+
+      - name: Compiled dashboard, closing PDFs and durable backend timer checks
+        run: node scripts/qa/v10-production-review.mjs

@@ -19,6 +19,7 @@ export interface CustomerLedger {
   receipts: { id: string; date: string; amountPaise: number; method: string; kind: string }[];
 }
 export interface DocumentModel {
+  closingReport?: import('./closing-contracts').ClosingReport;
   kind: DocumentKind; sourceId: string; businessId: string; reference: string; language: Language;
   format: DocumentFormat; detailed: boolean; generatedAt: string; merchant: Branding;
   customer: { id: string | null; name: string; phone: string }; legacy: boolean;

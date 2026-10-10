@@ -1,5 +1,8 @@
 # DukaanSet
 
+V9 adds a compact premium dashboard and complete record detail pages. V10.1 adds reviewed daily closing, separate cash/UPI reconciliation, immutable reports, optional physical counts, explicit next sessions and opt-in automatic closing on the persistent backend. See [V9/V10 verification and accounting policy](docs/v9-v10-test-report.md). The separate **Closing demo** uses real fictional transactions to demonstrate the ₹6,700 drawer calculation.
+
+
 The V8 public website uses the refined storefront identity, fictional interactive sale/VoiceOS/DemandPulse previews, six business categories and redesigned multilingual auth screens. See [brand usage](public/brand/USAGE.md) and [V8 implementation and verification](docs/v8-test-report.md). Commercial pricing and direct WhatsApp setup are labelled honestly; previews never write business records.
 
 **Apni Dukaan, Sab Set.** A mobile-first, three-language workspace for sales, stock, customer dues and missed demand. V4 adds one shared VoiceOS engine and global/contextual voice drafts to the transactional billing, inventory, payments and DemandPulse workflows.
@@ -30,7 +33,7 @@ The development server binds to loopback. Use `npm run dev -- --port 3002` for a
 
 The default database is `.data/dukaanset.sqlite`, with SQLite WAL journaling. `DATABASE_PATH` chooses durable private storage. Business data, tokens, password hashes, private photos, local outbox files and backups are ignored by Git. A Git push preserves **source**, not merchant data. Never expose them through `public/` or commit `.env.local`.
 
-The additive schema migrations upgrade earlier databases to version 6 and reject newer versions. Run `npm run backup` before upgrading; the command creates a SQLite-consistent snapshot under `.data/backups/` and checks integrity/foreign keys. Keep a protected copy elsewhere and restore only with the application stopped and the matching source revision. No scheduled backup service is included.
+The additive schema migrations upgrade earlier databases to version 7 and reject newer versions. Run `npm run backup` before upgrading; the command creates a SQLite-consistent snapshot under `.data/backups/` and checks integrity/foreign keys. Keep a protected copy elsewhere and restore only with the application stopped and the matching source revision. No scheduled backup service is included.
 
 [.env.example](.env.example) documents server-only configuration. Production account email requires `AUTH_EMAIL_MODE=resend`, a trusted HTTPS `AUTH_BASE_URL`, `AUTH_EMAIL_FROM` and `RESEND_API_KEY`. File delivery is disabled in production. Live delivery through a verified sender still requires an operational test.
 
@@ -50,9 +53,9 @@ Money uses integer paise and quantities use thousandths. Financial writes are tr
 
 ## Limits
 
-This is a tested local application, not a completed commercial deployment. It runs on a persistent single-process Node/SQLite server. Supplier purchase payments are cash-only; repayments allocate oldest-first; full cancellation refuses invoices with later repayments. Partial returns, stock-batch expiry, full variant matrices, supplier repayment, PostgreSQL/multi-process operation, subscriptions, verified payment settlement, government e-invoicing, OCR/hosted transcription and offline financial synchronization remain future work. Nearby merchant networking is expressly a future phase.
+This is a tested local application, not a completed commercial deployment. It runs on a persistent single-process Node/SQLite server. Purchase-entry payments are cash; later supplier payments support cash/UPI. Repayments allocate oldest-first unless an invoice is explicitly selected; full cancellation refuses invoices with later repayments. Partial returns, stock-batch expiry, full variant matrices, PostgreSQL/multi-process operation, subscriptions, verified payment settlement, government e-invoicing, OCR/hosted transcription and offline financial synchronization remain future work. Nearby merchant networking is expressly a future phase.
 
-Browser speech support/accuracy depends on the browser and may use its vendor's services. Manual entry remains available. PDFs rasterize text for Hindi shaping, so text search is unavailable. Public PWA assets have a narrow offline fallback; private records/API responses are excluded. Physical-device, screen-reader, HTTPS installation, live provider and merchant acceptance checks remain separate gates.
+Browser speech support/accuracy depends on the browser and may use its vendor's services. Manual entry remains available. PDFs embed searchable text with shaped Hindi fonts. Public PWA assets have a narrow offline fallback; private records/API responses are excluded. Physical-device, screen-reader, HTTPS installation, live provider and merchant acceptance checks remain separate gates.
 
 ## Verification and branches
 
@@ -70,12 +73,12 @@ npm run test:production -- http://127.0.0.1:3002
 
 Browser tests use a separate `.data/e2e.sqlite`, private test outbox and `.next-e2e` server on port 3001. Windows uses installed Edge; other platforms need Playwright Chromium installed. Use fictional records and free the test port first. The [V3 QA report](docs/v3-test-report.md) records actual results and rendered evidence; [V2](docs/v2-test-report.md) and [V1](docs/test-report.md) remain historical reports.
 
-`dev` contains active work; `staging` is for reviewed release candidates and `production` for explicitly approved stable releases. Branches do not deploy the app. This delivery saves V5 on `dev`; promotion and hosting are separate actions.
+`dev` contains active work; `staging` is for reviewed release candidates and `production` for explicitly approved stable releases. Branches do not deploy the app. Feature PRs target `dev`; promotion and hosting are separate actions.
 
 Other project documents: [progress](docs/progress.md), [architecture](docs/architecture.md), [design system](docs/design-system.md), [requirements](docs/requirements.md), [roadmap](docs/roadmap.md), [deployment preparation](docs/deployment.md), [server security boundary](src/lib/server/SECURITY.md), [V2 implementation](docs/v2-implementation.md) and [voice workflow](docs/v2-voice.md).
 ## Staging preparation
 
-Vercel staging uses a checked HTTPS gateway plus a persistent Node 24 backend. CI, isolated-host configuration, build metadata and staging SEO are prepared; the actual shareable deployment still requires backend hosting and verified email configuration. See [Vercel staging setup](docs/VERCEL_STAGING_SETUP.md). `main` is the unchanged initial production baseline; tested dev changes require review before the first production release.
+Vercel staging uses a checked HTTPS gateway plus a persistent Node 24 backend. CI, isolated-host configuration, build metadata and staging SEO are prepared; the actual shareable deployment still requires backend hosting and verified email configuration. See [Vercel staging setup](docs/VERCEL_STAGING_SETUP.md). `main` is the approved production baseline; new dev changes require review before production release.
 
 ## V5 multilingual experience
 

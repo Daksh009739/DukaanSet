@@ -17,7 +17,7 @@ export async function renderPdf(model: DocumentModel): Promise<{ bytes: Buffer; 
   doc.registerFont('Hindi',readFileSync(resolve(process.cwd(),'public/fonts/pdf/NotoSansDevanagari.ttf')));
   const chunks: Buffer[] = []; const complete = new Promise<Buffer>((resolve,reject)=>{doc.on('data',chunk=>chunks.push(Buffer.from(chunk)));doc.on('end',()=>resolve(Buffer.concat(chunks)));doc.on('error',reject);});
   const label=(key:string,options:Record<string,string|number>={})=>text(model.language,'documents',key,options);
-  const amount=(paise:number)=>money(paise,model.language), date=(value:string)=>dateText(value,model.language);
+  const amount=(paise:number)=>money(paise===0?0:paise,model.language), date=(value:string)=>dateText(value,model.language);
   const accent=mono?'#172E2A':model.merchant.accent, ink='#273C38';
   let y=margin, pages=0;
   // Use font fallback runs without converting Hindi to raster pictures.
@@ -36,29 +36,51 @@ export async function renderPdf(model: DocumentModel): Promise<{ bytes: Buffer; 
   }
   function space(h:number){if(y+h>height-60)newPage();}
   function block(value:string,size=thermal?8:10,colour=ink){const h=measured(value,content,size);space(h);write(value,margin,y,content,size,colour);y+=h;}
-  function newPage(){doc.addPage();pages++;y=margin;const title=model.kind==='receipt'&&model.receipt?.kind==='refund'?label('refundReceipt'):label(model.kind);
-    const logoSize=thermal?28:42,nameWidth=content-(model.merchant.logo?logoSize+30:20),nameHeight=measured(model.merchant.name,nameWidth,thermal?13:21),titleHeight=measured(title,content-20,thermal?8:11);const bandHeight=Math.max(thermal?55:74,nameHeight+titleHeight+20);
+  function newPage(){doc.addPage();pages++;y=margin;const title=model.closingReport?text(model.language,'workspace','closingPdf'):model.kind==='receipt'&&model.receipt?.kind==='refund'?label('refundReceipt'):label(model.kind);
+    const continuation=Boolean(model.closingReport&&pages>1),nameSize=thermal?13:continuation?16:21,titleSize=thermal?8:continuation?9:11;
+    const logoSize=thermal?28:42,nameWidth=content-(model.merchant.logo?logoSize+30:20),nameHeight=measured(model.merchant.name,nameWidth,nameSize),titleHeight=measured(title,content-20,titleSize);const bandHeight=Math.max(thermal?55:continuation?60:74,nameHeight+titleHeight+20);
     doc.rect(margin,y,content,bandHeight).fill(accent);
     if(model.merchant.logo){doc.image(Buffer.from(model.merchant.logo.split(',')[1],'base64'),margin+9,y+10,{fit:[logoSize,logoSize]});}
-    write(model.merchant.name,margin+(model.merchant.logo?logoSize+20:10),y+10,content-(model.merchant.logo?logoSize+30:20),thermal?13:21,'#FFFFFF');
-    write(title,margin+10,y+nameHeight+12,content-20,thermal?8:11,'#FFFFFF');y+=bandHeight+12;
+    write(model.merchant.name,margin+(model.merchant.logo?logoSize+20:10),y+10,content-(model.merchant.logo?logoSize+30:20),nameSize,'#FFFFFF');
+    write(title,margin+10,y+nameHeight+12,content-20,titleSize,'#FFFFFF');y+=bandHeight+12;
     if(pages>1){block(model.reference,thermal?8:10);}
   }
   newPage();
   for(const value of [model.merchant.tagline,model.merchant.address,[model.merchant.phone,model.merchant.email].filter(Boolean).join(' · '),model.merchant.website])if(value)block(value,thermal?8:9);
   y+=8;block(model.reference,thermal?10:15,accent);block(date(model.invoice?.date||model.receipt?.date||model.generatedAt));
-  block(model.customer.name||text(model.language,'sales','walkIn'),thermal?10:12);
+  if(!model.closingReport)block(model.customer.name||text(model.language,'sales','walkIn'),thermal?10:12);
   if(model.customer.phone)block(model.customer.phone);
   if(model.legacy)block(label('legacy'),thermal?7:9);
   if(model.invoice?.dueDate)block(`${label('dueDate')}: ${date(model.invoice.dueDate)}`);
   y+=10;
-  function pair(key:string,value:string,highlight=false){const size=highlight?(thermal?11:13):(thermal?8:10),tokenWidth=Math.max(...value.split(/\s+/u).map(word=>spanWidth(word,size))),valueSize=Math.max(thermal?6:8,Math.min(size,size*content*.38/Math.max(tokenWidth,1))),h=Math.max(measured(key,content*.55,size),measured(value,content*.39,valueSize))+8;space(h);if(highlight)doc.rect(margin,y-4,content,h).fill(mono?'#EDF1EF':'#E6F7F0');write(key,margin+4,y,content*.55,size);write(value,margin+content*.59,y,content*.39,valueSize);y+=h;}
+  function pair(key:string,value:string,highlight=false){const size=highlight?(thermal?11:13):(thermal?8:10),tokenWidth=Math.max(...value.split(/\s+/u).map(word=>spanWidth(word,size))),valueSize=Math.max(thermal?6:8,Math.min(size,size*content*.38/Math.max(tokenWidth,1))),h=Math.max(measured(key,content*.55,size),measured(value,content*.39,valueSize))+(model.closingReport?2:8);space(h);if(highlight)doc.rect(margin,y-4,content,h).fill(mono?'#EDF1EF':'#E6F7F0');write(key,margin+4,y,content*.55,size);write(value,margin+content*.59,y,content*.39,valueSize);y+=h;}
   function table(headers:string[],rows:string[][],fractions:number[]){
     const size=thermal?7:9,cols=fractions.map(f=>f*content);
     const rowHeight=(cells:string[])=>Math.max(...cells.map((cell,i)=>measured(cell,cols[i]-8,size)))+10;
     function row(cells:string[],head=false){const h=rowHeight(cells);if(y+h>height-60){newPage();heading();}if(head)doc.rect(margin,y,content,h).fill(mono?'#E8EFEC':'#DFF4ED');let x=margin;cells.forEach((cell,i)=>{write(cell,x+4,y+5,cols[i]-8,size);x+=cols[i];});y+=h;doc.moveTo(margin,y).lineTo(width-margin,y).strokeColor('#E8EFEC').lineWidth(.5).stroke();}
     function heading(){row(headers,true);}
     heading();for(const cells of rows)row(cells);y+=12;
+  }
+  if(model.closingReport){
+    const r=model.closingReport,w=(key:string)=>text(model.language,'workspace',key),T=r.totals;
+    block(w('businessReport'),9,accent);block(`${w('businessDate')}: ${r.session.businessDate} | ${w('version')}: ${r.version}`);
+    block(`${w(r.method)} | ${r.actorKind==='system'?w('schedulerActor'):r.actorName}`);block(`${w('closedAt')}: ${dateText(r.asOf,model.language,{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit',timeZone:r.session.timezone})}`);
+    if(r.scheduledAt)block(`${w('scheduledAt')}: ${dateText(r.scheduledAt,model.language,{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit',timeZone:r.session.timezone})}`);
+    block(`${r.session.timezone} | ${w('cutoff')}: ${r.session.cutoff}`);y+=8;
+    const section=(title:string,pairs:[string,number][])=>{space(measured(w(title),content,13)+pairs.reduce((h,[key,value])=>h+Math.max(measured(w(key),content*.55,['netSales','collections','closingReceivable','expectedCash'].includes(key)?13:10),measured(amount(value),content*.39,10))+4,0)+8);block(w(title),13,accent);for(const [key,value]of pairs)pair(w(key),amount(value),['netSales','collections','closingReceivable','expectedCash'].includes(key));y+=8;};
+    section('netSales',[['grossSales',T.grossSalesPaise],['discounts',-T.discountsPaise],['returns',-T.returnsPaise],['netSales',T.netSalesPaise]]);
+    section('paymentsBreakdown',[['cashCollections',T.cashCollectionsPaise],['upiCollections',T.upiCollectionsPaise],['collections',T.collectionsPaise],['saleCollections',T.saleCollectionsPaise],['olderCollections',T.olderDuesCollectionsPaise],['refunds',T.refundsPaise]]);
+    section('closingReceivable',[['openingReceivable',T.openingReceivablePaise],['newCredit',T.newCreditPaise],['creditCollections',-T.creditCollectionsPaise],['creditReversals',-T.creditReversalsPaise],['closingReceivable',T.closingReceivablePaise]]);
+    section('cashReconciliation',[['openingCash',r.session.openingCashPaise],['cashCollections',T.cashCollectionsPaise],['cashExpenses',-T.cashExpensesPaise],['cashSupplierPayments',-T.cashSupplierPaymentsPaise],['cashRefunds',-T.cashRefundsPaise],['deposits',T.depositsPaise],['withdrawals',-T.withdrawalsPaise],['expectedCash',T.expectedCashPaise]]);
+    pair(w('actualCash'),r.actualCashPaise===null?w('pendingCount'):amount(r.actualCashPaise));pair(w('difference'),r.differencePaise===null?'—':amount(r.differencePaise),true);block(w('countHint'),9);
+    block(w(r.verification==='pending'?'pendingCount':r.verification==='matched'?'matched':(r.differencePaise||0)<0?'cashShortage':'cashExcess'),10,accent);
+    section('expensesSuppliers',[['cashExpenses',T.cashExpensesPaise],['noncashExpenses',T.expensesPaise-T.cashExpensesPaise],['supplierPayments',T.supplierPaymentsPaise]]);
+    block(w('inventorySummary'),13,accent);pair(text(model.language,'translation','billsToday'),String(T.billCount));pair(text(model.language,'translation','purchases'),String(T.purchaseCount));pair(text(model.language,'translation','lowStock'),String(T.lowStockCount));
+    for(const p of r.inventory){space(90);block(`${p.name}${p.variant?' · '+p.variant:''}`,11,accent);const unit=unitText(p.unit,model.language);block(`${w('soldQuantity')}: ${quantity(p.soldMilli)} | ${w('receivedQuantity')}: ${quantity(p.receivedMilli)} | ${w('returnedQuantity')}: ${quantity(p.returnedMilli)} | ${w('wastedQuantity')}: ${quantity(p.wastedMilli)} ${unit}`,9);pair(w('availableStock'),`${quantity(p.availableMilli)} ${unit}`);}
+    if(r.reason){block(w('correctionReason'),12,accent);block(r.reason);block(r.sourceReferences.join(', '));}
+    if(r.revisedAt)block(`${w('revisedBy')}: ${r.revisionActorName} · ${dateText(r.revisedAt,model.language,{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit',timeZone:r.session.timezone})}`,9);
+    if(r.linkedCorrections?.length){block(w('linkedCorrectionHint'),9);for(const c of r.linkedCorrections)pair(`${c.sourceId} · ${date(c.date)}`,amount(c.amountPaise));}
+    block(`${w('session')}: ${r.session.id}`,8);block(`${w('calculationVersion')}: ${r.calculationVersion}`,8);
   }
   if(model.invoice){
     const inv=model.invoice;
@@ -81,7 +103,7 @@ export async function renderPdf(model: DocumentModel): Promise<{ bytes: Buffer; 
   if(model.originalPayments?.some(p=>p.method==='upi')||model.receipt?.method==='upi')block(label('recordedUpi'),thermal?7:9);
   if(model.merchant.upiId&&model.merchant.payee&&model.invoice&&model.invoice.status!=='cancelled'&&model.invoice.balancePaise>0){space(130);const uri=`upi://pay?pa=${encodeURIComponent(model.merchant.upiId)}&pn=${encodeURIComponent(model.merchant.payee)}&am=${(model.invoice.balancePaise/100).toFixed(2)}&cu=INR&tn=${encodeURIComponent(model.reference)}`;const qr=await QRCode.toBuffer(uri,{type:'png',width:240,margin:2,errorCorrectionLevel:'M'});doc.image(qr,margin,y,{width:88});y+=94;block(label('qrNote'),thermal?7:9);}
   for(const value of [model.merchant.terms,model.merchant.returnPolicy,model.merchant.footer])if(value){y+=8;block(value,thermal?7:9);}
-  block(label('generated',{date:date(model.generatedAt)}),thermal?7:9);
+  if(!model.closingReport)block(label('generated',{date:date(model.generatedAt)}),thermal?7:9);
   for(let i=0;i<pages;i++){doc.switchToPage(i);write(label('footer'),margin,height-39,content,thermal?6:8);write(label('page',{page:i+1,total:pages}),margin,height-25,content,thermal?6:8);}
   doc.end();return {bytes:await complete,pages};
 }

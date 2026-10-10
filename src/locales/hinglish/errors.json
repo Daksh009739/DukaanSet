@@ -25,7 +25,7 @@
   "CUSTOMER_REQUIRED": "Udhaar ya partial payment wale bill ke liye customer chuno.",
   "IDEMPOTENCY_CONFLICT": "Yeh attempt alag details ke saath pehle save hua hai. Nayi entry se pehle records check karo.",
   "REPAYMENT_EXISTS": "Iss bill par baad mein payments mile hain. Cancel ke liye reviewed adjustment chahiye, jo abhi available nahi hai.",
-  "DAY_CLOSED": "Aaj ka hisaab band ho gaya hai. Nayi paison ki entries agle business day darj karo.",
+  "DAY_CLOSED": "Yeh hisaab band hai. Agla len-den karne se pehle Aaj Ka Karobaar Shuru Karein mein shuruaati cash confirm karein.",
   "ALREADY_CLOSED": "Aaj ka hisaab pehle se save hai. Confirmed summary dekhne ke liye refresh karo.",
   "NOT_FOUND": "Chune hue business mein yeh record available nahi hai. Refresh karke phir try karo.",
   "LIMIT_REACHED": "Iss local workspace ki record limit poori ho gayi hai.",
@@ -80,5 +80,12 @@
   "WHATSAPP_RATE_LIMIT": "WhatsApp ne request limit ki. Ruk kar dobara check karein.",
   "WHATSAPP_CREDENTIALS": "Business sender ko administrator ki madad chahiye. Manual share kar sakte hain.",
   "WHATSAPP_REJECTED": "WhatsApp ne document request reject ki. Recipient aur connection check karein.",
-  "WHATSAPP_TIMEOUT": "Provider ka response ruk gaya. Retry se pehle recorded status check karein."
+  "WHATSAPP_TIMEOUT": "Provider ka response ruk gaya. Retry se pehle recorded status check karein.",
+  "STALE_PREVIEW": "Review ke baad records badle hain. Naye total dekhkar dobara confirm karein.",
+  "CASH_COUNT_REQUIRED": "Gine hue cash ki rakam bharein. Is dukaan mein cash ginna zaroori hai.",
+  "ACKNOWLEDGEMENT_REQUIRED": "Hisaab band karne se pehle antar ya baaki kaam dekhkar sahmati dein.",
+  "SESSION_ACTIVE": "Ek hisaab session khula hai. Karobari samay badalne ya naya session kholne se pehle ise band karein.",
+  "INVALID_TIME": "Session ka samay aur timezone dekhein. Naya session pichhle closing ke baad shuru hona chahiye.",
+  "ACCOUNTING_LIMIT": "Hisaab ka total samarthit seema se zyada hai. Records export karke sahayata se sampark karein.",
+  "CORRECTION_SOURCE": "Is hisaab ke band hone ke baad darj len-den chunein. Purane len-den surakshit total mein pehle se shaamil hain."
 }
