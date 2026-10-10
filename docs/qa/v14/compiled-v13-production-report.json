@@ -1,0 +1,57 @@
+{
+  "checkedAt": "2026-10-10T18:27:41.268Z",
+  "environment": "compiled local production; verified fictional shop; real licensed-media worker; typed VoiceOS",
+  "checks": [
+    "Compiled production rejects unconfigured registration delivery; a private verified fixture signs in through the normal API",
+    "One reviewed stock confirmation creates each missing product and its exact quantity/rate; presentation jobs do not block the save",
+    "Conversational customer + cash invoice is confirmed once, with correct stock and customer ledger",
+    "Invoice Studio generates a real immutable invoice PDF",
+    "Voice report reflects saved sales; closing review leaves the session open until explicit confirmation",
+    "Persistent media worker resolves or safely falls back; uncertain packaging stays unselected and financial records are unchanged",
+    "Compiled dashboard passes accessibility, responsive width checks and has no runtime errors"
+  ],
+  "media": [
+    {
+      "name": "coca cola 500ml",
+      "status": "suggestions",
+      "source": "",
+      "attribution": "",
+      "license": "",
+      "sourceUrl": "",
+      "suggestions": 3
+    },
+    {
+      "name": "maggi masala noodles",
+      "status": "suggestions",
+      "source": "",
+      "attribution": "",
+      "license": "",
+      "sourceUrl": "",
+      "suggestions": 1
+    },
+    {
+      "name": "pyaz",
+      "status": "ready",
+      "source": "wikimedia-commons",
+      "attribution": "Dubravko Sorić SoraZG on Flickr",
+      "license": "CC BY 2.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Three_onions_on_white_background.jpg",
+      "suggestions": 3
+    },
+    {
+      "name": "water bottle 1l",
+      "status": "suggestions",
+      "source": "",
+      "attribution": "",
+      "license": "",
+      "sourceUrl": "",
+      "suggestions": 2
+    }
+  ],
+  "dashboardReadyMs": 239.30000000447035,
+  "performance": {
+    "domContentLoadedMs": 57.100000001490116,
+    "loadMs": 88,
+    "resourceTransferBytes": 49856
+  }
+}

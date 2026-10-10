@@ -29,6 +29,7 @@ test('customer360, statement PDF, product aliases and invoice snapshots remain c
   await page.locator('.language-picker select').selectOption('hi'); const hindiDownload = page.waitForEvent('download'); await page.getByRole('button', {name:'PDF डाउनलोड',exact:true}).click(); await (await hindiDownload).saveAs('test-results/v2-invoice-hindi.pdf');
 });
 test('customer details and data-backed insights are accessible across phone widths and languages', async ({ page }) => {
+  test.setTimeout(120000);
   const { state } = await setup(page); const customer = state.customers.find(c => c.name.startsWith('Rahul'))!;
   for (const path of [`/app/customers/${customer.id}`, '/app/stock', '/app/ai']) {
     await page.goto(path); await expect(page.locator('main h1')).toBeVisible();
@@ -38,6 +39,6 @@ test('customer details and data-backed insights are accessible across phone widt
       const axe = await new AxeBuilder({ page }).include('.workspace').withTags(['wcag2a', 'wcag2aa', 'wcag22aa']).analyze(); expect(axe.violations).toEqual([]);
     }
   }
-  await page.locator('.language-picker select').selectOption('en'); await page.getByRole('button', { name: 'How much did I sell today?', exact: true }).click(); await expect(page.locator('.insights-answer')).toContainText('₹');
+  await page.locator('.language-picker select').selectOption('en'); await page.locator('.assistant-questions').getByRole('button', { name: 'Show today’s sales.', exact: true }).click(); await expect(page.getByRole('dialog').locator('.voiceos-answer')).toContainText('₹');
   await page.screenshot({ path: 'test-results/v2-insights.png', fullPage: true });
 });

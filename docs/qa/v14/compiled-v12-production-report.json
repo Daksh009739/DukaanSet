@@ -1,0 +1,11 @@
+{
+  "checkedAt": "2026-10-10T18:27:32.181Z",
+  "environment": "compiled local production build; isolated fictional shop; typed commands",
+  "checks": [
+    "Compiled conversational customer + invoice saves one dependent transaction with accurate stock and cash",
+    "Compiled focused stock creates its missing product and exact batch cost through one confirmed atomic save",
+    "Compiled global stock reuses the shared engine, increments existing stock and applies an explicit reviewed price change",
+    "Compiled compact assistant passes automated accessibility checks at mobile width",
+    "No compiled browser runtime errors"
+  ]
+}

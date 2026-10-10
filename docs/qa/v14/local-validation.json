@@ -1,0 +1,119 @@
+{
+  "checkedAt": "2026-10-10T18:29:01.639Z",
+  "runtime": "Node.js 24 on Windows",
+  "unit": {
+    "command": "npm test",
+    "passed": 202,
+    "failed": 0
+  },
+  "browser": {
+    "command": "npm run test:e2e",
+    "uniquePassed": 82,
+    "suites": 14,
+    "failedSuites": 0,
+    "note": "All 82 unique cases passed across 14 suites and targeted reruns. Final checks cover committed stock retirement, saving/recovery, normal navigation at eight widths in three languages, and restored financial answers after reload.",
+    "finalRechecks": [
+      {
+        "suite": "conversation",
+        "cases": 6,
+        "evidence": ".local/v14-completion-conversation.log",
+        "note": "Passed"
+      },
+      {
+        "suite": "voice-products",
+        "cases": 3,
+        "evidence": ".local/v14-completion-products.log",
+        "note": "Passed"
+      },
+      {
+        "suite": "voiceos",
+        "cases": 8,
+        "evidence": ".local/v14-completion-voiceos.log",
+        "note": "Passed"
+      },
+      {
+        "suite": "V14 functional workflows",
+        "cases": 6,
+        "evidence": ".local/v14-browser-final.log",
+        "note": "Six functional cases passed; the visual case was corrected to use normal navigation and rerun separately."
+      },
+      {
+        "suite": "V14 loaded visual audit",
+        "cases": 1,
+        "evidence": ".local/v14-render-native.log",
+        "note": "Passed"
+      },
+      {
+        "suite": "Restored report after business hydration",
+        "cases": 1,
+        "evidence": ".local/v14-report-reload.log",
+        "note": "Passed"
+      }
+    ]
+  },
+  "lint": {
+    "command": "npm run lint",
+    "passed": true,
+    "sourceFiles": 145
+  },
+  "types": {
+    "command": "npm run typecheck",
+    "passed": true
+  },
+  "locales": {
+    "command": "npm run test:locales",
+    "languages": [
+      "en",
+      "hi",
+      "hinglish"
+    ],
+    "keysPerLanguage": 2176,
+    "hardcodedVisibleText": 0
+  },
+  "sourceComparison": {
+    "checkedFiles": 253,
+    "mismatches": []
+  },
+  "liveSpeechAccuracy": "not verified; controlled browser recognition events only",
+  "production": {
+    "buildPassed": true,
+    "framework": "Next.js 16.4",
+    "generatedRoutes": 86,
+    "reports": [
+      {
+        "version": "v10",
+        "file": "compiled-v10-production-report.json",
+        "checkedAt": "2026-10-10T18:26:59.478Z",
+        "checks": 6
+      },
+      {
+        "version": "v12",
+        "file": "compiled-v12-production-report.json",
+        "checkedAt": "2026-10-10T18:27:32.181Z",
+        "checks": 5
+      },
+      {
+        "version": "v13",
+        "file": "compiled-v13-production-report.json",
+        "checkedAt": "2026-10-10T18:27:41.268Z",
+        "checks": 7
+      },
+      {
+        "version": "v14",
+        "file": "compiled-v14-production-report.json",
+        "checkedAt": "2026-10-10T18:28:27.914Z",
+        "checks": 5
+      }
+    ],
+    "securitySmoke": {
+      "passed": 7,
+      "failed": 0
+    },
+    "isolatedFictionalData": true
+  },
+  "screenshots": {
+    "before": 7,
+    "after": 34,
+    "compiled": 10
+  }
+}

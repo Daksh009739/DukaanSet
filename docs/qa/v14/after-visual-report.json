@@ -1,0 +1,166 @@
+{
+  "checkedAt": "2026-10-10T18:15:17.553Z",
+  "checks": [
+    {
+      "name": "stock",
+      "width": 320
+    },
+    {
+      "name": "demand",
+      "width": 320
+    },
+    {
+      "name": "customer",
+      "width": 320
+    },
+    {
+      "name": "assistant",
+      "width": 320
+    },
+    {
+      "name": "settings",
+      "width": 320
+    },
+    {
+      "name": "stock",
+      "width": 360
+    },
+    {
+      "name": "demand",
+      "width": 360
+    },
+    {
+      "name": "customer",
+      "width": 360
+    },
+    {
+      "name": "assistant",
+      "width": 360
+    },
+    {
+      "name": "settings",
+      "width": 360
+    },
+    {
+      "name": "stock",
+      "width": 390
+    },
+    {
+      "name": "demand",
+      "width": 390
+    },
+    {
+      "name": "customer",
+      "width": 390
+    },
+    {
+      "name": "assistant",
+      "width": 390
+    },
+    {
+      "name": "settings",
+      "width": 390
+    },
+    {
+      "name": "stock",
+      "width": 430
+    },
+    {
+      "name": "demand",
+      "width": 430
+    },
+    {
+      "name": "customer",
+      "width": 430
+    },
+    {
+      "name": "assistant",
+      "width": 430
+    },
+    {
+      "name": "settings",
+      "width": 430
+    },
+    {
+      "name": "stock",
+      "width": 768
+    },
+    {
+      "name": "demand",
+      "width": 768
+    },
+    {
+      "name": "customer",
+      "width": 768
+    },
+    {
+      "name": "assistant",
+      "width": 768
+    },
+    {
+      "name": "settings",
+      "width": 768
+    },
+    {
+      "name": "stock",
+      "width": 1024
+    },
+    {
+      "name": "demand",
+      "width": 1024
+    },
+    {
+      "name": "customer",
+      "width": 1024
+    },
+    {
+      "name": "assistant",
+      "width": 1024
+    },
+    {
+      "name": "settings",
+      "width": 1024
+    },
+    {
+      "name": "stock",
+      "width": 1440
+    },
+    {
+      "name": "demand",
+      "width": 1440
+    },
+    {
+      "name": "customer",
+      "width": 1440
+    },
+    {
+      "name": "assistant",
+      "width": 1440
+    },
+    {
+      "name": "settings",
+      "width": 1440
+    },
+    {
+      "name": "stock",
+      "width": 1920
+    },
+    {
+      "name": "demand",
+      "width": 1920
+    },
+    {
+      "name": "customer",
+      "width": 1920
+    },
+    {
+      "name": "assistant",
+      "width": 1920
+    },
+    {
+      "name": "settings",
+      "width": 1920
+    }
+  ],
+  "errors": []
+}
