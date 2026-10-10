@@ -25,6 +25,8 @@ Initial regressions exposed header actions before business hydration, a mobile s
 
 The first GitHub run passed unit/build/dashboard/auth checks, then Turbopack crashed restoring a stale disk task graph while starting the next isolated test server. `DUKAANSET_E2E=1` now disables only the documented development filesystem cache for browser tests. Normal development and production cache defaults remain enabled. Repeated server-start checks and the new exact-head CI run validate this correction.
 
+The next GitHub run passed all 193 unit checks, the build, all 75 browser cases and both earlier compiled demonstrations. Its final VoiceOS demonstration read the report container before the asynchronous ledger response populated its values. The check now waits for the exact ₹500 sales result rather than treating the loading container as a completed report.
+
 ## Rendered evidence
 
 The shared design was rendered on 16 major routes at desktop 1,672px and mobile 390px. Dashboard layout checks include widths 320, 360, 375, 390, 412, 430, 768, 1,024, 1,440, 1,672 and 1,920. English, Hindi and Hinglish phone screenshots are retained. Automated accessibility checks cover the dashboard, sidebar, sales/customer flows, VoiceOS and closing. Render checks found no document overflow or browser runtime errors.
