@@ -1,0 +1,99 @@
+{
+  "checkedAt": "2026-10-10T22:27:05.402Z",
+  "checks": [
+    "Favicon ICO, 16/32/48px PNGs, 180px Apple icon, manifest 192/512px icons, SVG compatibility route and updated offline cache all served successfully",
+    "Shared logo works on public/auth pages, expanded sidebar and compact navigation; sidebar controls remain separate; no browser errors or sidebar accessibility violations"
+  ],
+  "layouts": [
+    {
+      "route": "/en",
+      "width": 320,
+      "logoLoaded": true,
+      "overflow": false
+    },
+    {
+      "route": "/en",
+      "width": 390,
+      "logoLoaded": true,
+      "overflow": false
+    },
+    {
+      "route": "/en",
+      "width": 768,
+      "logoLoaded": true,
+      "overflow": false
+    },
+    {
+      "route": "/en",
+      "width": 1440,
+      "logoLoaded": true,
+      "overflow": false
+    },
+    {
+      "route": "/login",
+      "width": 320,
+      "logoLoaded": true,
+      "overflow": false
+    },
+    {
+      "route": "/login",
+      "width": 390,
+      "logoLoaded": true,
+      "overflow": false
+    },
+    {
+      "route": "/login",
+      "width": 768,
+      "logoLoaded": true,
+      "overflow": false
+    },
+    {
+      "route": "/login",
+      "width": 1440,
+      "logoLoaded": true,
+      "overflow": false
+    },
+    {
+      "route": "/app",
+      "width": 1050,
+      "overlap": false
+    },
+    {
+      "route": "/app",
+      "width": 1280,
+      "overlap": false
+    },
+    {
+      "route": "/app",
+      "width": 1440,
+      "overlap": false
+    },
+    {
+      "route": "/app",
+      "width": 1920,
+      "overlap": false
+    },
+    {
+      "route": "/app",
+      "width": 320,
+      "overflow": false
+    },
+    {
+      "route": "/app",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "route": "/app",
+      "width": 768,
+      "overflow": false
+    },
+    {
+      "route": "/app",
+      "width": 1024,
+      "overflow": false
+    }
+  ],
+  "errors": [],
+  "passed": true
+}
