@@ -14,7 +14,7 @@ const scale:Record<string,number>={hundred:100,sau:100,'सौ':100,thousand:100
 export function spokenText(raw:string):string {
   const words=normalize(raw.replace(/(?<=\d),(?=\d{3}(?:\D|$))/g,'')).split(' '), out:string[]=[];
   for(let i=0;i<words.length;i++){
-    if(['do','दो'].includes(words[i])&&['kar','karo','jodo','कर','करो','जोड़ो'].includes(words[i-1])){out.push(words[i]);continue;}
+    if(['do','दो'].includes(words[i])&&['kar','karo','jodo','bana','add','rakh','save','कर','करो','जोड़ो','बना'].includes(words[i-1])){out.push(words[i]);continue;}
     if(numbers[words[i]]===undefined){out.push(words[i]);continue;}
     let n=numbers[words[i]], group=n, total=0, end=i;
     while(end+1<words.length){const next=words[end+1], factor=scale[next];
@@ -40,7 +40,7 @@ function receipt(text:string,method:string):string|undefined {
     ?? text.match(new RegExp(`(?:${method})\\s*(?:${paidWords}|amount|था|tha|was)?\\s*(${amount})(?=\\s|$)`,'i'))?.[1];
 }
 export function resolveContact(query:string,contacts:{id:string;name:string;phone:string}[]):string[] {
-  const names:Record<string,string>={'राहुल':'rahul','शर्मा':'sharma','अमित':'amit','कुमार':'kumar','प्रिया':'priya','वर्मा':'verma','रमेश':'ramesh','गुप्ता':'gupta','नेहा':'neha','विक्रम':'vikram','पटेल':'patel','ट्रेडर्स':'traders'};
+  const names:Record<string,string>={'चेतना':'chetna','राहुल':'rahul','शर्मा':'sharma','अमित':'amit','कुमार':'kumar','प्रिया':'priya','वर्मा':'verma','रमेश':'ramesh','गुप्ता':'gupta','नेहा':'neha','विक्रम':'vikram','पटेल':'patel','ट्रेडर्स':'traders'};
   const label=(s:string)=>normalize(s).split(' ').map(w=>names[w]||w).join(' ');
   const q=label(query);if(!q)return[];
   const exact=contacts.filter(c=>label(c.name)===q||c.phone.replace(/\D/g,'')===q.replace(/\D/g,'')&&/\d{7}/.test(q));
@@ -76,10 +76,13 @@ export function detectIntent(raw:string,context?:VoiceIntent):VoiceIntent {
   if(/kitni|kitna|dikhao|batao|show|how much|how many|report|कितन|दिखाओ|बताओ/.test(t)&&!/bill.*(?:banao|बनाओ)|closing|हिसाब/.test(t))return'report';
   if(/maang|mang|maangi|maanga|chahiye|demand|unavailable|out of stock|मांग|माँग|चाहिए|उपलब्ध नहीं/.test(t))return'demand';
   if(/expense|kharcha|bijli|rent|खर्च|बिजली|किराया/.test(t))return'expense';
+  if(/payment|bhugtan|भुगतान/.test(t)&&/record|add|receive|karo|दर्ज|मिला/.test(t)&&!/bill|invoice|sold|bechi|beche|बिल|बेच/.test(t))return'payment';
   if(/(?:new|naya|naye|नया|नए).*supplier|supplier.*(?:add|jodo|जोड़)/.test(t))return'supplier';
-  if(/(?:new|naya|naye|नया|नए).*customer|customer.*(?:add|jodo|जोड़)/.test(t))return'customer';
+  if(/bill|invoice|बिल/.test(t)&&/bana|create|beche|sold|बना|बेच/.test(t))return'sale';
+  if(/customer|ग्राहक/.test(t)&&/add|create|new|naya|naye|naam|name|नया|नए|जोड़/.test(t))return'customer';
+  if(/(?:stock|स्टॉक)/.test(t)&&/add|jodo|rakh|जोड़/.test(t)||/add|jodo|जोड़/.test(t)&&/selling (?:price|rate|value)|purchase cost|cost price|batch cost/.test(t))return'stock';
   if(/purchase|खरीद|(?:traders|supplier|सप्लायर).*?(?:aayi|aaya|received|आई|आया)|\bse\b.*(?:aayi|aaya)/.test(t))return'purchase';
-  if(/sold|sell|sale|bechi|becha|bill|invoice|बेच|बिल/.test(t))return'sale';
+  if(/\b(?:sold|sell|sale|bechi|becha|beche|bill|invoice)\b|बेच|बिल/.test(t))return'sale';
   if(/stock|add|jodo|जोड़|स्टॉक/.test(t))return'stock';
   if(/account kholo|open.*account|खाता खोलो|screen|page|खोलो/.test(t))return'open';
   return context&&context!=='unknown'?context:'unknown';
@@ -94,7 +97,7 @@ export function formVoiceContext(command:VoiceCommand,fields:Record<string,strin
 const plural=(text:string)=>text.replace(/\bshirts\b/g,'shirt').replace(/\bt shirts\b/g,'t shirt').replace(/\bpackets\b/g,'packet').replace(/\bbiscuits\b/g,'biscuit');
 function entityQuery(text:string,type:'customer'|'supplier'):string {
   if(type==='supplier')return text.match(/^(.*?)\s+(?:se|से)\s/)?.[1]?.replace(/^(?:purchase|receive|received|खरीद)\s+/,'').trim()||text.match(/\bfrom\s+(.+?)(?=\s+\d|$)/)?.[1]?.trim()||'';
-  return text.match(/^(.*?)\s+(?:ko|ne|ka|को|ने|का)\s/)?.[1]?.replace(/^(?:bhai|please|aaj|today|आज)\s+/,'').trim()
+  return text.match(/^(.*?)\s+(?:ko|ne|ka|ke|को|ने|का|के)\s/)?.[1]?.replace(/^(?:bhai|please|aaj|today|आज)\s+/,'').trim()
     ||text.match(/\b(?:for|customer)\s+([\p{L}\p{M} ]+?)(?=\s+\d|\s+sold|$)/u)?.[1]?.trim()||'';
 }
 function itemFrom(clause:string,products:Product[],id:string):VoiceItem|null {
@@ -105,7 +108,7 @@ function itemFrom(clause:string,products:Product[],id:string):VoiceItem|null {
   if(numeric&&quantityStated)t=t.replace(numeric[0],' ');
   const unitMatch=t.match(/(?:^|\s)(kg|kilo|kilograms?|gram|grams|g|packet|pack|box|litres?|ml|metre|meter|pieces?|pcs|dozen|किलो|ग्राम|लीटर|पीस|पैकेट)(?=\s|$)/i);
   let unit=unitMatch?canonicalUnit(unitMatch[1]):'';if(unitMatch)t=t.replace(unitMatch[0],' ');
-  const query=t.replace(/\b(?:please|bhai|stock|add|jodo|kar|karo|do|ke|ka|ki|ko|mein|bechi|becha|hain|hai|sold|sell|to|for|from|at|aayi|aaya|received|quantity|requested|chahiye|thi|tha|maangi|maanga|mang|maang|customers?|customer|not|available|unavailable|it|was|is|bill|invoice|banao|bana|nahi|nahin|usne|he|she|aaj|today|ne|lekin|but|total|kul|demand)\b|स्टॉक|जोड़ो|कर|दो|के|की|को|में|हैं|है|बेची|बेचा|चाहिए|थी|था|मांगी|माँगी|ग्राहक|उपलब्ध|नहीं|चाहिये|बिल|बनाओ|आज|ने|लेकिन|कुल/gu,' ').replace(/\s+/g,' ').trim();
+  const query=t.replace(/\b(?:please|create|a|an|bhai|stock|add|jodo|kar|karo|do|ke|ka|ki|ko|mein|bechi|becha|beche|hain|hai|sold|sell|to|for|from|at|aayi|aaya|received|quantity|requested|chahiye|thi|tha|maangi|maanga|mang|maang|customers?|customer|not|available|unavailable|it|was|is|bill|invoice|banao|bana|nahi|nahin|usne|he|she|aaj|today|ne|lekin|but|total|kul|demand)\b|स्टॉक|जोड़ो|कर|दो|के|की|को|में|हैं|है|बेची|बेचा|चाहिए|थी|था|मांगी|माँगी|ग्राहक|उपलब्ध|नहीं|चाहिये|बिल|बनाओ|आज|ने|लेकिन|कुल/gu,' ').replace(/\s+/g,' ').trim();
   if(!query&&!qty&&!priceValue)return null;
   const match=resolveVoiceProduct(query,products), productId=match.exact&&match.ids.length===1?match.ids[0]:'';
   if(productId&&!unit)unit=products.find(p=>p.id===productId)!.unit;
@@ -160,7 +163,7 @@ export function interpretVoice(raw:string,state:V3State,context?:VoiceIntent,pre
     let itemsText=text;
     const name=result.changed.includes('customerQuery')?result.fields.customerQuery:result.changed.includes('supplierQuery')?result.fields.supplierQuery:'';
     if(name)itemsText=itemsText.replace(name,'').replace(/^\s*(?:ko|ne|ka|se|को|ने|का|से)\s+/,'');
-    itemsText=itemsText.replace(new RegExp(`(?:usne|he|she|उसने)?\\s*\\d+(?:\\.\\d+)?\\s*(?:rupaye|rupees|रुपये)?\\s*(?:${cashWords}|${onlineWords}).*$`),'').replace(/(?:cash|upi|online|कैश|यूपीआई)\s*(?:mila|tha|received|was)?\s*\d+.*/,'').replace(/\b(?:baaki|remaining)\s+(?:udhaar|credit).*/,'');
+    itemsText=itemsText.replace(new RegExp(`(?:^|\\s)(?:usne|he|she|उसने)?\\s*\\d+(?:\\.\\d+)?\\s*(?:rupaye|rupees|रुपये)?\\s*(?:${cashWords}|${onlineWords}).*$`),'').replace(/(?:cash|upi|online|कैश|यूपीआई)\s*(?:mila|tha|received|was)?\s*\d+.*/,'').replace(/\b(?:baaki|remaining)\s+(?:udhaar|credit).*/,'');
     itemsText=itemsText.replace(/(?:\d+)\s+(?:customers?|grahak|log|ग्राहक)(?:\s+(?:ne|ने))?/g,'');
     if(intent==='demand'){set('people',text.match(/(\d+)\s+(?:customers?|grahak|log|ग्राहक)/)?.[1]);itemsText=itemsText.replace(/^(?:aaj|today|आज)\s*/,'');}
     const pureQuantity=itemsText.match(/^(?:nahi\s*|nahin\s*|नहीं\s*)?(?:quantity|qty|मात्रा)?\s*(\d+(?:\.\d{1,3})?)\s*(?:(?:kar|karo|do|badlo|change|कर|करो|दो|बदलो)\s*)+$/);

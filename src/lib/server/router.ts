@@ -192,6 +192,7 @@ export async function handleRequest(request: Request, store: Store = getStore())
       case "stock": return json(store.adjustStock(userId, businessId, input));
       case "stockbatch": return json(store.receiveStockBatch(userId, businessId, input), 201);
       case "invoices": return json(store.createInvoice(userId, businessId, input), 201);
+      case "voice-sale": return json(store.createVoiceSale(userId,businessId,input),201);
       case "payments": return json(store.receivePayment(userId, businessId, input), 201);
       case "purchases": return json(store.createPurchase(userId, businessId, input), 201);
       case "expenses": return json(store.createExpense(userId, businessId, input), 201);

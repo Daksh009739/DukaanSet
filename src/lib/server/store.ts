@@ -9,6 +9,7 @@ import { captureIssued } from './document-snapshots';
 import { migrationV7 } from './closing-schema';
 import { ClosingService } from './closing';
 import { access, authorize } from './access';
+import { canonicalProductName, canonicalUnit, matchProducts } from '../voice/parser';
 import type { ModuleKey, Permission } from '../v3-contracts';
 import { DomainError, displayNames, aliases, assertWholeUnit, businessDay, category, convertQuantity, date, email, fingerprint, integer, items, keys, language, lineTotal, method, object, oneOf, password, string, unit as validateUnit } from "./validation";
 
@@ -36,7 +37,7 @@ function asAttachment(row: Row): SaleAttachment { return { id: String(row.id), u
 export class Store {
   readonly db: DatabaseSync;
   readonly schemaVersion = 7;
-  readonly runtimeRevision = "v10.1";
+  readonly runtimeRevision = "v11.1-v12";
   private transactionDepth = 0;
   constructor(path = process.env.DATABASE_PATH || resolve(process.cwd(), ".data", "dukaanset.sqlite")) {
     // Runtime database directories are external mutable data, never bundle assets.
@@ -260,10 +261,10 @@ export class Store {
     keys(input, ["idempotencyKey", "source", "items"]);
     return this.once(businessId, "stockbatch", input, () => {
       this.assertDayOpen(businessId);
-      const aggregate = new Map<string, { product: Product; quantity: number }>();
+      const aggregate = new Map<string, { product: Product; quantity: number; pricing:{previousPricePaise?:number;sellingPricePaise?:number;purchaseCostPaise?:number;purchaseTotalPaise?:number} }>();
       const created = new Map<string, { product: Product; fingerprint: string }>();
       for (const item of requested) {
-        keys(item, ["productId", "newProduct", "quantityMilli", "unit"]);
+        keys(item, ["productId", "newProduct", "quantityMilli", "unit", "sellingPricePaise", "previousPricePaise", "purchaseCostPaise", "purchaseTotalPaise"]);
         if ((item.productId !== undefined) === (item.newProduct !== undefined)) throw new DomainError('INVALID_INPUT','Choose an existing product or supply reviewed new-product details.');
         let product: Product;
         if (item.newProduct !== undefined) {
@@ -273,10 +274,11 @@ export class Store {
           const label=(value:string)=>value.normalize('NFKC').trim().replace(/\s+/g,' ').toLowerCase();
           const unitAliases:Record<string,string>={pcs:'piece',pieces:'piece',unit:'piece',kilogram:'kg',gram:'g',grams:'g',liter:'litre',l:'litre',meter:'metre',m:'metre'};
           const canonical=(value:string)=>unitAliases[value]||value;
-          const identity=JSON.stringify([label(name),label(variation),canonical(unit)]), digest=fingerprint(details), prior=created.get(identity);
+          const identity=JSON.stringify([canonicalProductName(name),label(variation),canonical(unit)]), digest=fingerprint({...details,name:canonicalProductName(name),unit:canonical(unit)}), prior=created.get(identity);
           if(prior){if(prior.fingerprint!==digest)throw new DomainError('INVALID_INPUT','Repeated new-product rows must have the same product details.');product=prior.product;}
           else {
-            if(this.rows('SELECT name,variation,unit FROM products WHERE business_id=?',businessId).some(row=>label(String(row.name))===label(name)&&label(String(row.variation))===label(variation)&&canonical(String(row.unit))===canonical(unit)))throw new DomainError('PRODUCT_EXISTS','This product already exists. Choose it from the catalogue.',409);
+            const catalogue=this.rows('SELECT * FROM products WHERE business_id=?',businessId).map(asProduct);
+            if(catalogue.some(product=>canonicalUnit(product.unit)===canonicalUnit(unit)&&(canonicalProductName(product.name)===canonicalProductName(name)&&label(product.variation)===label(variation)||matchProducts(name+' '+variation,[product]).exact)))throw new DomainError('PRODUCT_EXISTS','A matching product already exists. Review the catalogue match before retrying.',409);
             product=this.createProduct(userId,businessId,{...details,name,variation,unit,quantityMilli:0});
             created.set(identity,{product,fingerprint:digest});
           }
@@ -286,17 +288,28 @@ export class Store {
         if(from!==product.unit)this.assertPermission(userId,businessId,'inventory','unitConversion');
         const converted = convertQuantity(quantity, from, product.unit, product.packSize);
         assertWholeUnit(product.unit, converted);
-        aggregate.set(productId, { product, quantity: (aggregate.get(productId)?.quantity ?? 0) + converted });
+        const pricing:{previousPricePaise?:number;sellingPricePaise?:number;purchaseCostPaise?:number;purchaseTotalPaise?:number}={};
+        if(item.sellingPricePaise!==undefined){
+          if(item.newProduct!==undefined)throw new DomainError('INVALID_INPUT','New-product selling price belongs in product details.');
+          pricing.sellingPricePaise=integer(item.sellingPricePaise,'Selling price');pricing.previousPricePaise=integer(item.previousPricePaise,'Reviewed selling price');
+          if(product.pricePaise!==pricing.previousPricePaise)throw new DomainError('CONFLICT','Selling price changed. Review it again.',409);
+        }else if(item.previousPricePaise!==undefined)throw new DomainError('INVALID_INPUT','A reviewed price requires a requested price change.');
+        if(item.purchaseCostPaise!==undefined)pricing.purchaseCostPaise=integer(item.purchaseCostPaise,'Batch unit purchase cost');
+        if(item.purchaseTotalPaise!==undefined){pricing.purchaseTotalPaise=integer(item.purchaseTotalPaise,'Batch purchase total');if(pricing.purchaseCostPaise===undefined||BigInt(pricing.purchaseCostPaise)*BigInt(converted)!==BigInt(pricing.purchaseTotalPaise)*1000n)throw new DomainError('INVALID_INPUT','Batch purchase cost must equal its exact quantity times unit cost.');}
+        const prior=aggregate.get(productId);
+        if(prior){const comparable=(value:typeof pricing)=>({...value,purchaseTotalPaise:undefined});if(fingerprint(comparable(prior.pricing))!==fingerprint(comparable(pricing))||(prior.pricing.purchaseTotalPaise===undefined)!==(pricing.purchaseTotalPaise===undefined))throw new DomainError('INVALID_INPUT','Repeated product rows have conflicting prices or costs.');if(pricing.purchaseTotalPaise!==undefined)pricing.purchaseTotalPaise=integer(pricing.purchaseTotalPaise+prior.pricing.purchaseTotalPaise!,'Combined purchase cost');}
+        aggregate.set(productId, { product, quantity: (prior?.quantity ?? 0) + converted,pricing });
       }
       const id = uid(), at = stamp();
-      const lines = [...aggregate].map(([productId, { product, quantity }]) => {
+      const lines = [...aggregate].map(([productId, { product, quantity, pricing }]) => {
         integer(quantity, "Combined stock receipt", 1);
         if (product.quantityMilli + quantity > 1_000_000_000) throw new DomainError("STOCK_LIMIT", "Stock would exceed the supported limit.", 409);
         lineTotal(product.costPaise, product.quantityMilli + quantity);
-        return { productId, name: product.name, unit: product.unit, quantityMilli: quantity, movementId: uid() };
+        return { productId, name: product.name, unit: product.unit, quantityMilli: quantity, movementId: uid(),created:[...created.values()].some(value=>value.product.id===productId),...pricing };
       });
       for (const item of lines) {
         this.run("UPDATE products SET quantity_milli=quantity_milli+? WHERE id=? AND business_id=?", item.quantityMilli, item.productId, businessId);
+        if(item.sellingPricePaise!==undefined){this.run('UPDATE products SET price_paise=? WHERE id=? AND business_id=?',item.sellingPricePaise,item.productId,businessId);this.audit(userId,businessId,'product.price.updated',`${item.name}: ${item.previousPricePaise} → ${item.sellingPricePaise}`,at);}
         this.run("INSERT INTO movements VALUES(?,?,?,?,?,?,?)", item.movementId, businessId, item.productId, item.quantityMilli, "receipt", at, id);
       }
       this.run("INSERT INTO inventory_entries VALUES(?,?,?,?,?,?)", id, businessId, userId, at, source, JSON.stringify(lines));
@@ -338,6 +351,26 @@ export class Store {
       if (row.invoice_id) throw new DomainError("ATTACHMENT_LOCKED", "Saved invoice photos remain with the historical invoice.", 409);
       this.run("DELETE FROM attachments WHERE id=? AND business_id=?", attachmentId, businessId);
       return { ok: true };
+    });
+  }
+  /** A dependent customer + sale is one commit, including retries and audit rows. */
+  createVoiceSale(userId:string,businessId:string,raw:unknown):Invoice {
+    this.assertPermission(userId,businessId,'sales','voiceStock');
+    const input=object(raw);keys(input,['idempotencyKey','newCustomer','sale']);
+    const sale=object(input.sale);keys(sale,['customerId','items','payments','discountPaise','dueDate']);
+    return this.once(businessId,'voice.sale',input,()=>{
+      this.assertDayOpen(businessId);let customerId=sale.customerId;
+      if(input.newCustomer!==undefined){
+        this.assertPermission(userId,businessId,'customers');
+        if(customerId)throw new DomainError('INVALID_INPUT','Choose one customer creation or existing customer.');
+        const contact=object(input.newCustomer);keys(contact,['name','phone']);
+        const name=string(contact.name,'Customer name',100),phone=string(contact.phone,'Phone',30,true);
+        const label=(value:string)=>value.normalize('NFKC').trim().replace(/\s+/g,' ').toLowerCase();
+        const matches=this.rows('SELECT * FROM customers WHERE business_id=?',businessId).filter(row=>label(String(row.name))===label(name)||phone&&String(row.phone).replace(/\D/g,'')===phone.replace(/\D/g,''));
+        if(matches.length>1)throw new DomainError('CONTACT_EXISTS','Choose the correct existing customer.',409);
+        customerId=matches.length===1?String(matches[0].id):this.createContact(userId,businessId,'customers',{name,phone,rejectDuplicate:true}).id;
+      }
+      return this.createInvoice(userId,businessId,{...sale,customerId:customerId||null,idempotencyKey:string(input.idempotencyKey,'Action key',100)+':invoice'});
     });
   }
   createInvoice(userId: string, businessId: string, raw: unknown): Invoice {
@@ -649,6 +682,6 @@ export class Store {
 declare global { var dukaanStore: Store | undefined; }
 export function getStore(): Store {
   if (process.env.VERCEL === '1') throw new Error('DukaanSet SQLite requires a persistent backend. Deploy the Vercel gateway instead.');
-  if (globalThis.dukaanStore && globalThis.dukaanStore.runtimeRevision !== "v10.1") { globalThis.dukaanStore.close(); globalThis.dukaanStore = undefined; }
+  if (globalThis.dukaanStore && globalThis.dukaanStore.runtimeRevision !== "v11.1-v12") { globalThis.dukaanStore.close(); globalThis.dukaanStore = undefined; }
   return globalThis.dukaanStore ??= new Store();
 }

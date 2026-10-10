@@ -18,10 +18,10 @@ export function Field({ label, hint, ...props }: InputHTMLAttributes<HTMLInputEl
 export function Select({ label, children, ...props }: SelectHTMLAttributes<HTMLSelectElement> & {label:string}) {
   return <label className="field"><span>{label}</span><select aria-label={label} {...props}>{children}</select></label>;
 }
-export function Sheet({ title, description, open, onOpenChange, children, wide=false }: {title:string;description?:string;open:boolean;onOpenChange:(open:boolean)=>void;children:ReactNode;wide?:boolean}) {
+export function Sheet({ title, description, open, onOpenChange, children, wide=false, className,hideLanguage=false }: {title:string;description?:string;open:boolean;onOpenChange:(open:boolean)=>void;children:ReactNode;wide?:boolean;className?:string;hideLanguage?:boolean}) {
   const {t,i18n}=useTranslation(),app=useOptionalApp();
-  return <Dialog.Root open={open} onOpenChange={onOpenChange}><Dialog.Portal><Dialog.Overlay className="sheet-overlay"/><Dialog.Content className={clsx('sheet', wide && 'sheet-wide')}>
-    <div className="sheet-header"><div><Dialog.Title>{title}</Dialog.Title><Dialog.Description className={description ? 'muted' : 'sr-only'}>{description || title}</Dialog.Description></div><Dialog.Close className="icon-btn" aria-label={t('close')}><X size={20}/></Dialog.Close></div><div className="sheet-locale"><label><span>{t('language')}</span><select aria-label={t('language')} value={i18n.language} onChange={event=>{const language=event.target.value as Language;if(app)void app.changeLanguage(language).catch(error=>app.notify(app.errorText(error)));else void i18n.changeLanguage(language);}}><LanguageOptions/></select></label></div>{children}
+  return <Dialog.Root open={open} onOpenChange={onOpenChange}><Dialog.Portal><Dialog.Overlay className="sheet-overlay"/><Dialog.Content className={clsx('sheet', wide && 'sheet-wide',className)}>
+    <div className="sheet-header"><div><Dialog.Title>{title}</Dialog.Title><Dialog.Description className={description ? 'muted' : 'sr-only'}>{description || title}</Dialog.Description></div><Dialog.Close className="icon-btn" aria-label={t('close')}><X size={20}/></Dialog.Close></div>{!hideLanguage&&<div className="sheet-locale"><label><span>{t('language')}</span><select aria-label={t('language')} value={i18n.language} onChange={event=>{const language=event.target.value as Language;if(app)void app.changeLanguage(language).catch(error=>app.notify(app.errorText(error)));else void i18n.changeLanguage(language);}}><LanguageOptions/></select></label></div>}{children}
   </Dialog.Content></Dialog.Portal></Dialog.Root>;
 }
 export function Empty({icon, title, detail, action}: {icon:ReactNode;title:string;detail?:string;action?:ReactNode}) {

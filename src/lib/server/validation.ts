@@ -26,7 +26,7 @@ export function aliases(value: unknown): string[] {
 }
 export function unit(value: unknown): string {
   const v = string(value ?? "pcs", "Unit", 20).toLowerCase();
-  if (!["pcs", "piece", "pieces", "unit", "pair", "box", "bottle", "packet", "pack", "kg", "g", "gram", "grams", "kilogram", "litre", "liter", "l", "ml", "meter", "metre", "m"].includes(v)) throw new DomainError("INVALID_UNIT", "Choose a supported piece, weight, volume, or length unit.");
+  if (!["pcs", "piece", "pieces", "unit", "pair", "bag", "dozen", "box", "bottle", "packet", "pack", "kg", "g", "gram", "grams", "kilogram", "litre", "liter", "l", "ml", "meter", "metre", "m"].includes(v)) throw new DomainError("INVALID_UNIT", "Choose a supported piece, weight, volume, or length unit.");
   return v;
 }
 /** Exact compatible unit conversion; quantities remain integer thousandths. */
@@ -35,7 +35,7 @@ export function convertQuantity(quantityMilli: number, from: string, to: string,
     kg: ["weight", 1000n], kilogram: ["weight", 1000n], g: ["weight", 1n], gram: ["weight", 1n], grams: ["weight", 1n],
     litre: ["volume", 1000n], liter: ["volume", 1000n], l: ["volume", 1000n], ml: ["volume", 1n],
     meter: ["length", 1n], metre: ["length", 1n], m: ["length", 1n],
-    pcs: ["piece", 1n], piece: ["piece", 1n], pieces: ["piece", 1n], unit: ["piece", 1n],
+    pcs: ["piece", 1n], piece: ["piece", 1n], pieces: ["piece", 1n], unit: ["piece", 1n], dozen:["piece",12n],
   };
   const a = from.toLowerCase(), b = to.toLowerCase();
   if (a === b) return integer(quantityMilli, "Quantity", 1);
