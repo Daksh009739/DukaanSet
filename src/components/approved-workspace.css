@@ -23,3 +23,12 @@
 .chart-bars-month button:not(:nth-child(5n+1)):not(:last-child) small{display:none}.chart-bars-month small{font-size:10px}
 
 .approved-workspace .profile-name{min-height:26px;display:block;text-align:left}
+
+/* Keep the navigation toggle outside the scrollable branding area. */
+.approved-workspace{--sidebar-width:266px}
+.approved-workspace>.sidebar-collapse{position:fixed;left:var(--sidebar-width);right:auto;top:18px!important;z-index:30}
+@media(max-width:1350px){.approved-workspace{--sidebar-width:230px}}
+@media(max-width:1050px){.approved-workspace{--sidebar-width:200px}}
+.approved-workspace.sidebar-collapsed{--sidebar-width:82px}
+@media(min-width:1025px){.approved-workspace .app-header{padding-left:44px}}
+@media(max-width:1024px){.approved-workspace>.sidebar-collapse{display:none}}
