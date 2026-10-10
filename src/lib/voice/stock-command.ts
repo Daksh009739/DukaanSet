@@ -11,7 +11,8 @@ export function stockBaseQuantity(row:VoiceRow,products:Product[]):number|null {
  // Price-independent conversion of a detached draft; no placeholder reaches a save.
  return validateRow({...row,newProduct:row.newProduct?{...row.newProduct,price:'1',cost:''}:undefined,sellingPrice:undefined,sellingTotal:undefined,purchaseCost:undefined,purchaseTotal:undefined,unclearAmount:undefined},products).quantityMilli;
 }
-function normalizePrices(row:VoiceRow,products:Product[]):VoiceRow {
+export function normalizeStockPrices(row:VoiceRow,products:Product[]):VoiceRow {
+ row={...row,newProduct:row.newProduct?{...row.newProduct}:undefined};
  const product=products.find(p=>p.id===row.productId)||row.newProduct;
  for(const [key,unitKey] of [['sellingPrice','priceUnit'],['purchaseCost','costUnit']] as const){
   const unit=row[unitKey],amount=row[key];
@@ -40,7 +41,7 @@ export function prepareStockCommand(raw:string,products:Product[],previous:Voice
   const targets=rows.filter(row=>canonicalProductName(row.query)===canonicalProductName(correction[1])||row.productId&&matchProducts(correction[1],products.filter(p=>p.id===row.productId)).exact);
   if(targets.length===1){const row=targets[0];if(/rate|price|daam|दाम|रेट/.test(correction[0])){row.sellingPrice=correction[2];row.sellingTotal=undefined;row.priceUnit=canonicalUnit(priceUnitIn(text.slice(correction[0].length))||products.find(p=>p.id===row.productId)?.unit||row.unit);if(row.newProduct)row.newProduct.price=correction[2];}
    else{row.quantity=correction[2];if(correction[3])row.unit=canonicalUnit(correction[3]);}
-   return rows.map(row=>normalizePrices(row,products));
+   return rows.map(row=>normalizeStockPrices(row,products));
   }
   return rows.map(row=>({...validateRow(row,products),issues:[...row.issues,'correction']}));
  }
@@ -83,7 +84,7 @@ export function prepareStockCommand(raw:string,products:Product[],previous:Voice
   const baseQuantity=stockBaseQuantity(row,products);
   if(row.sellingTotal){const rate=baseQuantity===null?null:exactUnitCost(row.sellingTotal,String(baseQuantity/1000));if(rate!==null){row.sellingPrice=rate;row.priceUnit=products.find(p=>p.id===row.productId)?.unit||row.newProduct?.unit;if(row.newProduct)row.newProduct.price=rate;}else row.unclearAmount=row.sellingTotal;}
   if(row.newProduct&&row.purchaseCost)row.newProduct.cost=row.purchaseCost;
-  return normalizePrices(row,products);
+  return normalizeStockPrices(row,products);
  });
 }
 export function stockBatchItem(row:VoiceRow,products:Product[]):StockBatchItem {

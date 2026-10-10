@@ -6,7 +6,7 @@ Date: 10 October 2026. Feature branch: `feature/voiceos-smart-stock`, based on `
 
 | Check | Result |
 |---|---|
-| Node.js 24 unit/service tests | 179 passed, including 19 conversational/stock tests |
+| Node.js 24 unit/service tests | 180 passed, including 20 conversational/stock tests |
 | TypeScript and generated route types | Passed |
 | Source lint | Passed across 130 source files |
 | English / Hindi / Hinglish locale coverage | 2,060 keys per language; complete key/variable parity; no hardcoded visible source text |
@@ -19,7 +19,7 @@ The compiled checks use an isolated fictional database. They assert actual persi
 
 ## Browser regression and CI
 
-The regression set contains 71 tests across 12 suites: closing dashboard, conversational VoiceOS, Invoice Studio, localisation, premium website, core product/security flows, business details, sales recovery, focused voice stock, DemandPulse, automatic product stock and existing VoiceOS integrations. Each suite starts a fresh server so test authentication does not exhaust a production throttle. Production rate limits remain enabled.
+The regression set contains 72 tests across 12 suites: closing dashboard, conversational VoiceOS, Invoice Studio, localisation, premium website, core product/security flows, business details, sales recovery, focused voice stock, DemandPulse, automatic product stock and existing VoiceOS integrations. Each suite starts a fresh server so test authentication does not exhaust a production throttle. Production rate limits remain enabled.
 
 Existing financial assertions are retained when updating selectors for the compact input, expandable product editors and **Save All Stock** label. The new conversation suite checks one final confirmation, double clicks, lost-response recovery after reload, missing-rate clarification, exact stock/batch costs and 320/390/768/1440-pixel layouts. Recognition doubles verify the real browser adapter's callbacks and cleanup without claiming physical speech accuracy.
 

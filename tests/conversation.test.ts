@@ -4,7 +4,7 @@ import {randomUUID} from 'node:crypto';
 import {Store} from '../src/lib/server/store';
 import {SaaSService} from '../src/lib/server/saas';
 import {advanceVoice,nextVoiceQuestion,salePreview,commandCustomerName} from '../src/lib/voice/conversation';
-import {prepareStockCommand,stockBatchItem} from '../src/lib/voice/stock-command';
+import {prepareStockCommand,stockBatchItem,normalizeStockPrices} from '../src/lib/voice/stock-command';
 import {DomainError} from '../src/lib/server/validation';
 import {readConversationSession} from '../src/lib/voice/session';
 function fixture(){const store=new Store(':memory:'),session=store.demo(),business=session.businesses.find(b=>b.category==='vegetables')!;store.createContact(session.user.id,business.id,'customers',{name:'Chetna',phone:''});return{store,session,business,state:new SaaSService(store).state(session.user.id,business.id)};}
@@ -114,6 +114,14 @@ test('stock price metadata cannot redirect a global add command to sales or purc
  const f=fixture();try{
   for(const text of ['2 kilo Apricot selling price 80 rupaye kilo add karo','20 kilo daal total purchase cost 1000 rupaye stock add karo','10 kilo pyaz total batch selling value 400 rupaye add karo'])assert.equal(advanceVoice(text,f.state).intent,'stock');
   assert.equal(advanceVoice('Sell 2 kilo aloo to Chetna',f.state).intent,'sale');
+ }finally{f.store.close();}
+});
+
+test('choosing a catalogue match converts the reviewed draft rates without mutating its old values',()=>{
+ const f=fixture();try{
+  const rice=f.store.createProduct(f.session.user.id,f.business.id,{name:'Loose Rice',unit:'g',pricePaise:2,costPaise:1,quantityMilli:1000});
+  const old=prepareStockCommand('2 kilo Loose Rice selling price 40 rupaye kilo purchase cost 20 rupaye kilo add karo',[])[0];
+  const chosen=normalizeStockPrices({...old,productId:rice.id,newProduct:undefined},[rice]);assert.equal(chosen.quantityMilli,2_000_000);assert.equal(chosen.sellingPrice,'0.04');assert.equal(chosen.purchaseCost,'0.02');assert.equal(old.sellingPrice,'40');assert.equal(old.newProduct!.price,'40');assert.equal(chosen.issues.length,0);
  }finally{f.store.close();}
 });
 
