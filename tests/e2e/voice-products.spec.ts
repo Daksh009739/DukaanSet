@@ -74,7 +74,8 @@ test('a lost new-product acknowledgement survives reload and retries without dup
   await expect(page.getByText('Stock was not confirmed. Check your stock/history before changing this draft, then retry the same entry.',{exact:true})).toBeVisible();
   await expect(page.getByRole('button',{name:'Clear draft',exact:true})).toBeDisabled();
   await page.unrouteAll({behavior:'wait'});await page.reload();
-  await expect(page.getByLabel('Selling price (₹) 1',{exact:true})).toBeDisabled();
+  await page.getByTestId('voice-row').first().locator('.stock-v12-edit>summary').click();
+  await expect(page.getByLabel('Selling price (₹) 1 Edit details',{exact:true})).toBeDisabled();
   await page.getByRole('button',{name:'Save All Stock',exact:true}).click();
   await expect(page.getByRole('heading',{name:'Stock added',exact:true})).toBeVisible();
   await expect(page.getByTestId('voice-row')).toHaveCount(0);
