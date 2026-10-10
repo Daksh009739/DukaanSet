@@ -55,6 +55,8 @@ jobs:
         run: npm run test:e2e -- tests/e2e/premium-voice-v14.spec.ts
       - name: V15 semantic billing, conditional simulations, reorder retries and purchase extraction
         run: npm run test:e2e -- tests/e2e/voice-v15.spec.ts
+      - name: Contextual VoiceOS heroes, safe prefill, scoped records and multilingual responsive controls
+        run: npm run test:e2e -- tests/e2e/voice-hero.spec.ts
       - name: New product stock, lost acknowledgements and mobile inventory checks
         run: npm run test:e2e -- tests/e2e/voice-products.spec.ts
       - name: Dashboard, closing concurrency, report versions and translated PDF checks
@@ -79,3 +81,6 @@ jobs:
         run: node scripts/qa/v14-production-review.mjs
       - name: Compiled V15 semantic billing and authoritative business intelligence
         run: node scripts/qa/v15-production-review.mjs
+
+      - name: Compiled V15.2 contextual heroes, record references and responsive accessibility
+        run: node scripts/qa/v15-2-production-review.mjs

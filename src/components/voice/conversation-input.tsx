@@ -6,10 +6,11 @@ import {osCopy} from '@/lib/voice/os-copy';
 import {useVoiceCapture,useVoiceOS} from './voice-os-provider';
 import {Button,Field,Select} from '../ui';
 
-export function ConversationInput({onSubmit,question,disabled=false,initial=false,examples}:{onSubmit:(text:string)=>void;question:string;disabled?:boolean;initial?:boolean;examples?:string[]}){
+export function ConversationInput({onSubmit,question,disabled=false,initial=false,examples,prefill}:{onSubmit:(text:string)=>void;question:string;disabled?:boolean;initial?:boolean;examples?:string[];prefill?:{id:string;text:string}}){
  const copy=osCopy(useTranslation().i18n.language),[text,setText]=useState(''),voice=useVoiceOS(),locale=voice.spokenLocale,setLocale=voice.setSpokenLocale,capture=useVoiceCapture(setText),wasRecording=useRef(false),latest=useRef(text),submit=useRef(onSubmit);latest.current=text;submit.current=onSubmit;
  useEffect(()=>{if(wasRecording.current&&!capture.recording&&capture.completed&&!capture.problem&&!disabled&&latest.current.trim()){submit.current(latest.current);setText('');}wasRecording.current=capture.recording;},[capture.recording]);
  useEffect(()=>{if(disabled)capture.abort();},[disabled]);
+ useEffect(()=>{if(prefill){capture.abort();setText(prefill.text);}},[prefill?.id]);
  const problem=capture.problem==='language'?'languageError':capture.problem==='aborted'?'speechError':capture.problem;
  const review=()=>{if(!text.trim()||disabled||capture.recording)return;submit.current(text);setText('');};
  return <div className="voice-conversation-input"><div className="voice-conversation-mic"><button type="button" aria-label={capture.recording?copy.stop:copy.start} className={'conversation-microphone '+(capture.recording?'is-listening':'')} disabled={disabled||capture.supported===false} onClick={()=>capture.recording?capture.stop():capture.start(locale)}>{capture.recording?<Square size={29}/>:<Mic size={32}/>}</button><h2>{capture.recording?copy.listening:question||copy.welcome}</h2><p>{copy.speakOrType}</p></div>

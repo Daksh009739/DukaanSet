@@ -9,6 +9,7 @@ import { Button, CardTitle, Sheet, Empty } from './ui';
 import { money } from '@/lib/client';
 import { dateText } from '@/lib/locale';
 import { taskText, taskHref } from '@/lib/presentation';
+import {ContextualVoiceOSHero} from './voice/contextual-voiceos-hero';
 import { SalesOverviewChart, TradingSessionCard, AIInsightsPanel, TopProductsPanel } from './dashboard-panels';
 
 export function PremiumDashboard() {
@@ -24,6 +25,7 @@ export function PremiumDashboard() {
   ].filter(m => m.visible);
   const tasks = [...state.tasks].sort((a, b) => ({ expiry: 0, credit: 1, stock: 2, demand: 3 }[a.type] - { expiry: 0, credit: 1, stock: 2, demand: 3 }[b.type]));
   return <div className="premium-dashboard approved-dashboard"><header className="dashboard-welcome"><span className="greeting-hand" aria-hidden>👋</span><div><h1>{greeting}</h1><p>{w('overview')}</p></div><div className="dashboard-date"><CalendarDays size={24} /><div><b>{dateText(new Date(), i18n.language, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: timezone })}</b><small>{state.business.name}</small></div></div></header>
+    <ContextualVoiceOSHero variant="minimal"/>
     <div className="dashboard-metrics detail-metrics">{metrics.map(({ icon: Icon, ...metric }) => <div className={`summary-metric ${metric.tone}`} key={metric.tone}><span className="summary-icon" aria-hidden><Icon size={27} /></span><div><dl><dt>{metric.label}</dt><dd>{metric.value}</dd></dl><small>{metric.hint}</small>{metric.tone === 'purple' && state.metrics.lowStockCount > 0 && <Link className="metric-link" aria-label={t('reviewStock')} href="/app/stock?filter=low"><ArrowUpRight size={20} /></Link>}</div></div>)}</div>
     <div className="dashboard-main-grid">{p.reports && <SalesOverviewChart />}<TradingSessionCard onMore={() => setMore(true)} />{p.reports && <AIInsightsPanel />}</div>
     <div className="dashboard-focus-grid"><section className="card dashboard-work"><CardTitle action={<Link className="text-link" href="/app/todays-work">{t('seeAll')}<ArrowUpRight size={15} /></Link>}>{t('work')}</CardTitle>{closing?.latest?.verification === 'pending' && <Link className="task-row" href={`/app/reports/closings/${closing.latest.session.id}`}><span className="task-icon amber"><Clock3 size={18} /></span><div><b>{w('pendingCount')}</b><p>{w('verifyCash')}</p></div><ArrowUpRight size={16} /></Link>}{f.todaysWork && tasks.length ? tasks.slice(0, 4).map(task => <Link className="task-row" href={taskHref(task)} key={task.id}><span className={`task-icon ${task.type === 'credit' ? 'amber' : task.type === 'expiry' ? 'rose' : 'mint'}`}>{task.type === 'credit' ? <Wallet size={18} /> : task.type === 'demand' ? <MessageSquare size={18} /> : task.type === 'expiry' ? <AlertTriangle size={18} /> : <Package size={18} />}</span><div><b>{t(task.type === 'credit' ? 'taskCredit' : task.type === 'demand' ? 'taskDemand' : task.type === 'expiry' ? 'taskExpiry' : 'taskStock')}</b><p>{taskText(task, t, i18n.language)}</p></div><ArrowUpRight size={16} /></Link>) : <Empty icon={<CheckCircle2 />} title={t('allSet')} detail={t('noTasks')} />}</section>

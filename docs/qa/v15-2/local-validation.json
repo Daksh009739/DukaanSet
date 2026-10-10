@@ -1,0 +1,46 @@
+{
+  "checkedAt": "2026-10-10T21:47:20.821Z",
+  "node": "v24.18.0",
+  "sourceChecks": [
+    {
+      "name": "locales",
+      "exitCode": 0
+    },
+    {
+      "name": "lint",
+      "exitCode": 0
+    },
+    {
+      "name": "typecheck",
+      "exitCode": 0
+    },
+    {
+      "name": "unit",
+      "exitCode": 0
+    },
+    {
+      "name": "semantic",
+      "exitCode": 0
+    }
+  ],
+  "unit": {
+    "passed": 255,
+    "failed": 0
+  },
+  "locales": {
+    "keys": 2296,
+    "hardcodedVisibleText": 0
+  },
+  "browser": {
+    "uniquePassed": 7,
+    "note": "Six tests passed in the seven-case run. The selected-product handoff was corrected and its targeted rerun passed. Exact-head PR Quality runs all seven together and retains every baseline suite."
+  },
+  "compiled": {
+    "passed": true,
+    "layouts": 36,
+    "sourceFiles": 267
+  },
+  "liveSpeechVerified": false,
+  "liveProviderVerified": false,
+  "productionPromoted": false
+}

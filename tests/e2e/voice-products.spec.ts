@@ -29,10 +29,10 @@ async function newRows(page:Page) {
 }
 test('voice entry is highlighted at the top; new spoken products and stock save together',async({page})=>{
   const business=await setup(page),before=await state(page,business);
-  const entry=page.locator('.stock-voice-entry');
+  const entry=page.getByTestId('contextual-voice-hero');
   await expect(entry).toBeVisible();
   expect(await entry.evaluate(el=>el.getBoundingClientRect().top)).toBeLessThan(await page.locator('main h1').evaluate(el=>el.getBoundingClientRect().top));
-  await entry.getByRole('link',{name:'Add stock by voice',exact:true}).click();
+  await page.getByRole('link',{name:'Add stock by voice',exact:true}).click();
   await newRows(page);
   expect((await state(page,business)).products.length).toBe(before.products.length);
   await page.reload();
@@ -92,7 +92,7 @@ test('the highlighted entry and new-product review fit phones in all three langu
     for(const width of [320,390,768,1440]){
       await page.setViewportSize({width,height:844});
       expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
-      expect(await page.locator('.stock-voice-entry').evaluate(el=>el.getBoundingClientRect().bottom)).toBeLessThan(844);
+      expect(await page.getByTestId('contextual-voice-hero').evaluate(el=>el.getBoundingClientRect().bottom)).toBeLessThan(844);
     }
   }
   await page.getByRole('combobox',{name:/^(Language|Bhasha|भाषा)$/}).selectOption('en');
