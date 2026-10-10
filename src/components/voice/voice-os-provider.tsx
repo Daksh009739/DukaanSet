@@ -2,10 +2,12 @@
 import { createContext,useCallback,useContext,useEffect,useRef,useState,type ReactNode } from 'react';
 import { browserSpeechAdapter,type SpeechSession,type SpeechTranscriptionAdapter,type SpeechProblem } from '@/lib/voice/speech';
 import type { VoiceCommand,VoiceIntent } from '@/lib/voice/os';
+import type {VoicePageContext} from '@/lib/voice/discovery';
+export type VoiceDiscovery={id:string;text:string;businessId:string;context:VoicePageContext};
 import { useApp } from '../app-provider';
 
 type CaptureState={owner:string;phase:'ready'|'permissionState'|'listening';problem:SpeechProblem|null;completed?:boolean};
-type ContextValue={spokenLocale:'en-IN'|'hi-IN';setSpokenLocale:(value:'en-IN'|'hi-IN')=>void;capture:CaptureState;supported:boolean|null;start:(owner:string,locale:'en-IN'|'hi-IN',onText:(text:string)=>void)=>void;stop:(owner:string)=>void;abort:(owner?:string)=>void;handoff:VoiceCommand|null;send:(command:VoiceCommand)=>void;consume:(intent:VoiceIntent)=>void;launcher:VoiceIntent|null;launch:(intent:VoiceIntent|null)=>void;globalRequest:VoiceCommand|null;request:(command:VoiceCommand)=>void;clearRequest:()=>void;workspace:HTMLElement|null;setWorkspace:(node:HTMLElement|null)=>void};
+type ContextValue={discovery:VoiceDiscovery|null;discover:(context:VoicePageContext,text?:string)=>void;spokenLocale:'en-IN'|'hi-IN';setSpokenLocale:(value:'en-IN'|'hi-IN')=>void;capture:CaptureState;supported:boolean|null;start:(owner:string,locale:'en-IN'|'hi-IN',onText:(text:string)=>void)=>void;stop:(owner:string)=>void;abort:(owner?:string)=>void;handoff:VoiceCommand|null;send:(command:VoiceCommand)=>void;consume:(intent:VoiceIntent)=>void;launcher:VoiceIntent|null;launch:(intent:VoiceIntent|null)=>void;globalRequest:VoiceCommand|null;request:(command:VoiceCommand)=>void;clearRequest:()=>void;workspace:HTMLElement|null;setWorkspace:(node:HTMLElement|null)=>void};
 const Context=createContext<ContextValue|null>(null);
 export function VoiceOSProvider({children,adapter=browserSpeechAdapter}:{children:ReactNode;adapter?:SpeechTranscriptionAdapter}){
  const app=useApp(),recognition=useRef<SpeechSession|null>(null),generation=useRef(0),owner=useRef(''),timer=useRef<ReturnType<typeof setTimeout>|null>(null);
@@ -14,7 +16,10 @@ export function VoiceOSProvider({children,adapter=browserSpeechAdapter}:{childre
  const speechKey='ds-spoken-language-'+app.session?.user.id;
  useEffect(()=>{try{const saved=sessionStorage.getItem(speechKey);setSpokenLocale(saved==='hi-IN'?'hi-IN':'en-IN');}catch{}},[speechKey]);
  const chooseSpokenLocale=(value:'en-IN'|'hi-IN')=>{setSpokenLocale(value);try{sessionStorage.setItem(speechKey,value);}catch{}};
- const [capture,setCapture]=useState<CaptureState>({owner:'',phase:'ready',problem:null}),[supported,setSupported]=useState<boolean|null>(null),[handoff,setHandoff]=useState<VoiceCommand|null>(null),[launcher,launch]=useState<VoiceIntent|null>(null);
+ const [capture,setCapture]=useState<CaptureState>({owner:'',phase:'ready',problem:null}),[supported,setSupported]=useState<boolean|null>(null),[handoff,setHandoff]=useState<VoiceCommand|null>(null),[launcher,setLauncher]=useState<VoiceIntent|null>(null);
+ const [discovery,setDiscovery]=useState<VoiceDiscovery|null>(null);
+ const launch=useCallback((intent:VoiceIntent|null)=>{setDiscovery(null);setLauncher(intent);},[]);
+ const discover=(context:VoicePageContext,text='')=>{setDiscovery({id:crypto.randomUUID(),text,businessId:app.businessId,context});setLauncher(context.intent);};
  const [globalRequest,setGlobalRequest]=useState<VoiceCommand|null>(null),[workspace,setWorkspace]=useState<HTMLElement|null>(null);
  const request=useCallback((command:VoiceCommand)=>{setGlobalRequest(command);launch('unknown');},[]),clearRequest=useCallback(()=>setGlobalRequest(null),[]);
  const abort=useCallback((requester?:string)=>{if(requester&&requester!==owner.current)return;++generation.current;if(timer.current)clearTimeout(timer.current);timer.current=null;const current=recognition.current;recognition.current=null;finishCurrent.current=null;if(current){try{current.abort();}catch{}}setCapture({owner:owner.current,phase:'ready',problem:null});},[]);
@@ -34,7 +39,7 @@ export function VoiceOSProvider({children,adapter=browserSpeechAdapter}:{childre
   try{instance.start();}catch{finish('speechError');}
  };
  const stop=(requester:string)=>{if(owner.current!==requester||!recognition.current)return;const instance=recognition.current;try{instance.stop();}catch{finishCurrent.current?.();return;}if(recognition.current!==instance)return;if(timer.current)clearTimeout(timer.current);timer.current=setTimeout(()=>{if(recognition.current===instance)finishCurrent.current?.();},1500);};
- return <Context.Provider value={{spokenLocale,setSpokenLocale:chooseSpokenLocale,capture,supported,start,stop,abort,handoff,send:setHandoff,consume:intent=>setHandoff(previous=>previous?.intent===intent?null:previous),launcher,launch,globalRequest,request,clearRequest,workspace,setWorkspace}}>{children}</Context.Provider>;
+ return <Context.Provider value={{discovery,discover,spokenLocale,setSpokenLocale:chooseSpokenLocale,capture,supported,start,stop,abort,handoff,send:setHandoff,consume:intent=>setHandoff(previous=>previous?.intent===intent?null:previous),launcher,launch,globalRequest,request,clearRequest,workspace,setWorkspace}}>{children}</Context.Provider>;
 }
 export function useVoiceOS(){const value=useContext(Context);if(!value)throw new Error('VoiceOS requires its scoped provider');return value;}
 export function useVoiceCapture(onText:(text:string)=>void){

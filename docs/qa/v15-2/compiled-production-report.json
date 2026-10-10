@@ -1,0 +1,229 @@
+{
+  "checkedAt": "2026-10-10T21:27:47.931Z",
+  "environment": "Compiled production build; isolated fictional business; typed commands; no live speech or provider calls",
+  "checks": [
+    "Product detail example prefills without parsing or writing; explicit review resolves the exact current product in the shared stock confirmation workflow",
+    "Customer dues and bill PDF examples use their actual scoped records; document preview creates no new invoice, payment or stock movement",
+    "Keyboard launch and dismissal preserve unsaved sale quantities",
+    "Per-user collapse survives route navigation and reload, and can be reopened",
+    "36 compiled dashboard, stock and detail layouts fit 1440/768/390/320px in all three UI languages with zero hero accessibility violations; print exclusion and reduced motion work"
+  ],
+  "layouts": [
+    {
+      "language": "en",
+      "width": 1440,
+      "path": "/app",
+      "height": 68
+    },
+    {
+      "language": "en",
+      "width": 1440,
+      "path": "/app/stock",
+      "height": 112.640625
+    },
+    {
+      "language": "en",
+      "width": 1440,
+      "path": "/app/customers/:id",
+      "height": 104.640625
+    },
+    {
+      "language": "en",
+      "width": 768,
+      "path": "/app",
+      "height": 90.296875
+    },
+    {
+      "language": "en",
+      "width": 768,
+      "path": "/app/stock",
+      "height": 136.234375
+    },
+    {
+      "language": "en",
+      "width": 768,
+      "path": "/app/customers/:id",
+      "height": 104.640625
+    },
+    {
+      "language": "en",
+      "width": 390,
+      "path": "/app",
+      "height": 124.28125
+    },
+    {
+      "language": "en",
+      "width": 390,
+      "path": "/app/stock",
+      "height": 127
+    },
+    {
+      "language": "en",
+      "width": 390,
+      "path": "/app/customers/:id",
+      "height": 127
+    },
+    {
+      "language": "en",
+      "width": 320,
+      "path": "/app",
+      "height": 124.28125
+    },
+    {
+      "language": "en",
+      "width": 320,
+      "path": "/app/stock",
+      "height": 127
+    },
+    {
+      "language": "en",
+      "width": 320,
+      "path": "/app/customers/:id",
+      "height": 143.375
+    },
+    {
+      "language": "hi",
+      "width": 1440,
+      "path": "/app",
+      "height": 68
+    },
+    {
+      "language": "hi",
+      "width": 1440,
+      "path": "/app/stock",
+      "height": 112.640625
+    },
+    {
+      "language": "hi",
+      "width": 1440,
+      "path": "/app/customers/:id",
+      "height": 104.640625
+    },
+    {
+      "language": "hi",
+      "width": 768,
+      "path": "/app",
+      "height": 90.296875
+    },
+    {
+      "language": "hi",
+      "width": 768,
+      "path": "/app/stock",
+      "height": 136.234375
+    },
+    {
+      "language": "hi",
+      "width": 768,
+      "path": "/app/customers/:id",
+      "height": 104.640625
+    },
+    {
+      "language": "hi",
+      "width": 390,
+      "path": "/app",
+      "height": 121
+    },
+    {
+      "language": "hi",
+      "width": 390,
+      "path": "/app/stock",
+      "height": 127
+    },
+    {
+      "language": "hi",
+      "width": 390,
+      "path": "/app/customers/:id",
+      "height": 127
+    },
+    {
+      "language": "hi",
+      "width": 320,
+      "path": "/app",
+      "height": 124.28125
+    },
+    {
+      "language": "hi",
+      "width": 320,
+      "path": "/app/stock",
+      "height": 127
+    },
+    {
+      "language": "hi",
+      "width": 320,
+      "path": "/app/customers/:id",
+      "height": 127
+    },
+    {
+      "language": "hinglish",
+      "width": 1440,
+      "path": "/app",
+      "height": 68
+    },
+    {
+      "language": "hinglish",
+      "width": 1440,
+      "path": "/app/stock",
+      "height": 112.640625
+    },
+    {
+      "language": "hinglish",
+      "width": 1440,
+      "path": "/app/customers/:id",
+      "height": 104.640625
+    },
+    {
+      "language": "hinglish",
+      "width": 768,
+      "path": "/app",
+      "height": 90.296875
+    },
+    {
+      "language": "hinglish",
+      "width": 768,
+      "path": "/app/stock",
+      "height": 136.234375
+    },
+    {
+      "language": "hinglish",
+      "width": 768,
+      "path": "/app/customers/:id",
+      "height": 104.640625
+    },
+    {
+      "language": "hinglish",
+      "width": 390,
+      "path": "/app",
+      "height": 124.28125
+    },
+    {
+      "language": "hinglish",
+      "width": 390,
+      "path": "/app/stock",
+      "height": 127
+    },
+    {
+      "language": "hinglish",
+      "width": 390,
+      "path": "/app/customers/:id",
+      "height": 127
+    },
+    {
+      "language": "hinglish",
+      "width": 320,
+      "path": "/app",
+      "height": 124.28125
+    },
+    {
+      "language": "hinglish",
+      "width": 320,
+      "path": "/app/stock",
+      "height": 143.375
+    },
+    {
+      "language": "hinglish",
+      "width": 320,
+      "path": "/app/customers/:id",
+      "height": 143.375
+    }
+  ]
+}

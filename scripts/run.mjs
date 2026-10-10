@@ -19,7 +19,7 @@ const commands = {
   typecheck: ['node_modules/typescript/bin/tsc', '--noEmit'],
   lint: ['scripts/lint-source.mjs'],
   locales: ['scripts/check-locales.mjs'],
-  test: ['--import', 'tsx', '--test', 'tests/backend.test.ts', 'tests/client.test.ts', 'tests/voice.test.ts', 'tests/v3.test.ts', 'tests/deployment.test.ts', 'tests/voiceos.test.ts', 'tests/localization.test.ts','tests/documents.test.ts','tests/closing.test.ts','tests/conversation.test.ts','tests/product-media.test.ts','tests/dashboard-data.test.ts','tests/voice-v14.test.ts','tests/voice-v15.test.ts'],
+  test: ['--import', 'tsx', '--test', 'tests/backend.test.ts', 'tests/client.test.ts', 'tests/voice.test.ts', 'tests/v3.test.ts', 'tests/deployment.test.ts', 'tests/voiceos.test.ts', 'tests/localization.test.ts','tests/documents.test.ts','tests/closing.test.ts','tests/conversation.test.ts','tests/product-media.test.ts','tests/dashboard-data.test.ts','tests/voice-v14.test.ts','tests/voice-v15.test.ts','tests/voice-discovery.test.ts'],
   e2e: ['scripts/run-e2e.mjs'],
   backup: ['scripts/backup-database.mjs'],
   smoke: ['scripts/check-production.mjs'],

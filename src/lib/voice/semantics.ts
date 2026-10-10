@@ -9,6 +9,7 @@ export function extractVoiceRoles(normalized:string):VoiceRoles {
  const text=normalize(normalized);let productText=text,customer='',supplier='';
  // Consume complete role phrases, rather than deleting only the person's name.
  const customerPatterns=[
+  /^(?:record\s+(?:a\s+)?)?payment\s+(?:from|for)\s+(.+?)(?=\s+(?:of|for)\s+\d|\s+\d|$)/u,
   /^(?:please\s+)?(?:create\s+(?:a\s+)?(?:bill|invoice)\s+for|bill\s+for|sell\s+to)\s+(.+?)(?=\s+(?:for|of)\s+\d|\s+\d|$)/u,
   /^(?:please\s+|bhai\s+|aaj\s+|today\s+|आज\s+)?(.+?)\s+(?:ke naam (?:se|pe|par)|के नाम से|के नाम पर|ko|को|ka|का)(?=\s|$)/u,
   /^(.+?)\s+customer\s+(?:create|add)\s+(?:karo|kar do)?\s*(?:aur|and)\s+(?:usko|uska|iska)?/u
@@ -16,7 +17,8 @@ export function extractVoiceRoles(normalized:string):VoiceRoles {
  for(const pattern of customerPatterns){const match=text.match(pattern);if(!match)continue;const value=match[1].trim();
   if(!/\d|stock|स्टॉक|supplier|सप्लायर|traders|bill|invoice|create|add|banao|बिल/.test(value)){customer=value;productText=text.replace(match[0],' ').replace(/^\s*(?:for|of)\s+/,'');break;}
  }
- const leading=text.match(/^(?:purchase\s+|receive\s+)?(.+?)\s+(?:supplier\s+)?(?:se|से|from)\s+(?=\d)/u);
+ const englishPurchase=text.match(/^(?:purchase|receive purchase)\s+from\s+(.+?)\s+(?=\d)/u);
+ const leading=englishPurchase||text.match(/^(?:purchase\s+|receive\s+)?(.+?)\s+(?:supplier\s+)?(?:se|से|from)\s+(?=\d)/u);
  const trailing=text.match(/\s+([\p{L}\p{M}]+)\s+supplier\s+(?:se|से)\s+(?:aayi|aaya|received|आई|आया)/u);
  if(leading&&!customer&&!/\d/.test(leading[1])&&/purchase|supplier|traders|kharid|aayi|aaya|received|सप्लायर|खरीद|आई|आया/.test(text)){supplier=leading[1].replace(/\s+supplier$/,'').trim();productText=text.replace(leading[0],'');customer='';}
  else if(trailing){supplier=trailing[1];const marker=text.indexOf(' '+supplier+' supplier');if(marker>=0){productText=text.slice(0,marker);customer='';}}

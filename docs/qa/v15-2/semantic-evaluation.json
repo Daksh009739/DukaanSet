@@ -1,0 +1,302 @@
+{
+  "generatedAt": "2026-10-10T21:23:59.992Z",
+  "kind": "Labelled typed-transcript deterministic interpretation; fictional scoped records; no live speech or provider call",
+  "cases": 40,
+  "intentCorrect": 40,
+  "intentAccuracyPercent": 100,
+  "labelledSlotChecks": 134,
+  "correctSlots": 134,
+  "slotAccuracyPercent": 100,
+  "parseLatencyMs": {
+    "samples": 1000,
+    "median": 0.23319999999989705,
+    "p95": 0.751399999999876,
+    "p99": 1.7618999999999687
+  },
+  "limitations": [
+    "Small manually labelled regression corpus; not an estimate of real-world speech accuracy.",
+    "Parser timings exclude microphone, transcription, provider, network, review and commit latency."
+  ],
+  "results": [
+    {
+      "text": "Rahul ke naam se 10 kilo daal ka bill add karo",
+      "intentCorrect": true,
+      "slotsCorrect": 4,
+      "slots": 4,
+      "errors": []
+    },
+    {
+      "text": "Rahul ko 10 kilo daal bechi",
+      "intentCorrect": true,
+      "slotsCorrect": 4,
+      "slots": 4,
+      "errors": []
+    },
+    {
+      "text": "10 kilo daal stock mein add karo",
+      "intentCorrect": true,
+      "slotsCorrect": 3,
+      "slots": 3,
+      "errors": []
+    },
+    {
+      "text": "Rahul ke naam se 10 kilo daal add kar do",
+      "intentCorrect": true,
+      "slotsCorrect": 1,
+      "slots": 1,
+      "errors": []
+    },
+    {
+      "text": "Rahul ka ₹500 udhaar cash mein jama karo",
+      "intentCorrect": true,
+      "slotsCorrect": 3,
+      "slots": 3,
+      "errors": []
+    },
+    {
+      "text": "Create a bill for Rahul for ten kilos of dal",
+      "intentCorrect": true,
+      "slotsCorrect": 4,
+      "slots": 4,
+      "errors": []
+    },
+    {
+      "text": "Rahul ke naam pe 10 kg daal ka bill banao",
+      "intentCorrect": true,
+      "slotsCorrect": 4,
+      "slots": 4,
+      "errors": []
+    },
+    {
+      "text": "Rahul ko daal di thi 10 kilo, bill bana do",
+      "intentCorrect": true,
+      "slotsCorrect": 4,
+      "slots": 4,
+      "errors": []
+    },
+    {
+      "text": "Rahul ko 2 kilo aloo, 3 kilo pyaz aur 5 kilo daal bechi",
+      "intentCorrect": true,
+      "slotsCorrect": 4,
+      "slots": 4,
+      "errors": []
+    },
+    {
+      "text": "Stock mein 10 kilo aloo, 20 kilo pyaz aur 5 packet Maggi add karo",
+      "intentCorrect": true,
+      "slotsCorrect": 2,
+      "slots": 2,
+      "errors": []
+    },
+    {
+      "text": "राहुल के नाम से दस किलो दाल का बिल बनाओ",
+      "intentCorrect": true,
+      "slotsCorrect": 4,
+      "slots": 4,
+      "errors": []
+    },
+    {
+      "text": "Rahul ko aadha kilo daal bechi",
+      "intentCorrect": true,
+      "slotsCorrect": 4,
+      "slots": 4,
+      "errors": []
+    },
+    {
+      "text": "Rahul ko dedh kilo daal bechi",
+      "intentCorrect": true,
+      "slotsCorrect": 4,
+      "slots": 4,
+      "errors": []
+    },
+    {
+      "text": "Rahul ko dhai kilo daal bechi",
+      "intentCorrect": true,
+      "slotsCorrect": 4,
+      "slots": 4,
+      "errors": []
+    },
+    {
+      "text": "Rahul ko sava kilo daal bechi",
+      "intentCorrect": true,
+      "slotsCorrect": 4,
+      "slots": 4,
+      "errors": []
+    },
+    {
+      "text": "Rahul ko 10 kilo daal ₹100 kilo mein bechi cash mila",
+      "intentCorrect": true,
+      "slotsCorrect": 6,
+      "slots": 6,
+      "errors": []
+    },
+    {
+      "text": "Rahul ko 10 kilo daal total ₹1000 mein bechi UPI mila",
+      "intentCorrect": true,
+      "slotsCorrect": 6,
+      "slots": 6,
+      "errors": []
+    },
+    {
+      "text": "Chetna ke naam se ₹200 ka bill bana do",
+      "intentCorrect": true,
+      "slotsCorrect": 2,
+      "slots": 2,
+      "errors": []
+    },
+    {
+      "text": "Chetna ko 5 kilo aloo ₹200 mein beche cash mila",
+      "intentCorrect": true,
+      "slotsCorrect": 6,
+      "slots": 6,
+      "errors": []
+    },
+    {
+      "text": "Rahul ko do shirts ₹899 ki ek bechi ₹1000 cash ₹500 UPI baaki udhaar",
+      "intentCorrect": true,
+      "slotsCorrect": 9,
+      "slots": 9,
+      "errors": []
+    },
+    {
+      "text": "Aaj cash kitna mila",
+      "intentCorrect": true,
+      "slotsCorrect": 0,
+      "slots": 0,
+      "errors": []
+    },
+    {
+      "text": "Kal ki closing PDF dikhao",
+      "intentCorrect": true,
+      "slotsCorrect": 0,
+      "slots": 0,
+      "errors": []
+    },
+    {
+      "text": "Aaj ki dukaan close kar do",
+      "intentCorrect": true,
+      "slotsCorrect": 0,
+      "slots": 0,
+      "errors": []
+    },
+    {
+      "text": "Maggi kitna mangwana chahiye",
+      "intentCorrect": true,
+      "slotsCorrect": 0,
+      "slots": 0,
+      "errors": []
+    },
+    {
+      "text": "Agar daal 60 mein kharidun aur 75 mein bechu toh",
+      "intentCorrect": true,
+      "slotsCorrect": 0,
+      "slots": 0,
+      "errors": []
+    },
+    {
+      "text": "If I buy at 60 and sell at 75 what if",
+      "intentCorrect": true,
+      "slotsCorrect": 0,
+      "slots": 0,
+      "errors": []
+    },
+    {
+      "text": "Supplier ka bill scan karna hai",
+      "intentCorrect": true,
+      "slotsCorrect": 0,
+      "slots": 0,
+      "errors": []
+    },
+    {
+      "text": "Aaj business mein kya dhyan dena hai",
+      "intentCorrect": true,
+      "slotsCorrect": 0,
+      "slots": 0,
+      "errors": []
+    },
+    {
+      "text": "20 kilo pyaz stock mein add karo",
+      "intentCorrect": true,
+      "slotsCorrect": 3,
+      "slots": 3,
+      "errors": []
+    },
+    {
+      "text": "Chetna naam ka customer add karo",
+      "intentCorrect": true,
+      "slotsCorrect": 0,
+      "slots": 0,
+      "errors": []
+    },
+    {
+      "text": "20 kilo daal ₹1000 ki kharidi",
+      "intentCorrect": true,
+      "slotsCorrect": 5,
+      "slots": 5,
+      "errors": []
+    },
+    {
+      "text": "Rahul ko 10 kilo daal 100 rupaye kilo mein bechi cash",
+      "intentCorrect": true,
+      "slotsCorrect": 7,
+      "slots": 7,
+      "errors": []
+    },
+    {
+      "text": "10 kilo daal Rahul supplier se aayi",
+      "intentCorrect": true,
+      "slotsCorrect": 4,
+      "slots": 4,
+      "errors": []
+    },
+    {
+      "text": "Gupta Traders se 10 kilo daal aayi",
+      "intentCorrect": true,
+      "slotsCorrect": 4,
+      "slots": 4,
+      "errors": []
+    },
+    {
+      "text": "Bhai Rahul ko 2 kilo daal ka bill bana do cash",
+      "intentCorrect": true,
+      "slotsCorrect": 5,
+      "slots": 5,
+      "errors": []
+    },
+    {
+      "text": "Rahul ko 2 piece Blue Casual Shirt XL bechi cash",
+      "intentCorrect": true,
+      "slotsCorrect": 5,
+      "slots": 5,
+      "errors": []
+    },
+    {
+      "text": "Rahul nahi Rohan ke naam se bill karo",
+      "intentCorrect": true,
+      "slotsCorrect": 5,
+      "slots": 5,
+      "errors": []
+    },
+    {
+      "text": "₹100 nahi ₹90 kilo karo",
+      "intentCorrect": true,
+      "slotsCorrect": 7,
+      "slots": 7,
+      "errors": []
+    },
+    {
+      "text": "daal nahi aloo",
+      "intentCorrect": true,
+      "slotsCorrect": 6,
+      "slots": 6,
+      "errors": []
+    },
+    {
+      "text": "Kal cash kitna mila",
+      "intentCorrect": true,
+      "slotsCorrect": 1,
+      "slots": 1,
+      "errors": []
+    }
+  ]
+}

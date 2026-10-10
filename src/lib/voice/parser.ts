@@ -23,7 +23,7 @@ const synonyms: Record<string, string> = {
   pyaz:'onion', pyaaz:'onion', pyaj:'onion', प्याज:'onion', प्याज़:'onion', onions:'onion', aloo:'potato', aalu:'potato', aaloo:'potato', alu:'potato', आलू:'potato', potatoes:'potato',
   chawal:'rice', चावल:'rice', atta:'flour', आटा:'flour', tamatar:'tomato', टमाटर:'tomato', tomatoes:'tomato',
   adrak:'ginger', अदरक:'ginger', lehsun:'garlic', lahsun:'garlic', लहसुन:'garlic',
-  biscuits:'biscuit', बिस्कुट:'biscuit', चीनी:'sugar', cheeni:'sugar', chini:'sugar', नमक:'salt', namak:'salt',
+  biscuits:'biscuit', बिस्कुट:'biscuit', चीनी:'sugar', cheeni:'sugar', chini:'sugar', नमक:'salt', namak:'salt', मैगी:'maggi',
 };
 export const numbers: Record<string, number> = {
   zero:0, one:1,two:2,three:3,four:4,five:5,six:6,seven:7,eight:8,nine:9,ten:10,eleven:11,twelve:12,thirteen:13,fourteen:14,fifteen:15,sixteen:16,seventeen:17,eighteen:18,nineteen:19,twenty:20,thirty:30,forty:40,fifty:50,sixty:60,seventy:70,eighty:80,ninety:90,hundred:100,
