@@ -1,8 +1,8 @@
 {
-  "checkedAt": "2026-10-10T21:27:47.931Z",
+  "checkedAt": "2026-10-10T21:44:34.593Z",
   "environment": "Compiled production build; isolated fictional business; typed commands; no live speech or provider calls",
   "checks": [
-    "Product detail example prefills without parsing or writing; explicit review resolves the exact current product in the shared stock confirmation workflow",
+    "Product detail example prefills without parsing or writing; explicit review resolves the exact current product in the shared stock confirmation workflow, including successive products with identical suggested text",
     "Customer dues and bill PDF examples use their actual scoped records; document preview creates no new invoice, payment or stock movement",
     "Keyboard launch and dismissal preserve unsaved sale quantities",
     "Per-user collapse survives route navigation and reload, and can be reopened",
