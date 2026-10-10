@@ -10,7 +10,7 @@ import { schema } from "./schema";
 import { migrationV2, migrationV3, migrationV4, migrationV5, migrationV6 } from "./migrations";
 import { captureIssued } from './document-snapshots';
 import { migrationV7 } from './closing-schema';
-import { ClosingService } from './closing';
+import { ClosingService,wallTime } from './closing';
 import { access, authorize } from './access';
 import { canonicalProductName, canonicalUnit, matchProducts } from '../voice/parser';
 import type { ModuleKey, Permission } from '../v3-contracts';
@@ -582,7 +582,11 @@ export class Store {
   }
   voiceReport(userId:string,businessId:string,periodValue:string,feature: "voiceStock"|"assistant"="voiceStock"):VoiceReport {
     this.assertPermission(userId,businessId,'reports',feature);
-    const period=oneOf(periodValue,'Report period',['today','week','all']),today=businessDay(),start=period==='all'?'0000-01-01T00:00:00.000Z':new Date(`${period==='week'?businessDay(new Date(Date.now()-6*86400000).toISOString()):today}T00:00:00+05:30`).toISOString(),end=new Date(Date.parse(`${today}T00:00:00+05:30`)+86400000).toISOString();
+    const period=oneOf(periodValue,'Report period',['today','week','all','yesterday','month','lastWeek','twoDaysAgo']),service=new ClosingService(this),settings=service.settings(businessId),active=service.current(businessId),today=active.businessDate;
+    const shift=(day:string,count:number)=>new Date(Date.parse(day+'T12:00:00Z')+count*86400000).toISOString().slice(0,10);
+    const first=period==='yesterday'?shift(today,-1):period==='twoDaysAgo'?shift(today,-2):period==='lastWeek'?shift(today,-13):period==='week'?shift(today,-6):period==='month'?today.slice(0,8)+'01':today;
+    const last=period==='yesterday'?today:period==='twoDaysAgo'?shift(today,-1):period==='lastWeek'?shift(today,-6):shift(today,1);
+    const start=period==='all'?'0000-01-01T00:00:00.000Z':wallTime(first,active.cutoff||settings.cutoff,active.timezone||settings.timezone),end=wallTime(last,active.cutoff||settings.cutoff,active.timezone||settings.timezone);
     return this.transaction(()=>{
       if(period==='today'){const preview=new ClosingService(this).calculate(businessId),t=preview.totals;return {period,salesPaise:t.netSalesPaise,bills:t.billCount,cashPaise:t.cashCollectionsPaise-t.cashRefundsPaise,upiPaise:t.upiCollectionsPaise-t.upiRefundsPaise,expensesPaise:t.expensesPaise,expectedCashPaise:t.expectedCashPaise,topProducts:preview.inventory.map(p=>({id:p.productId,name:p.name,unit:p.unit,quantityMilli:Math.max(0,p.soldMilli-p.returnedMilli)})).filter(p=>p.quantityMilli>0).sort((a,b)=>b.quantityMilli-a.quantityMilli).slice(0,20)};}
       const sales=this.row("SELECT COALESCE(SUM(total_paise),0) amount,COUNT(*) count FROM invoices WHERE business_id=? AND status!='cancelled' AND date>=? AND date<?",businessId,start,end)!;
@@ -591,7 +595,7 @@ export class Store {
       const expenses=this.row('SELECT COALESCE(SUM(amount_paise),0) amount FROM expenses WHERE business_id=? AND date>=? AND date<?',businessId,start,end)!;
       const products=new Map<string,VoiceReport['topProducts'][number]>();
       for(const invoice of this.rows("SELECT items_json FROM invoices WHERE business_id=? AND status!='cancelled' AND date>=? AND date<?",businessId,start,end))for(const item of JSON.parse(String(invoice.items_json)) as InvoiceItem[]){const previous=products.get(item.productId);products.set(item.productId,{id:item.productId,name:item.name,unit:item.unit,quantityMilli:(previous?.quantityMilli||0)+item.quantityMilli});}
-      return {period,salesPaise:Number(sales.amount),bills:Number(sales.count),cashPaise:Number(cash.amount),upiPaise:Number(upi.amount),expensesPaise:Number(expenses.amount),topProducts:[...products.values()].sort((a,b)=>b.quantityMilli-a.quantityMilli).slice(0,20)};
+      return {period,businessDate:today,timezone:active.timezone||settings.timezone,start,end,salesPaise:Number(sales.amount),bills:Number(sales.count),cashPaise:Number(cash.amount),upiPaise:Number(upi.amount),expensesPaise:Number(expenses.amount),topProducts:[...products.values()].sort((a,b)=>b.quantityMilli-a.quantityMilli).slice(0,20)};
     });
   }
   export(userId: string, businessId: string) {

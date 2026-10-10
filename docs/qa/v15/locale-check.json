@@ -1,0 +1,22 @@
+{
+  "locales": [
+    "en",
+    "hi",
+    "hinglish"
+  ],
+  "coverage": "100% key and variable parity",
+  "counts": {
+    "common": 411,
+    "errors": 89,
+    "retail": 63,
+    "saas": 225,
+    "sales": 141,
+    "inventoryVoice": 126,
+    "voiceos": 202,
+    "marketing": 590,
+    "documents": 137,
+    "workspace": 257
+  },
+  "total": 2241,
+  "hardcodedVisibleText": 0
+}

@@ -1,0 +1,11 @@
+{
+  "checkedAt": "2026-10-10T20:20:18.477Z",
+  "environment": "compiled production build; isolated fictional demo; typed input",
+  "checks": [
+    "Billing routes the exact ambiguous command into one real stock batch; 10/2/10 retained and dal explicitly resolved",
+    "The same instruction can create one confirmed cash invoice with exact quantities, the selected customer and authoritative payment",
+    "Compiled Assistant uses the shared engine, updates an actual customer, and answers recorded sales",
+    "Contextual DemandPulse catalogue preparation links the request without inventing opening stock or recovered revenue",
+    "Five redesigned compiled screens pass desktop/mobile accessibility and overflow checks without runtime errors"
+  ]
+}

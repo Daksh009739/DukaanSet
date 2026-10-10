@@ -15,7 +15,8 @@
     "test:staging": "node scripts/run.mjs staging-smoke",
     "backup": "node scripts/run.mjs backup",
     "test:locales": "node scripts/run.mjs locales",
-    "lint": "node scripts/run.mjs lint"
+    "lint": "node scripts/run.mjs lint",
+    "test:voice-eval": "node --import tsx scripts/qa/voice-v15-evaluation.ts"
   },
   "dependencies": {
     "@fontsource-variable/manrope": "^5.3.0",

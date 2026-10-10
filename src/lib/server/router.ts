@@ -7,6 +7,8 @@ import { SaaSService } from './saas';
 import { AuthenticationService } from './authentication';
 import { authorize } from './access';
 import { AssistantService } from './assistant';
+import { IntelligenceService } from './intelligence';
+import { VoiceInterpreterService } from './voice-interpreter';
 import { DocumentService } from './documents';
 import { DeliveryService } from './whatsapp';
 import { ClosingService } from './closing';
@@ -118,6 +120,11 @@ export async function handleRequest(request: Request, store: Store = getStore())
     const [, businessId, action, recordId, subAction] = match;
     store.assertMember(userId, businessId);
     const closing=new ClosingService(store),media=new ProductMediaService(store);
+    if(action==='voice-interpret'&&!recordId){const service=new VoiceInterpreterService(store);if(verb==='GET')return json(service.status(userId,businessId));if(verb!=='POST')throw new DomainError('METHOD_NOT_ALLOWED','Use GET or POST.',405);throttle(`interpret:${userId}`,5);return json(await service.interpret(userId,businessId,await body(request)));}
+    if(action==='intelligence'&&!recordId&&verb==='GET')return json(new IntelligenceService(store).overview(userId,businessId));
+    if(action==='reorder-plan'&&!recordId&&verb==='GET')return json(new IntelligenceService(store).reorder(userId,businessId,{productId:url.searchParams.get('productId'),leadDays:Number(url.searchParams.get('leadDays')??7),coverageDays:Number(url.searchParams.get('coverageDays')??7)}));
+    if(action==='simulate'&&!recordId&&verb==='POST')return json(new IntelligenceService(store).simulate(userId,businessId,await body(request)));
+    if(action==='purchase-extract'&&!recordId&&verb==='POST'){throttle(`purchase-extract:${userId}`,10);return json(new IntelligenceService(store).extractPurchase(userId,businessId,await body(request)));}
     if(action==='media-settings'&&!recordId)return json(verb==='GET'?media.settings(userId,businessId):media.saveSettings(userId,businessId,await body(request)));
     if(action==='product-media'&&recordId){
       if(verb==='GET'&&subAction==='image'){const photo=media.read(userId,businessId,recordId,url.searchParams.get('candidate'));return new Response(new Uint8Array(photo.bytes),{headers:{'Content-Type':photo.mime,'Cache-Control':'private, no-store','X-Content-Type-Options':'nosniff','Content-Security-Policy':"default-src 'none'; sandbox"}});}

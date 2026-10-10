@@ -33,6 +33,8 @@ jobs:
       - run: npm run lint
       - run: npm run typecheck
       - run: npm test
+      - name: Labelled V15 semantic intent, entity roles and financial slot regression gate
+        run: npm run test:voice-eval
       - run: npm run build
       - run: npx playwright install --with-deps chromium
       - name: Approved dashboard, product media and shared mobile design checks
@@ -51,6 +53,8 @@ jobs:
         run: npm run test:e2e -- tests/e2e/conversation.spec.ts
       - name: V14 cross-module commands, shared assistant, DemandPulse preparation and responsive accessibility
         run: npm run test:e2e -- tests/e2e/premium-voice-v14.spec.ts
+      - name: V15 semantic billing, conditional simulations, reorder retries and purchase extraction
+        run: npm run test:e2e -- tests/e2e/voice-v15.spec.ts
       - name: New product stock, lost acknowledgements and mobile inventory checks
         run: npm run test:e2e -- tests/e2e/voice-products.spec.ts
       - name: Dashboard, closing concurrency, report versions and translated PDF checks
@@ -73,3 +77,5 @@ jobs:
 
       - name: Compiled V14 cross-module saves, shared Assistant and premium screens
         run: node scripts/qa/v14-production-review.mjs
+      - name: Compiled V15 semantic billing and authoritative business intelligence
+        run: node scripts/qa/v15-production-review.mjs
