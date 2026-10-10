@@ -3,6 +3,8 @@ import type { NextConfig } from 'next';
 const config: NextConfig = {
   distDir: process.env.DUKAANSET_BUILD_DIR || '.next',
   turbopack: { root: process.cwd() },
+  // Repeated isolated test servers must not reload a previous server's task graph.
+  experimental: { turbopackFileSystemCacheForDev: process.env.DUKAANSET_E2E !== '1' },
   poweredByHeader: false,
   logging:{incomingRequests:{ignore:[/\/verify-email/,/\/reset-password/,/\/accept-invite/]}},
   serverExternalPackages: ['node:sqlite','pdfkit','qrcode'],
