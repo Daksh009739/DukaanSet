@@ -1,0 +1,192 @@
+[
+  {
+    "name": "Pyaz",
+    "media": {
+      "url": "/api/businesses/018d1673-ab6a-4acf-a7be-29f9c92c4b63/product-media/c7a623c4-53bf-44f3-b962-6eeef5b8df1c/image?v=0e2a3388-1ddd-432b-b38f-25a45bdcee1a",
+      "selected": "automatic",
+      "status": "ready",
+      "source": "wikimedia-commons",
+      "attribution": "Dubravko Sorić SoraZG on Flickr",
+      "license": "CC BY 2.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Three_onions_on_white_background.jpg",
+      "category": "produce"
+    },
+    "candidates": [
+      {
+        "id": "1882dd442025e182e153be0683fedf08",
+        "title": "File:Three onions on white background.jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Three_onions_on_white_background.jpg",
+        "author": "Dubravko Sorić SoraZG on Flickr",
+        "license": "CC BY 2.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+        "width": 3648,
+        "height": 2736,
+        "mime": "image/jpeg",
+        "confidence": 0.96,
+        "automatic": true,
+        "url": "/api/businesses/018d1673-ab6a-4acf-a7be-29f9c92c4b63/product-media/c7a623c4-53bf-44f3-b962-6eeef5b8df1c/image?candidate=0e2a3388-1ddd-432b-b38f-25a45bdcee1a"
+      },
+      {
+        "id": "bd558edd34d2e2bde087eb78526620b9",
+        "title": "File:Onion on White.JPG",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Onion_on_White.JPG",
+        "author": "Colin",
+        "license": "CC BY-SA 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+        "width": 2793,
+        "height": 2793,
+        "mime": "image/jpeg",
+        "confidence": 0.96,
+        "automatic": true,
+        "url": "/api/businesses/018d1673-ab6a-4acf-a7be-29f9c92c4b63/product-media/c7a623c4-53bf-44f3-b962-6eeef5b8df1c/image?candidate=82b578e1-bdef-4b49-8411-ac0ecd345675"
+      },
+      {
+        "id": "6d99b8093fb790979a5c5c32d60d7bca",
+        "title": "File:Red Onion on White.JPG",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Red_Onion_on_White.JPG",
+        "author": "Colin",
+        "license": "CC BY-SA 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+        "width": 3056,
+        "height": 3056,
+        "mime": "image/jpeg",
+        "confidence": 0.96,
+        "automatic": true,
+        "url": "/api/businesses/018d1673-ab6a-4acf-a7be-29f9c92c4b63/product-media/c7a623c4-53bf-44f3-b962-6eeef5b8df1c/image?candidate=2e31205f-02b6-4f9b-9745-5da06369a032"
+      }
+    ]
+  },
+  {
+    "name": "Maggi Masala Noodles",
+    "media": {
+      "url": null,
+      "selected": "automatic",
+      "status": "suggestions",
+      "source": "",
+      "attribution": "",
+      "license": "",
+      "licenseUrl": "",
+      "sourceUrl": "",
+      "category": "food"
+    },
+    "candidates": [
+      {
+        "id": "2c8780cbc68f14000f4ce3e2f757c57f",
+        "title": "File:Masala noodles.jpeg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Masala_noodles.jpeg",
+        "author": "Ravindernav",
+        "license": "CC BY-SA 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+        "width": 1840,
+        "height": 3264,
+        "mime": "image/jpeg",
+        "confidence": 0.5666666666666667,
+        "automatic": false,
+        "url": "/api/businesses/018d1673-ab6a-4acf-a7be-29f9c92c4b63/product-media/f4c0d37e-d3dc-42ac-b706-93293af9afe5/image?candidate=17c0076a-e745-47ad-be60-1fd4e12048d6"
+      }
+    ]
+  },
+  {
+    "name": "Coca-Cola 500ml",
+    "media": {
+      "url": null,
+      "selected": "automatic",
+      "status": "suggestions",
+      "source": "",
+      "attribution": "",
+      "license": "",
+      "licenseUrl": "",
+      "sourceUrl": "",
+      "category": "drink"
+    },
+    "candidates": [
+      {
+        "id": "8dd4e21d34b41a0bf533e6eccc4f43cc",
+        "title": "File:Coca-Cola Japan Company soft drink vending machine 20081024.jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Coca-Cola_Japan_Company_soft_drink_vending_machine_20081024.jpg",
+        "author": "Corpse Reviver",
+        "license": "CC BY-SA 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
+        "width": 1962,
+        "height": 2605,
+        "mime": "image/jpeg",
+        "confidence": 0.5666666666666667,
+        "automatic": false,
+        "url": "/api/businesses/018d1673-ab6a-4acf-a7be-29f9c92c4b63/product-media/6dd8842f-353a-44d9-90c3-b84abe5e2a51/image?candidate=47b887fc-ca78-42af-8561-f15af60b3e41"
+      },
+      {
+        "id": "0153724d92fcb443c1f2d1c0241edccd",
+        "title": "File:Coca-cola 50cl can - Italia.jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Coca-cola_50cl_can_-_Italia.jpg",
+        "author": "M0tty",
+        "license": "CC BY-SA 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+        "width": 2389,
+        "height": 3584,
+        "mime": "image/jpeg",
+        "confidence": 0.5666666666666667,
+        "automatic": false,
+        "url": "/api/businesses/018d1673-ab6a-4acf-a7be-29f9c92c4b63/product-media/6dd8842f-353a-44d9-90c3-b84abe5e2a51/image?candidate=c231b459-2c75-47f6-9801-8e3d02564e7d"
+      },
+      {
+        "id": "547edda608a77c23303762073b45376e",
+        "title": "File:Coca-cola-clear.jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Coca-cola-clear.jpg",
+        "author": "Sebras",
+        "license": "CC BY-SA 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+        "width": 4500,
+        "height": 4000,
+        "mime": "image/jpeg",
+        "confidence": 0.5666666666666667,
+        "automatic": false,
+        "url": "/api/businesses/018d1673-ab6a-4acf-a7be-29f9c92c4b63/product-media/6dd8842f-353a-44d9-90c3-b84abe5e2a51/image?candidate=81184747-f366-4054-9197-d0f52ff42e95"
+      }
+    ]
+  },
+  {
+    "name": "Water Bottle 1L",
+    "media": {
+      "url": null,
+      "selected": "automatic",
+      "status": "suggestions",
+      "source": "",
+      "attribution": "",
+      "license": "",
+      "licenseUrl": "",
+      "sourceUrl": "",
+      "category": "drink"
+    },
+    "candidates": [
+      {
+        "id": "d86e11cf1f3381c6c2331446cf43df59",
+        "title": "File:San Pelligrino - 1L bottle (cropped).JPG",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:San_Pelligrino_-_1L_bottle_(cropped).JPG",
+        "author": "Marianne Casamance",
+        "license": "CC BY-SA 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+        "width": 1605,
+        "height": 3181,
+        "mime": "image/jpeg",
+        "confidence": 0.5666666666666667,
+        "automatic": false,
+        "url": "/api/businesses/018d1673-ab6a-4acf-a7be-29f9c92c4b63/product-media/101ccad1-ba17-4dba-b0a6-28b144b8266e/image?candidate=44cc966a-57d3-44b8-9166-4fa293fd1045"
+      },
+      {
+        "id": "51485aa6c9e509adc26b731bd33d9265",
+        "title": "File:Katadyn BeFree Water Filter Bottle, Hollow Fiber 0.1-micron filter (42646936672).jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Katadyn_BeFree_Water_Filter_Bottle,_Hollow_Fiber_0.1-micron_filter_(42646936672).jpg",
+        "author": "Tony Webster from Minneapolis, Minnesota, United States",
+        "license": "CC BY 2.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+        "width": 5115,
+        "height": 3415,
+        "mime": "image/jpeg",
+        "confidence": 0.5666666666666667,
+        "automatic": false,
+        "url": "/api/businesses/018d1673-ab6a-4acf-a7be-29f9c92c4b63/product-media/101ccad1-ba17-4dba-b0a6-28b144b8266e/image?candidate=ce876bc4-4f2d-4fd9-9601-9b42897e9af2"
+      }
+    ]
+  }
+]

@@ -3,6 +3,9 @@ import { createHash, randomBytes, randomUUID, scryptSync, timingSafeEqual } from
 import { mkdirSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import type { Business, BusinessState, Customer, CustomerStatement, InventoryEntry, Invoice, InvoiceItem, Payment, Product, Purchase, SaleAttachment, Session, Supplier, User,VoiceReport } from "../contracts";
+import { salesBuckets, rankedProducts } from '../dashboard-data';
+import { migrationV8 } from './product-media-schema';
+import { ProductMediaService } from './product-media-service';
 import { schema } from "./schema";
 import { migrationV2, migrationV3, migrationV4, migrationV5, migrationV6 } from "./migrations";
 import { captureIssued } from './document-snapshots';
@@ -36,8 +39,8 @@ function asAttachment(row: Row): SaleAttachment { return { id: String(row.id), u
 
 export class Store {
   readonly db: DatabaseSync;
-  readonly schemaVersion = 7;
-  readonly runtimeRevision = "v11.1-v12";
+  readonly schemaVersion = 8;
+  readonly runtimeRevision = "v13.1";
   private transactionDepth = 0;
   constructor(path = process.env.DATABASE_PATH || resolve(process.cwd(), ".data", "dukaanset.sqlite")) {
     // Runtime database directories are external mutable data, never bundle assets.
@@ -45,7 +48,7 @@ export class Store {
     this.db = new DatabaseSync(path);
     this.db.exec("PRAGMA foreign_keys = ON; PRAGMA busy_timeout = 5000; PRAGMA journal_mode = WAL;");
     const version = Number((this.db.prepare("PRAGMA user_version").get() as Row).user_version);
-    if (version > 7) { this.db.close(); throw new Error("Database schema is newer than this application."); }
+    if (version > 8) { this.db.close(); throw new Error("Database schema is newer than this application."); }
     this.transaction(() => {
       if (version === 0) this.db.exec(schema);
       if (version < 2) this.db.exec(migrationV2);
@@ -54,6 +57,7 @@ export class Store {
       if (version < 5) this.db.exec(migrationV5);
       if (version < 6) this.db.exec(migrationV6);
       if (version < 7) this.db.exec(migrationV7);
+      if (version < 8) this.db.exec(migrationV8);
     });
     this.db.prepare("DELETE FROM sessions WHERE expires_at < ?").run(stamp());
     this.db.prepare("DELETE FROM attachments WHERE invoice_id IS NULL AND date < ?").run(new Date(Date.now() - 86_400_000).toISOString());
@@ -158,6 +162,7 @@ export class Store {
       if(quantity&&new ClosingService(this).current(businessId).status==='closed')throw new DomainError('DAY_CLOSED','Open the next session before adding opening stock.',409);
       this.run("INSERT INTO products VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", id, businessId, name, sku, unit, price, cost, quantity, minimum, expiry, JSON.stringify(names), barcode, variation, packSize, JSON.stringify(displayNames(input.displayNames)));
       if (quantity) this.run("INSERT INTO movements VALUES(?,?,?,?,?,?,?)", uid(), businessId, id, quantity, "opening", stamp(), null);
+      this.run("INSERT INTO product_media(product_id,business_id,available_at,updated_at) VALUES(?,?,?,?)",id,businessId,stamp(),stamp());
       this.audit(userId, businessId, "product.created", name);
     });
     return asProduct(this.entity("products", businessId, id));
@@ -177,6 +182,7 @@ export class Store {
       if (next.sku && this.row("SELECT id FROM products WHERE business_id=? AND sku=? AND id!=?", businessId, next.sku, productId)) throw new DomainError("SKU_EXISTS", "This SKU already exists in this business.", 409);
       lineTotal(next.costPaise, next.quantityMilli);
       this.run("UPDATE products SET name=?,sku=?,unit=?,price_paise=?,cost_paise=?,min_stock_milli=?,expiry_date=?,aliases_json=?,barcode=?,variation=?,pack_size=?,display_names_json=? WHERE id=? AND business_id=?", next.name, next.sku, next.unit, next.pricePaise, next.costPaise, next.minStockMilli, next.expiryDate, JSON.stringify(next.aliases), next.barcode, next.variation, next.packSize, JSON.stringify(next.displayNames || {}), productId, businessId);
+      if(next.name!==prior.name||next.variation!==prior.variation||next.barcode!==prior.barcode)this.run("UPDATE product_media SET status='queued',asset_id=CASE WHEN selected='automatic' THEN NULL ELSE asset_id END,candidates_json='[]',attempts=0,available_at=?,updated_at=?,lease=NULL WHERE product_id=? AND business_id=?",stamp(),stamp(),productId,businessId);
       this.audit(userId, businessId, "product.updated", next.name);
       return next;
     });
@@ -546,7 +552,7 @@ export class Store {
     });
   }
   state(userId: string, businessId: string): BusinessState {
-    const business = this.assertMember(userId, businessId), products = this.rows("SELECT * FROM products WHERE business_id=? ORDER BY name", businessId).map(asProduct), allPayments = this.rows("SELECT * FROM payments WHERE business_id=? ORDER BY date DESC,id DESC", businessId).map(asPayment), today = businessDay();
+    const business = this.assertMember(userId, businessId), products = new ProductMediaService(this).decorateProducts(businessId,this.rows("SELECT * FROM products WHERE business_id=? ORDER BY name", businessId).map(asProduct)), allPayments = this.rows("SELECT * FROM payments WHERE business_id=? ORDER BY date DESC,id DESC", businessId).map(asPayment), today = businessDay();
     const receipts = new Map<string, Payment[]>();
     for (const payment of allPayments) if (payment.invoiceId) receipts.set(payment.invoiceId, [...(receipts.get(payment.invoiceId) ?? []), payment]);
     const allInvoices = this.rows("SELECT * FROM invoices WHERE business_id=? ORDER BY date DESC,id DESC", businessId).map(row => asInvoice(row, receipts.get(String(row.id)) ?? []));
@@ -561,7 +567,9 @@ export class Store {
     const tasks: BusinessState["tasks"] = low.slice(0, 6).map(p => ({ id: `stock-${p.id}`, title: `Restock ${p.name}`, detail: `${p.quantityMilli / 1000} ${p.unit} remaining`, type: "stock", name: p.name, productId: p.id, quantityMilli: p.quantityMilli, unit: p.unit }));
     for (const c of customers.filter(c => c.balancePaise > 0).slice(0, 4)) tasks.push({ id: `credit-${c.id}`, title: `Collect from ${c.name}`, detail: `₹${(c.balancePaise / 100).toFixed(2)} outstanding`, type: "credit", name: c.name, customerId: c.id, balancePaise: c.balancePaise });
     for (const p of products.filter(p => p.expiryDate && p.expiryDate <= new Date(Date.parse(`${today}T00:00:00Z`) + 7 * 86_400_000).toISOString().slice(0, 10)).slice(0, 4)) tasks.push({ id: `expiry-${p.id}`, title: `Check ${p.name} expiry`, detail: `Expiry: ${p.expiryDate}`, type: "expiry", name: p.name, productId: p.id, expiryDate: p.expiryDate! });
-    return { business, products, customers, suppliers, invoices: allInvoices.slice(0, 1000), payments: allPayments.slice(0, 1000),
+    const timezone = new ClosingService(this).settings(businessId).timezone, now = new Date();
+    const dashboard = { sales: {week: salesBuckets(allInvoices,'week',now,timezone),month:salesBuckets(allInvoices,'month',now,timezone),year:salesBuckets(allInvoices,'year',now,timezone)},topProducts:rankedProducts(allInvoices,products,now,timezone).map(({product,...row})=>({productId:product!.id,...row})) };
+    return { business, products, dashboard, customers, suppliers, invoices: allInvoices.slice(0, 1000), payments: allPayments.slice(0, 1000),
       totals: { salesPaise: active.reduce((sum, invoice) => sum + invoice.totalPaise, 0), receivedPaise: allPayments.reduce((sum, payment) => sum + payment.amountPaise, 0), expensesPaise: Number(expenses.total) },
       daily: { cashPaise: todayPayments.filter(payment => payment.method === "cash").reduce((sum, payment) => sum + payment.amountPaise, 0), upiPaise: todayPayments.filter(payment => payment.method === "upi").reduce((sum, payment) => sum + payment.amountPaise, 0), purchaseCount: Number(purchases.count), expensesPaise: Number(expenses.today_total), cashExpensesPaise: Number(expenses.today_cash), cashPurchasePaymentsPaise: Number(purchases.cash), creditSalesPaise: todayInvoices.reduce((sum, invoice) => sum + invoice.balancePaise, 0), olderDuesReceivedPaise: todayPayments.filter(payment => payment.kind === "repayment" && payment.invoiceId && (invoiceDays.get(payment.invoiceId) ?? today) < today).reduce((sum, payment) => sum + payment.amountPaise, 0) },
       inventoryEntries: this.rows("SELECT * FROM inventory_entries WHERE business_id=? ORDER BY date DESC,id DESC LIMIT 1000", businessId).map(row => ({ id: String(row.id), date: String(row.date), source: row.source as InventoryEntry["source"], items: JSON.parse(String(row.items_json)) })),
@@ -610,7 +618,7 @@ export class Store {
       for (const business of session.businesses) {
         if (this.row("SELECT user_id FROM memberships WHERE business_id=? AND user_id!=? LIMIT 1", business.id, userId)) throw new DomainError("DEMO_ONLY", "A shared business cannot be reset as demo data.", 403);
         this.run('DELETE FROM delivery_events WHERE delivery_id IN (SELECT id FROM deliveries WHERE business_id=?)',business.id);
-        for(const table of ['closing_notices','closing_jobs','closing_versions','cash_movements','supplier_payments','business_sessions','closing_settings'])this.run(`DELETE FROM ${table} WHERE business_id=?`,business.id);
+        for(const table of ['product_media','media_assets','media_settings','closing_notices','closing_jobs','closing_versions','cash_movements','supplier_payments','business_sessions','closing_settings'])this.run(`DELETE FROM ${table} WHERE business_id=?`,business.id);
         for (const table of ["deliveries","documents","communication_preferences","whatsapp_inbound","whatsapp_connections","invoice_branding","demand_followups", "demand_conversions", "reorder_drafts", "demand_dismissals", "demand_requests", "attachments", "idempotency", "payments", "movements", "inventory_entries", "purchases", "invoices", "expenses", "closings", "audit", "products", "customers", "suppliers"]) this.run(`DELETE FROM ${table} WHERE business_id=?`, business.id);
         this.run('DELETE FROM business_settings WHERE business_id=?',business.id);
       }
@@ -682,6 +690,6 @@ export class Store {
 declare global { var dukaanStore: Store | undefined; }
 export function getStore(): Store {
   if (process.env.VERCEL === '1') throw new Error('DukaanSet SQLite requires a persistent backend. Deploy the Vercel gateway instead.');
-  if (globalThis.dukaanStore && globalThis.dukaanStore.runtimeRevision !== "v11.1-v12") { globalThis.dukaanStore.close(); globalThis.dukaanStore = undefined; }
+  if (globalThis.dukaanStore && globalThis.dukaanStore.runtimeRevision !== "v13.1") { globalThis.dukaanStore.close(); globalThis.dukaanStore = undefined; }
   return globalThis.dukaanStore ??= new Store();
 }
