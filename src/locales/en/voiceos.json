@@ -17,7 +17,7 @@
   "privacy": "Your browser may process speech through its recognition service. DukaanSet does not store raw audio.",
   "fallback": "Microphone unavailable. Type your command below.",
   "sample": "Text-command demo",
-  "duplicate": "This transcript was already applied. Edit it or record a new correction.",
+  "duplicate": "This draft is ready. Edit details or start a new command.",
   "permission": "Your role or this business’s settings do not allow this action.",
   "wrongWorkflow": "This command belongs to another workflow. Use global VoiceOS to switch.",
   "customer": "Choose the customer in the form.",
@@ -69,7 +69,7 @@
   "week": "Last 7 days",
   "all": "All time",
   "missing": "Complete these details",
-  "filled": "Draft prepared. Review before saving.",
+  "filled": "Draft prepared. Review it before saving.",
   "allowDuplicate": "Create a separate contact with matching details",
   "existingContact": "Open existing contact",
   "recordedUPI": "UPI is manually recorded; bank verification is not connected.",
@@ -130,5 +130,10 @@
   "customerExists": "Use the existing customer",
   "upi": "UPI",
   "exampleStock": "Add stock.",
-  "examplePayment": "Record a customer payment."
+  "examplePayment": "Record a customer payment.",
+  "intentChoice": "Add these products to stock or create a cash sale?",
+  "chooseStock": "Add to stock",
+  "chooseSale": "Create cash sale",
+  "history": "Recent conversation",
+  "saving": "Saving…"
 }

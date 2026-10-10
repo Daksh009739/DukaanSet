@@ -1,0 +1,156 @@
+{
+  "checkedAt": "2026-10-10T17:49:32.329Z",
+  "runs": [
+    {
+      "suite": [
+        "tests/e2e/approved-dashboard.spec.ts"
+      ],
+      "exitCode": 0,
+      "evidence": ".local/v14-full-e2e-final.log",
+      "cases": 3
+    },
+    {
+      "suite": [
+        "tests/e2e/closing-dashboard.spec.ts"
+      ],
+      "exitCode": 0,
+      "evidence": ".local/v14-full-e2e-final.log",
+      "cases": 3
+    },
+    {
+      "suite": [
+        "tests/e2e/conversation.spec.ts"
+      ],
+      "exitCode": 0,
+      "evidence": ".local/v14-full-e2e-final.log",
+      "cases": 6
+    },
+    {
+      "suite": [
+        "tests/e2e/invoice-studio.spec.ts"
+      ],
+      "exitCode": 0,
+      "evidence": ".local/v14-full-e2e-final.log",
+      "cases": 7
+    },
+    {
+      "suite": [
+        "tests/e2e/localization.spec.ts"
+      ],
+      "exitCode": 0,
+      "evidence": ".local/v14-remaining-e2e.log",
+      "cases": 9
+    },
+    {
+      "suite": [
+        "tests/e2e/premium-voice-v14.spec.ts"
+      ],
+      "exitCode": 0,
+      "evidence": ".local/v14-remaining-e2e.log",
+      "cases": 7
+    },
+    {
+      "suite": [
+        "tests/e2e/premium-website.spec.ts"
+      ],
+      "exitCode": 0,
+      "evidence": ".local/v14-remaining-e2e.log",
+      "cases": 4
+    },
+    {
+      "suite": [
+        "tests/e2e/product.spec.ts"
+      ],
+      "exitCode": 0,
+      "evidence": ".local/v14-remaining-e2e.log",
+      "cases": 7
+    },
+    {
+      "suite": [
+        "tests/e2e/v2-business.spec.ts"
+      ],
+      "exitCode": 0,
+      "evidence": ".local/v14-remaining-e2e2.log",
+      "cases": 2
+    },
+    {
+      "suite": [
+        "tests/e2e/v2-sales.spec.ts"
+      ],
+      "exitCode": 0,
+      "evidence": ".local/v14-remaining-e2e2.log",
+      "cases": 9
+    },
+    {
+      "suite": [
+        "tests/e2e/v2-voice.spec.ts"
+      ],
+      "exitCode": 0,
+      "evidence": ".local/v14-remaining-e2e2.log",
+      "cases": 6
+    },
+    {
+      "suite": [
+        "tests/e2e/v3-demand.spec.ts"
+      ],
+      "exitCode": 0,
+      "evidence": ".local/v14-remaining-e2e2.log",
+      "cases": 8
+    },
+    {
+      "suite": [
+        "tests/e2e/voice-products.spec.ts"
+      ],
+      "exitCode": 0,
+      "evidence": ".local/v14-remaining-e2e2.log",
+      "cases": 3
+    },
+    {
+      "suite": [
+        "tests/e2e/voiceos.spec.ts"
+      ],
+      "exitCode": 0,
+      "evidence": ".local/v14-remaining-e2e2.log",
+      "cases": 8
+    }
+  ],
+  "uniqueCases": 82,
+  "finalRechecks": [
+    {
+      "suite": "conversation",
+      "cases": 6,
+      "evidence": ".local/v14-completion-conversation.log",
+      "note": "Passed"
+    },
+    {
+      "suite": "voice-products",
+      "cases": 3,
+      "evidence": ".local/v14-completion-products.log",
+      "note": "Passed"
+    },
+    {
+      "suite": "voiceos",
+      "cases": 8,
+      "evidence": ".local/v14-completion-voiceos.log",
+      "note": "Passed"
+    },
+    {
+      "suite": "V14 functional workflows",
+      "cases": 6,
+      "evidence": ".local/v14-browser-final.log",
+      "note": "Six functional cases passed; the visual case was corrected to use normal navigation and rerun separately."
+    },
+    {
+      "suite": "V14 loaded visual audit",
+      "cases": 1,
+      "evidence": ".local/v14-render-native.log",
+      "note": "Passed"
+    },
+    {
+      "suite": "Restored report after business hydration",
+      "cases": 1,
+      "evidence": ".local/v14-report-reload.log",
+      "note": "Passed"
+    }
+  ]
+}

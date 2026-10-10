@@ -1,17 +1,21 @@
 'use client';
-import {LocalizedUnit} from '@/components/localized-data';
-import '@/lib/v2-i18n';
+import {useCallback} from 'react';
 import Link from 'next/link';
-import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { Sparkles } from 'lucide-react';
-import { money, quantity } from '@/lib/client';
-import { useApp } from './app-provider';
-import { PageHeading } from './dashboard';
-import { Button, CardTitle } from './ui';
-import { DemandPreview } from './demand/demand-page';
-import { ConfiguredAssistant } from './assistant';
-export function BusinessInsights() {
-  const { t } = useTranslation('v2'); const { state, session } = useApp(); const [question, setQuestion] = useState(''); if (!state) return null;
-  return <><PageHeading title={t('summary')} subtitle={t('rules')}/><section className="card insights-card"><span className="quick-icon mint"><Sparkles/></span><p>{t('rulesHint')}</p><div className="button-row">{['sales', 'credit', 'stock'].map(key => <Button variant={question === key ? 'primary' : 'secondary'} key={key} onClick={() => setQuestion(key)}>{t(`${key}Question`)}</Button>)}</div><div className="insights-answer" aria-live="polite">{!question ? <p>{t('askHint')}</p> : question === 'sales' ? <><CardTitle>{t('salesQuestion')}</CardTitle><strong>{money(state.metrics.salesTodayPaise, session?.user.language)}</strong><p>{t('billsToday')}: {state.metrics.billsToday} · {t('collection')}: {money(state.metrics.collectedTodayPaise, session?.user.language)}</p></> : question === 'credit' ? <><CardTitle>{t('creditQuestion')}</CardTitle>{state.customers.filter(c => c.balancePaise > 0).length ? state.customers.filter(c => c.balancePaise > 0).map(c => <Link className="record-row" href={`/app/customers/${c.id}`} key={c.id}><b>{c.name}</b><span>{money(c.balancePaise)}</span></Link>) : <p>{t('noDues')}</p>}</> : <><CardTitle>{t('stockQuestion')}</CardTitle>{state.products.filter(p => p.quantityMilli <= p.minStockMilli).length ? state.products.filter(p => p.quantityMilli <= p.minStockMilli).map(p => <Link className="record-row" href={`/app/stock?product=${p.id}`} key={p.id}><b>{p.name}</b><span>{quantity(p.quantityMilli)} <LocalizedUnit value={p.unit}/></span></Link>) : <p>{t('noLow')}</p>}</>}</div></section><div className="below-card"><DemandPreview/></div><ConfiguredAssistant/></>;
+import {useTranslation} from 'react-i18next';
+import {Sparkles,ArrowUpRight,Package,Wallet} from 'lucide-react';
+import {money,quantity} from '@/lib/client';
+import {useApp} from './app-provider';
+import {PageHeading} from './dashboard';
+import {CardTitle} from './ui';
+import {useVoiceOS} from './voice/voice-os-provider';
+import {advanceVoice} from '@/lib/voice/conversation';
+import {osCopy} from '@/lib/voice/os-copy';
+import {LocalizedUnit} from './localized-data';
+import './premium-ux.css';
+
+export function BusinessInsights(){
+ const app=useApp(),voice=useVoiceOS(),{t:w,i18n}=useTranslation('workspace'),copy=osCopy(i18n.language);
+ const host=useCallback((node:HTMLDivElement|null)=>voice.setWorkspace(node),[voice.setWorkspace]);
+ if(!app.state)return null;const state=app.state,low=state.products.filter(p=>p.quantityMilli<=p.minStockMilli);
+ return <><PageHeading title={w('assistantTitle')} subtitle={w('assistantSubtitle')}/><div className="assistant-layout"><section className="card assistant-workspace"><header className="assistant-context"><span className="quick-icon mint"><Sparkles size={23}/></span><div><b>{state.business.name}</b><small>{w('assistantContext')}</small></div><span className="badge badge-paid">VoiceOS</span></header><div ref={host} data-testid="assistant-conversation"/>{!state.configuration.features.voiceStock&&<p role="status">{copy.permission}</p>}<footer className="assistant-transparency">{copy.rulesOnly}</footer></section><aside className="assistant-sidebar"><section className="card"><CardTitle>{w('businessToday')}</CardTitle><dl className="assistant-context-metrics"><div><dt>{w('salesToday')}</dt><dd>{money(state.metrics.salesTodayPaise,i18n.language)}</dd></div><div><dt>{w('moneyReceived')}</dt><dd>{money(state.metrics.collectedTodayPaise,i18n.language)}</dd></div><div><dt>{w('moneyToCollect')}</dt><dd>{money(state.metrics.outstandingPaise,i18n.language)}</dd></div></dl><div className="assistant-questions">{[copy.exampleSales,w('questionLowStock'),w('questionOutstanding')].map(question=><button key={question} disabled={!state.configuration.features.voiceStock} onClick={()=>voice.request(advanceVoice(question,state))}>{question}<ArrowUpRight size={16}/></button>)}</div></section><section className="card"><CardTitle><Package size={17}/>{w('stockNeedsAttention')}</CardTitle>{low.slice(0,4).map(product=><Link className="assistant-related" key={product.id} href={'/app/stock/'+product.id}><span>{product.name}</span><b>{quantity(product.quantityMilli)} <LocalizedUnit value={product.unit}/></b></Link>)}{!low.length&&<p className="card-note">{w('stockHealthy')}</p>}</section><section className="card"><CardTitle><Wallet size={17}/>{w('moneyToCollect')}</CardTitle>{state.customers.filter(c=>c.balancePaise>0).slice(0,4).map(customer=><Link className="assistant-related" href={'/app/customers/'+customer.id} key={customer.id}><span>{customer.name}</span><b>{money(customer.balancePaise,i18n.language)}</b></Link>)}<Link className="text-link" href="/app/customers">{w('viewCustomers')}<ArrowUpRight size={15}/></Link></section></aside></div></>;
 }

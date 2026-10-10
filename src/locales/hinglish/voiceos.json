@@ -17,7 +17,7 @@
   "privacy": "Browser apni speech service se awaaz process kar sakta hai. DukaanSet raw audio save nahi karta.",
   "fallback": "Microphone nahi hai. Neeche command type karo.",
   "sample": "Text Command Ka Demo",
-  "duplicate": "Yeh transcript pehle apply hua hai. Edit karo ya nayi correction bolo.",
+  "duplicate": "Draft ready hai. Details badlein ya naya command shuru karein.",
   "permission": "Aapka role ya business settings yeh kaam allow nahi karte.",
   "wrongWorkflow": "Yeh command dusre kaam ki hai. Global VoiceOS se workflow badlo.",
   "customer": "Form mein customer chuno.",
@@ -69,7 +69,7 @@
   "week": "Pichhle 7 din",
   "all": "Poora Itihaas",
   "missing": "Yeh details poori karo",
-  "filled": "Draft ready hai. Save se pehle review karein.",
+  "filled": "Draft taiyaar hai. Save karne se pehle check karein.",
   "allowDuplicate": "Same details se jaan-boojhkar alag contact banao",
   "existingContact": "Purana Contact Kholo",
   "recordedUPI": "UPI khud darj hai; bank verification connected nahi hai.",
@@ -130,5 +130,10 @@
   "customerExists": "Existing customer use karein",
   "upi": "UPI se",
   "exampleStock": "Stock add karo.",
-  "examplePayment": "Customer ka payment record karo."
+  "examplePayment": "Customer ka payment record karo.",
+  "intentChoice": "Yeh products stock mein add karne hain ya cash sale ka bill banana hai?",
+  "chooseStock": "Stock mein add karein",
+  "chooseSale": "Cash sale banayein",
+  "history": "Haal ki baatcheet",
+  "saving": "Save ho raha hai…"
 }

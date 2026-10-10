@@ -49,6 +49,8 @@ jobs:
         run: npm run test:e2e -- tests/e2e/voiceos.spec.ts
       - name: Conversational VoiceOS, automatic product drafting and atomic stock checks
         run: npm run test:e2e -- tests/e2e/conversation.spec.ts
+      - name: V14 cross-module commands, shared assistant, DemandPulse preparation and responsive accessibility
+        run: npm run test:e2e -- tests/e2e/premium-voice-v14.spec.ts
       - name: New product stock, lost acknowledgements and mobile inventory checks
         run: npm run test:e2e -- tests/e2e/voice-products.spec.ts
       - name: Dashboard, closing concurrency, report versions and translated PDF checks
@@ -68,3 +70,6 @@ jobs:
 
       - name: Compiled approved dashboard, VoiceOS, real media queue and invoice demonstration
         run: node scripts/qa/v13-production-review.mjs
+
+      - name: Compiled V14 cross-module saves, shared Assistant and premium screens
+        run: node scripts/qa/v14-production-review.mjs

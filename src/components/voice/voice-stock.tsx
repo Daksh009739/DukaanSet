@@ -36,19 +36,20 @@ function loadDraft(key:string):VoiceDraft|null {
   }catch{return null;}
 }
 
-export function VoiceStockPage({embedded=false,seed}:{embedded?:boolean;seed?:VoiceCommand}){
+export function VoiceStockPage({embedded=false,seed,onCommitted,onExecuting}:{embedded?:boolean;seed?:VoiceCommand;onCommitted?:(entry:InventoryEntry)=>void;onExecuting?:(busy:boolean)=>void}){
   const app=useApp();const {i18n}=useTranslation();const copy=voiceCopy(i18n.language);const frequency=new Map<string,number>();for(const entry of app.state!.inventoryEntries||[])for(const item of entry.items)frequency.set(item.productId,(frequency.get(item.productId)||0)+1);const products=[...app.state!.products].sort((a,b)=>(frequency.get(b.id)||0)-(frequency.get(a.id)||0));const storageKey=draftStorageKey(app.session!.user.id,app.businessId);
   const [draft,setDraft]=useState<VoiceDraft>(newVoiceDraft);const [hydrated,setHydrated]=useState('');const [storageError,setStorageError]=useState(false);const [note,setNote]=useState<VoiceCopyKey|null>(null);const [workPhase,setPhase]=useState<'ready'|'permissionState'|'listening'|'processing'|'saving'>('ready');const [saveError,setSaveError]=useState('');const [summary,setSummary]=useState<{entry:InventoryEntry;skipped:number}|null>(null);const [resetting,setResetting]=useState(false);
   const saving=useRef(false);const scopeRef=useRef(app.businessId);scopeRef.current=app.businessId;const active=useRef(true);const voice=useVoiceOS();const locale=voice.spokenLocale,setLocale=voice.setSpokenLocale;const capture=useVoiceCapture(value=>setDraft(previous=>({...previous,transcript:value})));const {problem,supported}=capture;const phase=capture.recording?capture.phase:workPhase;
-  useEffect(()=>{active.current=true;const restored=loadDraft(storageKey);if(!restored)setDraft(newVoiceDraft());if(restored){setDraft({...restored,rows:restored.submitted?restored.rows:restored.rows.map(row=>restoreVoiceRow(row,products))});setNote('restored');}setHydrated(storageKey);return()=>{active.current=false;capture.abort();};},[storageKey]);
+  const appliedSeed=useRef<VoiceCommand|null>(null);
+  useEffect(()=>{active.current=true;appliedSeed.current=null;const restored=loadDraft(storageKey);if(!restored)setDraft(newVoiceDraft());if(restored){setDraft({...restored,rows:restored.submitted?restored.rows:restored.rows.map(row=>restoreVoiceRow(row,products))});setNote('restored');}setHydrated(storageKey);return()=>{active.current=false;capture.abort();};},[storageKey]);
   useEffect(()=>{if(hydrated!==storageKey)return;try{sessionStorage.setItem(storageKey,JSON.stringify({...draft,updatedAt:Date.now()}));setStorageError(false);}catch{setStorageError(true);}},[draft,hydrated,storageKey]);
-  useEffect(()=>{const command=seed||voice.handoff;if(hydrated===storageKey&&command?.intent==='stock'&&!draft.submitted){setDraft(previous=>previous.applied===command.transcript?previous:{...previous,transcript:command.transcript,applied:command.transcript,rows:prepareStockCommand(command.transcript,products,previous.rows)});voice.consume('stock');}},[hydrated,seed,voice.handoff,draft.submitted]);
+  useEffect(()=>{const command=seed||voice.handoff;if(hydrated===storageKey&&command?.intent==='stock'&&!draft.submitted&&appliedSeed.current!==command){appliedSeed.current=command;setDraft(previous=>previous.applied===command.transcript?previous:{...previous,transcript:command.transcript,applied:command.transcript,rows:prepareStockCommand(command.transcript,products,previous.rows)});voice.consume('stock');}},[hydrated,seed,voice.handoff,draft.submitted]);
 
   const rows=draft.submitted?draft.rows:draft.rows.map(row=>validateRow(row,products));const resolved=rows.filter(row=>!row.issues.length);const invalid=rows.length-resolved.length;const busy=phase==='saving';const recording=phase==='listening'||phase==='permissionState';const locked=hydrated!==storageKey||Boolean(draft.submitted)||busy||resetting||app.writing;
   const edit=(id:string,changes:Partial<VoiceRow>)=>{setSummary(null);setDraft(previous=>({...previous,rows:previous.rows.map(row=>{if(row.id!==id)return row;const next={...row,...changes},base=products.find(p=>p.id===next.productId)?.unit||next.newProduct?.unit||next.unit;if(changes.sellingPrice!==undefined)next.priceUnit=base;if(changes.purchaseCost!==undefined)next.costUnit=base;return normalizeStockPrices(next,products);})}));};
   const prepare=()=>{if(!draft.transcript.trim())return;if(draft.transcript===draft.applied){setNote('transcriptDuplicate');return;}setPhase('processing');setSummary(null);setNote(null);setSaveError('');setDraft(previous=>({...previous,applied:previous.transcript,rows:prepareStockCommand(previous.transcript,products,previous.rows)}));setPhase('ready');};
   const wasRecording=useRef(false),prepareRef=useRef(prepare);prepareRef.current=prepare;
-  useEffect(()=>{if(wasRecording.current&&!capture.recording&&!capture.problem&&!locked)prepareRef.current();wasRecording.current=capture.recording;},[capture.recording]);
+  useEffect(()=>{if(wasRecording.current&&!capture.recording&&capture.completed&&!capture.problem&&!locked)prepareRef.current();wasRecording.current=capture.recording;},[capture.recording]);
   const start=()=>{if(recording||locked)return;setNote(null);capture.start(locale);};
   const stop=()=>capture.stop();
   const clear=()=>{capture.abort();setDraft(newVoiceDraft());setSummary(null);setSaveError('');setNote('discarded');setPhase('ready');};
@@ -58,13 +59,14 @@ export function VoiceStockPage({embedded=false,seed}:{embedded?:boolean;seed?:Vo
     const source=resolved.every(row=>row.source==='manual')?'manual':resolved.some(row=>row.source==='manual')?'mixed':'voice';
     const submitted:NonNullable<VoiceDraft['submitted']>=draft.submitted||{source,rowIds:resolved.map(row=>row.id),items:resolved.map(row=>stockBatchItem(row,products))};const skipped=draft.rows.length-submitted.items.length;
     try{sessionStorage.setItem(storageKey,JSON.stringify({...draft,submitted,updatedAt:Date.now()}));}catch{setStorageError(true);return;}
-    const savingBusiness=app.businessId;saving.current=true;setPhase('saving');setSaveError('');setDraft(previous=>({...previous,submitted}));
+    const savingBusiness=app.businessId;saving.current=true;setPhase('saving');setSaveError('');setDraft(previous=>({...previous,submitted}));onExecuting?.(true);
     try{
       const entry=await app.mutation<InventoryEntry>('/stockbatch',{idempotencyKey:draft.key,source:submitted.source,items:submitted.items});
       if(!active.current||scopeRef.current!==savingBusiness)return;
-      setSummary({entry,skipped});setDraft({...newVoiceDraft(),rows:submitted.rowIds?draft.rows.filter(row=>!submitted.rowIds!.includes(row.id)):rows.filter(row=>row.issues.length)});;setNote(null);app.notify(copy.success);
+      const remaining={...newVoiceDraft(),rows:submitted.rowIds?draft.rows.filter(row=>!submitted.rowIds!.includes(row.id)):rows.filter(row=>row.issues.length)};
+      setSummary({entry,skipped});setDraft(remaining);try{sessionStorage.setItem(storageKey,JSON.stringify(remaining));}catch{setStorageError(true);}setNote(null);app.notify(copy.success);onCommitted?.(entry);
     }catch(error){if(active.current&&scopeRef.current===savingBusiness){setSaveError(error instanceof RequestError&&error.code==='PRODUCT_EXISTS'?'duplicateProduct':'saveError');if(error instanceof RequestError&&error.status>=400&&error.status<500&&error.code!=='IDEMPOTENCY_CONFLICT')setDraft(previous=>({...previous,submitted:undefined}));if(error instanceof RequestError&&error.code==='PRODUCT_EXISTS')await app.refresh();}}
-    finally{saving.current=false;if(active.current)setPhase('ready');}
+    finally{saving.current=false;onExecuting?.(false);if(active.current)setPhase('ready');}
   };
   const resetDemo=async()=>{if(resetting||busy||app.writing)return;setResetting(true);try{await app.resetDemo();}catch{if(active.current)setSaveError('demoResetError');}finally{if(active.current)setResetting(false);}};
   const stateLabel=phase!=='ready'?copy[phase]:invalid?copy.clarify:rows.length?copy.review:copy.ready;

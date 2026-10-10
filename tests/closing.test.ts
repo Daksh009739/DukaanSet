@@ -1,4 +1,4 @@
-import {test} from 'node:test';
+import {test,mock} from 'node:test';
 import assert from 'node:assert/strict';
 import {randomUUID} from 'node:crypto';
 import {mkdtempSync,rmSync} from 'node:fs';
@@ -13,6 +13,7 @@ import {DomainError} from '../src/lib/server/validation';
 
 const code=(fn:()=>unknown,c:string)=>assert.throws(fn,(e:unknown)=>e instanceof DomainError&&e.code===c);
 function fixture(path=':memory:') {
+  mock.timers.enable({apis:['Date'],now:new Date('2026-10-10T15:31:00.000Z').getTime()});
   const store=new Store(path),account=store.register({name:'Closing Owner',email:randomUUID()+'@example.test',password:'closing-tests-123',businessName:'Sharma Fashion Store',category:'clothing',language:'en'}),user=account.user.id,business=account.businesses[0].id;
   let now=new Date('2026-10-10T15:31:00.000Z');const service=new ClosingService(store,()=>now);
   const product=store.createProduct(user,business,{name:'Blue Shirt',unit:'piece',pricePaise:10000,quantityMilli:100000});
@@ -25,7 +26,8 @@ function fixture(path=':memory:') {
   store.receivePayment(user,business,{customerId:customer.id,amountPaise:40000,method:'cash',idempotencyKey:'old-cash'});
   store.receivePayment(user,business,{customerId:customer.id,amountPaise:60000,method:'upi',idempotencyKey:'old-upi'});
   store.createExpense(user,business,{description:'Fictional daily expense',amountPaise:70000,method:'cash',idempotencyKey:'expense'});
-  return {store,user,business,service,product,customer,sale,setNow:(value:string)=>{now=new Date(value);}};
+  const close=store.close.bind(store);store.close=()=>{close();mock.timers.reset();};
+  return {store,user,business,service,product,customer,sale,setNow:(value:string)=>{now=new Date(value);mock.timers.setTime(now.getTime());}};
 }
 test('real transaction fixture reconciles the requested 11,000 / 10,500 / 3,500 / 6,700 example',()=>{
   const f=fixture();try{const p=f.service.preview(f.user,f.business),t=p.totals;

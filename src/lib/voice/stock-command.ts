@@ -34,6 +34,8 @@ export function exactUnitCost(total:string,qty:string):string|null {
 /** This is shared by the global assistant and focused stock workspace. No writes. */
 export function prepareStockCommand(raw:string,products:Product[],previous:VoiceRow[]=[]):VoiceRow[] {
  const text=spokenStockText(raw.replace(/₹\s*(\d+(?:\.\d{1,2})?)/g,'$1 rupaye')).trim(),rows:VoiceRow[]=previous.map(row=>({...row,newProduct:row.newProduct?{...row.newProduct}:undefined}));
+ const trailingCorrection=text.match(new RegExp(`^\\d+(?:\\.\\d+)?\\s+(?:nahi|nahin|नहीं)\\s+${number}\\s+(${unitWords})\\s+(.+?)\\s*(?:karo|kar do|करो)?$`));
+ if(trailingCorrection&&rows.length){const query=trailingCorrection[3].replace(/\s+(?:karo|kar do|करो)$/,'').trim();return prepareStockCommand(`${query} 0 nahi ${trailingCorrection[1]} ${trailingCorrection[2]}`,products,rows);}
  // A quantity/rate correction targets a catalogue identity, never appends stock.
  const correction=text.match(new RegExp(`^(.+?)\\s+(?:ka\\s+|का\\s+)?(?:rate|selling price|selling rate|daam|दाम|रेट)\\s+${number}`))
   ||text.match(new RegExp(`^(.+?)\\s+\\d+(?:\\.\\d+)?\\s+(?:nahi|nahin|नहीं)\\s+${number}\\s+(${unitWords})?`));

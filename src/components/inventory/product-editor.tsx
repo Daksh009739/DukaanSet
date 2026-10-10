@@ -8,9 +8,9 @@ import { minorUnits } from '@/lib/client';
 import { useApp } from '../app-provider';
 import { Button, Field, FormError, Sheet } from '../ui';
 
-export function ProductEditor({ product, onClose }: { product: Product; onClose: () => void }) {
+export function ProductEditor({ product, initialPrice, onClose }: { product: Product; initialPrice?:string; onClose: () => void }) {
   const { t,i18n } = useTranslation(); const v = useTranslation('v2').t; const app = useApp();
-  const [name, setName] = useState(product.name); const [sku, setSku] = useState(product.sku); const [price, setPrice] = useState(String(product.pricePaise / 100)); const [cost, setCost] = useState(String(product.costPaise / 100));
+  const [name, setName] = useState(product.name); const [sku, setSku] = useState(product.sku); const [price, setPrice] = useState(initialPrice??String(product.pricePaise / 100)); const [cost, setCost] = useState(String(product.costPaise / 100));
   const [minimum, setMinimum] = useState(String(product.minStockMilli / 1000)); const [expiry, setExpiry] = useState(product.expiryDate || ''); const [aliases, setAliases] = useState((product.aliases || []).join(', ')); const [barcode, setBarcode] = useState(product.barcode || ''); const [variation, setVariation] = useState(product.variation || ''); const [pack, setPack] = useState(product.packSize ? String(product.packSize) : '');
   const [displayNames,setDisplayNames]=useState(product.displayNames||{});
   const [error, setError] = useState(''); const [busy, setBusy] = useState(false);

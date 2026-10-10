@@ -64,6 +64,7 @@ export function voiceAllowed(intent:VoiceIntent,state:V3State):boolean {
 }
 export function detectIntent(raw:string,context?:VoiceIntent):VoiceIntent {
   const t=spokenText(raw);
+  if(/^(?:(?:today|week|weekly|all time|aaj|आज|is hafte|इस हफ्ते)\s+)?(?:sales?|collections?|expenses?|low stock|outstanding)$/.test(t))return'report';
   if(/^(?:cancel|discard|radd|रद्द)(?:\s+(?:draft|ड्राफ्ट))?$/.test(t))return'cancel';
   if(/(?:closing|daily.*(?:hisaab|report)|shop.*report|दैनिक.*(?:हिसाब|रिपोर्ट)|दुकान.*हिसाब)/.test(t)&&/pdf|report|पीडीएफ|रिपोर्ट/.test(t))return'closing';
   if(/(?:close|band|बंद).*(?:today|aaj|shop|dukaan|आज|दुकान)|(?:today|aaj|shop|dukaan|आज|दुकान).*(?:close|band|बंद)/.test(t))return'closing';
@@ -120,13 +121,13 @@ export function voiceQuantity(item:VoiceItem,products:Product[]):number|null {
   return row.quantityMilli;
 }
 /** Pure, allowlisted draft preparation. It never performs writes or sends data to a model. */
-export function interpretVoice(raw:string,state:V3State,context?:VoiceIntent,previous?:VoiceCommand):VoiceCommand {
+export function interpretVoice(raw:string,state:V3State,context?:VoiceIntent,previous?:VoiceCommand,routed=false):VoiceCommand {
   const source=raw.slice(0,5000).replace(/\d{1,3}(?:,\d{2})*,\d{3}(?=\D|$)/g,value=>value.replace(/,/g,''));
   const text=spokenText(source.replace(/,\s*(?=\d+\s+[\p{L}\p{M}])/gu,' aur ')), detected=detectIntent(text,context), intent=context&&context!=='unknown'&&detected!=='cancel'?context:detected;
   const result:VoiceCommand=previous&&previous.intent===intent?{...previous,fields:{...previous.fields},items:previous.items.map(i=>({...i})),changed:[],changedItems:[],removedProducts:[],warnings:[],transcript:raw.slice(0,5000)}:blank(intent,raw.slice(0,5000));
   const set=(key:string,value:string|undefined)=>{if(value!==undefined){result.fields[key]=value;result.changed.push(key);}};
   if(!voiceAllowed(intent,state)){result.warnings.push('permission');return result;}
-  if(detected!==intent&&detected!=='unknown'&&detected!=='cancel'&&context){result.warnings.push('wrongWorkflow');return result;}
+  if(detected!==intent&&detected!=='unknown'&&detected!=='cancel'&&context&&!routed){result.warnings.push('wrongWorkflow');return result;}
   if(intent==='cancel')return result;
   const correction=Boolean(previous&&/\b(?:quantity|qty|badlo|change|correct|nahi|nahin|instead|actually)\b|मात्रा|बदलो|नहीं/.test(text)&&!(intent==='demand'&&/available|उपलब्ध/.test(text)));
   if(['sale','payment','demand','open','document'].includes(intent)||intent==='report'&&/udhaar|dues|outstanding|baaki|उधार|बाकी/.test(text)){
