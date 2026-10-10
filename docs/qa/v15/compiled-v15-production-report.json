@@ -1,0 +1,11 @@
+{
+  "checkedAt": "2026-10-10T20:20:35.046Z",
+  "environment": "Compiled production build; isolated fictional business; typed commands; external interpreter disabled",
+  "checks": [
+    "Rahul and Daal resolve independently; missing payment blocks save; confirmation writes one invoice and its exact inventory deduction",
+    "Read-only simulation returns 300 profit and 20% gross margin without any business transaction",
+    "Reorder calculation uses actual stock and sales; repeated confirmation saves one unreceived draft with no stock or payable changes",
+    "Invoice-text extraction validates scoped products and totals without receiving goods; unconfigured interpretation status is truthful",
+    "Authoritative gross-profit estimate and action center render in all three languages at 1440, 390 and 320 px with zero accessibility violations or runtime errors"
+  ]
+}

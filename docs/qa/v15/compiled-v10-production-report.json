@@ -1,0 +1,12 @@
+{
+  "checkedAt": "2026-10-10T20:18:52.189Z",
+  "environment": "local production build; isolated fictional database",
+  "checks": [
+    "Seven public/security/PWA production smoke checks passed",
+    "Compiled dashboard accessibility passes automated axe checks",
+    "Compiled dashboard and counted close render with accurate financial totals",
+    "Compiled closing PDFs work in English, Hindi and Hinglish",
+    "Real local production worker auto-closes an opted-in fictional session with its browser page closed and leaves physical cash pending",
+    "No browser runtime errors"
+  ]
+}

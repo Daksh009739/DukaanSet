@@ -1,0 +1,69 @@
+{
+  "checkedAt": "2026-10-10T20:21:24.034Z",
+  "runtime": "v24.18.0",
+  "unit": {
+    "passed": 251,
+    "failed": 0,
+    "command": "npm test"
+  },
+  "labelledEvaluation": {
+    "cases": 40,
+    "slotChecks": 134,
+    "passed": true
+  },
+  "browser": {
+    "newUniqueCasesPassed": 6,
+    "command": "npm run test:e2e -- tests/e2e/voice-v15.spec.ts",
+    "note": "Five cases passed in the final six-case run; the sixth required a concise field label and passed in a targeted rerun. Exact-head CI runs all six together plus all 14 baseline suites."
+  },
+  "locales": {
+    "keys": 2241,
+    "hardcodedVisibleText": 0,
+    "passed": true
+  },
+  "lint": {
+    "sourceFiles": 153,
+    "passed": true
+  },
+  "types": {
+    "passed": true
+  },
+  "build": {
+    "passed": true,
+    "sourceVerified": true
+  },
+  "compiled": [
+    {
+      "version": "10",
+      "passed": true,
+      "durationMs": 32666
+    },
+    {
+      "version": "12",
+      "passed": true,
+      "durationMs": 8072
+    },
+    {
+      "version": "13",
+      "passed": true,
+      "durationMs": 45775
+    },
+    {
+      "version": "14",
+      "passed": true,
+      "durationMs": 16538
+    },
+    {
+      "version": "15",
+      "passed": true,
+      "durationMs": 14739
+    }
+  ],
+  "liveSpeechVerified": false,
+  "liveProviderVerified": false,
+  "imageOcrConfigured": false,
+  "hosting": {
+    "verified": false,
+    "blocker": "Persistent HTTPS backend origin is not configured for Vercel staging."
+  }
+}

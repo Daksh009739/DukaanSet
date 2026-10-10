@@ -29,7 +29,7 @@ export const numbers: Record<string, number> = {
   zero:0, one:1,two:2,three:3,four:4,five:5,six:6,seven:7,eight:8,nine:9,ten:10,eleven:11,twelve:12,thirteen:13,fourteen:14,fifteen:15,sixteen:16,seventeen:17,eighteen:18,nineteen:19,twenty:20,thirty:30,forty:40,fifty:50,sixty:60,seventy:70,eighty:80,ninety:90,hundred:100,
   ek:1,do:2,teen:3,char:4,chaar:4,panch:5,paanch:5,chhe:6,che:6,saat:7,aath:8,nau:9,das:10,gyarah:11,barah:12,bees:20,pachas:50,sau:100,
   शून्य:0,एक:1,दो:2,तीन:3,चार:4,पांच:5,पाँच:5,छह:6,सात:7,आठ:8,नौ:9,दस:10,ग्यारह:11,बारह:12,बीस:20,पचास:50,सौ:100,
-  half:0.5,aadha:0.5,adha:0.5,आधा:0.5,आधे:0.5,dedh:1.5,डेढ़:1.5,डेढ:1.5,dhai:2.5,ढाई:2.5,
+  half:0.5,aadha:0.5,adha:0.5,आधा:0.5,आधे:0.5,dedh:1.5,डेढ़:1.5,डेढ:1.5,dhai:2.5,ढाई:2.5,sava:1.25,sawa:1.25,सवा:1.25,
   terah:13,chaudah:14,pandrah:15,solah:16,satrah:17,atharah:18,unnis:19,ikkis:21,baees:22,teis:23,chaubis:24,pachis:25,pachees:25,tees:30,chaalis:40,sath:60,sattar:70,assi:80,nabbe:90,dhaai:2.5,
   तेरह:13,चौदह:14,पंद्रह:15,पन्द्रह:15,सोलह:16,सत्रह:17,अठारह:18,उन्नीस:19,इक्कीस:21,बाईस:22,तेईस:23,चौबीस:24,पच्चीस:25,तीस:30,चालीस:40,साठ:60,सत्तर:70,अस्सी:80,नब्बे:90,
 };

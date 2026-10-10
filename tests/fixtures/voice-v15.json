@@ -1,0 +1,477 @@
+[
+  {
+    "text": "Rahul ke naam se 10 kilo daal ka bill add karo",
+    "intent": "sale",
+    "customer": "rahul",
+    "products": [
+      "daal"
+    ],
+    "quantities": [
+      "10"
+    ],
+    "units": [
+      "kg"
+    ]
+  },
+  {
+    "text": "Rahul ko 10 kilo daal bechi",
+    "intent": "sale",
+    "customer": "rahul",
+    "products": [
+      "daal"
+    ],
+    "quantities": [
+      "10"
+    ],
+    "units": [
+      "kg"
+    ]
+  },
+  {
+    "text": "10 kilo daal stock mein add karo",
+    "intent": "stock",
+    "products": [
+      "daal"
+    ],
+    "quantities": [
+      "10"
+    ],
+    "units": [
+      "kg"
+    ]
+  },
+  {
+    "text": "Rahul ke naam se 10 kilo daal add kar do",
+    "intent": "stock",
+    "question": "intentChoice"
+  },
+  {
+    "text": "Rahul ka ₹500 udhaar cash mein jama karo",
+    "intent": "payment",
+    "customer": "rahul",
+    "amount": "500",
+    "method": "cash"
+  },
+  {
+    "text": "Create a bill for Rahul for ten kilos of dal",
+    "intent": "sale",
+    "customer": "rahul",
+    "products": [
+      "dal"
+    ],
+    "quantities": [
+      "10"
+    ],
+    "units": [
+      "kg"
+    ]
+  },
+  {
+    "text": "Rahul ke naam pe 10 kg daal ka bill banao",
+    "intent": "sale",
+    "customer": "rahul",
+    "products": [
+      "daal"
+    ],
+    "quantities": [
+      "10"
+    ],
+    "units": [
+      "kg"
+    ]
+  },
+  {
+    "text": "Rahul ko daal di thi 10 kilo, bill bana do",
+    "intent": "sale",
+    "customer": "rahul",
+    "products": [
+      "daal"
+    ],
+    "quantities": [
+      "10"
+    ],
+    "units": [
+      "kg"
+    ]
+  },
+  {
+    "text": "Rahul ko 2 kilo aloo, 3 kilo pyaz aur 5 kilo daal bechi",
+    "intent": "sale",
+    "customer": "rahul",
+    "products": [
+      "aloo",
+      "pyaz",
+      "daal"
+    ],
+    "quantities": [
+      "2",
+      "3",
+      "5"
+    ],
+    "units": [
+      "kg",
+      "kg",
+      "kg"
+    ]
+  },
+  {
+    "text": "Stock mein 10 kilo aloo, 20 kilo pyaz aur 5 packet Maggi add karo",
+    "intent": "stock",
+    "quantities": [
+      "10",
+      "20",
+      "5"
+    ],
+    "units": [
+      "kg",
+      "kg",
+      "packet"
+    ]
+  },
+  {
+    "text": "राहुल के नाम से दस किलो दाल का बिल बनाओ",
+    "intent": "sale",
+    "customer": "राहुल",
+    "products": [
+      "दाल"
+    ],
+    "quantities": [
+      "10"
+    ],
+    "units": [
+      "kg"
+    ]
+  },
+  {
+    "text": "Rahul ko aadha kilo daal bechi",
+    "intent": "sale",
+    "customer": "rahul",
+    "products": [
+      "daal"
+    ],
+    "quantities": [
+      "0.5"
+    ],
+    "units": [
+      "kg"
+    ]
+  },
+  {
+    "text": "Rahul ko dedh kilo daal bechi",
+    "intent": "sale",
+    "customer": "rahul",
+    "products": [
+      "daal"
+    ],
+    "quantities": [
+      "1.5"
+    ],
+    "units": [
+      "kg"
+    ]
+  },
+  {
+    "text": "Rahul ko dhai kilo daal bechi",
+    "intent": "sale",
+    "customer": "rahul",
+    "products": [
+      "daal"
+    ],
+    "quantities": [
+      "2.5"
+    ],
+    "units": [
+      "kg"
+    ]
+  },
+  {
+    "text": "Rahul ko sava kilo daal bechi",
+    "intent": "sale",
+    "customer": "rahul",
+    "products": [
+      "daal"
+    ],
+    "quantities": [
+      "1.25"
+    ],
+    "units": [
+      "kg"
+    ]
+  },
+  {
+    "text": "Rahul ko 10 kilo daal ₹100 kilo mein bechi cash mila",
+    "intent": "sale",
+    "customer": "rahul",
+    "products": [
+      "daal"
+    ],
+    "quantities": [
+      "10"
+    ],
+    "total": 100000,
+    "mode": "cash",
+    "units": [
+      "kg"
+    ]
+  },
+  {
+    "text": "Rahul ko 10 kilo daal total ₹1000 mein bechi UPI mila",
+    "intent": "sale",
+    "customer": "rahul",
+    "products": [
+      "daal"
+    ],
+    "quantities": [
+      "10"
+    ],
+    "total": 100000,
+    "mode": "upi",
+    "units": [
+      "kg"
+    ]
+  },
+  {
+    "text": "Chetna ke naam se ₹200 ka bill bana do",
+    "intent": "sale",
+    "customer": "chetna",
+    "question": "items"
+  },
+  {
+    "text": "Chetna ko 5 kilo aloo ₹200 mein beche cash mila",
+    "intent": "sale",
+    "customer": "chetna",
+    "products": [
+      "aloo"
+    ],
+    "quantities": [
+      "5"
+    ],
+    "total": 20000,
+    "mode": "cash",
+    "units": [
+      "kg"
+    ]
+  },
+  {
+    "text": "Rahul ko do shirts ₹899 ki ek bechi ₹1000 cash ₹500 UPI baaki udhaar",
+    "intent": "sale",
+    "customer": "rahul",
+    "products": [
+      "shirt"
+    ],
+    "quantities": [
+      "2"
+    ],
+    "total": 179800,
+    "mode": "split",
+    "units": [
+      "piece"
+    ],
+    "cash": "1000",
+    "upi": "500",
+    "pending": 29800
+  },
+  {
+    "text": "Aaj cash kitna mila",
+    "intent": "report"
+  },
+  {
+    "text": "Kal ki closing PDF dikhao",
+    "intent": "closing"
+  },
+  {
+    "text": "Aaj ki dukaan close kar do",
+    "intent": "closing"
+  },
+  {
+    "text": "Maggi kitna mangwana chahiye",
+    "intent": "reorder"
+  },
+  {
+    "text": "Agar daal 60 mein kharidun aur 75 mein bechu toh",
+    "intent": "simulation"
+  },
+  {
+    "text": "If I buy at 60 and sell at 75 what if",
+    "intent": "simulation"
+  },
+  {
+    "text": "Supplier ka bill scan karna hai",
+    "intent": "scan"
+  },
+  {
+    "text": "Aaj business mein kya dhyan dena hai",
+    "intent": "insights"
+  },
+  {
+    "text": "20 kilo pyaz stock mein add karo",
+    "intent": "stock",
+    "products": [
+      "pyaz"
+    ],
+    "quantities": [
+      "20"
+    ],
+    "units": [
+      "kg"
+    ]
+  },
+  {
+    "text": "Chetna naam ka customer add karo",
+    "intent": "customer"
+  },
+  {
+    "text": "20 kilo daal ₹1000 ki kharidi",
+    "intent": "purchase",
+    "products": [
+      "daal"
+    ],
+    "quantities": [
+      "20"
+    ],
+    "units": [
+      "kg"
+    ],
+    "prices": [
+      "50"
+    ],
+    "basis": [
+      "unit"
+    ]
+  },
+  {
+    "text": "Rahul ko 10 kilo daal 100 rupaye kilo mein bechi cash",
+    "intent": "sale",
+    "customer": "rahul",
+    "products": [
+      "daal"
+    ],
+    "quantities": [
+      "10"
+    ],
+    "units": [
+      "kg"
+    ],
+    "prices": [
+      "100"
+    ],
+    "mode": "cash",
+    "total": 100000
+  },
+  {
+    "text": "10 kilo daal Rahul supplier se aayi",
+    "intent": "purchase",
+    "supplier": "rahul",
+    "products": [
+      "daal"
+    ],
+    "quantities": [
+      "10"
+    ],
+    "units": [
+      "kg"
+    ]
+  },
+  {
+    "text": "Gupta Traders se 10 kilo daal aayi",
+    "intent": "purchase",
+    "supplier": "gupta traders",
+    "products": [
+      "daal"
+    ],
+    "quantities": [
+      "10"
+    ],
+    "units": [
+      "kg"
+    ]
+  },
+  {
+    "text": "Bhai Rahul ko 2 kilo daal ka bill bana do cash",
+    "intent": "sale",
+    "customer": "rahul",
+    "products": [
+      "daal"
+    ],
+    "quantities": [
+      "2"
+    ],
+    "units": [
+      "kg"
+    ],
+    "mode": "cash"
+  },
+  {
+    "text": "Rahul ko 2 piece Blue Casual Shirt XL bechi cash",
+    "intent": "sale",
+    "customer": "rahul",
+    "products": [
+      "blue casual shirt xl"
+    ],
+    "quantities": [
+      "2"
+    ],
+    "units": [
+      "piece"
+    ],
+    "mode": "cash"
+  },
+  {
+    "previous": "Rahul ko 2 kilo daal bechi cash",
+    "text": "Rahul nahi Rohan ke naam se bill karo",
+    "intent": "sale",
+    "customer": "rohan",
+    "products": [
+      "daal"
+    ],
+    "quantities": [
+      "2"
+    ],
+    "units": [
+      "kg"
+    ],
+    "mode": "cash"
+  },
+  {
+    "previous": "Rahul ko 10 kilo daal 100 rupaye kilo mein bechi cash",
+    "text": "₹100 nahi ₹90 kilo karo",
+    "intent": "sale",
+    "customer": "rahul",
+    "products": [
+      "daal"
+    ],
+    "quantities": [
+      "10"
+    ],
+    "prices": [
+      "90"
+    ],
+    "units": [
+      "kg"
+    ],
+    "mode": "cash",
+    "total": 90000
+  },
+  {
+    "previous": "Rahul ko 2 kilo daal bechi cash",
+    "text": "daal nahi aloo",
+    "intent": "sale",
+    "customer": "rahul",
+    "products": [
+      "aloo"
+    ],
+    "quantities": [
+      "2"
+    ],
+    "units": [
+      "kg"
+    ],
+    "mode": "cash",
+    "total": 8000
+  },
+  {
+    "text": "Kal cash kitna mila",
+    "intent": "report",
+    "period": "yesterday"
+  }
+]

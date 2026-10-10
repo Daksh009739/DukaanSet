@@ -3,7 +3,7 @@ import {text} from '@/lib/locale';
 import { Suspense } from 'react';
 import { notFound } from 'next/navigation';
 import { Workspace } from '@/components/workspace';
-const sections=new Set(['sales','stock','products','customers','purchases','suppliers','payments','expenses','reports','todays-work','daily-closing','settings','ai','help','demand']);
+const sections=new Set(['sales','stock','products','customers','purchases','suppliers','payments','expenses','reports','todays-work','daily-closing','settings','ai','help','demand','intelligence']);
 export default async function AppPage({params}: {params:Promise<{slug?:string[]}>}) {
   const {slug=[]}=await params;
   const [section,id,record]=slug,uuid=(value:string)=>/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(value);
