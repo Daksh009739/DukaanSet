@@ -15,9 +15,9 @@ export interface Invoice { id: string; number: string; date: string; customerId:
 /** amountPaise is signed: sale/repayment positive, refund negative. */
 export interface Payment { id: string; customerId: string | null; invoiceId: string | null; amountPaise: number; method: PaymentMethod; date: string; kind: "sale" | "repayment" | "refund" }
 export interface Movement { id: string; productId: string; productName: string; quantityMilli: number; reason: string; date: string; referenceId: string | null }
-export interface InventoryEntry { id: string; date: string; source: "voice" | "manual" | "mixed"; items: { productId: string; name: string; unit: string; quantityMilli: number; movementId: string }[] }
+export interface InventoryEntry { id: string; date: string; source: "voice" | "manual" | "mixed"; items: { productId: string; name: string; unit: string; quantityMilli: number; movementId: string; created?:boolean; previousPricePaise?:number; sellingPricePaise?:number; purchaseCostPaise?:number; purchaseTotalPaise?:number }[] }
 export interface StockProductInput { name: string; unit: string; pricePaise: number; costPaise: number; sku: string; variation: string }
-export type StockBatchItem = { productId: string; quantityMilli: number } | { newProduct: StockProductInput; quantityMilli: number };
+export type StockBatchItem = ({ productId: string; quantityMilli: number; sellingPricePaise?:number; previousPricePaise?:number } | { newProduct: StockProductInput; quantityMilli: number }) & {unit?:string;purchaseCostPaise?:number; purchaseTotalPaise?:number};
 export interface Purchase { id: string; supplierId: string; supplierName: string; date: string; items: { productId: string; name: string; unit: string; quantityMilli: number; costPaise: number; totalPaise: number }[]; totalPaise: number; paidPaise: number; balancePaise: number }
 export interface Expense { id: string; description: string; amountPaise: number; method: PaymentMethod; date: string }
 export interface Closing { id: string; date: string; businessDay: string; openingCashPaise: number; expectedCashPaise: number; actualCashPaise: number; differencePaise: number }

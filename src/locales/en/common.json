@@ -337,7 +337,8 @@
     "meter": "metres",
     "metre": "metres",
     "m": "metres",
-    "dozen": "dozens"
+    "dozen": "dozens",
+    "bag": "Bag"
   },
   "activityLabels": {
     "business": "Shop created",
@@ -412,6 +413,7 @@
     "m_one": "metre",
     "m_other": "metres",
     "dozen_one": "dozen",
-    "dozen_other": "dozens"
+    "dozen_other": "dozens",
+    "bag": "{{count}} bags"
   }
 }

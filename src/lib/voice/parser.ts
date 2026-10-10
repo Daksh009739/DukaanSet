@@ -1,11 +1,11 @@
 import type { Product, StockBatchItem } from '../contracts';
 
 export type VoiceProduct = Product;
-export type RowIssue = 'unknown' | 'ambiguous' | 'quantity' | 'unit' | 'conversion' | 'whole' | 'limit' | 'correction' | 'productDetails' | 'duplicateProduct';
+export type RowIssue = 'unknown' | 'ambiguous' | 'quantity' | 'unit' | 'conversion' | 'whole' | 'limit' | 'correction' | 'productDetails' | 'duplicateProduct' | 'priceMeaning' | 'price';
 export interface VoiceNewProduct { name: string; unit: string; price: string; cost: string; sku: string; variation: string }
-export interface VoiceRow { id: string; query: string; productId: string; candidates: string[]; quantity: string; unit: string; quantityMilli: number | null; issues: RowIssue[]; source: 'voice' | 'manual'; newProduct?: VoiceNewProduct }
+export interface VoiceRow { id: string; query: string; productId: string; candidates: string[]; quantity: string; unit: string; quantityMilli: number | null; issues: RowIssue[]; source: 'voice' | 'manual'; newProduct?: VoiceNewProduct; sellingPrice?:string; purchaseCost?:string; purchaseTotal?:string; unclearAmount?:string; priceUnit?:string; costUnit?:string; sellingTotal?:string }
 export interface VoiceDraft { version: 1; key: string; transcript: string; applied: string; rows: VoiceRow[]; updatedAt: number; submitted?: { source:'voice'|'manual'|'mixed'; items:StockBatchItem[]; rowIds?:string[] } }
-export const catalogueUnits = ['piece','packet','box','kg','g','litre','ml','metre'] as const;
+export const catalogueUnits = ['piece','packet','box','kg','g','litre','ml','metre','bag'] as const;
 export function voicePricePaise(value: string): number | null {
   if (!/^\d{1,8}(?:\.\d{1,2})?$/.test(value)) return null;
   const [whole, fraction=''] = value.split('.');
@@ -20,7 +20,7 @@ export function newProductDraft(row:VoiceRow):VoiceNewProduct {
 const synonyms: Record<string, string> = {
   'नीला':'blue','नीली':'blue','काला':'black','काली':'black','शर्ट':'shirt','शर्ट्स':'shirt','कमीज':'shirt','कमीज़':'shirt',shirts:'shirt',
   doodh:'milk', dudh:'milk', दूध:'milk', dal:'dal', daal:'dal', दाल:'dal', lentils:'dal', lentil:'dal',
-  pyaz:'onion', pyaaz:'onion', प्याज:'onion', प्याज़:'onion', onions:'onion', aloo:'potato', alu:'potato', आलू:'potato', potatoes:'potato',
+  pyaz:'onion', pyaaz:'onion', pyaj:'onion', प्याज:'onion', प्याज़:'onion', onions:'onion', aloo:'potato', aalu:'potato', aaloo:'potato', alu:'potato', आलू:'potato', potatoes:'potato',
   chawal:'rice', चावल:'rice', atta:'flour', आटा:'flour', tamatar:'tomato', टमाटर:'tomato', tomatoes:'tomato',
   adrak:'ginger', अदरक:'ginger', lehsun:'garlic', lahsun:'garlic', लहसुन:'garlic',
   biscuits:'biscuit', बिस्कुट:'biscuit', चीनी:'sugar', cheeni:'sugar', chini:'sugar', नमक:'salt', namak:'salt',
@@ -42,14 +42,15 @@ const units: Record<string,string> = {
   packet:'packet',packets:'packet',pack:'packet',packs:'packet',पैकेट:'packet',पैकेट्स:'packet',
   box:'box',boxes:'box',डिब्बा:'box',डिब्बे:'box',बॉक्स:'box',
   dozen:'dozen',dozens:'dozen',darjan:'dozen',दर्जन:'dozen',
-  m:'metre',meter:'metre',meters:'metre',metre:'metre',metres:'metre',मीटर:'metre',
+  bag:'bag',bags:'bag',bori:'bag',बोरी:'bag',m:'metre',meter:'metre',meters:'metre',metre:'metre',metres:'metre',मीटर:'metre',
 };
 const noise = new Set('bhai please add stock jodo jod जोड़ जोड़ो जोड़ जोड़ो kar karo karna karni kardo do de dena karado bhi aur and ke ka ki ko mein hai se quantity of the a an hata hatao remove delete sorry nahi nahin no actually instead badlo change update make quantity कर करो देना दो के का की को भी और है से मात्रा हटा हटाओ नहीं माफ'.split(' '));
 
 export function normalize(value: string): string {
   return value.normalize('NFKC').toLowerCase().replace(/[०-९]/g, character=>String(character.charCodeAt(0)-2406)).replace(/[।,;!?…]/g,' ').replace(/(?<!\d)\.|\.(?!\d)/g,' ').replace(/[^\p{L}\p{M}\p{N}.\s-]/gu,' ').replace(/\s+/g,' ').trim();
 }
-function canonical(value:string):string { return normalize(value).split(' ').map(token=>synonyms[token]||token).join(' '); }
+export function canonicalProductName(value:string):string { return normalize(value).split(' ').map(token=>synonyms[token]||token).join(' '); }
+const canonical=canonicalProductName;
 export function canonicalUnit(value:string):string { return units[normalize(value)]||normalize(value); }
 function editDistance(a:string,b:string):number { const row=Array.from({length:b.length+1},(_,i)=>i);for(let i=1;i<=a.length;i++){let last=row[0];row[0]=i;for(let j=1;j<=b.length;j++){const prior=row[j];row[j]=Math.min(row[j]+1,row[j-1]+1,last+(a[i-1]===b[j-1]?0:1));last=prior;}}return row[b.length]; }
 export function matchProducts(query:string, products:VoiceProduct[]):{ids:string[];exact:boolean} {
@@ -102,10 +103,12 @@ export function validateRow(row:VoiceRow, products:VoiceProduct[]):VoiceRow {
     if(products.some(item=>label(item.name)===label(details.name)&&label(item.variation)===label(details.variation)&&canonicalUnit(item.unit)===canonicalUnit(details.unit)))issues.push('duplicateProduct');
     product={unit:details.unit,packSize:null};
   }
+  if(row.unclearAmount)issues.push('priceMeaning');
+  if([row.sellingPrice,row.purchaseCost,row.purchaseTotal,row.sellingTotal].some(value=>value!==undefined&&value!==''&&voicePricePaise(value)===null))issues.push('price');
   if(!product)issues.push(row.candidates.length?'ambiguous':'unknown');
   if(!/^\d+(?:\.\d{1,3})?$/.test(row.quantity)||Number(row.quantity)<=0)issues.push('quantity');
   if(!row.unit)issues.push('unit');
-  if(!issues.includes('quantity')&&['piece','packet','box','pair','bottle'].includes(canonicalUnit(row.unit))&&Number(row.quantity)%1!==0)issues.push('whole');
+  if(!issues.includes('quantity')&&['piece','packet','box','pair','bottle','bag'].includes(canonicalUnit(row.unit))&&Number(row.quantity)%1!==0)issues.push('whole');
   let quantityMilli:number|null=null;
   if(product&&!issues.includes('quantity')&&row.unit){
     const base=canonicalUnit(product.unit),spoken=canonicalUnit(row.unit);let factor:number|undefined;
@@ -119,6 +122,7 @@ export function validateRow(row:VoiceRow, products:VoiceProduct[]):VoiceRow {
     if(!factor)issues.push('conversion');
     else{const [whole,fraction='']=row.quantity.split('.');const numerator=(BigInt(whole)*1000n+BigInt(fraction.padEnd(3,'0')))*BigInt(factor);quantityMilli=Number(numerator/1000n);if(numerator%1000n!==0n||!Number.isSafeInteger(quantityMilli)||quantityMilli<=0||quantityMilli>1_000_000_000)issues.push('limit');else if(['piece','packet','box','pair','bottle'].includes(base)&&quantityMilli%1000!==0&&!issues.includes('whole'))issues.push('whole');}
   }
+  if(row.sellingTotal&&quantityMilli!==null){const total=voicePricePaise(row.sellingTotal),price=voicePricePaise(row.newProduct?.price||row.sellingPrice||'');if(total!==null&&price!==null&&BigInt(price)*BigInt(quantityMilli)!==BigInt(total)*1000n)issues.push('priceMeaning');}
   return{...row,issues,quantityMilli:issues.length?null:quantityMilli};
 }
 function rowFrom(clause:string,products:VoiceProduct[],index:number):VoiceRow {

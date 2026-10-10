@@ -1,5 +1,7 @@
 # DukaanSet
 
+V11.1 adds a compact global conversational VoiceOS with multi-turn customer, billing, payment and expense drafts. V12 shares automatic new-product preparation, separated purchase/selling prices and one atomic **Save All Stock** action between the global assistant and stock workspace. See [architecture, examples and limits](docs/v11-v12-voiceos.md) and [verification evidence](docs/v11-v12-test-report.md).
+
 V9 adds a compact premium dashboard and complete record detail pages. V10.1 adds reviewed daily closing, separate cash/UPI reconciliation, immutable reports, optional physical counts, explicit next sessions and opt-in automatic closing on the persistent backend. See [V9/V10 verification and accounting policy](docs/v9-v10-test-report.md). The separate **Closing demo** uses real fictional transactions to demonstrate the ₹6,700 drawer calculation.
 
 
@@ -9,7 +11,7 @@ The V8 public website uses the refined storefront identity, fictional interactiv
 
 Source: [Daksh009739/DukaanSet](https://github.com/Daksh009739/DukaanSet). See the [V3 implementation and limits](docs/v3-implementation.md), [QA report](docs/v3-test-report.md) and preserved [V3 brief](docs/briefs/v3-master.md).
 
-For the latest feature, see [VoiceOS setup, architecture and demo A–E](docs/v4-voiceos.md), [V4 test results](docs/v4-test-report.md) and the [V4 brief](docs/briefs/v4-voiceos-master.md). Real browser speech recognition has typed fallback; device transcription accuracy and live staging remain explicit validation limits. Recognised commands fill reviewed forms; they do not automatically save or send messages.
+For the earlier VoiceOS foundation, see [setup, architecture and demo A–E](docs/v4-voiceos.md), [V4 test results](docs/v4-test-report.md) and the [V4 brief](docs/briefs/v4-voiceos-master.md). Real browser speech recognition has typed fallback; device transcription accuracy and live staging remain explicit validation limits. Recognised commands prepare reviewed drafts; they do not automatically save or send messages.
 
 ## Run locally
 

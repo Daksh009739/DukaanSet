@@ -21,8 +21,9 @@ async function newRows(page:Page) {
   await page.getByRole('button',{name:'Review transcript',exact:true}).click();
   await expect(page.getByTestId('voice-row')).toHaveCount(2);
   for(let index=1;index<=2;index++){
-    await page.getByTestId('voice-row').nth(index-1).getByRole('button',{name:'Add as new product',exact:true}).click();
+    await expect(page.getByTestId('voice-row').nth(index-1).getByText('New product',{exact:false})).toBeVisible();
     await page.getByLabel(`Selling price (₹) ${index}`,{exact:true}).fill(index===1?'120':'80');
+    await page.getByTestId('voice-row').nth(index-1).locator('.stock-v12-edit>summary').click();
     await page.getByLabel(`Cost price (₹, optional) ${index}`,{exact:true}).fill(index===1?'60':'40');
   }
 }
@@ -36,8 +37,8 @@ test('voice entry is highlighted at the top; new spoken products and stock save 
   expect((await state(page,business)).products.length).toBe(before.products.length);
   await page.reload();
   await expect(page.getByLabel('Product name 1',{exact:true})).toHaveValue('dragonfruit');
-  await expect(page.getByLabel('Selling price (₹) 1',{exact:true})).toHaveValue('120');
-  await page.getByRole('button',{name:'Confirm & add stock',exact:true}).click();
+  await expect(page.getByLabel('Selling price (₹) 1 Edit details',{exact:true})).toHaveValue('120');
+  await page.getByRole('button',{name:'Save All Stock',exact:true}).click();
   await expect(page.getByRole('heading',{name:'Stock added',exact:true})).toBeVisible();
   const after=await state(page,business);
   expect(after.products).toHaveLength(before.products.length+2);
@@ -49,8 +50,8 @@ test('voice entry is highlighted at the top; new spoken products and stock save 
   await page.goto('/app/stock/voice');
   await page.getByLabel('Your words',{exact:true}).fill('3 kilo kiwi');
   await page.getByRole('button',{name:'Review transcript',exact:true}).click();
-  await expect(page.getByLabel('Product 1',{exact:true})).toHaveValue(after.products.find(item=>item.name==='kiwi')!.id);
-  await page.getByRole('button',{name:'Confirm & add stock',exact:true}).click();
+  await page.getByTestId('voice-row').first().locator('.stock-v12-edit>summary').click();await expect(page.getByLabel('Product 1',{exact:true})).toHaveValue(after.products.find(item=>item.name==='kiwi')!.id);
+  await page.getByRole('button',{name:'Save All Stock',exact:true}).click();
   await expect(page.getByRole('heading',{name:'Stock added',exact:true})).toBeVisible();
   expect((await state(page,business)).products).toHaveLength(after.products.length);
   expect((await state(page,business)).products.find(item=>item.name==='kiwi')!.quantityMilli).toBe(13000);
@@ -60,7 +61,7 @@ test('voice entry is highlighted at the top; new spoken products and stock save 
     await page.evaluate(id=>{const key=Object.keys(sessionStorage).find(key=>key.startsWith('ds-voice-draft-')&&key.endsWith(id))!;const draft=JSON.parse(sessionStorage.getItem(key)!);draft.rows[0].productId='';draft.rows[0].candidates=[];draft.rows[0].issues=['unknown'];sessionStorage.setItem(key,JSON.stringify(draft));},business);
   await page.reload();
   await expect(page.getByLabel('Product 1',{exact:true})).toHaveValue(ginger.id);
-  await page.getByRole('button',{name:'Confirm & add stock',exact:true}).click();
+  await page.getByRole('button',{name:'Save All Stock',exact:true}).click();
   await expect(page.getByRole('heading',{name:'Stock added',exact:true})).toBeVisible();
   expect((await state(page,business)).products.find(item=>item.id===ginger.id)!.quantityMilli).toBe(ginger.quantityMilli+3000);
   expect((await state(page,business)).products).toHaveLength(after.products.length);
@@ -69,12 +70,12 @@ test('a lost new-product acknowledgement survives reload and retries without dup
   const business=await setup(page),before=await state(page,business);
   await page.goto('/app/stock/voice');await newRows(page);
   await page.route(`**/api/businesses/${business}/stockbatch`,async route=>{const response=await route.fetch();expect(response.status()).toBe(201);await route.abort('failed');});
-  await page.getByRole('button',{name:'Confirm & add stock',exact:true}).click();
+  await page.getByRole('button',{name:'Save All Stock',exact:true}).click();
   await expect(page.getByText('Stock was not confirmed. Check your stock/history before changing this draft, then retry the same entry.',{exact:true})).toBeVisible();
   await expect(page.getByRole('button',{name:'Clear draft',exact:true})).toBeDisabled();
   await page.unrouteAll({behavior:'wait'});await page.reload();
   await expect(page.getByLabel('Selling price (₹) 1',{exact:true})).toBeDisabled();
-  await page.getByRole('button',{name:'Confirm & add stock',exact:true}).click();
+  await page.getByRole('button',{name:'Save All Stock',exact:true}).click();
   await expect(page.getByRole('heading',{name:'Stock added',exact:true})).toBeVisible();
   await expect(page.getByTestId('voice-row')).toHaveCount(0);
   const after=await state(page,business);

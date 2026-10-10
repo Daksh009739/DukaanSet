@@ -337,7 +337,8 @@
     "meter": "मीटर",
     "metre": "मीटर",
     "m": "मीटर",
-    "dozen": "दर्जन"
+    "dozen": "दर्जन",
+    "bag": "बोरी"
   },
   "activityLabels": {
     "business": "दुकान बनाई गई",
@@ -412,6 +413,7 @@
     "m_one": "मीटर",
     "m_other": "मीटर",
     "dozen_one": "दर्जन",
-    "dozen_other": "दर्जन"
+    "dozen_other": "दर्जन",
+    "bag": "{{count}} बोरी"
   }
 }

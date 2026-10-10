@@ -1,0 +1,32 @@
+import {spawn} from 'node:child_process';
+import {mkdirSync,writeFileSync} from 'node:fs';
+import {chromium} from '@playwright/test';
+import AxeBuilder from '@axe-core/playwright';
+import assert from 'node:assert/strict';
+
+const origin='http://127.0.0.1:3002',output='.local/qa-v12-production';mkdirSync(output,{recursive:true});
+const env={...process.env,NODE_ENV:'production',DUKAANSET_ENV:'local',DATABASE_PATH:'.data/v12-production-qa.sqlite',AUTH_BASE_URL:origin,AUTH_EMAIL_MODE:'file',AUTH_MAIL_DIRECTORY:'.data/v12-production-mail',AI_PROVIDER:'',DUKAANSET_CLOSING_WORKER:'0'};
+const report={checkedAt:new Date().toISOString(),environment:'compiled local production build; isolated fictional shop; typed commands',checks:[]};
+const server=spawn(process.execPath,['node_modules/next/dist/bin/next','start','--hostname','127.0.0.1','--port','3002'],{env,windowsHide:true,stdio:['ignore','pipe','pipe']});let browser;
+server.stderr.on('data',data=>{if(String(data).includes('Error'))process.stderr.write(data);});
+try{
+ let ready=false;for(let i=0;i<60;i++){try{if((await fetch(origin+'/api/health')).ok){ready=true;break;}}catch{}await new Promise(r=>setTimeout(r,500));}assert.ok(ready,'Compiled server readiness');
+ browser=await chromium.launch({channel:process.platform==='win32'?'msedge':undefined,headless:true});const context=await browser.newContext({baseURL:origin,viewport:{width:390,height:844}}),page=await context.newPage(),errors=[];page.on('pageerror',error=>errors.push(error.message));
+ const post=(path,data)=>context.request.post('/api'+path,{headers:{Origin:origin},data});assert.equal((await post('/auth/demo',{language:'en'})).status(),201);await post('/account/language',{language:'en'});
+ const session=await(await context.request.get('/api/session')).json(),business=session.businesses.find(b=>b.category==='vegetables');assert.ok(business);
+ const state=async()=>await(await context.request.get(`/api/businesses/${business.id}/state`)).json();
+ await page.goto('/app');await page.getByLabel('Your business',{exact:true}).selectOption(business.id);await page.locator('.dashboard-welcome h1').waitFor();await page.goto('/app/customers');
+ const launch=async()=>{await page.getByRole('button',{name:'Open VoiceOS',exact:true}).click();return page.getByRole('dialog');};
+ const say=async text=>{const dialog=page.getByRole('dialog');await dialog.getByLabel('Voice command',{exact:true}).fill(text);await dialog.getByRole('button',{name:'Review request',exact:true}).click();};
+ const before=await state(),potato=before.products.find(p=>p.name==='Potatoes');assert.ok(potato);
+ let dialog=await launch();assert.equal(await dialog.locator('textarea').count(),0);assert.equal(await dialog.locator('.conversation-suggestions button').count(),3);
+ await say('Heer customer add karo aur uska 5 kilo aloo 200 rupaye mein bill bana do');assert.equal(await dialog.getByRole('button',{name:'Confirm & Save',exact:true}).isEnabled(),false);await say('Cash');
+ assert.equal((await state()).invoices.length,before.invoices.length);await dialog.getByRole('button',{name:'Confirm & Save',exact:true}).click();await dialog.getByText('Saved successfully',{exact:true}).waitFor();
+ let after=await state();assert.equal(after.invoices.length,before.invoices.length+1);assert.equal(after.customers.filter(c=>c.name==='Heer').length,1);assert.equal(after.products.find(p=>p.id===potato.id).quantityMilli,potato.quantityMilli-5000);assert.equal(after.invoices[0].totalPaise,20000);assert.equal(after.invoices[0].paidPaise,20000);report.checks.push('Compiled conversational customer + invoice saves one dependent transaction with accurate stock and cash');
+ await dialog.getByRole('button',{name:'Close',exact:true}).click();await page.goto('/app/stock/voice');
+ await page.getByLabel('Your words',{exact:true}).fill('20 kilo Apricot total purchase cost 1000 rupaye add karo');await page.getByRole('button',{name:'Review transcript',exact:true}).click();assert.equal(await page.getByRole('button',{name:'Save All Stock',exact:true}).isEnabled(),false);await page.getByLabel('Selling price (₹) 1',{exact:true}).fill('70');
+ assert.equal((await state()).products.filter(p=>p.name==='apricot').length,0);await page.getByRole('button',{name:'Save All Stock',exact:true}).click();await page.getByRole('heading',{name:'Stock added',exact:true}).waitFor();after=await state();const apricot=after.products.find(p=>p.name==='apricot');assert.ok(apricot);assert.equal(apricot.quantityMilli,20000);assert.equal(apricot.pricePaise,7000);assert.equal(apricot.costPaise,5000);assert.equal(after.inventoryEntries[0].items[0].purchaseTotalPaise,100000);assert.deepEqual(after.purchases,before.purchases);report.checks.push('Compiled focused stock creates its missing product and exact batch cost through one confirmed atomic save');await page.screenshot({path:output+'/stock-mobile.png',fullPage:true});
+ await page.goto('/app/stock');dialog=await launch();await say('2 kilo Apricot selling price 80 rupaye kilo add karo');await dialog.getByRole('button',{name:'Save All Stock',exact:true}).click();await dialog.getByRole('heading',{name:'Stock added',exact:true}).waitFor();after=await state();assert.equal(after.products.filter(p=>p.id===apricot.id).length,1);assert.equal(after.products.find(p=>p.id===apricot.id).quantityMilli,22000);assert.equal(after.products.find(p=>p.id===apricot.id).pricePaise,8000);report.checks.push('Compiled global stock reuses the shared engine, increments existing stock and applies an explicit reviewed price change');
+ await dialog.getByRole('button',{name:'Start new command',exact:true}).click();await dialog.getByRole('button',{name:'Close',exact:true}).click();dialog=await launch();await dialog.locator('.conversation-settings summary').click();const violations=(await new AxeBuilder({page}).include('.conversation-sheet').withTags(['wcag2a','wcag2aa']).analyze()).violations;assert.deepEqual(violations,[]);await page.screenshot({path:output+'/assistant-mobile.png'});report.checks.push('Compiled compact assistant passes automated accessibility checks at mobile width');assert.deepEqual(errors,[]);report.checks.push('No compiled browser runtime errors');
+ writeFileSync(output+'/production-report.json',JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify(report,null,2));
+}finally{await browser?.close();server.kill('SIGTERM');}

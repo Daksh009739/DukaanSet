@@ -337,7 +337,8 @@
     "meter": "metre",
     "metre": "metre",
     "m": "metre",
-    "dozen": "darjan"
+    "dozen": "darjan",
+    "bag": "Bori"
   },
   "activityLabels": {
     "business": "Dukaan bani",
@@ -412,6 +413,7 @@
     "m_one": "metre",
     "m_other": "metre",
     "dozen_one": "darjan",
-    "dozen_other": "darjan"
+    "dozen_other": "darjan",
+    "bag": "{{count}} bori"
   }
 }

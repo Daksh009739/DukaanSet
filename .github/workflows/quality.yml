@@ -38,6 +38,10 @@ jobs:
         run: npm run test:e2e -- tests/e2e/product.spec.ts
       - name: VoiceOS financial and microphone browser checks
         run: npm run test:e2e -- tests/e2e/voiceos.spec.ts
+      - name: Conversational VoiceOS, automatic product drafting and atomic stock checks
+        run: npm run test:e2e -- tests/e2e/conversation.spec.ts
+      - name: New product stock, lost acknowledgements and mobile inventory checks
+        run: npm run test:e2e -- tests/e2e/voice-products.spec.ts
       - name: Dashboard, closing concurrency, report versions and translated PDF checks
         run: npm run test:e2e -- tests/e2e/closing-dashboard.spec.ts
 
@@ -50,3 +54,5 @@ jobs:
 
       - name: Compiled dashboard, closing PDFs and durable backend timer checks
         run: node scripts/qa/v10-production-review.mjs
+      - name: Compiled conversational billing and shared stock automation checks
+        run: node scripts/qa/v12-production-review.mjs
