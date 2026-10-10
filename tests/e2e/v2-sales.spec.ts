@@ -24,10 +24,15 @@ async function fashionDemo(page: Page, baseURL: string) {
   const session = await (await page.request.get('/api/session')).json() as Session;
   const business = session.businesses.find(item => item.name === 'Sharma Fashion Store');
   expect(business).toBeTruthy();
-  await page.locator('#business-select').selectOption(business!.id);
+  await selectBusiness(page,business!.id);
   await expect(page.locator('.dashboard-welcome h1')).toBeVisible();
   const state = await businessState(page, business!.id);
   return { business: business!, state, shirt: state.products.find(item => item.name === 'Blue Casual Shirt')!, customer: state.customers.find(item => item.name === 'Rahul Sharma')! };
+}
+async function selectBusiness(page:Page,businessId:string){
+  await expect(page.locator('#business-select')).toBeEnabled();
+  if(await page.locator('#business-select').isVisible()) await page.locator('#business-select').selectOption(businessId);
+  else { await page.getByRole('button',{name:'More',exact:true}).first().click();const menu=page.getByRole('dialog');await menu.getByRole('combobox',{name:'Your business',exact:true}).selectOption(businessId);await expect(page.locator('#main')).toHaveAttribute('data-business-id',businessId);if(await menu.isVisible()) await menu.getByRole('button',{name:'Close',exact:true}).click(); }
 }
 
 async function businessState(page: Page, businessId: string) {
@@ -214,7 +219,7 @@ test('a committed sale with a lost response stays locked across reload and repla
   await page.route('**/api/auth/logout', route => route.fulfill({ status: 200, contentType: 'application/json', body: '{}' }));
   await page.locator('.bottom-nav').getByRole('button').click(); await page.getByRole('dialog').getByRole('button', { name: /Log out|Logout|Sign out/, exact: true }).click(); await expect(page).toHaveURL(/\/login$/);
   expect(await page.evaluate(key => sessionStorage.getItem(key), draftKey)).toBe(frozenRaw); expect(await page.evaluate(() => sessionStorage.getItem('v2-sales-unrelated-logout-key'))).toBeNull();
-  await page.goto(`/app/sales/new?product=${shirt.id}`); await page.locator('#business-select').selectOption(business.id); await expect(page.getByRole('button', { name: 'Retry same sale', exact: true })).toBeEnabled();
+  await page.goto(`/app/sales/new?product=${shirt.id}`); await selectBusiness(page,business.id); await expect(page.getByRole('button', { name: 'Retry same sale', exact: true })).toBeEnabled();
   await page.getByRole('button', { name: 'Retry same sale', exact: true }).click(); await expect(page.getByRole('heading', { name: 'Sale saved successfully', exact: true })).toBeVisible(); expect(replayed).toEqual(original); expect(attempts).toBe(2);
   const after = await businessState(page, business.id); expect(after.invoices.filter(record => !before.invoices.some(old => old.id === record.id))).toHaveLength(1); expect(after.products.find(product => product.id === shirt.id)?.quantityMilli).toBe(1000); expect(after.movements.filter(movement => movement.referenceId === invoice.id)).toHaveLength(1); expect(after.payments.filter(payment => payment.invoiceId === invoice.id)).toHaveLength(1);
 });

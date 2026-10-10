@@ -1,0 +1,156 @@
+{
+  "checks": [
+    {
+      "path": "/app",
+      "width": 1672
+    },
+    {
+      "path": "/app/sales/new",
+      "width": 1672
+    },
+    {
+      "path": "/app/sales",
+      "width": 1672
+    },
+    {
+      "path": "/app/sales/d658d130-25b8-4f78-b411-6375ffeaeeb8",
+      "width": 1672
+    },
+    {
+      "path": "/app/stock",
+      "width": 1672
+    },
+    {
+      "path": "/app/stock/9d1d5d33-f840-4ce3-afd9-269085c39a30",
+      "width": 1672
+    },
+    {
+      "path": "/app/customers",
+      "width": 1672
+    },
+    {
+      "path": "/app/customers/1809b431-c763-4aec-8ea2-f6e1e8bb2dfa",
+      "width": 1672
+    },
+    {
+      "path": "/app/purchases",
+      "width": 1672
+    },
+    {
+      "path": "/app/suppliers",
+      "width": 1672
+    },
+    {
+      "path": "/app/payments",
+      "width": 1672
+    },
+    {
+      "path": "/app/payments/ecd19fad-393d-4311-b933-aec6cc93679b",
+      "width": 1672
+    },
+    {
+      "path": "/app/demand",
+      "width": 1672
+    },
+    {
+      "path": "/app/reports",
+      "width": 1672
+    },
+    {
+      "path": "/app/daily-closing",
+      "width": 1672
+    },
+    {
+      "path": "/app/settings",
+      "width": 1672
+    },
+    {
+      "path": "/app",
+      "width": 390
+    },
+    {
+      "path": "/app/sales/new",
+      "width": 390
+    },
+    {
+      "path": "/app/sales",
+      "width": 390
+    },
+    {
+      "path": "/app/sales/d658d130-25b8-4f78-b411-6375ffeaeeb8",
+      "width": 390
+    },
+    {
+      "path": "/app/stock",
+      "width": 390
+    },
+    {
+      "path": "/app/stock/9d1d5d33-f840-4ce3-afd9-269085c39a30",
+      "width": 390
+    },
+    {
+      "path": "/app/customers",
+      "width": 390
+    },
+    {
+      "path": "/app/customers/1809b431-c763-4aec-8ea2-f6e1e8bb2dfa",
+      "width": 390
+    },
+    {
+      "path": "/app/purchases",
+      "width": 390
+    },
+    {
+      "path": "/app/suppliers",
+      "width": 390
+    },
+    {
+      "path": "/app/payments",
+      "width": 390
+    },
+    {
+      "path": "/app/payments/ecd19fad-393d-4311-b933-aec6cc93679b",
+      "width": 390
+    },
+    {
+      "path": "/app/demand",
+      "width": 390
+    },
+    {
+      "path": "/app/reports",
+      "width": 390
+    },
+    {
+      "path": "/app/daily-closing",
+      "width": 390
+    },
+    {
+      "path": "/app/settings",
+      "width": 390
+    }
+  ],
+  "viewportWidths": [
+    320,
+    360,
+    375,
+    390,
+    412,
+    430,
+    768,
+    1024,
+    1440,
+    1672,
+    1920
+  ],
+  "languages": [
+    "en",
+    "hi",
+    "hinglish"
+  ],
+  "errors": [],
+  "developmentNavigation": {
+    "domContentLoadedMs": 440.79999999701977,
+    "loadMs": 608.5,
+    "transferredBytes": 42024
+  }
+}

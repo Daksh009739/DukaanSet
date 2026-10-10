@@ -1,5 +1,7 @@
 # DukaanSet
 
+V13.1 implements the approved dashboard and shared application theme, complete invoice chart aggregates, full-history invoice search, and asynchronous licensed product media with merchant overrides. See [implementation and operating limits](docs/v13-1-product-transformation.md) and [QA evidence](docs/v13-1-test-report.md).
+
 V11.1 adds a compact global conversational VoiceOS with multi-turn customer, billing, payment and expense drafts. V12 shares automatic new-product preparation, separated purchase/selling prices and one atomic **Save All Stock** action between the global assistant and stock workspace. See [architecture, examples and limits](docs/v11-v12-voiceos.md) and [verification evidence](docs/v11-v12-test-report.md).
 
 V9 adds a compact premium dashboard and complete record detail pages. V10.1 adds reviewed daily closing, separate cash/UPI reconciliation, immutable reports, optional physical counts, explicit next sessions and opt-in automatic closing on the persistent backend. See [V9/V10 verification and accounting policy](docs/v9-v10-test-report.md). The separate **Closing demo** uses real fictional transactions to demonstrate the ₹6,700 drawer calculation.

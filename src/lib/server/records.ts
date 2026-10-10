@@ -3,6 +3,7 @@ import type {HistoryEntry,RecordDetail,RecordHistory,RecordType,InvoiceHistoryRe
 import {DomainError,oneOf} from './validation';
 import {safeSum} from './closing';
 import {ClosingService,sessionDay} from './closing';
+import {ProductMediaService} from './product-media-service';
 import {access} from './access';
 type Row=Record<string,string|number|null>;
 export class RecordService {
@@ -22,7 +23,7 @@ export class RecordService {
  }
  detail(userId:string,businessId:string,id:string,rawType:unknown):RecordDetail {
   const type=oneOf(rawType,'Record type',['product','customer','purchase','supplier','payment'] as const);this.permit(userId,businessId,type);
-  if(type==='product'){const p=this.entity('products',businessId,id);return {type,product:{id,name:String(p.name),sku:String(p.sku),unit:String(p.unit),quantityMilli:Number(p.quantity_milli),minStockMilli:Number(p.min_stock_milli),pricePaise:Number(p.price_paise),costPaise:Number(p.cost_paise),variation:String(p.variation),expiryDate:p.expiry_date as string|null,aliases:JSON.parse(String(p.aliases_json)),barcode:String(p.barcode),packSize:p.pack_size===null?null:Number(p.pack_size),displayNames:JSON.parse(String(p.display_names_json))}};}
+  if(type==='product'){const p=this.entity('products',businessId,id);return {type,product:{media:new ProductMediaService(this.store).summary(businessId,id),id,name:String(p.name),sku:String(p.sku),unit:String(p.unit),quantityMilli:Number(p.quantity_milli),minStockMilli:Number(p.min_stock_milli),pricePaise:Number(p.price_paise),costPaise:Number(p.cost_paise),variation:String(p.variation),expiryDate:p.expiry_date as string|null,aliases:JSON.parse(String(p.aliases_json)),barcode:String(p.barcode),packSize:p.pack_size===null?null:Number(p.pack_size),displayNames:JSON.parse(String(p.display_names_json))}};}
   if(type==='purchase'){const p=this.entity('purchases',businessId,id),s=this.entity('suppliers',businessId,String(p.supplier_id));return {type,purchase:{id,supplierId:String(p.supplier_id),supplierName:String(s.name),date:String(p.date),items:JSON.parse(String(p.items_json)),totalPaise:Number(p.total_paise),paidPaise:Number(p.paid_paise),balancePaise:Number(p.balance_paise)}};}
   if(type==='supplier'){const s=this.entity('suppliers',businessId,id),p=this.rows('SELECT * FROM purchases WHERE business_id=? AND supplier_id=?',businessId,id);return {type,supplier:{id,name:String(s.name),phone:String(s.phone),balancePaise:safeSum(p.map(i=>Number(i.balance_paise))),purchasesPaise:safeSum(p.map(i=>Number(i.total_paise))),paidPaise:safeSum(p.map(i=>Number(i.paid_paise))),purchaseCount:p.length}};}
   if(type==='payment'){

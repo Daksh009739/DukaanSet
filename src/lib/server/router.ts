@@ -13,6 +13,8 @@ import { ClosingService } from './closing';
 import { renderPdf } from './pdf-renderer';
 import { RecordService } from './records';
 
+import { ProductMediaService } from './product-media-service';
+
 const COOKIE = "dukaanset_session";
 const buckets = new Map<string, { count: number; expires: number }>();
 function throttle(key: string, limit: number, windowMs = 60_000) {
@@ -115,7 +117,15 @@ export async function handleRequest(request: Request, store: Store = getStore())
     if (!match) throw new DomainError("NOT_FOUND", "Endpoint not found.", 404);
     const [, businessId, action, recordId, subAction] = match;
     store.assertMember(userId, businessId);
-    const closing=new ClosingService(store);
+    const closing=new ClosingService(store),media=new ProductMediaService(store);
+    if(action==='media-settings'&&!recordId)return json(verb==='GET'?media.settings(userId,businessId):media.saveSettings(userId,businessId,await body(request)));
+    if(action==='product-media'&&recordId){
+      if(verb==='GET'&&subAction==='image'){const photo=media.read(userId,businessId,recordId,url.searchParams.get('candidate'));return new Response(new Uint8Array(photo.bytes),{headers:{'Content-Type':photo.mime,'Cache-Control':'private, no-store','X-Content-Type-Options':'nosniff','Content-Security-Policy':"default-src 'none'; sandbox"}});}
+      if(verb==='GET'&&!subAction)return json(media.detail(userId,businessId,recordId));
+      if(verb==='POST'&&subAction==='refresh'){throttle(`media:${userId}`,6);return json(media.refresh(userId,businessId,recordId));}
+      if(verb==='POST'&&subAction==='select')return json(media.select(userId,businessId,recordId,await body(request)));
+      if(verb==='POST'&&subAction==='upload'){throttle(`upload:${userId}`,20);const bytes=await readBody(request,MAX_IMAGE_BYTES),mime=request.headers.get('content-type')?.split(';')[0]||'';return json(await media.upload(userId,businessId,recordId,bytes,mime,request.headers.get('x-image-rights')==='confirmed'),201);}
+    }
     if(action==='record-details'&&recordId&&verb==='GET')return json(new RecordService(store).detail(userId,businessId,recordId,url.searchParams.get('type')));
     if(action==='invoice-history'&&!recordId&&verb==='GET')return json(new RecordService(store).invoiceHistory(userId,businessId,url.searchParams));
     if(action==='supplier-dues'&&recordId&&verb==='GET')return json(new RecordService(store).supplierDues(userId,businessId,recordId));
