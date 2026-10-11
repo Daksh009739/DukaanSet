@@ -1,4 +1,8 @@
 /* V16.1 reference composition. Shared chrome; dashboard-only scenery and density. */
+.account-demo-options{display:grid;gap:10px;border:1px solid #dfebe6;border-radius:12px;padding:14px;margin:16px 0;background:#f5fbf8}
+.account-demo-options>.badge{justify-self:start}
+.account-demo-options>p{margin:0;font-size:12px;line-height:1.6;color:#425e53}
+.account-demo-options .demo-reset-button{justify-content:flex-start;min-height:44px}
 .reference-workspace .dashboard-loading{display:block;padding:0;min-height:760px}
 .reference-workspace .dashboard-skeleton-hero{height:310px;border-radius:15px;margin:0 -14px;background:#dcece7}
 .reference-workspace .dashboard-skeleton-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:14px 0}

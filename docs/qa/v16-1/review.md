@@ -21,6 +21,7 @@ Verified locally:
 - Source lint, TypeScript, locale parity for 2358 keys in English/Hindi/Hinglish, and the labelled VoiceOS semantic evaluation passed.
 - The optimized production build passed.
 - All five V16.1 browser tests passed: existing action workflows, keyboard voice report without writes, real cash/count values, weather fallback and business switching, and ten widths in each language.
+- The requested demo-strip removal was checked at 1142px and 390px: the hero begins at 66px and 76px respectively, account-menu demo controls remain visible, and no runtime errors or page overflow were observed.
 - Existing browser suites passed: approved dashboard/media/shared modules (3), closing/versioned PDFs/concurrent accounting (3), contextual voice/scoped examples (7), and onboarding/auth/sales/purchases/refunds (7).
 - Compiled V16.1 review passed 30 layouts at 320, 360, 375, 390, 412, 430, 768, 1024, 1440 and 1920px in all three languages, with no document overflow, runtime errors or WCAG A/AA violations. See `production-report.json` for geometry and a local cached-navigation measurement; that measurement is not a production network performance guarantee.
 
@@ -34,6 +35,6 @@ Differences that follow real data and approved branding:
 - Product photos reuse stored associations. The QA shop has no licensed photos, so its approved safe category icons appear. Uncertain product imagery is never silently selected.
 - Fake growth percentages and decorative financial trend bars are omitted because those historical comparisons are not supplied by the authoritative data. The visible area chart and product share bars use real values.
 - The scene is original illustration artwork following the approved direction, not an exact pixel copy. See `hero-art.md`.
-- Demonstration accounts retain the demo disclosure banner; these final captures use an isolated verified fixture so the approved application composition is visible.
+- The owner requested removal of the demo strip. Demo disclosure, reset, closing-demo and registration controls now live in the account menu; the dashboard has no demo banner. Final captures use an isolated verified fixture.
 
 Release scope is the feature branch → `dev` pull request. `main` follows normal review. Hosted staging remains dependent on the existing durable HTTPS backend configuration (`DUKAANSET_BACKEND_ORIGIN`); this review verifies local compiled production and does not claim a live staging deployment.
