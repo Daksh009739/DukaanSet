@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { missingVoiceFields,voiceAllowed,type VoiceCommand,type VoiceIntent,voiceQuantity } from '@/lib/voice/os';
 import { osCopy,intentLabel,type VoiceOSCopyKey } from '@/lib/voice/os-copy';
 import { minorUnits } from '@/lib/client';
-import { useApp } from '../app-provider';
+import { useApp,useUnsavedBusinessWork } from '../app-provider';
 import { Button,Field,Select } from '../ui';
 import { useVoiceOS } from './voice-os-provider';
 import {advanceVoice,nextVoiceQuestion} from '@/lib/voice/conversation';
@@ -19,6 +19,7 @@ export const voiceSamples:Partial<Record<VoiceIntent,string>>={sale:'Rahul ko 2 
 export function VoicePanel({intent,onApply,disabled=false,onBlockedChange,seed,expanded=false,getContext,onCancel}:{intent:VoiceIntent;onApply:(command:VoiceCommand)=>void;disabled?:boolean;onBlockedChange?:(blocked:boolean)=>void;seed?:VoiceCommand;expanded?:boolean;getContext?:(command:VoiceCommand)=>VoiceCommand;onCancel?:()=>void}){
  const app=useApp(),copy=osCopy(useTranslation().i18n.language),voice=useVoiceOS(),[text,setText]=useState(''),[command,setCommand]=useState<VoiceCommand|null>(null),[note,setNote]=useState(''),[show,setShow]=useState(expanded),last=useRef(''),apply=useRef(onApply),blockedCallback=useRef(onBlockedChange);apply.current=onApply;blockedCallback.current=onBlockedChange;
  const state=app.state!,allowed=voiceAllowed(intent,state),locked=disabled||voice.capture.phase!=='ready',current=command?(getContext?.(command)||command):null;
+ useUnsavedBusinessWork(Boolean(text.trim()||command));
  const blocking=Boolean(current&&(current.intent==='sale'&&!current.fields.mode||current.warnings.some(w=>['permission','wrongWorkflow','correction','splitCollection','cashPurchaseOnly'].includes(w))||current.items.some(item=>current.intent!=='demand'&&(!item.productId||voiceQuantity(item,state.products)===null)||item.priceBasis==='unclear'||item.priceBasis==='total')));
  useEffect(()=>{blockedCallback.current?.(blocking);},[blocking]);
  const appliedSeed=useRef<VoiceCommand|null>(null);

@@ -8,7 +8,7 @@ import type {PreparedDocument} from '@/lib/document-contracts';
 import {api,money,quantity,minorUnits} from '@/lib/client';
 import {dateText,unitText,locale} from '@/lib/locale';
 import {downloadBlob} from '@/lib/browser-documents';
-import {useApp} from './app-provider';
+import {useApp,useUnsavedBusinessWork} from './app-provider';
 import {useOperations} from './operations';
 import {Button,CardTitle,Empty,FormError,Sheet,Field,Select} from './ui';
 import {DetailHeader,DetailMetrics,Disclosure} from './detail-patterns';
@@ -46,6 +46,7 @@ export function RecordDetailPage({id,type}:{id:string;type:RecordType}) {
 }
 export function SupplierPaymentForm({purchaseId,supplierId,due,onSaved,initial}:{purchaseId?:string;supplierId?:string;due:number;onSaved:()=>void;initial?:{amount:string;method:string}}) {
  const app=useApp(),{t}=useTranslation(),w=useTranslation('workspace').t,[selected,setSelected]=useState(purchaseId||''),[purchases,setPurchases]=useState<{id:string;balancePaise:number}[]>([]),[amount,setAmount]=useState(initial?.amount||''),[method,setMethod]=useState(initial?.method??'cash'),[busy,setBusy]=useState(false),[error,setError]=useState(''),[key]=useState(()=>crypto.randomUUID());
+ useUnsavedBusinessWork(Boolean(amount||busy||selected!==purchaseId&&selected));
  useEffect(()=>{if(!supplierId)return;const c=new AbortController();void api<{id:string;balancePaise:number}[]>(`/businesses/${app.businessId}/supplier-dues/${supplierId}`,undefined,c.signal).then(setPurchases).catch(cause=>{if(!c.signal.aborted)setError(app.errorText(cause));});return()=>c.abort();},[supplierId,app.businessId]);
  return <form className="sheet-body" onSubmit={async e=>{e.preventDefault();setBusy(true);setError('');try{await app.mutation(`/purchases/${selected}/payment`,{amountPaise:minorUnits(amount),method,idempotencyKey:key});onSaved();}catch(cause){setError(app.errorText(cause));}finally{setBusy(false);}}}><p>{w('supplierPaymentHint')}</p><p>{w('supplierPayable')}: {money(due)}</p>{!purchaseId&&<Select label={t('purchases')} required value={selected} onChange={e=>setSelected(e.target.value)}><option value="">{t('selectSupplier')}</option>{purchases.map(p=><option value={p.id} key={p.id}>{p.id.slice(0,8)} · {money(p.balancePaise)}</option>)}</Select>}<Field label={t('amount')} inputMode="decimal" required value={amount} onChange={e=>setAmount(e.target.value)}/><Select required label={t('paymentMethod')} value={method} onChange={e=>setMethod(e.target.value)}>{initial&&<option value="">—</option>}<option value="cash">{t('cash')}</option><option value="upi">{t('upi')}</option></Select><FormError message={error}/><Button type="submit" busy={busy} disabled={!selected}>{w('addSupplierPayment')}</Button></form>;
 }

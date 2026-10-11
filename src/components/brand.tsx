@@ -13,8 +13,8 @@ export function BrandSymbol({ className = "", title }: { className?: string; tit
   return <img className={`brand-symbol ${className}`} src={brand.assets.symbol} width={512} height={512} alt={title || ''} aria-hidden={!title}/>;
 }
 
-export function Logo({ compact = false, inverted = false, className = "", href = "/" }: { compact?: boolean; inverted?: boolean; className?: string; href?: string }) {
-  const {t}=useTranslation();return <Link href={href} className={`brand-logo ${compact ? "brand-logo-compact" : ""} ${inverted ? "brand-inverted" : ""} ${className}`} aria-label={t('brandHome')}>
+export function Logo({ compact = false, inverted = false, className = "", href = "/",onClick }: { compact?: boolean; inverted?: boolean; className?: string; href?: string;onClick?:()=>void }) {
+  const {t}=useTranslation();return <Link href={href} onClick={onClick} className={`brand-logo ${compact ? "brand-logo-compact" : ""} ${inverted ? "brand-inverted" : ""} ${className}`} aria-label={t('brandHome')}>
     <BrandSymbol />
     {!compact && <span className="brand-wordmark"><img src={inverted ? brand.assets.dark : brand.assets.horizontal} width={1000} height={187} alt=""/></span>}
   </Link>;

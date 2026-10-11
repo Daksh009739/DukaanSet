@@ -1,6 +1,6 @@
 import {spawn} from 'node:child_process';
 import {mkdirSync,writeFileSync} from 'node:fs';
-import {chromium} from '@playwright/test';
+import {chromium,expect} from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 import assert from 'node:assert/strict';
 
@@ -15,7 +15,7 @@ try{
  const post=(path,data)=>context.request.post('/api'+path,{headers:{Origin:origin},data});assert.equal((await post('/auth/demo',{language:'en'})).status(),201);await post('/account/language',{language:'en'});
  const session=await(await context.request.get('/api/session')).json(),business=session.businesses.find(b=>b.category==='vegetables');assert.ok(business);
  const state=async()=>await(await context.request.get(`/api/businesses/${business.id}/state`)).json();
- await page.goto('/app');await page.locator('.dashboard-welcome h1').waitFor();await page.locator('.bottom-nav').getByRole('button',{name:'More',exact:true}).click();const menu=page.getByRole('dialog');await menu.getByRole('combobox',{name:'Your business',exact:true}).selectOption(business.id);await page.locator('.dashboard-welcome h1').waitFor();if(await menu.isVisible())await menu.getByRole('button',{name:'Close',exact:true}).click();await page.goto('/app/customers');
+ await page.goto('/app');await page.locator('.dashboard-welcome h1').waitFor();await page.locator('.bottom-nav').getByRole('button',{name:'More',exact:true}).click();const menu=page.getByRole('dialog');await menu.locator('[data-shop-switch]').click();await menu.getByRole('option',{name:business.name,exact:true}).click();await expect(page.locator('main')).toHaveAttribute('data-business-id',business.id);if(await menu.isVisible())await menu.getByRole('button',{name:'Close',exact:true}).click();await page.goto('/app/customers');
  const launch=async()=>{await page.getByRole('button',{name:'Open VoiceOS',exact:true}).click();return page.getByRole('dialog');};
  const say=async text=>{const dialog=page.getByRole('dialog');await dialog.getByLabel('Voice command',{exact:true}).fill(text);await dialog.getByRole('button',{name:'Review request',exact:true}).click();};
  const before=await state(),potato=before.products.find(p=>p.name==='Potatoes');assert.ok(potato);

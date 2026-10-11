@@ -20,7 +20,7 @@ import './conversation.css';
 import {SupplierPaymentForm} from '../record-details';
 import {readConversationSession} from '@/lib/voice/session';
 import {recordVoiceDiagnostic,clearVoiceDiagnostics} from '@/lib/voice/diagnostics';
-import { useApp } from '../app-provider';
+import { useApp,useUnsavedBusinessWork } from '../app-provider';
 import { useOperations,type Action } from '../operations';
 import { Button,Sheet,Select,FormError } from '../ui';
 import { api, businessDay } from '@/lib/client';
@@ -50,6 +50,7 @@ export function GlobalVoiceLauncher({hideLauncher=false}:{hideLauncher?:boolean}
  useEffect(()=>{setHistory([]);clearVoiceDiagnostics();setEditRequest(null);setDocumentRequest(null);setSupplierPaymentRequest(null);},[storageKey]);
  useEffect(()=>{if(!voice.globalRequest||hydrated!==storageKey)return;if(pending||busy)setError(copy.pendingAction);else{setCommand(voice.globalRequest);setSaved(null);setError('');setActionKey(crypto.randomUUID());}voice.clearRequest();},[voice.globalRequest,hydrated,storageKey]);
  const [documentRequest,setDocumentRequest]=useState<{customerId:string;kind:DocumentKind;id:string;share:boolean;period:{start:string;end:string}}|null>(null);
+ useUnsavedBusinessWork(Boolean(pending||command&&!['report','navigate','cancel'].includes(command.intent)||voice.capture.phase!=='ready'));
  const reportAllowed=Boolean(app.state&&voiceAllowed('report',app.state));
  useEffect(()=>{setStats(undefined);if(command?.intent!=='report'||!reportAllowed)return;const controller=new AbortController();api<VoiceReport>(`/businesses/${app.businessId}/voice-report?period=${command.fields.period||'today'}`,undefined,controller.signal).then(result=>{if(!controller.signal.aborted)setStats(result);}).catch(cause=>{if(!controller.signal.aborted)setError(app.errorText(cause));});return()=>controller.abort();},[command,app.businessId,reportAllowed]);
  if(!app.state?.configuration.features.voiceStock)return null;

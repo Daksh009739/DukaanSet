@@ -1,5 +1,6 @@
 'use client';
 import {useEffect,useRef,useState} from 'react';
+import {useUnsavedBusinessWork} from '../app-provider';
 import {Mic,Square,Settings2,ArrowUp} from 'lucide-react';
 import {useTranslation} from 'react-i18next';
 import {osCopy} from '@/lib/voice/os-copy';
@@ -8,6 +9,7 @@ import {Button,Field,Select} from '../ui';
 
 export function ConversationInput({onSubmit,question,disabled=false,initial=false,examples,prefill}:{onSubmit:(text:string)=>void;question:string;disabled?:boolean;initial?:boolean;examples?:string[];prefill?:{id:string;text:string}}){
  const copy=osCopy(useTranslation().i18n.language),[text,setText]=useState(''),voice=useVoiceOS(),locale=voice.spokenLocale,setLocale=voice.setSpokenLocale,capture=useVoiceCapture(setText),wasRecording=useRef(false),latest=useRef(text),submit=useRef(onSubmit);latest.current=text;submit.current=onSubmit;
+ useUnsavedBusinessWork(Boolean(text.trim()||capture.recording));
  useEffect(()=>{if(wasRecording.current&&!capture.recording&&capture.completed&&!capture.problem&&!disabled&&latest.current.trim()){submit.current(latest.current);setText('');}wasRecording.current=capture.recording;},[capture.recording]);
  useEffect(()=>{if(disabled)capture.abort();},[disabled]);
  useEffect(()=>{if(prefill){capture.abort();setText(prefill.text);}},[prefill?.id]);

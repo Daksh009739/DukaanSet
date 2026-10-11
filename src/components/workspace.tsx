@@ -25,7 +25,7 @@ import {IntelligenceTools} from './intelligence-tools';
 import {PurchasesHub,PurchaseOrderDetail} from './purchases-hub';
 import { VoiceOSProvider } from './voice/voice-os-provider';
 import {ContextualVoiceOSHero} from './voice/contextual-voiceos-hero';
-import type { ReactNode } from 'react';
+import {useState,type ReactNode} from 'react';
 import type { Locale } from '@/lib/locale';
 import moduleStyles from './module-workspace.module.css';
 
@@ -40,6 +40,6 @@ function Screen({slug}: {slug:string[]}) {
   const premium=['sales','stock','products','customers','payments','purchases','suppliers'].includes(section)&&(!id||section==='sales'&&id==='new'||['stock','products'].includes(section)&&id==='history');
   return <div className={premium?moduleStyles.surface:undefined} key={`${app.businessId}-${app.resetEpoch}-${slug.join('/')}-${search.toString()}`}>{denied?<Empty icon={<CircleHelp/>} title={v(module&&configuration&&!configuration.features[module]?'featureDisabled':'permissionDenied')} action={<Link href="/app">{v('returnHome')}</Link>}/>:<>{section&&section!=='intelligence'&&<ContextualVoiceOSHero variant={premium?'minimal':undefined}/>} {section==='demand'?<DemandPage/>:section==='settings'?<SaaSSettings section={id}/>:screen}</>}</div>;
 }
-function WorkspaceScope({children}:{children:ReactNode}){const app=useApp(),scope=`${app.session?.user.id}-${app.businessId}-${app.resetEpoch}`;return <VoiceOSProvider key={scope}><DemandWrites key={scope}><OperationsProvider key={scope}><AppShell><WriteRecoveryNotice/>{children}</AppShell></OperationsProvider></DemandWrites></VoiceOSProvider>;}
-export function WorkspaceLayout({children,initialLanguage}:{children:ReactNode;initialLanguage:Locale}){return <AppProvider initialLanguage={initialLanguage}><WorkspaceScope>{children}</WorkspaceScope></AppProvider>;}
+function WorkspaceScope({children,initialCollapsed}:{children:ReactNode;initialCollapsed:boolean}){const app=useApp(),scope=`${app.session?.user.id}-${app.businessId}-${app.resetEpoch}`;const [collapsed,setCollapsed]=useState(initialCollapsed);const toggle=()=>{const next=!collapsed;setCollapsed(next);if(app.session)document.cookie=`ds-nav-${app.session.user.id}=${next?'collapsed':'expanded'}; Path=/app; Max-Age=31536000; SameSite=Lax${location.protocol==='https:'?'; Secure':''}`;};return <VoiceOSProvider key={scope}><DemandWrites key={scope}><OperationsProvider key={scope}><AppShell collapsed={collapsed} onCollapse={toggle}><WriteRecoveryNotice/>{children}</AppShell></OperationsProvider></DemandWrites></VoiceOSProvider>;}
+export function WorkspaceLayout({children,initialLanguage,initialCollapsed=false}:{children:ReactNode;initialLanguage:Locale;initialCollapsed?:boolean}){return <AppProvider initialLanguage={initialLanguage}><WorkspaceScope initialCollapsed={initialCollapsed}>{children}</WorkspaceScope></AppProvider>;}
 export function Workspace({slug}: {slug:string[]}) {return <Screen slug={slug}/>;}

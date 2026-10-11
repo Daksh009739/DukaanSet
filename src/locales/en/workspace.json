@@ -341,5 +341,26 @@
     "purchaseEmptyHint": "Receive a purchase to add stock and keep supplier dues up to date.",
     "purchaseOrdersEmptyHint": "Plan your next restock from DemandPulse. Stock updates after you receive the goods.",
     "firstPurchase": "Record your first purchase"
+  },
+  "sidebar": {
+    "navigation": "Shop navigation",
+    "primaryNav": "Main navigation",
+    "drawerHint": "Choose a shop or open a business page.",
+    "switchShop": "Switch shop: {{shop}}",
+    "searchShops": "Search your shops…",
+    "yourShops": "Your shops",
+    "noShops": "No matching shops. Try another name.",
+    "storeOpen": "Store open",
+    "storeClosed": "Store closed",
+    "followUps": "Ready demand follow-ups: {{count}}",
+    "planInfo": "Explore DukaanSet plans",
+    "proHint": "Explore more business tools and insights.",
+    "profileActions": "Open profile actions",
+    "myProfile": "My profile",
+    "unsavedTitle": "Switch shop with unfinished work?",
+    "unsavedHint": "Local drafts stay with this shop. Unsaved form changes will be lost. Switch to {{shop}}?",
+    "stay": "Stay in this shop",
+    "switchConfirm": "Switch shop",
+    "switchFailed": "Could not switch shops. Your current shop is still open. Please try again."
   }
 }
