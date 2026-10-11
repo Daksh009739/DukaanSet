@@ -20,7 +20,14 @@ async function fashionDemo(page: Page, baseURL: string) {
   const response = await page.request.post('/api/auth/demo', { data: {}, headers: { Origin: new URL(baseURL).origin } });
   expect(response.ok()).toBeTruthy();
   await page.goto('/app');
-  await page.getByRole('combobox', { name: /Language|Bhasha|भाषा/ }).selectOption('en');
+  const language = page.locator('.app-header').getByRole('combobox', { name: /Language|Bhasha|भाषा/ });
+  if (await language.isVisible()) await language.selectOption('en');
+  else {
+    await page.locator('.profile-menu-trigger').click();
+    const account = page.getByRole('dialog');
+    await account.getByRole('combobox', { name: /Language|Bhasha|भाषा/ }).selectOption('en');
+    await account.getByRole('button', { name: 'Close', exact: true }).click();
+  }
   const session = await (await page.request.get('/api/session')).json() as Session;
   const business = session.businesses.find(item => item.name === 'Sharma Fashion Store');
   expect(business).toBeTruthy();
@@ -30,9 +37,14 @@ async function fashionDemo(page: Page, baseURL: string) {
   return { business: business!, state, shirt: state.products.find(item => item.name === 'Blue Casual Shirt')!, customer: state.customers.find(item => item.name === 'Rahul Sharma')! };
 }
 async function selectBusiness(page:Page,businessId:string){
+  if (await page.locator('#hero-business').isVisible()) {
+    await page.locator('#hero-business').selectOption(businessId);
+    await expect(page.locator('#main')).toHaveAttribute('data-business-id',businessId);
+    return;
+  }
   await expect(page.locator('#business-select')).toBeEnabled();
   if(await page.locator('#business-select').isVisible()) await page.locator('#business-select').selectOption(businessId);
-  else { await page.getByRole('button',{name:'More',exact:true}).first().click();const menu=page.getByRole('dialog');await menu.getByRole('combobox',{name:'Your business',exact:true}).selectOption(businessId);await expect(page.locator('#main')).toHaveAttribute('data-business-id',businessId);if(await menu.isVisible()) await menu.getByRole('button',{name:'Close',exact:true}).click(); }
+  else { await page.locator('.bottom-nav').getByRole('button',{name:'More',exact:true}).click();const menu=page.getByRole('dialog');await menu.getByRole('combobox',{name:'Your business',exact:true}).selectOption(businessId);await expect(page.locator('#main')).toHaveAttribute('data-business-id',businessId);if(await menu.isVisible()) await menu.getByRole('button',{name:'Close',exact:true}).click(); }
 }
 
 async function businessState(page: Page, businessId: string) {

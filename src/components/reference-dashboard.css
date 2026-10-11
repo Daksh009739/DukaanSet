@@ -1,0 +1,151 @@
+/* V16.1 reference composition. Shared chrome; dashboard-only scenery and density. */
+.account-demo-options{display:grid;gap:10px;border:1px solid #dfebe6;border-radius:12px;padding:14px;margin:16px 0;background:#f5fbf8}
+.account-demo-options>.badge{justify-self:start}
+.account-demo-options>p{margin:0;font-size:12px;line-height:1.6;color:#425e53}
+.account-demo-options .demo-reset-button{justify-content:flex-start;min-height:44px}
+.reference-workspace .dashboard-loading{display:block;padding:0;min-height:760px}
+.reference-workspace .dashboard-skeleton-hero{height:310px;border-radius:15px;margin:0 -14px;background:#dcece7}
+.reference-workspace .dashboard-skeleton-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:14px 0}
+.reference-workspace .dashboard-skeleton-metrics>.skeleton{height:90px;border-radius:13px}
+.reference-workspace .dashboard-skeleton-panels{display:grid;grid-template-columns:1.5fr 1fr;gap:14px}
+.reference-workspace .dashboard-skeleton-panels>.skeleton{height:230px;border-radius:14px}
+@media(max-width:600px){.reference-workspace .dashboard-skeleton-hero{height:400px;border-radius:0;margin:0 -12px}.reference-workspace .dashboard-skeleton-metrics{grid-template-columns:1fr 1fr;gap:8px}.reference-workspace .dashboard-skeleton-metrics>.skeleton{height:78px}.reference-workspace .dashboard-skeleton-panels{grid-template-columns:1fr}}
+.reference-workspace.approved-workspace{--sidebar-width:204px;--teal:#0b554c;--forest:#063e37;--mint:#15c99c;--border:#edf2f2;--radius:14px;background:#f5f9fa}
+.reference-workspace.approved-workspace .sidebar{width:var(--sidebar-width);padding:16px 12px;background:#fff;color:#25434b;border-right:1px solid #eaf0f1;box-shadow:none}
+.reference-workspace.approved-workspace .workspace-main{margin-left:var(--sidebar-width);width:calc(100% - var(--sidebar-width))}
+.reference-workspace.approved-workspace .sidebar-logo.brand-logo{width:172px;min-height:36px;margin:0 auto;padding:0}
+.reference-workspace.approved-workspace .sidebar-caption{font-size:10px;color:#304e53;margin:2px 0 22px;text-align:center}
+.reference-workspace.approved-workspace .sidebar nav{gap:2px}
+.reference-workspace.approved-workspace .sidebar nav a,.reference-workspace .business-tools-link{color:#304b55;font-size:12px;gap:14px;padding:9px 12px;min-height:40px;border-radius:9px}
+.reference-workspace.approved-workspace .sidebar nav a.active{color:#064b41;background:#e1fbf2;border-color:transparent}
+.reference-workspace.approved-workspace .sidebar nav a:hover,.reference-workspace .business-tools-link:hover{background:#effaf6}
+.reference-workspace .sidebar-divider{display:none}
+.reference-workspace .business-tools-link{margin:0;border:0;border-radius:9px}
+.reference-workspace .nav-new,.reference-workspace .nav-ai{display:none}
+.reference-workspace .sidebar-upgrade{background:#f7fbfb;color:#193c43;border-color:#eef4f4;padding:14px;font-size:12px}
+.reference-workspace .sidebar-upgrade>svg:first-child{color:#a46700}
+.reference-workspace .sidebar-upgrade{grid-template-columns:22px 1fr;gap:7px}
+.reference-workspace .sidebar-upgrade b{font-size:12px;white-space:nowrap}
+.reference-workspace .sidebar-upgrade>svg:last-child{display:none}
+.reference-workspace .sidebar-upgrade p,.reference-workspace .sidebar-upgrade>svg:last-child{color:#496176;font-size:10px}
+.reference-workspace.approved-workspace>.sidebar-collapse{min-width:24px!important;min-height:32px!important;width:24px;left:calc(var(--sidebar-width) - 1px);top:18px!important;background:#e7f7f2!important;color:#245b50;border-radius:0 7px 7px 0}
+.reference-workspace.approved-workspace.sidebar-collapsed{--sidebar-width:72px}
+.reference-workspace.approved-workspace.sidebar-collapsed .sidebar{width:72px}
+.reference-workspace.approved-workspace.sidebar-collapsed .sidebar-logo.brand-logo{width:44px;padding:0;margin:0 auto 16px}
+.reference-workspace.approved-workspace.sidebar-collapsed .workspace-main{margin-left:72px;width:calc(100% - 72px)}
+.reference-workspace.approved-workspace .app-header{height:66px;min-height:66px;padding:0 18px 0 28px;background:#ffffffed;gap:14px}
+.reference-workspace .global-search-trigger{width:min(590px,48%);height:40px;background:#f1f6f7;padding:10px 14px;font-size:12px;border-radius:22px}
+.reference-workspace .global-search-trigger>svg{color:#169a91}
+.reference-workspace.approved-workspace .header-tools{gap:12px}
+.reference-workspace .reference-menu,.reference-workspace .reference-mobile-logo{display:none}
+.reference-workspace.approved-workspace .business-select{max-width:192px;gap:9px}
+.reference-workspace.approved-workspace .profile-menu-trigger{width:40px;height:40px;min-width:40px;font-size:15px;background:#0c4c43}
+.reference-workspace .profile-name{max-width:130px}
+.reference-workspace.approved-workspace .business-select select{max-width:130px}
+.reference-workspace .language-flag{display:none}
+.reference-workspace.approved-workspace .language-picker{height:34px;padding:0 6px}
+.reference-workspace.approved-workspace .language-picker select{height:32px;font-size:11px;max-width:74px}
+.reference-workspace.dashboard-shell .app-content{padding:0 14px 24px;max-width:1800px}
+.reference-workspace .reference-dashboard{display:flex;flex-direction:column;gap:14px}
+.reference-workspace .reference-dashboard .reference-hero{display:flex;flex-direction:column;justify-content:space-between;gap:18px;min-height:310px;margin:0 -14px;padding:27px 18px 14px;color:white;border-radius:15px;background:#053e37 url('/brand/dashboard-hero-v16.webp') right bottom/cover no-repeat;isolation:isolate}
+.reference-workspace .reference-hero:before{display:none}
+.reference-workspace .hero-top{display:grid;width:100%;grid-template-columns:minmax(200px,1fr) 175px 160px 195px;gap:12px;align-items:start}
+.reference-workspace .hero-greeting{display:flex;gap:13px;align-items:flex-start;min-width:0}
+.reference-workspace .hero-greeting>svg{color:#ffce49;flex-shrink:0;margin-top:12px}
+.reference-workspace .hero-greeting>div{min-width:0}
+.reference-workspace .reference-hero .hero-greeting p{color:#d9eeea;font-size:18px;margin:9px 0 3px;line-height:1.35}
+.reference-workspace .reference-hero h1{margin:0 0 4px;font-size:28px;line-height:1.4;letter-spacing:-.4px;color:#fff}
+.reference-workspace .hero-greeting select{width:100%;max-width:100%;padding:0 20px 0 0;border:0;border-radius:0;background:transparent;color:#fff;font:inherit;font-weight:750;cursor:pointer;text-overflow:ellipsis}
+.reference-workspace .hero-greeting option{color:#173e38;background:white;font-size:16px}
+.reference-workspace .hero-greeting small{font-size:11px;line-height:1.5;display:block;color:#e5f5f0}
+.reference-workspace .hero-greeting small>span{color:#36e0b0}
+.reference-workspace .hero-date,.reference-workspace .hero-weather{display:flex;align-items:center;gap:13px;min-height:74px;padding:13px 14px;background:#ffffff06;border:1px solid #ffffff06;box-shadow:0 2px 6px #001f2314;border-radius:13px;min-width:0;color:#e0f0ed}
+.reference-workspace .hero-date>svg,.reference-workspace .hero-weather>svg{flex-shrink:0}
+.reference-workspace .hero-date span,.reference-workspace .hero-date b{display:block;font-size:12px;line-height:1.6;font-weight:500}
+.reference-workspace .hero-date small{display:block;font-size:10px;line-height:1.5;margin-top:5px}
+.reference-workspace .hero-weather{gap:9px;padding:10px;min-height:74px}
+.reference-workspace .hero-weather>div{min-width:0}
+.reference-workspace .hero-weather b{display:block;font-size:11px;line-height:1.5;font-weight:500}
+.reference-workspace .hero-weather.weather-ready b{font-size:18px;font-weight:750;line-height:1.3}
+.reference-workspace .hero-weather span{display:block;font-size:11px;line-height:1.5}
+.reference-workspace .hero-weather small{display:flex;gap:3px;font-size:9px;color:#d4e5e1;align-items:center;line-height:1.5;overflow-wrap:anywhere}
+.reference-workspace .hero-weather.weather-ready>svg{color:#ffca4b}
+.reference-workspace .reference-hero .hero-voice.voiceos-launcher{display:flex;gap:12px;width:100%;height:46px;min-height:46px;min-width:0;border-radius:30px;background:#fff;color:#164a43;border:1px solid #dff4ee;box-shadow:0 3px 8px #032e2915;padding:10px 15px;margin:6px 0 0;cursor:pointer}
+.reference-workspace .reference-hero .hero-voice>span{display:block;font-size:11px;flex:1;min-width:0;text-align:left;line-height:1.4;font-weight:650;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.reference-workspace .reference-hero .hero-voice>svg{width:23px;height:23px;flex-shrink:0}
+.reference-workspace .reference-hero .hero-voice>svg:last-child{width:16px}
+.reference-workspace .dashboard-quick-actions{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;width:100%;margin:0;padding:0}
+.reference-workspace .dashboard-quick-action{display:flex;align-items:center;gap:10px;background:#fff;color:#172e37;border:1px solid #e3efed;border-radius:11px;padding:12px 10px;min-height:64px;min-width:0;text-align:left;font:inherit;cursor:pointer;box-shadow:0 3px 10px #003e2412}
+.reference-workspace .dashboard-quick-action:hover{background:#f0fcf7;border-color:#b4e5d2}
+.reference-workspace .dashboard-quick-action>span:last-child{min-width:0}
+.reference-workspace .quick-icon{display:grid;place-items:center;border-radius:50%;width:39px;height:39px;background:#e7fbf6;color:#159d90;flex-shrink:0}
+.reference-workspace .dashboard-quick-action:nth-child(2) .quick-icon,.reference-workspace .dashboard-quick-action:nth-child(4) .quick-icon{color:#1385b0;background:#e7f8fd}
+.reference-workspace .dashboard-quick-action b{font-size:12px;display:block;font-weight:750;line-height:1.45}
+.reference-workspace .dashboard-quick-action small{font-size:10px;display:block;color:#526b79;line-height:1.6}
+.reference-workspace .dashboard-quick-action.quick-more{display:none}
+.reference-workspace .reference-dashboard .dashboard-metrics{grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:0}
+.reference-workspace .reference-dashboard .summary-metric{display:flex;align-items:flex-start;gap:12px;padding:14px;min-height:90px;background:#fff;border:1px solid #edf2f4;box-shadow:0 3px 12px #42677003;border-radius:13px}
+.reference-workspace .reference-dashboard .summary-icon{display:grid;width:42px;height:42px;margin:0;border-radius:50%;background:#e7f8fd;color:#087798;float:none;flex-shrink:0}
+.reference-workspace .reference-dashboard .summary-metric.cash .summary-icon{color:#068969;background:#e1fcf0}
+.reference-workspace .reference-dashboard .summary-metric.dues .summary-icon{color:#d13a4b;background:#fff0f0}
+.reference-workspace .reference-dashboard .summary-metric dt{font-size:12px;line-height:1.45;min-height:0;max-width:none;margin:0 0 5px;font-weight:600;color:#304d57}
+.reference-workspace .reference-dashboard .summary-metric dd{font-size:22px;line-height:1.2;letter-spacing:-.5px;font-weight:800;color:#142e35;overflow-wrap:anywhere}
+.reference-workspace .reference-dashboard .summary-metric small{font-size:9px;color:#57717b;line-height:1.4;margin-top:5px;padding:0}
+.reference-workspace .reference-charts{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:14px}
+.reference-workspace .reference-tables{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:14px}
+.reference-workspace .reference-dashboard .card{margin:0;min-width:0;background:white;border-color:#edf3f3;border-radius:14px;box-shadow:0 4px 16px #345e6003}
+.reference-workspace .reference-dashboard .card-title{padding:12px 16px 7px;min-height:40px;gap:12px}
+.reference-workspace .reference-dashboard :is(.card-title h2,.chart-heading h2){font-size:16px;line-height:1.4;letter-spacing:-.35px}
+.reference-workspace .reference-dashboard .text-link{color:#067864;font-size:11px;min-height:28px;display:flex;align-items:center;white-space:nowrap}
+.reference-workspace :is(.chart-heading,.dashboard-top-products .card-title) select{height:32px;padding:5px 24px 5px 10px;border:1px solid #e7eeee;border-radius:8px;background:white;font-size:11px;color:#304d57;max-width:145px}
+.reference-workspace .chart-heading{align-items:center;padding:12px 16px 0}
+.reference-workspace .sales-chart{position:relative;height:130px;margin:20px 23px 30px 16px;gap:12px;align-items:stretch}
+.reference-workspace .chart-axis{font-size:10px;min-width:42px;transform:translateY(-6px);color:#526e79}
+.reference-workspace .chart-plot{border-left:0;border-bottom:0;min-width:0}
+.reference-workspace .sales-area{position:absolute;width:100%;height:100%;inset:0;overflow:visible}
+.reference-workspace .chart-bars{padding:0;gap:0;display:block}
+.reference-workspace .chart-bars button{position:absolute;left:calc(var(--chart-x,0)*1%);width:24px;max-width:24px;height:100%;padding:0;transform:translateX(-50%);border-radius:5px}
+.reference-workspace .chart-point{position:absolute;top:var(--point-top);left:0;right:0;height:14px;transform:translateY(-50%);border-radius:50%}
+.reference-workspace .chart-bars small{top:calc(100% + 9px);left:50%;transform:translateX(-50%);font-size:10px;display:block!important}
+.reference-workspace .chart-bars-month small{font-size:9px}
+.reference-workspace .chart-tooltip{top:var(--point-top);bottom:auto;margin-top:-32px;margin-bottom:0;white-space:nowrap;background:#075449;color:#fff;font-size:10px}
+.reference-workspace .chart-bars button:first-child .chart-tooltip{left:0;transform:none}
+.reference-workspace .chart-bars button:last-child .chart-tooltip{left:auto;right:0;transform:none}
+.reference-workspace .chart-empty{font-size:11px;margin:0;padding:0 16px 12px}
+.reference-workspace .reference-dashboard .dashboard-top-products{grid-column:auto;padding-bottom:7px}
+.reference-workspace .reference-dashboard .top-product-row{display:grid;grid-template-columns:34px minmax(0,1fr) 25% 70px;gap:9px;padding:5px 16px;min-height:42px;max-width:none}
+.reference-workspace .reference-dashboard .top-product-row>div{min-width:0}
+.reference-workspace .reference-dashboard .top-product-row b{font-size:11px;line-height:1.4;font-weight:700}
+.reference-workspace .reference-dashboard .top-product-row>b{font-size:12px;text-align:right;white-space:nowrap}
+.reference-workspace .reference-dashboard .top-product-row small{font-size:10px;color:#607781;line-height:1.5}
+.reference-workspace .reference-dashboard .top-product-row small{display:block}
+@media(min-width:1025px){.reference-workspace.dashboard-shell .app-content{padding:0 0 24px}.reference-workspace .reference-dashboard .reference-hero{margin:0}.reference-workspace .dashboard-skeleton-hero{margin:0}.reference-workspace .reference-dashboard .top-product-row{min-height:40px;padding-top:3px;padding-bottom:3px}.reference-workspace .reference-tables{grid-template-columns:minmax(0,1.25fr) minmax(0,1fr)}.reference-workspace .global-search-trigger{width:min(590px,42%)}}
+.reference-workspace .reference-dashboard .product-share{display:block;height:6px;width:100%;margin:0;background:#f0f5f6}
+.reference-workspace .reference-dashboard .product-share>span{background:#139d7c}
+.reference-workspace .reference-dashboard .dashboard-recent,.reference-workspace .reference-dashboard .dashboard-low-stock{padding:0 0 9px}
+.reference-workspace .dashboard-table-wrap{overflow-x:auto;padding:0 16px}
+.reference-workspace .reference-dashboard table{width:100%;border-collapse:collapse;font-size:11px;line-height:1.5;text-align:left}
+.reference-workspace .reference-dashboard th{font-size:10px;color:#56707c;font-weight:550;padding:4px 6px;border-bottom:1px solid #eef3f4;white-space:nowrap}
+.reference-workspace .reference-dashboard td{padding:4px 6px;border-bottom:1px solid #f0f5f5;color:#2e4954;font-variant-numeric:tabular-nums}
+.reference-workspace .reference-dashboard tr:last-child td{border-bottom:0}
+.reference-workspace .reference-dashboard td:first-child,.reference-workspace .reference-dashboard th:first-child{padding-left:0}
+.reference-workspace .reference-dashboard td:last-child,.reference-workspace .reference-dashboard th:last-child{padding-right:0}
+.reference-workspace .reference-dashboard td a{display:inline-flex;align-items:center;min-height:28px;font-weight:550}
+.reference-workspace .reference-dashboard .badge{font-size:10px;padding:2px 9px;line-height:1.5;border-radius:7px;white-space:nowrap}
+.reference-workspace .reference-dashboard .badge-low{color:#bd3346;background:#ffeded}
+.reference-workspace .low-product{gap:8px}
+.reference-workspace .low-product>span:last-child{overflow-wrap:anywhere}
+.reference-workspace .reference-dashboard .empty{min-height:155px;padding:25px 18px}
+.reference-workspace .bottom-nav{grid-template-columns:repeat(5,minmax(0,1fr))}
+@media(min-width:1440px){.reference-workspace.approved-workspace{--sidebar-width:230px}.reference-workspace .hero-top{grid-template-columns:minmax(250px,1fr) 170px 160px 210px}.reference-workspace .reference-dashboard .reference-hero{min-height:330px;padding:28px 22px 18px}.reference-workspace .reference-dashboard .summary-metric{min-height:100px;padding:18px}.reference-workspace .reference-dashboard .summary-metric dd{font-size:25px}.reference-workspace .sales-chart{height:185px}.reference-workspace .reference-dashboard .top-product-row{min-height:49px}}
+@media(max-width:1200px) and (min-width:1025px){.reference-workspace .hero-top{grid-template-columns:minmax(175px,1fr) 175px 160px 195px;gap:12px}.reference-workspace .hero-greeting>svg{width:30px}.reference-workspace .hero-greeting{gap:10px}.reference-workspace .reference-hero .hero-greeting p{font-size:17px}.reference-workspace .reference-hero h1{font-size:26px}.reference-workspace .dashboard-quick-actions{gap:10px}.reference-workspace .dashboard-quick-action{gap:8px;padding:10px}.reference-workspace .quick-icon{width:34px;height:34px}.reference-workspace .dashboard-quick-action b{font-size:11px}.reference-workspace .hero-date{padding:10px}.reference-workspace .reference-dashboard .summary-metric{gap:8px;padding:12px}.reference-workspace .reference-dashboard .summary-metric dt{font-size:11px}.reference-workspace .reference-dashboard .top-product-row{grid-template-columns:30px minmax(0,1fr) 22% 64px}}
+@media(max-width:1024px){.reference-workspace.approved-workspace .sidebar,.reference-workspace.approved-workspace>.sidebar-collapse{display:none}.reference-workspace.approved-workspace .workspace-main,.reference-workspace.approved-workspace.sidebar-collapsed .workspace-main{margin-left:0;width:100%;padding-bottom:70px}.reference-workspace.approved-workspace .bottom-nav{display:grid;background:#fff;border-top:1px solid #e7f0ef;z-index:40}.reference-workspace .bottom-nav a,.reference-workspace .bottom-nav button{color:#526c79;min-height:60px;font-size:10px;gap:4px}.reference-workspace .bottom-nav .active{color:#075e4e}.reference-workspace.approved-workspace .app-header{padding:0 16px}.reference-workspace .reference-menu{display:none}.reference-workspace.dashboard-shell .reference-menu{display:flex}.reference-workspace.dashboard-shell .app-header{background:#073f37;border-bottom:0;color:white;gap:8px;height:76px;min-height:76px}.reference-workspace.dashboard-shell .reference-mobile-logo{display:flex;width:158px}.reference-workspace.dashboard-shell .global-search-trigger,.reference-workspace.dashboard-shell .language-picker,.reference-workspace.dashboard-shell .mobile-only,.reference-workspace.dashboard-shell .business-select>div{display:none}.reference-workspace.dashboard-shell .business-select{display:flex;max-width:none;margin:0}.reference-workspace.dashboard-shell .header-tools{margin-left:auto;gap:8px}.reference-workspace.dashboard-shell .profile-menu-trigger{background:#e8f8f1;color:#0c5344;width:37px;height:37px;min-width:37px;border:0}.reference-workspace.dashboard-shell .notification-button{color:#e5f8ee;min-width:35px;width:35px}.reference-workspace.dashboard-shell .reference-menu{color:#e5f8ee;width:32px;min-width:32px}.reference-workspace .reference-dashboard .reference-hero{border-radius:0;background-position:right bottom;min-height:290px;padding-top:16px}.reference-workspace .hero-top{grid-template-columns:minmax(0,1fr) 160px 160px;grid-template-areas:'greet date weather' 'voice voice voice';gap:18px}.reference-workspace .hero-greeting{grid-area:greet}.reference-workspace .hero-date{grid-area:date}.reference-workspace .hero-weather{grid-area:weather}.reference-workspace .reference-hero .hero-voice.voiceos-launcher{grid-area:voice;max-width:480px}.reference-workspace .dashboard-quick-actions{background:white;border-radius:13px;padding:12px;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:90px;box-shadow:0 2px 8px #134b3412}.reference-workspace .dashboard-quick-action{box-shadow:none;border:0;justify-content:center;text-align:center;flex-direction:column;gap:4px;min-height:82px;padding:6px}.reference-workspace .dashboard-quick-action.quick-more{display:flex}.reference-workspace .reference-dashboard .dashboard-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.reference-workspace .reference-charts{grid-template-columns:minmax(0,1.4fr) minmax(0,1fr)}}
+@media(max-width:600px){.reference-workspace.dashboard-shell .app-header{padding:0 12px}.reference-workspace.dashboard-shell .app-content{padding:0 12px 20px}.reference-workspace .reference-dashboard{gap:10px}.reference-workspace .reference-dashboard .reference-hero{padding:8px 16px 0;min-height:0;gap:0;margin:0 -12px;background-size:auto 204px;background-position:right 0;position:relative;background-color:transparent}.reference-workspace .reference-hero:before{display:block;position:absolute;inset:0 0 auto;height:204px;background:#063f38;z-index:-1}.reference-workspace .reference-hero:after{content:'';position:absolute;inset:0 0 auto;height:204px;background:url('/brand/dashboard-hero-v16.webp') right top/auto 204px no-repeat;z-index:-1;pointer-events:none}.reference-workspace .hero-top{grid-template-columns:1fr;grid-template-areas:'greet' 'date' 'weather' 'voice';gap:0;min-height:196px;padding:0}.reference-workspace .hero-greeting{display:block;width:100%;padding:0 0 3px}.reference-workspace .hero-greeting>svg{display:none}.reference-workspace .reference-hero .hero-greeting p{font-size:17px;margin:0 0 1px}.reference-workspace .reference-hero h1{font-size:26px;line-height:1.3;margin:0 0 3px;max-width:70%}.reference-workspace .hero-greeting small{display:none}.reference-workspace .hero-date{padding:0;background:transparent;border:0;box-shadow:none;min-height:24px;gap:7px;align-items:center;max-width:65%}.reference-workspace .hero-date>svg{width:16px;height:16px}.reference-workspace .hero-date>div{display:flex;flex-wrap:wrap;gap:0 4px}.reference-workspace .hero-date span,.reference-workspace .hero-date b{font-size:11px;line-height:1.5;font-weight:500}.reference-workspace .hero-date small{font-size:9px;margin-top:0}.reference-workspace .hero-weather{padding:5px 0 0;background:transparent;border:0;box-shadow:none;min-height:36px;gap:9px;max-width:58%}.reference-workspace .hero-weather>svg{width:30px;height:30px}.reference-workspace .hero-weather>div{display:flex;flex-wrap:wrap;gap:0 5px}.reference-workspace .hero-weather b{font-size:11px}.reference-workspace .hero-weather.weather-ready b{font-size:17px;width:100%}.reference-workspace .hero-weather small{font-size:9px}.reference-workspace .reference-hero .hero-voice.voiceos-launcher{max-width:none;margin:8px 0 12px;padding:11px 17px;align-self:end;min-height:48px;height:48px;gap:12px}.reference-workspace .reference-hero .hero-voice>span{font-size:12px}.reference-workspace .dashboard-quick-actions{margin:0 -4px;width:calc(100% + 8px);padding:8px 5px;gap:4px;border-radius:14px;grid-template-columns:repeat(3,minmax(0,1fr));border:1px solid #edf4f2}.reference-workspace .dashboard-quick-action{min-height:72px;padding:4px 2px;gap:3px}.reference-workspace .quick-icon{width:34px;height:34px}.reference-workspace .quick-icon svg{width:22px;height:22px}.reference-workspace .dashboard-quick-action b{font-size:11px;font-weight:700}.reference-workspace .dashboard-quick-action small{font-size:10px;line-height:1.4}.reference-workspace .reference-dashboard .dashboard-metrics{gap:8px}.reference-workspace .reference-dashboard .summary-metric{min-height:72px;padding:8px;gap:7px;align-items:flex-start;position:relative;border-radius:10px}.reference-workspace .reference-dashboard .summary-icon{width:24px;height:24px;background:transparent;float:none}.reference-workspace .reference-dashboard .summary-icon svg{width:21px;height:21px}.reference-workspace .reference-dashboard .summary-metric dt{font-size:10px;min-height:0;margin:0 0 5px}.reference-workspace .reference-dashboard .summary-metric dd{font-size:20px;line-height:1.25}.reference-workspace .reference-dashboard .summary-metric small{font-size:8px;line-height:1.4;margin-top:3px}.reference-workspace .reference-charts,.reference-workspace .reference-tables{grid-template-columns:1fr;gap:10px}.reference-workspace .reference-dashboard .card-title,.reference-workspace .chart-heading{padding:12px 14px 4px}.reference-workspace .reference-dashboard :is(.card-title h2,.chart-heading h2){font-size:15px!important}.reference-workspace .sales-chart{height:78px;margin:14px 26px 22px 14px;gap:9px}.reference-workspace .chart-axis{font-size:9px;min-width:33px}.reference-workspace .chart-bars small{font-size:8px}.reference-workspace :is(.chart-heading,.dashboard-top-products .card-title) select{height:30px;max-width:135px;font-size:10px;padding:4px 20px 4px 8px}.reference-workspace .reference-dashboard .top-product-row{grid-template-columns:34px minmax(0,1fr) 24% 67px;gap:8px;padding:6px 14px}.reference-workspace .dashboard-table-wrap{padding:0 12px}.reference-workspace .reference-dashboard table{font-size:10px}.reference-workspace .reference-dashboard th{font-size:9px}.reference-workspace .reference-dashboard td{padding:4px}.reference-workspace .reference-dashboard .badge{font-size:9px;padding:2px 5px}.reference-workspace .reference-dashboard .dashboard-recent table{min-width:360px}.reference-workspace .reference-dashboard .empty{min-height:130px}}
+@media(max-width:359px){.reference-workspace.dashboard-shell .app-header{padding:0 8px;gap:4px}.reference-workspace.dashboard-shell .reference-mobile-logo{width:141px}.reference-workspace.dashboard-shell .header-tools{gap:4px}.reference-workspace .reference-hero h1{font-size:23px}.reference-workspace .dashboard-quick-action b{font-size:10px}.reference-workspace .dashboard-quick-action small{font-size:9px}.reference-workspace .reference-dashboard .summary-metric{gap:4px;padding:9px 7px}.reference-workspace .reference-dashboard .summary-metric dd{font-size:18px}.reference-workspace .reference-dashboard .summary-metric dt{font-size:9px}}
+@media(prefers-reduced-motion:reduce){.reference-workspace *{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+@media print{.reference-workspace .reference-hero,.reference-workspace .bottom-nav,.reference-workspace .app-header,.reference-workspace .sidebar,.reference-workspace>.sidebar-collapse{display:none!important}.reference-workspace .workspace-main{margin:0!important;width:100%!important}.reference-workspace .reference-dashboard{display:block}.reference-workspace .card{break-inside:avoid}}
+
+@media(max-width:600px){.reference-workspace.approved-workspace:not(.dashboard-shell) .app-header{padding:0 10px;gap:4px}.reference-workspace.approved-workspace:not(.dashboard-shell) .header-tools{gap:3px}}
+
+.reference-workspace .sales-chart{padding:0}
+@media(max-width:600px){.reference-workspace .reference-dashboard .dashboard-chart .chart-heading{padding:10px 14px 0}.reference-workspace.dashboard-shell .bottom-nav{height:calc(56px + env(safe-area-inset-bottom));padding:3px 10px calc(3px + env(safe-area-inset-bottom))}.reference-workspace.dashboard-shell .bottom-nav a,.reference-workspace.dashboard-shell .bottom-nav button{min-height:48px;font-size:9px}}

@@ -1,0 +1,497 @@
+{
+  "checkedAt": "2026-10-11T18:44:11.367Z",
+  "environment": "Compiled local production, isolated verified QA shop, saved invoices and product stock, unconfigured live weather",
+  "layouts": [
+    {
+      "language": "en",
+      "width": 320,
+      "hero": {
+        "x": 0,
+        "y": 76,
+        "width": 320,
+        "height": 382.78125
+      },
+      "voice": {
+        "x": 16,
+        "y": 220,
+        "width": 288,
+        "height": 48
+      }
+    },
+    {
+      "language": "en",
+      "width": 360,
+      "hero": {
+        "x": 0,
+        "y": 76,
+        "width": 360,
+        "height": 389.875
+      },
+      "voice": {
+        "x": 16,
+        "y": 220,
+        "width": 328,
+        "height": 48
+      }
+    },
+    {
+      "language": "en",
+      "width": 375,
+      "hero": {
+        "x": 0,
+        "y": 76,
+        "width": 375,
+        "height": 389.875
+      },
+      "voice": {
+        "x": 16,
+        "y": 220,
+        "width": 343,
+        "height": 48
+      }
+    },
+    {
+      "language": "en",
+      "width": 390,
+      "hero": {
+        "x": 0,
+        "y": 76,
+        "width": 390,
+        "height": 375.875
+      },
+      "voice": {
+        "x": 16,
+        "y": 220,
+        "width": 358,
+        "height": 48
+      }
+    },
+    {
+      "language": "en",
+      "width": 412,
+      "hero": {
+        "x": 0,
+        "y": 76,
+        "width": 412,
+        "height": 375.875
+      },
+      "voice": {
+        "x": 16,
+        "y": 220,
+        "width": 380,
+        "height": 48
+      }
+    },
+    {
+      "language": "en",
+      "width": 430,
+      "hero": {
+        "x": 0,
+        "y": 76,
+        "width": 430,
+        "height": 375.875
+      },
+      "voice": {
+        "x": 16,
+        "y": 220,
+        "width": 398,
+        "height": 48
+      }
+    },
+    {
+      "language": "en",
+      "width": 768,
+      "hero": {
+        "x": 0,
+        "y": 76,
+        "width": 768,
+        "height": 513.765625
+      },
+      "voice": {
+        "x": 18,
+        "y": 212.984375,
+        "width": 480,
+        "height": 46
+      }
+    },
+    {
+      "language": "en",
+      "width": 1024,
+      "hero": {
+        "x": 0,
+        "y": 76,
+        "width": 1024,
+        "height": 513.765625
+      },
+      "voice": {
+        "x": 18,
+        "y": 212.984375,
+        "width": 480,
+        "height": 46
+      }
+    },
+    {
+      "language": "en",
+      "width": 1440,
+      "hero": {
+        "x": 230,
+        "y": 66,
+        "width": 1210,
+        "height": 330
+      },
+      "voice": {
+        "x": 1208,
+        "y": 100,
+        "width": 210,
+        "height": 46
+      }
+    },
+    {
+      "language": "en",
+      "width": 1920,
+      "hero": {
+        "x": 230,
+        "y": 66,
+        "width": 1690,
+        "height": 330
+      },
+      "voice": {
+        "x": 1688,
+        "y": 100,
+        "width": 210,
+        "height": 46
+      }
+    },
+    {
+      "language": "hi",
+      "width": 320,
+      "hero": {
+        "x": 0,
+        "y": 76,
+        "width": 320,
+        "height": 370.1875
+      },
+      "voice": {
+        "x": 16,
+        "y": 220,
+        "width": 288,
+        "height": 48
+      }
+    },
+    {
+      "language": "hi",
+      "width": 360,
+      "hero": {
+        "x": 0,
+        "y": 76,
+        "width": 360,
+        "height": 375.875
+      },
+      "voice": {
+        "x": 16,
+        "y": 220,
+        "width": 328,
+        "height": 48
+      }
+    },
+    {
+      "language": "hi",
+      "width": 375,
+      "hero": {
+        "x": 0,
+        "y": 76,
+        "width": 375,
+        "height": 375.875
+      },
+      "voice": {
+        "x": 16,
+        "y": 220,
+        "width": 343,
+        "height": 48
+      }
+    },
+    {
+      "language": "hi",
+      "width": 390,
+      "hero": {
+        "x": 0,
+        "y": 76,
+        "width": 390,
+        "height": 375.875
+      },
+      "voice": {
+        "x": 16,
+        "y": 220,
+        "width": 358,
+        "height": 48
+      }
+    },
+    {
+      "language": "hi",
+      "width": 412,
+      "hero": {
+        "x": 0,
+        "y": 76,
+        "width": 412,
+        "height": 375.875
+      },
+      "voice": {
+        "x": 16,
+        "y": 220,
+        "width": 380,
+        "height": 48
+      }
+    },
+    {
+      "language": "hi",
+      "width": 430,
+      "hero": {
+        "x": 0,
+        "y": 76,
+        "width": 430,
+        "height": 375.875
+      },
+      "voice": {
+        "x": 16,
+        "y": 220,
+        "width": 398,
+        "height": 48
+      }
+    },
+    {
+      "language": "hi",
+      "width": 768,
+      "hero": {
+        "x": 0,
+        "y": 76,
+        "width": 768,
+        "height": 513.765625
+      },
+      "voice": {
+        "x": 18,
+        "y": 212.984375,
+        "width": 480,
+        "height": 46
+      }
+    },
+    {
+      "language": "hi",
+      "width": 1024,
+      "hero": {
+        "x": 0,
+        "y": 76,
+        "width": 1024,
+        "height": 513.765625
+      },
+      "voice": {
+        "x": 18,
+        "y": 212.984375,
+        "width": 480,
+        "height": 46
+      }
+    },
+    {
+      "language": "hi",
+      "width": 1440,
+      "hero": {
+        "x": 230,
+        "y": 66,
+        "width": 1210,
+        "height": 330
+      },
+      "voice": {
+        "x": 1208,
+        "y": 100,
+        "width": 210,
+        "height": 46
+      }
+    },
+    {
+      "language": "hi",
+      "width": 1920,
+      "hero": {
+        "x": 230,
+        "y": 66,
+        "width": 1690,
+        "height": 330
+      },
+      "voice": {
+        "x": 1688,
+        "y": 100,
+        "width": 210,
+        "height": 46
+      }
+    },
+    {
+      "language": "hinglish",
+      "width": 320,
+      "hero": {
+        "x": 0,
+        "y": 76,
+        "width": 320,
+        "height": 384.6875
+      },
+      "voice": {
+        "x": 16,
+        "y": 220,
+        "width": 288,
+        "height": 48
+      }
+    },
+    {
+      "language": "hinglish",
+      "width": 360,
+      "hero": {
+        "x": 0,
+        "y": 76,
+        "width": 360,
+        "height": 391.8125
+      },
+      "voice": {
+        "x": 16,
+        "y": 220,
+        "width": 328,
+        "height": 48
+      }
+    },
+    {
+      "language": "hinglish",
+      "width": 375,
+      "hero": {
+        "x": 0,
+        "y": 76,
+        "width": 375,
+        "height": 391.8125
+      },
+      "voice": {
+        "x": 16,
+        "y": 220,
+        "width": 343,
+        "height": 48
+      }
+    },
+    {
+      "language": "hinglish",
+      "width": 390,
+      "hero": {
+        "x": 0,
+        "y": 76,
+        "width": 390,
+        "height": 391.8125
+      },
+      "voice": {
+        "x": 16,
+        "y": 220,
+        "width": 358,
+        "height": 48
+      }
+    },
+    {
+      "language": "hinglish",
+      "width": 412,
+      "hero": {
+        "x": 0,
+        "y": 76,
+        "width": 412,
+        "height": 375.875
+      },
+      "voice": {
+        "x": 16,
+        "y": 220,
+        "width": 380,
+        "height": 48
+      }
+    },
+    {
+      "language": "hinglish",
+      "width": 430,
+      "hero": {
+        "x": 0,
+        "y": 76,
+        "width": 430,
+        "height": 375.875
+      },
+      "voice": {
+        "x": 16,
+        "y": 220,
+        "width": 398,
+        "height": 48
+      }
+    },
+    {
+      "language": "hinglish",
+      "width": 768,
+      "hero": {
+        "x": 0,
+        "y": 76,
+        "width": 768,
+        "height": 513.765625
+      },
+      "voice": {
+        "x": 18,
+        "y": 212.984375,
+        "width": 480,
+        "height": 46
+      }
+    },
+    {
+      "language": "hinglish",
+      "width": 1024,
+      "hero": {
+        "x": 0,
+        "y": 76,
+        "width": 1024,
+        "height": 513.765625
+      },
+      "voice": {
+        "x": 18,
+        "y": 212.984375,
+        "width": 480,
+        "height": 46
+      }
+    },
+    {
+      "language": "hinglish",
+      "width": 1440,
+      "hero": {
+        "x": 230,
+        "y": 66,
+        "width": 1210,
+        "height": 330
+      },
+      "voice": {
+        "x": 1208,
+        "y": 100,
+        "width": 210,
+        "height": 46
+      }
+    },
+    {
+      "language": "hinglish",
+      "width": 1920,
+      "hero": {
+        "x": 230,
+        "y": 66,
+        "width": 1690,
+        "height": 330
+      },
+      "voice": {
+        "x": 1688,
+        "y": 100,
+        "width": 210,
+        "height": 46
+      }
+    }
+  ],
+  "checks": [
+    "Actual saved invoice totals, cash-only collections, customer receivables and all-time bill count match the dashboard",
+    "Real unavailable weather does not replace the saved shop city or block records",
+    "30 compiled multilingual responsive layouts have no document overflow or WCAG A/AA violations",
+    "Dashboard rendering and language changes preserve invoice and product ledgers"
+  ],
+  "performance": {
+    "domContentLoadedMs": 54.40000000037253,
+    "loadMs": 71.80000000074506,
+    "resourceTransferBytes": 55983
+  }
+}

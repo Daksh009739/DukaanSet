@@ -18,6 +18,7 @@ import type { Permission,ModuleKey } from '@/lib/v3-contracts';
 import './v3.css';
 import './workspace-premium.css';
 import './approved-workspace.css';
+import './reference-dashboard.css';
 import {SmartClosingPage,ClosingHistory} from './closing/closing-page';
 import {RecordDetailPage} from './record-details';
 import {IntelligenceTools} from './intelligence-tools';

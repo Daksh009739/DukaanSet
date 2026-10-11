@@ -27,6 +27,7 @@ test('server chart and product totals include invoices beyond the visible 1000-r
   store.transaction(()=>{for(let i=0;i<1005;i++)insert.run(...columns.map(key=>key==='id'?'qa-extra-'+i:key==='number'?'QA-'+i:source[key]) as (string|number|null)[]);});
   const state=store.state(user,business);assert.equal(state.invoices.length,1000);assert.equal(state.dashboard!.sales.week.reduce((sum,row)=>sum+row.salesPaise,0),100600);assert.equal(state.dashboard!.topProducts[0].quantityMilli,1006000);assert.equal(state.dashboard!.sales.year.reduce((sum,row)=>sum+row.salesPaise,0),state.totals.salesPaise);
   assert.equal(state.invoices.some(invoice=>invoice.id===source.id),false);
+  assert.equal(state.dashboard!.totalBills,1006);
   assert.equal(new RecordService(store).invoiceHistory(user,business,new URLSearchParams({query:String(source.number)})).invoices[0].id,source.id);
  }finally{store.close();}
 });
