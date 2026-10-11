@@ -4,6 +4,8 @@ Cash Collected reads net cash receipts rather than cash plus UPI. Total Bills co
 
 The demo strip is removed from the application layout. Demo information, reset, closing-demo and shop registration controls remain in the account menu.
 
+Assistant and Help remain accessible through Business Tools on desktop and More on mobile.
+
 Validation: 259 unit tests, locale parity across English/Hindi/Hinglish, source lint/typecheck, semantic voice regression, production build, dashboard/action/weather checks, 30 multilingual viewport layouts with accessibility checks, and the existing module/closing/voice suites. Actual implementation screenshots and reference comparison are saved under `docs/qa/v16-1`.
 
 Weather is currently unconfigured; provider-ready cases are mocked explicitly in tests. Product photos use stored associations or safe fallback icons. The scenic illustration follows the approved composition as original artwork. This PR targets `dev`; production follows the normal `dev` → `main` review.

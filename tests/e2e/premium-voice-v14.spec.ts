@@ -15,7 +15,11 @@ async function navigateAudit(page:Page,name:string,path:string){
  const destination=name==='stock'?'/app/stock':name==='customer'?'/app/customers':path;
  const links=await page.locator('a[href="'+destination+'"]').all();let visible:Locator|undefined;
  for(const link of links)if(await link.isVisible()){visible=link;break;}
- if(visible)await visible.click();else{await page.locator('.app-header button.mobile-only').click();await page.getByRole('dialog').locator('a[href="'+destination+'"]').first().click();}
+ if(visible)await visible.click();else{
+  const more=page.locator('.bottom-nav button');
+  if(await more.isVisible())await more.click();else await page.locator('.business-tools-link').click();
+  await page.getByRole('dialog').locator('a[href="'+destination+'"]').first().click();
+ }
  await page.waitForURL(url=>url.pathname===destination);
  if(destination!==path){await page.locator('main a[href="'+path+'"]').first().click();await page.waitForURL(url=>url.pathname===path);}
  await expect(page.locator('main h1')).toBeVisible();
