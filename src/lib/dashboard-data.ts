@@ -2,6 +2,8 @@ import type { Invoice, Product } from './contracts';
 
 export type ChartPeriod = 'week' | 'month' | 'year';
 export interface DashboardData {
+  clock?:{timezone:string;businessDate:string;cutoff:string};
+  totalBills?:number;
   sales: Record<ChartPeriod, { date: string; salesPaise: number }[]>;
   topProducts: { productId: string; revenuePaise: number; quantityMilli: number; share: number }[];
 }

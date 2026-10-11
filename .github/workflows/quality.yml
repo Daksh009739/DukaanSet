@@ -39,6 +39,8 @@ jobs:
       - run: npx playwright install --with-deps chromium
       - name: Approved dashboard, product media and shared mobile design checks
         run: npm run test:e2e -- tests/e2e/approved-dashboard.spec.ts
+      - name: V16.1 approved composition, cash accuracy, weather fallback and multilingual viewport checks
+        run: npm run test:e2e -- tests/e2e/approved-dashboard-v16.spec.ts
       - name: Critical auth, isolation, inventory and sales browser checks
         run: npm run test:e2e -- tests/e2e/product.spec.ts
       - name: Customer details, mobile sale recovery, voice stock and DemandPulse regression checks
@@ -84,3 +86,5 @@ jobs:
 
       - name: Compiled V15.2 contextual heroes, record references and responsive accessibility
         run: node scripts/qa/v15-2-production-review.mjs
+      - name: Compiled V16.1 reference layout, real cash totals and thirty accessible dashboard layouts
+        run: node scripts/qa/v16-production-review.mjs

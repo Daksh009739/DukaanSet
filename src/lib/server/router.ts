@@ -5,7 +5,8 @@ import { createHash } from "node:crypto";
 import { decodePhoto, MAX_IMAGE_BYTES } from "./images";
 import { SaaSService } from './saas';
 import { AuthenticationService } from './authentication';
-import { authorize } from './access';
+import { authorize, access } from './access';
+import { shopWeather } from './weather';
 import { AssistantService } from './assistant';
 import { IntelligenceService } from './intelligence';
 import { VoiceInterpreterService } from './voice-interpreter';
@@ -119,6 +120,7 @@ export async function handleRequest(request: Request, store: Store = getStore())
     if (!match) throw new DomainError("NOT_FOUND", "Endpoint not found.", 404);
     const [, businessId, action, recordId, subAction] = match;
     store.assertMember(userId, businessId);
+    if(action==='weather'&&!recordId&&verb==='GET')return json(await shopWeather().current(access(store.db,userId,businessId).location));
     const closing=new ClosingService(store),media=new ProductMediaService(store);
     if(action==='voice-interpret'&&!recordId){const service=new VoiceInterpreterService(store);if(verb==='GET')return json(service.status(userId,businessId));if(verb!=='POST')throw new DomainError('METHOD_NOT_ALLOWED','Use GET or POST.',405);throttle(`interpret:${userId}`,5);return json(await service.interpret(userId,businessId,await body(request)));}
     if(action==='intelligence'&&!recordId&&verb==='GET')return json(new IntelligenceService(store).overview(userId,businessId));

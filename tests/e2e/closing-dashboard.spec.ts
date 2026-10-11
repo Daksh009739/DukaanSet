@@ -2,6 +2,7 @@ import {test,expect,type Page} from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 import {mkdirSync,writeFileSync} from 'node:fs';
 import {text} from '../../src/lib/locale';
+import {money} from '../../src/lib/client';
 import type {Language} from '../../src/lib/contracts';
 import type {ClosingReport,ClosingPreview} from '../../src/lib/closing-contracts';
 import {pdfText} from './document-helper';
@@ -15,11 +16,11 @@ async function noOverflow(page:Page){expect(await page.evaluate(()=>document.doc
 
 test('dashboard → counted close → versions → PDF → explicit next opening',async({page})=>{
  const f=await setup(page),before=await state(page,f.business);
- await expect(page.locator('.detail-metrics')).toContainText('₹11,000');await expect(page.locator('.detail-metrics')).toContainText('₹10,500');await expect(page.locator('.detail-metrics')).toContainText('₹3,500');
- expect(await page.locator('.dashboard-closing').evaluate(e=>e.getBoundingClientRect().top)).toBeLessThan(650);
+ await expect(page.locator('.detail-metrics')).toContainText('₹11,000');await expect(page.locator('.detail-metrics')).toContainText(money(before.daily.cashPaise));await expect(page.locator('.detail-metrics')).toContainText('₹3,500');
+ await expect(page.locator('.sidebar').getByRole('link',{name:w('en','v16.closing'),exact:true})).toBeVisible();
  for(const width of [320,360,375,390,412,430,768,1024,1440]){await page.setViewportSize({width,height:1000});await noOverflow(page);}
  await page.screenshot({path:`${qa}/dashboard-desktop.png`,fullPage:true});await page.setViewportSize({width:390,height:844});await page.screenshot({path:`${qa}/dashboard-mobile.png`,fullPage:true});
- await page.getByRole('link',{name:w('en','closeToday'),exact:true}).click();await expect(page.locator('.smart-closing')).toContainText('₹6,700');await page.getByLabel(w('en','actualCash'),{exact:true}).fill('6650');await expect(page.locator('.inline-summary')).toContainText('₹50');await page.getByLabel(w('en','acknowledge'),{exact:true}).check();
+ await page.setViewportSize({width:1440,height:1000});await page.locator('.sidebar').getByRole('link',{name:w('en','v16.closing'),exact:true}).click();await page.setViewportSize({width:390,height:844});await expect(page.locator('.smart-closing')).toContainText('₹6,700');await page.getByLabel(w('en','actualCash'),{exact:true}).fill('6650');await expect(page.locator('.inline-summary')).toContainText('₹50');await page.getByLabel(w('en','acknowledge'),{exact:true}).check();
  expect((await new AxeBuilder({page}).include('.workspace').withTags(['wcag2a','wcag2aa','wcag22aa']).analyze()).violations).toEqual([]);
  await page.screenshot({path:`${qa}/closing-mobile.png`,fullPage:true});await page.getByRole('button',{name:w('en','confirmClosing'),exact:true}).click();await expect(page.locator('.closing-report-banner')).toContainText('DS-');await expect(page.locator('.closing-report-banner')).toContainText(w('en','cashShortage'));
  const reports:ClosingReport[]=await(await page.request.get(`/api/businesses/${f.business}/closing-reports`)).json();expect(reports).toHaveLength(1);expect(reports[0].differencePaise).toBe(-5000);expect(reports[0].actualCashPaise).toBe(665000);
