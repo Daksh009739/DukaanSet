@@ -1,0 +1,3 @@
+Replace the previous DukaanSet identity with the owner's new storefront logo and square app icon. The shared brand component uses transparent light/dark logos, compact navigation uses the square icon, and browser/PWA/Apple icons are updated with an offline cache refresh. Original attachments are preserved in the repository.
+
+Validation: lint, TypeScript and production build passed. A compiled browser review passed 16 layouts from 320 to 1920px, verified favicon and manifest assets, confirmed the sidebar logo stays clear of its collapse control, and found no sidebar accessibility violations or browser errors. Screenshots and results are saved in docs/qa/storefront-brand/.

@@ -1,0 +1,15 @@
+/* Keep the supplied artwork's proportions and reserve space before images load. */
+.brand-logo{width:200px;max-width:100%;gap:0}
+.brand-logo>.brand-symbol{display:none}
+.brand-wordmark{display:block;width:100%;line-height:0}
+.brand-wordmark img{display:block;width:100%;height:auto;object-fit:contain}
+.brand-symbol{object-fit:contain;aspect-ratio:1}
+.brand-logo.brand-logo-compact{width:44px;justify-content:center}
+.brand-logo-compact>.brand-symbol{display:block}
+.approved-workspace .sidebar-logo.brand-logo{display:flex;width:calc(100% - 8px);min-height:44px;margin:0 4px;padding:0;gap:0}
+.approved-workspace .sidebar-caption{margin:8px 0 28px;padding:0;text-align:center}
+.approved-workspace.sidebar-collapsed .sidebar-logo.brand-logo{width:100%;margin:0;padding:15px 0 20px;justify-content:center}
+.sidebar-collapsed .sidebar-logo>.brand-symbol{display:block;width:42px;height:42px}
+.sidebar-collapsed .sidebar-logo>.brand-wordmark{display:none}
+@media(max-width:540px){.m-header .brand-logo{width:160px}}
+@media(max-width:359px){.m-header .brand-logo{width:142px}}

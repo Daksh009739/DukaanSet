@@ -1,16 +1,14 @@
-# DukaanSet brand assets
+# DukaanSet storefront identity
 
-V8 original SVG concept: a geometric storefront roof, a D-shaped store edge and a connected check. The mark remains readable at small mobile sizes. No external illustrations, photos or competitor assets are used. See [brand usage](USAGE.md).
+The application uses the two logo images supplied by the owner on 11 October 2026. The untouched originals are saved in sources/. The square artwork is the compact app identity and favicon; the horizontal artwork is the full logo.
 
-- `logo.svg`: primary horizontal lockup on light surfaces
-- `logo-dark.svg`: inverted lockup for dark surfaces
-- `logo-mono.svg`: monochrome lockup
-- `symbol.svg`: compact square symbol
-- `maskable.svg`: editable safe-zone master for the maskable PNG
-- `icon-192.png`, `icon-512.png`, `maskable-512.png`: manifest assets rasterised from the SVG masters
-- `splash.svg`: splash branding artwork; runtime splash behaviour is browser-dependent
-- `/icon.svg`: favicon master
-- `/social.svg`: editable original social artwork
-- `invoice-logo.svg` / `invoice-logo.png`: print and PDF-compatible platform identity
+- storefront-logo.webp / .png: transparent horizontal logo for light surfaces.
+- storefront-logo-dark.webp / .png: the same geometry with a white Dukaan wordmark for dark surfaces; the storefront and mint Set stay coloured.
+- storefront-symbol.png: transparent square icon for compact navigation and loading states.
+- icon-16.png, icon-32.png, icon-48.png: browser favicon sizes; src/app/favicon.ico contains all three sizes.
+- apple-touch-icon.png: opaque 180px Apple home-screen icon.
+- icon-192.png, icon-512.png, maskable-512.png: installed-app icons. The maskable icon keeps the artwork within the central safe zone.
+- logo.svg, logo-dark.svg, symbol.svg, /icon.svg: self-contained compatibility wrappers for the new raster identity.
+- logo-mono.svg, invoice-logo.svg / .png: monochrome platform assets. Merchant documents continue to use the merchant's own saved identity.
 
-Runtime logo identity is centralised in `src/components/brand.tsx`; CSS lives in `src/components/marketing.css`. SVG text remains editable and uses Manrope with an Arial fallback. The working brand has not received trademark or domain clearance.
+Runtime branding is centralised in src/components/brand.tsx; sizing lives in src/components/storefront-brand.css. Preserve the aspect ratio and the sidebar collapse control's separate space. See [usage and preparation](USAGE.md).
