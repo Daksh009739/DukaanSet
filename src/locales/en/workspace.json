@@ -319,5 +319,27 @@
     "loading": "Loading your dashboard…",
     "calendarSales": "Sales by calendar date",
     "countUnavailable": "Bill count unavailable"
+  },
+  "moduleUi": {
+    "recordsCount_one": "{{count}} record",
+    "recordsCount_other": "{{count}} records",
+    "customersWithBalance_one": "{{count}} customer with a balance",
+    "customersWithBalance_other": "{{count}} customers with a balance",
+    "clearSearch": "Clear search",
+    "resetFilters": "Reset filters",
+    "customerDirectory": "Customer directory",
+    "supplierDirectory": "Supplier directory",
+    "paymentHistory": "Payment history",
+    "searchSuppliers": "Search supplier name or phone",
+    "searchPayments": "Search customer name or phone",
+    "withBalance": "With balance",
+    "settled": "Settled",
+    "recordedReceipts": "Recorded receipts",
+    "refunds": "Refunds",
+    "netReceived": "Net received",
+    "shownRecords": "For the records shown below",
+    "purchaseEmptyHint": "Receive a purchase to add stock and keep supplier dues up to date.",
+    "purchaseOrdersEmptyHint": "Plan your next restock from DemandPulse. Stock updates after you receive the goods.",
+    "firstPurchase": "Record your first purchase"
   }
 }

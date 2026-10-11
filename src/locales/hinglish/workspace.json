@@ -319,5 +319,27 @@
     "loading": "Dashboard aa raha hai…",
     "calendarSales": "Calendar date ke hisaab se sales",
     "countUnavailable": "Bills ki ginti nahi mili"
+  },
+  "moduleUi": {
+    "recordsCount_one": "{{count}} entry",
+    "recordsCount_other": "{{count}} entries",
+    "customersWithBalance_one": "{{count}} customer ka baaki hisaab",
+    "customersWithBalance_other": "{{count}} customers ka baaki hisaab",
+    "clearSearch": "Search saaf karein",
+    "resetFilters": "Filters reset karein",
+    "customerDirectory": "Customer list",
+    "supplierDirectory": "Supplier list",
+    "paymentHistory": "Payment ka hisaab",
+    "searchSuppliers": "Supplier ka naam ya phone khojein",
+    "searchPayments": "Customer ka naam ya phone khojein",
+    "withBalance": "Baaki hisaab",
+    "settled": "Hisaab clear",
+    "recordedReceipts": "Darj mili rakam",
+    "refunds": "Wapas ki rakam",
+    "netReceived": "Net mili rakam",
+    "shownRecords": "Neeche dikhaye records ke liye",
+    "purchaseEmptyHint": "Purchase receive karke stock jodein aur supplier ka hisaab update rakhein.",
+    "purchaseOrdersEmptyHint": "DemandPulse se agle stock ki planning karein. Maal receive hone par stock update hoga.",
+    "firstPurchase": "Pehli purchase darj karein"
   }
 }

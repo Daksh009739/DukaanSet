@@ -319,5 +319,27 @@
     "loading": "डैशबोर्ड आ रहा है…",
     "calendarSales": "कैलेंडर की तारीख़ के अनुसार बिक्री",
     "countUnavailable": "बिलों की गिनती उपलब्ध नहीं"
+  },
+  "moduleUi": {
+    "recordsCount_one": "{{count}} रिकॉर्ड",
+    "recordsCount_other": "{{count}} रिकॉर्ड",
+    "customersWithBalance_one": "{{count}} ग्राहक का बकाया",
+    "customersWithBalance_other": "{{count}} ग्राहकों का बकाया",
+    "clearSearch": "खोज साफ करें",
+    "resetFilters": "फ़िल्टर रीसेट करें",
+    "customerDirectory": "ग्राहक सूची",
+    "supplierDirectory": "सप्लायर सूची",
+    "paymentHistory": "भुगतान का इतिहास",
+    "searchSuppliers": "सप्लायर का नाम या फ़ोन खोजें",
+    "searchPayments": "ग्राहक का नाम या फ़ोन खोजें",
+    "withBalance": "बकाया वाले",
+    "settled": "हिसाब साफ",
+    "recordedReceipts": "दर्ज प्राप्त राशि",
+    "refunds": "वापसी की राशि",
+    "netReceived": "शुद्ध प्राप्त राशि",
+    "shownRecords": "नीचे दिखाए गए रिकॉर्ड के लिए",
+    "purchaseEmptyHint": "खरीद प्राप्त करके स्टॉक जोड़ें और सप्लायर का बकाया अपडेट रखें।",
+    "purchaseOrdersEmptyHint": "DemandPulse से अगली खरीद की योजना बनाएं। माल प्राप्त होने पर स्टॉक अपडेट होता है।",
+    "firstPurchase": "पहली खरीद दर्ज करें"
   }
 }

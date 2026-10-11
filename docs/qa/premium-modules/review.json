@@ -1,0 +1,114 @@
+{
+  "checkedAt": "2026-10-11T20:06:28.927Z",
+  "environment": "Compiled local production, isolated fictional hardware demo",
+  "layouts": [
+    {
+      "route": "sales/new",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "route": "sales",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "route": "stock",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "route": "customers",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "route": "payments",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "route": "purchases",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "route": "suppliers",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "route": "sales/new",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "route": "sales",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "route": "stock",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "route": "customers",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "route": "payments",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "route": "purchases",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "route": "suppliers",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "route": "sales/new",
+      "width": 320,
+      "overflow": false
+    },
+    {
+      "route": "sales",
+      "width": 320,
+      "overflow": false
+    },
+    {
+      "route": "stock",
+      "width": 320,
+      "overflow": false
+    },
+    {
+      "route": "customers",
+      "width": 320,
+      "overflow": false
+    },
+    {
+      "route": "payments",
+      "width": 320,
+      "overflow": false
+    },
+    {
+      "route": "purchases",
+      "width": 320,
+      "overflow": false
+    },
+    {
+      "route": "suppliers",
+      "width": 320,
+      "overflow": false
+    }
+  ],
+  "accessibilityLayouts": 14,
+  "runtimeErrors": [],
+  "ledgerUnchanged": true
+}

@@ -41,6 +41,8 @@ jobs:
         run: npm run test:e2e -- tests/e2e/approved-dashboard.spec.ts
       - name: V16.1 approved composition, cash accuracy, weather fallback and multilingual viewport checks
         run: npm run test:e2e -- tests/e2e/approved-dashboard-v16.spec.ts
+      - name: Premium module filters, signed refund summaries and multilingual responsive accessibility
+        run: npm run test:e2e -- tests/e2e/premium-modules.spec.ts
       - name: Critical auth, isolation, inventory and sales browser checks
         run: npm run test:e2e -- tests/e2e/product.spec.ts
       - name: Customer details, mobile sale recovery, voice stock and DemandPulse regression checks
