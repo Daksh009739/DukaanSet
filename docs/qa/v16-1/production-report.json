@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-10-11T14:26:08.134Z",
+  "checkedAt": "2026-10-11T18:44:11.367Z",
   "environment": "Compiled local production, isolated verified QA shop, saved invoices and product stock, unconfigured live weather",
   "layouts": [
     {
@@ -490,8 +490,8 @@
     "Dashboard rendering and language changes preserve invoice and product ledgers"
   ],
   "performance": {
-    "domContentLoadedMs": 170.09999999403954,
-    "loadMs": 232.7999999821186,
-    "resourceTransferBytes": 55945
+    "domContentLoadedMs": 54.40000000037253,
+    "loadMs": 71.80000000074506,
+    "resourceTransferBytes": 55983
   }
 }
