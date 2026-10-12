@@ -362,5 +362,29 @@
     "stay": "Stay in this shop",
     "switchConfirm": "Switch shop",
     "switchFailed": "Could not switch shops. Your current shop is still open. Please try again."
+  },
+  "overlays": {
+    "searchTitle": "Search your workspace",
+    "searchDescription": "Find the right product, customer or bill in seconds.",
+    "clearSearch": "Clear search",
+    "quickLinks": "QUICK LINKS",
+    "noResultsHint": "Try a shorter name, phone number, SKU or invoice number.",
+    "resultCount_one": "{{count}} result shown",
+    "resultCount_other": "{{count}} results shown",
+    "activeShop": "Searching in {{shop}}",
+    "escapeKey": "Esc",
+    "toClose": "to close",
+    "updatesDescription": "Your shop’s important follow-ups, all in one place.",
+    "allUpdates": "All",
+    "otherUpdates": "More",
+    "filterUpdates": "Filter updates",
+    "noCategoryUpdates": "Nothing here right now",
+    "caughtUpHint": "Updates appear here when your shop needs attention.",
+    "updateCount_one": "{{count}} follow-up",
+    "updateCount_other": "{{count}} follow-ups",
+    "updateSettings": "Update preferences",
+    "voiceHint": "Speak. Review. Save.",
+    "trySaying": "TRY SAYING",
+    "reviewHint": "You review every change before saving."
   }
 }

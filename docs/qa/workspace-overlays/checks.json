@@ -1,0 +1,31 @@
+{
+  "checkedAt": "2026-10-12T09:52:42.239Z",
+  "typecheck": "passed",
+  "lint": "passed",
+  "locales": {
+    "status": "passed",
+    "keysPerLanguage": 2448,
+    "hardcodedVisibleText": 0
+  },
+  "productionBuild": "passed",
+  "browserTests": {
+    "total": 13,
+    "overlays": 3,
+    "voiceOS": 5,
+    "dashboardWeather": 2,
+    "closingDetails": 3
+  },
+  "browserLayouts": 60,
+  "browserAccessibilityScans": 18,
+  "compiledLayouts": 63,
+  "compiledAccessibilityScans": 27,
+  "runtimeErrors": 0,
+  "localPreview": {
+    "app": 200,
+    "health": 200
+  },
+  "limitations": [
+    "Weather readiness and earlier accounting date are simulated for layout review.",
+    "No live acoustic speech or hosted release is established by these UI checks."
+  ]
+}

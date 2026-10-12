@@ -362,5 +362,29 @@
     "stay": "इसी दुकान में रहें",
     "switchConfirm": "दुकान बदलें",
     "switchFailed": "दुकान बदल नहीं सकी। आपकी मौजूदा दुकान खुली है। फिर कोशिश करें।"
+  },
+  "overlays": {
+    "searchTitle": "अपनी दुकान में खोजें",
+    "searchDescription": "उत्पाद, ग्राहक या बिल पल भर में खोजें।",
+    "clearSearch": "खोज साफ़ करें",
+    "quickLinks": "सीधे खोलें",
+    "noResultsHint": "छोटा नाम, फ़ोन नंबर, SKU या बिल नंबर आज़माएँ।",
+    "resultCount_one": "{{count}} नतीजा दिखाया गया",
+    "resultCount_other": "{{count}} नतीजे दिखाए गए",
+    "activeShop": "{{shop}} में खोज रहे हैं",
+    "escapeKey": "एस्केप",
+    "toClose": "करें",
+    "updatesDescription": "आपकी दुकान के ज़रूरी काम, एक ही जगह।",
+    "allUpdates": "सभी",
+    "otherUpdates": "अन्य",
+    "filterUpdates": "सूचनाएँ छाँटें",
+    "noCategoryUpdates": "अभी यहाँ कोई सूचना नहीं है",
+    "caughtUpHint": "दुकान में ध्यान देने की ज़रूरत होने पर सूचनाएँ यहाँ दिखेंगी।",
+    "updateCount_one": "{{count}} ज़रूरी काम",
+    "updateCount_other": "{{count}} ज़रूरी काम",
+    "updateSettings": "सूचनाओं की पसंद",
+    "voiceHint": "बोलें। जाँचें। सहेजें।",
+    "trySaying": "बोलकर आज़माएँ",
+    "reviewHint": "सहेजने से पहले हर बदलाव आप जाँचते हैं।"
   }
 }

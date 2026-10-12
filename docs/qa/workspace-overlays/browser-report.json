@@ -1,0 +1,307 @@
+{
+  "layouts": [
+    {
+      "language": "en",
+      "section": "hero",
+      "width": 320
+    },
+    {
+      "language": "en",
+      "section": "hero",
+      "width": 390
+    },
+    {
+      "language": "en",
+      "section": "hero",
+      "width": 600
+    },
+    {
+      "language": "en",
+      "section": "hero",
+      "width": 768
+    },
+    {
+      "language": "en",
+      "section": "hero",
+      "width": 1024
+    },
+    {
+      "language": "en",
+      "section": "hero",
+      "width": 1142
+    },
+    {
+      "language": "en",
+      "section": "hero",
+      "width": 1440
+    },
+    {
+      "language": "en",
+      "section": "hero",
+      "width": 1920
+    },
+    {
+      "language": "en",
+      "section": "search",
+      "width": 320
+    },
+    {
+      "language": "en",
+      "section": "search",
+      "width": 390
+    },
+    {
+      "language": "en",
+      "section": "search",
+      "width": 768
+    },
+    {
+      "language": "en",
+      "section": "search",
+      "width": 1440
+    },
+    {
+      "language": "en",
+      "section": "updates",
+      "width": 320
+    },
+    {
+      "language": "en",
+      "section": "updates",
+      "width": 390
+    },
+    {
+      "language": "en",
+      "section": "updates",
+      "width": 768
+    },
+    {
+      "language": "en",
+      "section": "updates",
+      "width": 1440
+    },
+    {
+      "language": "en",
+      "section": "voice",
+      "width": 320
+    },
+    {
+      "language": "en",
+      "section": "voice",
+      "width": 390
+    },
+    {
+      "language": "en",
+      "section": "voice",
+      "width": 768
+    },
+    {
+      "language": "en",
+      "section": "voice",
+      "width": 1440
+    },
+    {
+      "language": "hi",
+      "section": "hero",
+      "width": 320
+    },
+    {
+      "language": "hi",
+      "section": "hero",
+      "width": 390
+    },
+    {
+      "language": "hi",
+      "section": "hero",
+      "width": 600
+    },
+    {
+      "language": "hi",
+      "section": "hero",
+      "width": 768
+    },
+    {
+      "language": "hi",
+      "section": "hero",
+      "width": 1024
+    },
+    {
+      "language": "hi",
+      "section": "hero",
+      "width": 1142
+    },
+    {
+      "language": "hi",
+      "section": "hero",
+      "width": 1440
+    },
+    {
+      "language": "hi",
+      "section": "hero",
+      "width": 1920
+    },
+    {
+      "language": "hi",
+      "section": "search",
+      "width": 320
+    },
+    {
+      "language": "hi",
+      "section": "search",
+      "width": 390
+    },
+    {
+      "language": "hi",
+      "section": "search",
+      "width": 768
+    },
+    {
+      "language": "hi",
+      "section": "search",
+      "width": 1440
+    },
+    {
+      "language": "hi",
+      "section": "updates",
+      "width": 320
+    },
+    {
+      "language": "hi",
+      "section": "updates",
+      "width": 390
+    },
+    {
+      "language": "hi",
+      "section": "updates",
+      "width": 768
+    },
+    {
+      "language": "hi",
+      "section": "updates",
+      "width": 1440
+    },
+    {
+      "language": "hi",
+      "section": "voice",
+      "width": 320
+    },
+    {
+      "language": "hi",
+      "section": "voice",
+      "width": 390
+    },
+    {
+      "language": "hi",
+      "section": "voice",
+      "width": 768
+    },
+    {
+      "language": "hi",
+      "section": "voice",
+      "width": 1440
+    },
+    {
+      "language": "hinglish",
+      "section": "hero",
+      "width": 320
+    },
+    {
+      "language": "hinglish",
+      "section": "hero",
+      "width": 390
+    },
+    {
+      "language": "hinglish",
+      "section": "hero",
+      "width": 600
+    },
+    {
+      "language": "hinglish",
+      "section": "hero",
+      "width": 768
+    },
+    {
+      "language": "hinglish",
+      "section": "hero",
+      "width": 1024
+    },
+    {
+      "language": "hinglish",
+      "section": "hero",
+      "width": 1142
+    },
+    {
+      "language": "hinglish",
+      "section": "hero",
+      "width": 1440
+    },
+    {
+      "language": "hinglish",
+      "section": "hero",
+      "width": 1920
+    },
+    {
+      "language": "hinglish",
+      "section": "search",
+      "width": 320
+    },
+    {
+      "language": "hinglish",
+      "section": "search",
+      "width": 390
+    },
+    {
+      "language": "hinglish",
+      "section": "search",
+      "width": 768
+    },
+    {
+      "language": "hinglish",
+      "section": "search",
+      "width": 1440
+    },
+    {
+      "language": "hinglish",
+      "section": "updates",
+      "width": 320
+    },
+    {
+      "language": "hinglish",
+      "section": "updates",
+      "width": 390
+    },
+    {
+      "language": "hinglish",
+      "section": "updates",
+      "width": 768
+    },
+    {
+      "language": "hinglish",
+      "section": "updates",
+      "width": 1440
+    },
+    {
+      "language": "hinglish",
+      "section": "voice",
+      "width": 320
+    },
+    {
+      "language": "hinglish",
+      "section": "voice",
+      "width": 390
+    },
+    {
+      "language": "hinglish",
+      "section": "voice",
+      "width": 768
+    },
+    {
+      "language": "hinglish",
+      "section": "voice",
+      "width": 1440
+    }
+  ],
+  "accessibilityScans": 18,
+  "runtimeErrors": [],
+  "readOnly": true
+}

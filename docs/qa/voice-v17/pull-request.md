@@ -2,4 +2,8 @@ Voice requests now retain an editable task through follow-ups and corrections, s
 
 The global composer has a responsive multilingual preview, scoped record navigation, resumable unfinished work, real closing summaries and stock confirmation that remains visible on phones. Optional structured understanding receives bounded consented task context and cannot overwrite later edits or reinterpret financial reversals. This branch includes the previously green sidebar/module changes from #12.
 
+Workspace search now provides focused input, permission-aware quick links and grouped real record results. Updates have actionable cards, live category filters and internal scrolling. Dashboard date/weather controls remain readable above the illustration, city setup opens shop settings, and VoiceOS uses a consistent microphone, suggestions and composer. Search and update dialogs retain keyboard dismissal and restore focus while removing their duplicate language controls.
+
 Validation: 298 unit/backend tests; 66 labelled intent cases and 188 slot checks; 58 connected browser tests; typecheck, lint, locale gate and production build; isolated compiled transactions, nine accessibility scans and three-language viewport review. Evidence and limitations are in `docs/qa/voice-v17/README.md`. Browser recognition and provider responses are simulated; live acoustic/provider testing and protected hosted staging remain unverified.
+
+Additional UI validation and desktop/phone screenshots are in `docs/qa/workspace-overlays/README.md`; the new search/update interaction and multilingual layout suite and compiled UI review are included in Quality CI.

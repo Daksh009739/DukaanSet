@@ -43,6 +43,10 @@ jobs:
         run: npm run test:e2e -- tests/e2e/approved-dashboard-v16.spec.ts
       - name: Premium module filters, signed refund summaries and multilingual responsive accessibility
         run: npm run test:e2e -- tests/e2e/premium-modules.spec.ts
+      - name: Workspace search, update actions, hero controls and multilingual dialog accessibility
+        run: npm run test:e2e -- tests/e2e/workspace-overlays.spec.ts
+      - name: Compiled workspace overlays and responsive dashboard controls
+        run: node scripts/qa/workspace-overlays-production.mjs
       - name: Smart sidebar, persisted rail, protected shop switching and multilingual accessible drawers
         run: npm run test:e2e -- tests/e2e/smart-sidebar.spec.ts
       - name: Critical auth, isolation, inventory and sales browser checks

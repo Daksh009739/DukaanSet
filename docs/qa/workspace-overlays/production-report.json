@@ -1,0 +1,494 @@
+{
+  "checkedAt": "2026-10-12T09:49:51.621Z",
+  "environment": "Isolated compiled production build; fictional demo data; live weather and AI providers disabled",
+  "layouts": [
+    {
+      "section": "hero",
+      "language": "en",
+      "width": 320
+    },
+    {
+      "section": "hero",
+      "language": "en",
+      "width": 390
+    },
+    {
+      "section": "hero",
+      "language": "en",
+      "width": 768
+    },
+    {
+      "section": "hero",
+      "language": "en",
+      "width": 1142
+    },
+    {
+      "section": "hero",
+      "language": "en",
+      "width": 1440
+    },
+    {
+      "section": "hero",
+      "language": "en",
+      "width": 1920
+    },
+    {
+      "section": "search",
+      "language": "en",
+      "width": 320
+    },
+    {
+      "section": "search",
+      "language": "en",
+      "width": 390
+    },
+    {
+      "section": "search",
+      "language": "en",
+      "width": 768
+    },
+    {
+      "section": "search",
+      "language": "en",
+      "width": 1440
+    },
+    {
+      "section": "updates",
+      "language": "en",
+      "width": 320
+    },
+    {
+      "section": "updates",
+      "language": "en",
+      "width": 390
+    },
+    {
+      "section": "updates",
+      "language": "en",
+      "width": 768
+    },
+    {
+      "section": "updates",
+      "language": "en",
+      "width": 1440
+    },
+    {
+      "section": "voice",
+      "language": "en",
+      "width": 320
+    },
+    {
+      "section": "voice",
+      "language": "en",
+      "width": 390
+    },
+    {
+      "section": "voice",
+      "language": "en",
+      "width": 768
+    },
+    {
+      "section": "voice",
+      "language": "en",
+      "width": 1440
+    },
+    {
+      "section": "hero",
+      "language": "hi",
+      "width": 320
+    },
+    {
+      "section": "hero",
+      "language": "hi",
+      "width": 390
+    },
+    {
+      "section": "hero",
+      "language": "hi",
+      "width": 768
+    },
+    {
+      "section": "hero",
+      "language": "hi",
+      "width": 1142
+    },
+    {
+      "section": "hero",
+      "language": "hi",
+      "width": 1440
+    },
+    {
+      "section": "hero",
+      "language": "hi",
+      "width": 1920
+    },
+    {
+      "section": "search",
+      "language": "hi",
+      "width": 320
+    },
+    {
+      "section": "search",
+      "language": "hi",
+      "width": 390
+    },
+    {
+      "section": "search",
+      "language": "hi",
+      "width": 768
+    },
+    {
+      "section": "search",
+      "language": "hi",
+      "width": 1440
+    },
+    {
+      "section": "updates",
+      "language": "hi",
+      "width": 320
+    },
+    {
+      "section": "updates",
+      "language": "hi",
+      "width": 390
+    },
+    {
+      "section": "updates",
+      "language": "hi",
+      "width": 768
+    },
+    {
+      "section": "updates",
+      "language": "hi",
+      "width": 1440
+    },
+    {
+      "section": "voice",
+      "language": "hi",
+      "width": 320
+    },
+    {
+      "section": "voice",
+      "language": "hi",
+      "width": 390
+    },
+    {
+      "section": "voice",
+      "language": "hi",
+      "width": 768
+    },
+    {
+      "section": "voice",
+      "language": "hi",
+      "width": 1440
+    },
+    {
+      "section": "hero",
+      "language": "hinglish",
+      "width": 320
+    },
+    {
+      "section": "hero",
+      "language": "hinglish",
+      "width": 390
+    },
+    {
+      "section": "hero",
+      "language": "hinglish",
+      "width": 768
+    },
+    {
+      "section": "hero",
+      "language": "hinglish",
+      "width": 1142
+    },
+    {
+      "section": "hero",
+      "language": "hinglish",
+      "width": 1440
+    },
+    {
+      "section": "hero",
+      "language": "hinglish",
+      "width": 1920
+    },
+    {
+      "section": "search",
+      "language": "hinglish",
+      "width": 320
+    },
+    {
+      "section": "search",
+      "language": "hinglish",
+      "width": 390
+    },
+    {
+      "section": "search",
+      "language": "hinglish",
+      "width": 768
+    },
+    {
+      "section": "search",
+      "language": "hinglish",
+      "width": 1440
+    },
+    {
+      "section": "updates",
+      "language": "hinglish",
+      "width": 320
+    },
+    {
+      "section": "updates",
+      "language": "hinglish",
+      "width": 390
+    },
+    {
+      "section": "updates",
+      "language": "hinglish",
+      "width": 768
+    },
+    {
+      "section": "updates",
+      "language": "hinglish",
+      "width": 1440
+    },
+    {
+      "section": "voice",
+      "language": "hinglish",
+      "width": 320
+    },
+    {
+      "section": "voice",
+      "language": "hinglish",
+      "width": 390
+    },
+    {
+      "section": "voice",
+      "language": "hinglish",
+      "width": 768
+    },
+    {
+      "section": "voice",
+      "language": "hinglish",
+      "width": 1440
+    },
+    {
+      "section": "hero-ready",
+      "language": "en",
+      "width": 320
+    },
+    {
+      "section": "hero-ready",
+      "language": "en",
+      "width": 390
+    },
+    {
+      "section": "hero-ready",
+      "language": "en",
+      "width": 1440
+    },
+    {
+      "section": "hero-ambiguous",
+      "language": "en",
+      "width": 320
+    },
+    {
+      "section": "hero-ambiguous",
+      "language": "en",
+      "width": 390
+    },
+    {
+      "section": "hero-ambiguous",
+      "language": "en",
+      "width": 1440
+    },
+    {
+      "section": "hero-location",
+      "language": "en",
+      "width": 320
+    },
+    {
+      "section": "hero-location",
+      "language": "en",
+      "width": 390
+    },
+    {
+      "section": "hero-location",
+      "language": "en",
+      "width": 1440
+    }
+  ],
+  "accessibility": [
+    {
+      "section": "search",
+      "language": "en",
+      "width": 390,
+      "violations": 0
+    },
+    {
+      "section": "search",
+      "language": "en",
+      "width": 1440,
+      "violations": 0
+    },
+    {
+      "section": "updates",
+      "language": "en",
+      "width": 390,
+      "violations": 0
+    },
+    {
+      "section": "updates",
+      "language": "en",
+      "width": 1440,
+      "violations": 0
+    },
+    {
+      "section": "voice",
+      "language": "en",
+      "width": 390,
+      "violations": 0
+    },
+    {
+      "section": "voice",
+      "language": "en",
+      "width": 1440,
+      "violations": 0
+    },
+    {
+      "section": "search",
+      "language": "hi",
+      "width": 390,
+      "violations": 0
+    },
+    {
+      "section": "search",
+      "language": "hi",
+      "width": 1440,
+      "violations": 0
+    },
+    {
+      "section": "updates",
+      "language": "hi",
+      "width": 390,
+      "violations": 0
+    },
+    {
+      "section": "updates",
+      "language": "hi",
+      "width": 1440,
+      "violations": 0
+    },
+    {
+      "section": "voice",
+      "language": "hi",
+      "width": 390,
+      "violations": 0
+    },
+    {
+      "section": "voice",
+      "language": "hi",
+      "width": 1440,
+      "violations": 0
+    },
+    {
+      "section": "search",
+      "language": "hinglish",
+      "width": 390,
+      "violations": 0
+    },
+    {
+      "section": "search",
+      "language": "hinglish",
+      "width": 1440,
+      "violations": 0
+    },
+    {
+      "section": "updates",
+      "language": "hinglish",
+      "width": 390,
+      "violations": 0
+    },
+    {
+      "section": "updates",
+      "language": "hinglish",
+      "width": 1440,
+      "violations": 0
+    },
+    {
+      "section": "voice",
+      "language": "hinglish",
+      "width": 390,
+      "violations": 0
+    },
+    {
+      "section": "voice",
+      "language": "hinglish",
+      "width": 1440,
+      "violations": 0
+    },
+    {
+      "section": "hero-ready",
+      "language": "en",
+      "width": 320,
+      "violations": 0
+    },
+    {
+      "section": "hero-ready",
+      "language": "en",
+      "width": 390,
+      "violations": 0
+    },
+    {
+      "section": "hero-ready",
+      "language": "en",
+      "width": 1440,
+      "violations": 0
+    },
+    {
+      "section": "hero-ambiguous",
+      "language": "en",
+      "width": 320,
+      "violations": 0
+    },
+    {
+      "section": "hero-ambiguous",
+      "language": "en",
+      "width": 390,
+      "violations": 0
+    },
+    {
+      "section": "hero-ambiguous",
+      "language": "en",
+      "width": 1440,
+      "violations": 0
+    },
+    {
+      "section": "hero-location",
+      "language": "en",
+      "width": 320,
+      "violations": 0
+    },
+    {
+      "section": "hero-location",
+      "language": "en",
+      "width": 390,
+      "violations": 0
+    },
+    {
+      "section": "hero-location",
+      "language": "en",
+      "width": 1440,
+      "violations": 0
+    }
+  ],
+  "checks": [
+    "Real weather response remains unavailable without a configured provider or city",
+    "Simulated ready, ambiguous and missing-city weather remain readable beside an earlier accounting date",
+    "Compiled CSS fits all checked widths and languages",
+    "Search returns actual product records; updates retain live counts; typed VoiceOS reads actual report data",
+    "All checked dialogs pass WCAG A/AA scans",
+    "Viewing overlays and reports leaves financial and inventory ledgers unchanged"
+  ],
+  "runtimeErrors": []
+}
