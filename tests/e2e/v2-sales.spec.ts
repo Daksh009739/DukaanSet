@@ -44,7 +44,7 @@ async function selectBusiness(page:Page,businessId:string){
   }
   await expect(page.locator('#business-select')).toBeEnabled();
   if(await page.locator('#business-select').isVisible()) await page.locator('#business-select').selectOption(businessId);
-  else { await page.locator('.bottom-nav').getByRole('button',{name:'More',exact:true}).click();const menu=page.getByRole('dialog');await menu.getByRole('combobox',{name:'Your business',exact:true}).selectOption(businessId);await expect(page.locator('#main')).toHaveAttribute('data-business-id',businessId);if(await menu.isVisible()) await menu.getByRole('button',{name:'Close',exact:true}).click(); }
+  else { const session=await(await page.request.get('/api/session')).json() as Session;const shop=session.businesses.find(b=>b.id===businessId)!;await page.locator('.bottom-nav').getByRole('button',{name:'More',exact:true}).click();const menu=page.getByRole('dialog');await menu.locator('[data-shop-switch]').click();await menu.getByRole('option',{name:shop.name,exact:true}).click();const warning=page.getByRole('dialog',{name:'Switch shop with unfinished work?',exact:true});if(await warning.isVisible())await warning.getByRole('button',{name:'Switch shop',exact:true}).click();await expect(page.locator('#main')).toHaveAttribute('data-business-id',businessId);if(await menu.isVisible()) await menu.getByRole('button',{name:'Close',exact:true}).click(); }
 }
 
 async function businessState(page: Page, businessId: string) {
@@ -229,7 +229,7 @@ test('a committed sale with a lost response stays locked across reload and repla
   await page.evaluate(() => sessionStorage.setItem('v2-sales-unrelated-logout-key', 'discard this'));
   // Mock only the logout acknowledgement to test local cleanup; the isolated demo cookie stays valid for replay.
   await page.route('**/api/auth/logout', route => route.fulfill({ status: 200, contentType: 'application/json', body: '{}' }));
-  await page.locator('.bottom-nav').getByRole('button').click(); await page.getByRole('dialog').getByRole('button', { name: /Log out|Logout|Sign out/, exact: true }).click(); await expect(page).toHaveURL(/\/login$/);
+  await page.locator('.bottom-nav').getByRole('button').click();await page.getByRole('dialog').getByRole('button',{name:'Open profile actions',exact:true}).click(); await page.getByRole('dialog').getByRole('button', { name: /Log out|Logout|Sign out/, exact: true }).click(); await expect(page).toHaveURL(/\/login$/);
   expect(await page.evaluate(key => sessionStorage.getItem(key), draftKey)).toBe(frozenRaw); expect(await page.evaluate(() => sessionStorage.getItem('v2-sales-unrelated-logout-key'))).toBeNull();
   await page.goto(`/app/sales/new?product=${shirt.id}`); await selectBusiness(page,business.id); await expect(page.getByRole('button', { name: 'Retry same sale', exact: true })).toBeEnabled();
   await page.getByRole('button', { name: 'Retry same sale', exact: true }).click(); await expect(page.getByRole('heading', { name: 'Sale saved successfully', exact: true })).toBeVisible(); expect(replayed).toEqual(original); expect(attempts).toBe(2);

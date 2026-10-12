@@ -17,8 +17,10 @@ async function navigateAudit(page:Page,name:string,path:string){
  for(const link of links)if(await link.isVisible()){visible=link;break;}
  if(visible)await visible.click();else{
   const more=page.locator('.bottom-nav button');
-  if(await more.isVisible())await more.click();else await page.locator('.business-tools-link').click();
-  await page.getByRole('dialog').locator('a[href="'+destination+'"]').first().click();
+  const mobile=await more.isVisible();if(mobile)await more.click();
+  const host=mobile?page.getByRole('dialog'):page.locator('aside.sidebar'),link=host.locator('a[href="'+destination+'"]').first();
+  if(!await link.isVisible()){const tools=host.locator('.business-tools-link');if(await tools.getAttribute('aria-expanded')==='false')await tools.click();}
+  await link.click();
  }
  await page.waitForURL(url=>url.pathname===destination);
  if(destination!==path){await page.locator('main a[href="'+path+'"]').first().click();await page.waitForURL(url=>url.pathname===path);}
