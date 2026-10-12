@@ -228,7 +228,7 @@
   "permissionHelp": "Microphone permission help",
   "permissionHelpText": "Allow the microphone in this site’s browser settings. You can always type instead.",
   "displayLanguage": "Display language",
-  "independentLanguages": "This changes labels and answers. Speech language is set separately in VoiceOS.",
+  "independentLanguages": "The app language controls screens. VoiceOS follows your conversation automatically.",
   "movementSold": "Sold",
   "movementReceived": "Stock received",
   "movementReturned": "Returned to stock",

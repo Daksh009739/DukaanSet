@@ -10,6 +10,8 @@ import { shopWeather } from './weather';
 import { AssistantService } from './assistant';
 import { IntelligenceService } from './intelligence';
 import { VoiceInterpreterService } from './voice-interpreter';
+import { VoiceAudioService } from './voice-audio';
+import { MAX_VOICE_AUDIO_BYTES } from '../voice/audio-contracts';
 import { DocumentService } from './documents';
 import { DeliveryService } from './whatsapp';
 import { ClosingService } from './closing';
@@ -111,6 +113,7 @@ export async function handleRequest(request: Request, store: Store = getStore())
     const userId = store.authenticate(token(request));
     throttle(`user:${userId}`, 180);
     if (path === "/api/session" && verb === "GET") return json(store.session(userId));
+    if(path==='/api/account/voice'){const service=new VoiceAudioService(store);return json(verb==='GET'?await service.status(userId,request.signal):await service.savePreferences(userId,await body(request),request.signal));}
     if (path === "/api/account/language" && verb === "POST") return json(store.updateLanguage(userId, await body(request)));
     if(path==='/api/account/profile'&&verb==='POST')return json(auth.account(userId,await body(request)));
     if(path==='/api/account/password'&&verb==='POST')return json(auth.changePassword(userId,await body(request)),200,{'Set-Cookie':cookie('',request,true)});
@@ -123,6 +126,8 @@ export async function handleRequest(request: Request, store: Store = getStore())
     if(action==='weather'&&!recordId&&verb==='GET')return json(await shopWeather().current(access(store.db,userId,businessId).location));
     const closing=new ClosingService(store),media=new ProductMediaService(store);
     if(action==='voice-interpret'&&!recordId){const service=new VoiceInterpreterService(store);if(verb==='GET')return json(service.status(userId,businessId));if(verb!=='POST')throw new DomainError('METHOD_NOT_ALLOWED','Use GET or POST.',405);throttle(`interpret:${userId}`,5);return json(await service.interpret(userId,businessId,await body(request),request.signal));}
+    if(action==='voice-transcribe'&&!recordId&&verb==='POST'){throttle(`voice-stt:${userId}`,30);return json(await new VoiceAudioService(store).transcribe(userId,businessId,await readBody(request,MAX_VOICE_AUDIO_BYTES),request.headers.get('content-type')||'',request.signal));}
+    if(action==='voice-speech'&&!recordId&&verb==='POST'){throttle(`voice-tts:${userId}`,30);const bytes=await new VoiceAudioService(store).synthesize(userId,businessId,await body(request),request.signal);return new Response(bytes,{headers:{'Content-Type':'audio/mpeg','Cache-Control':'private, no-store','X-Content-Type-Options':'nosniff'}});}
     if(action==='intelligence'&&!recordId&&verb==='GET')return json(new IntelligenceService(store).overview(userId,businessId));
     if(action==='reorder-plan'&&!recordId&&verb==='GET')return json(new IntelligenceService(store).reorder(userId,businessId,{productId:url.searchParams.get('productId'),leadDays:Number(url.searchParams.get('leadDays')??7),coverageDays:Number(url.searchParams.get('coverageDays')??7)}));
     if(action==='simulate'&&!recordId&&verb==='POST')return json(new IntelligenceService(store).simulate(userId,businessId,await body(request)));

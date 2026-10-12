@@ -1,5 +1,7 @@
 import {voiceIntents,type VoiceCommand} from './os';
-export interface ConversationSession {key:string;command:VoiceCommand;updatedAt:number;pending:{path:string;body:Record<string,unknown>}|null;suspended?:VoiceCommand}
+import type {Language} from '../contracts';
+export type ConversationMessage={id:string;role:'user'|'assistant';text:string};
+export interface ConversationSession {key:string;command:VoiceCommand;updatedAt:number;pending:{path:string;body:Record<string,unknown>}|null;suspended?:VoiceCommand;language?:Language;history?:ConversationMessage[]}
 const object=(value:unknown):value is Record<string,unknown>=>Boolean(value&&typeof value==='object'&&!Array.isArray(value));
 const strings=(value:unknown,max:number):value is string[]=>Array.isArray(value)&&value.length<=max&&value.every(v=>typeof v==='string'&&v.length<=120);
 /** Browser recovery is untrusted input; it cannot introduce new action paths. */
@@ -13,6 +15,7 @@ export function readConversationSession(raw:string|null,now=Date.now()):Conversa
   if(!pending&&now-value.updatedAt>30*60*1000)return null;
   let suspended:VoiceCommand|undefined;
   if(value.suspended!==undefined){const previous=readConversationSession(JSON.stringify({key:value.key,command:value.suspended,updatedAt:value.updatedAt,pending:null}),now);if(!previous){if(!pending)return null;}else suspended=previous.command;}
-  return{key:value.key,command:c as unknown as VoiceCommand,updatedAt:value.updatedAt,pending,...suspended?{suspended}:{}};
+  const history=Array.isArray(value.history)&&value.history.length<=24&&value.history.every(message=>object(message)&&typeof message.id==='string'&&message.id.length<=1600&&['user','assistant'].includes(String(message.role))&&typeof message.text==='string'&&message.text.length<=1200)?value.history as ConversationMessage[]:[];
+  return{key:value.key,command:c as unknown as VoiceCommand,updatedAt:value.updatedAt,pending,...suspended?{suspended}:{},...['en','hi','hinglish'].includes(String(value.language))?{language:value.language as Language}:{},history};
  }catch{return null;}
 }

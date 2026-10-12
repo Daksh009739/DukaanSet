@@ -228,7 +228,7 @@
   "permissionHelp": "Mic permission mein madad",
   "permissionHelpText": "Browser mein is site ko microphone permission dein. Aap hamesha type bhi kar sakte hain.",
   "displayLanguage": "Screen ki language",
-  "independentLanguages": "Isse labels aur jawaab badalte hain. Bolne ki language VoiceOS mein alag chunein.",
+  "independentLanguages": "App ki bhasha screens ke liye hai. VoiceOS baatcheet ki bhasha apne aap follow karta hai.",
   "movementSold": "Becha gaya",
   "movementReceived": "Stock mila",
   "movementReturned": "Stock mein waapas",

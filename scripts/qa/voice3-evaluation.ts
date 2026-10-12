@@ -1,0 +1,10 @@
+import {readFileSync,writeFileSync,mkdirSync} from 'node:fs';
+import assert from 'node:assert/strict';
+import {conversationLanguage,spokenControl} from '../../src/lib/voice/conversation-language';
+import type {Language} from '../../src/lib/contracts';
+const cases=JSON.parse(readFileSync('tests/fixtures/voice3-language.json','utf8')) as {text:string;previous:Language;expected:Language}[],durations:number[]=[];
+const results=cases.map(row=>{const start=performance.now(),actual=conversationLanguage(row.text,row.previous);durations.push(performance.now()-start);return{...row,actual,correct:actual===row.expected};});
+const controls=[['Haan save karo','confirm'],['हाँ सेव करो','confirm'],['yes save it','confirm'],['cancel it','cancel'],['stop speaking','stop'],['do not save',null],['nahi save karo',null],['save Rahul as customer',null],['yes 500 cash',null]] as const;
+for(const [text,expected]of controls)assert.equal(spokenControl(text),expected,text);
+durations.sort((a,b)=>a-b);const report={generatedAt:new Date().toISOString(),environment:'Manually labelled typed text; no microphone, provider, pronunciation or natural speech evaluation',languageCases:cases.length,correct:results.filter(r=>r.correct).length,confirmationCases:controls.length,latencyMs:{median:durations[Math.floor(durations.length/2)],p95:durations[Math.floor(durations.length*.95)]},limitations:['Small regression corpus does not establish real-world language accuracy.','Provider and acoustic latency are excluded.'],results};
+mkdirSync('.local/qa-voice3-evaluation',{recursive:true});writeFileSync('.local/qa-voice3-evaluation/report.json',JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify(report,null,2));assert.equal(report.correct,cases.length);

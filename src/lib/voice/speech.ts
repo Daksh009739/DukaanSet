@@ -20,12 +20,12 @@ export interface SpeechSession {start:()=>void;stop:()=>void;abort:()=>void}
 export interface SpeechTranscriptionAdapter {
  id:string;
  available:()=>boolean;
- create:(locale:'en-IN'|'hi-IN',callbacks:{started:()=>void;ended:()=>void;transcript:(value:string,final:string)=>void;failed:(problem:SpeechProblem)=>void})=>SpeechSession;
+ create:(locale:'en-IN'|'hi-IN',callbacks:{started:()=>void;ended:()=>void;transcript:(value:string,final:string,languages?:string[])=>void;failed:(problem:SpeechProblem)=>void})=>SpeechSession;
 }
 /** Browser audio is handled by the browser's speech service. No cloud provider is configured here. */
 export const browserSpeechAdapter:SpeechTranscriptionAdapter={
  id:'browser',available:()=>Boolean(speechConstructor()),
- create(locale,callbacks){const Constructor=speechConstructor();if(!Constructor)throw new Error('Speech recognition unavailable');const recognition=new Constructor();configureRecognition(recognition,locale,callbacks);return{
-  start:()=>recognition.start(),stop:()=>recognition.stop(),abort:()=>{recognition.onstart=null;recognition.onend=null;recognition.onresult=null;recognition.onerror=null;recognition.abort();}
+ create(locale,callbacks){const Constructor=speechConstructor();if(!Constructor)throw new Error('Speech recognition unavailable');const recognition=new Constructor();let turnTimer:ReturnType<typeof setTimeout>|null=null;const clear=()=>{if(turnTimer)clearTimeout(turnTimer);turnTimer=null;};configureRecognition(recognition,locale,{...callbacks,transcript:(text,final)=>{clear();callbacks.transcript(text,final);if(final.trim()&&text===final)turnTimer=setTimeout(()=>{try{recognition.stop();}catch{callbacks.failed('speechError');}},1100);}});return{
+  start:()=>recognition.start(),stop:()=>{clear();recognition.stop();},abort:()=>{clear();recognition.onstart=null;recognition.onend=null;recognition.onresult=null;recognition.onerror=null;recognition.abort();}
  };}
 };

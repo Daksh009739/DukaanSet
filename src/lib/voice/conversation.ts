@@ -4,7 +4,7 @@ import { minorUnits,lineTotal } from '../client';
 import { detectIntent,interpretVoice,resolveContact,resolveVoiceProduct,spokenText,voiceAllowed,voiceQuantity,voiceIntents,type VoiceCommand,type VoiceIntent } from './os';
 import {canonicalUnit,canonicalProductName} from './parser';
 import {prepareStockCommand,stockRowsFromCommand} from './stock-command';
-import {z} from 'zod';
+import {z} from './zod';
 import {extractVoiceRoles,interpretedSlotsSchema,type InterpretedSlots,requiresRecordCorrectionReview} from './semantics';
 import {prepareCatalogueCommand,catalogueQuestion} from './catalogue-command';
 
@@ -51,6 +51,7 @@ export function chooseVoiceIntent(command:VoiceCommand,intent:'stock'|'sale',sta
  const rows=prepareStockCommand(clean,state.products),result=interpretVoice(clean,state,intent,undefined,true);
  result.items=rows.map(row=>({id:row.id,query:row.query,productId:row.productId,candidates:row.candidates,quantity:row.quantity,unit:row.unit,price:row.sellingPrice||'',priceBasis:row.sellingPrice?'unit':''}));
  result.fields.sourceTranscript=original;result.transcript=clean;result.warnings=result.warnings.filter(w=>w!=='wrongWorkflow');
+ if(command.fields.genericItems==='true'){result.items=[];result.fields.genericItems='true';}
  if(intent==='sale'){if(/cash|nakad|कैश|नकद/.test(spokenText(original)))result.fields.mode='cash';if(roles.customer.spokenName){result.fields.customerQuery=roles.customer.spokenName;const ids=resolveContact(roles.customer.spokenName,state.customers);result.fields.customerId=ids.length===1?ids[0]:'';}}
  if(!voiceAllowed(intent,state))result.warnings=['permission'];
  return result;
@@ -87,8 +88,10 @@ export function advanceVoice(raw:string,state:V3State,previous?:VoiceCommand,sel
   return{intent:'open',transcript:raw,fields:{screen:kind==='customer'?'customerAccount':kind==='product'?'productDetail':'supplierDetail',query,[kind+'Id']:ids.length===1?ids[0]:''},items:[],warnings:[],changed:[],changedItems:[]};}
  if(previous&&spokenText(raw)===spokenText(normalizeVoiceInstruction(previous.transcript)))return previous;
  if(previous&&/^(?:change karna hai|change|edit|badalna hai|बदलना है|बदलाव करना है)$/.test(spokenText(raw)))return{...previous,transcript:raw,fields:{...previous.fields,editRequested:'true'},changed:['editRequested'],changedItems:[]};
+ if(/\d+\s*(?:products?|items?|प्रोडक्ट|उत्पाद|सामान)/iu.test(raw)&&/(?:ke naam se|के नाम से|customer|ग्राहक)/iu.test(raw)&&/(?:add|jodo|जोड़)/iu.test(raw)&&!/(?:stock|inventory|स्टॉक|bill|invoice|बिल)/iu.test(raw))return{intent:'stock',transcript:raw,fields:{sourceTranscript:raw,genericItems:'true',customerQuery:commandCustomerName(raw)},items:[],warnings:['intentChoice'],changed:[],changedItems:[]};
  const catalogue=prepareCatalogueCommand(raw,state,previous);if(catalogue)return catalogue;
  if(previous){const correction=conversationCorrection(raw,state,previous);if(correction)return correction;}
+ if(previous&&['sale','stock','purchase'].includes(previous.intent)&&/^(?:remove (?:the )?last (?:product|item)|last (?:product|item) (?:hata(?:o| do)?|remove karo)|आखिरी (?:उत्पाद|सामान|प्रोडक्ट) हटाओ)[.!।]?$/iu.test(raw)){const removed=previous.items.at(-1);return{...previous,transcript:raw,items:previous.items.slice(0,-1),fields:{...previous.fields,total:''},removedProducts:removed?.productId?[removed.productId]:[],changed:[],changedItems:removed?[removed.id]:[],warnings:voiceAllowed(previous.intent,state)?[]:['permission']};}
  if(previous?.intent==='sale'&&/nahi|nahin|नहीं/.test(spokenText(raw))){
   const t=spokenText(raw),replacement=t.match(/^(.+?)\s+(?:nahi|nahin|नहीं)\s+(.+?)(?:\s+(?:karo|kar do|करो))?$/u),rate=t.match(/(?:nahi|nahin|नहीं)\s+(\d+(?:\.\d{1,2})?)\s*(?:rupaye|rupees|रुपये)?\s*(kilo|kg|किलो)?/);
   if(rate&&/₹|price|rate|rupaye|rupees|रुपये|रेट|दाम/.test(raw)&&previous.items.length===1){const product=state.products.find(p=>p.id===previous.items[0].productId),price=product?voiceRateInCatalogueUnit(rate[1],rate[2]||product.unit,product):null;if(price!==null)return{...previous,transcript:raw,fields:{...previous.fields,total:''},warnings:[],items:[{...previous.items[0],price,priceBasis:'unit'}],changedItems:[previous.items[0].id]};}
@@ -249,7 +252,7 @@ export function buildVoiceRequest(command:VoiceCommand,state:V3State,key:string)
  if(!voiceCommandSchema.safeParse(command).success||!voiceAllowed(command.intent,state)||nextVoiceQuestion(command,state))return null;
  const f=command.fields,body:Record<string,unknown>={idempotencyKey:key};
  if(command.intent==='stock'&&f.operation==='catalogueProduct')return{path:'/catalogue-import',body:{...body,products:[{name:f.name,unit:f.unit,pricePaise:minorUnits(f.price),quantityMilli:0,rejectDuplicate:true}]}};
- if(command.intent==='sale'){const sale=salePreview(command,state.products);if(!sale.valid)return null;return{path:'/voice-sale',body:{...body,...f.createCustomer==='true'?{newCustomer:{name:f.name,phone:f.phone||''}}:{},sale:{customerId:f.customerId||null,items:sale.items,discountPaise:sale.discount,payments:[{method:'cash',amountPaise:sale.cash},{method:'upi',amountPaise:sale.upi}].filter(p=>p.amountPaise>0),dueDate:null}}};}
+ if(command.intent==='sale'){const sale=salePreview(command,state.products);if(!sale.valid)return null;return{path:'/voice-sale',body:{...body,expected:{products:[...new Set(sale.items.map(item=>item.productId))].map(id=>{const p=state.products.find(p=>p.id===id)!;return{id:p.id,unit:p.unit,pricePaise:p.pricePaise,quantityMilli:p.quantityMilli,variation:p.variation};}),...f.customerId?{customer:{id:f.customerId,name:state.customers.find(c=>c.id===f.customerId)?.name||''}}:{}},...f.createCustomer==='true'?{newCustomer:{name:f.name,phone:f.phone||''}}:{},sale:{customerId:f.customerId||null,items:sale.items,discountPaise:sale.discount,payments:[{method:'cash',amountPaise:sale.cash},{method:'upi',amountPaise:sale.upi}].filter(p=>p.amountPaise>0),dueDate:null}}};}
  if(command.intent==='customer')return{path:'/customers',body:{...body,name:f.name,phone:f.phone||'',rejectDuplicate:true}};
  if(command.intent==='payment')return{path:'/payments',body:{...body,customerId:f.customerId,amountPaise:minorUnits(f.amount),method:f.method}};
  if(command.intent==='expense')return{path:'/expenses',body:{...body,description:f.description,amountPaise:minorUnits(f.amount),method:f.method}};

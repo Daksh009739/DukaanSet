@@ -1,0 +1,185 @@
+{
+  "generatedAt": "2026-10-12T12:29:22.783Z",
+  "environment": "Manually labelled typed text; no microphone, provider, pronunciation or natural speech evaluation",
+  "languageCases": 24,
+  "correct": 24,
+  "confirmationCases": 9,
+  "latencyMs": {
+    "median": 0.034799999999904685,
+    "p95": 2.3364999999998872
+  },
+  "limitations": [
+    "Small regression corpus does not establish real-world language accuracy.",
+    "Provider and acoustic latency are excluded."
+  ],
+  "results": [
+    {
+      "text": "Create a bill for Rahul",
+      "previous": "hi",
+      "expected": "en",
+      "actual": "en",
+      "correct": true
+    },
+    {
+      "text": "Show yesterday sales",
+      "previous": "hi",
+      "expected": "en",
+      "actual": "en",
+      "correct": true
+    },
+    {
+      "text": "Add a customer named Rahul",
+      "previous": "hinglish",
+      "expected": "en",
+      "actual": "en",
+      "correct": true
+    },
+    {
+      "text": "Record payment from Rahul of 500 cash",
+      "previous": "hi",
+      "expected": "en",
+      "actual": "en",
+      "correct": true
+    },
+    {
+      "text": "Rahul ka bill banao",
+      "previous": "en",
+      "expected": "hinglish",
+      "actual": "hinglish",
+      "correct": true
+    },
+    {
+      "text": "Rahul nahi Rohan ke naam se karo",
+      "previous": "en",
+      "expected": "hinglish",
+      "actual": "hinglish",
+      "correct": true
+    },
+    {
+      "text": "Daal stock mein add kar do",
+      "previous": "en",
+      "expected": "hinglish",
+      "actual": "hinglish",
+      "correct": true
+    },
+    {
+      "text": "Aaj ki sale dikhao",
+      "previous": "en",
+      "expected": "hinglish",
+      "actual": "hinglish",
+      "correct": true
+    },
+    {
+      "text": "राहुल का बिल बनाओ",
+      "previous": "en",
+      "expected": "hi",
+      "actual": "hi",
+      "correct": true
+    },
+    {
+      "text": "राहुल ने 500 रुपये दिए",
+      "previous": "en",
+      "expected": "hi",
+      "actual": "hi",
+      "correct": true
+    },
+    {
+      "text": "ग्राहक अजय जोड़ो",
+      "previous": "en",
+      "expected": "hi",
+      "actual": "hi",
+      "correct": true
+    },
+    {
+      "text": "आज की बिक्री दिखाओ",
+      "previous": "en",
+      "expected": "hi",
+      "actual": "hi",
+      "correct": true
+    },
+    {
+      "text": "Create a bill for राहुल",
+      "previous": "hi",
+      "expected": "en",
+      "actual": "en",
+      "correct": true
+    },
+    {
+      "text": "500 cash",
+      "previous": "hi",
+      "expected": "hi",
+      "actual": "hi",
+      "correct": true
+    },
+    {
+      "text": "500 UPI 300 udhaar",
+      "previous": "hi",
+      "expected": "hi",
+      "actual": "hi",
+      "correct": true
+    },
+    {
+      "text": "yes",
+      "previous": "hi",
+      "expected": "hi",
+      "actual": "hi",
+      "correct": true
+    },
+    {
+      "text": "haan save karo",
+      "previous": "en",
+      "expected": "en",
+      "actual": "en",
+      "correct": true
+    },
+    {
+      "text": "हाँ सेव करो",
+      "previous": "hi",
+      "expected": "hi",
+      "actual": "hi",
+      "correct": true
+    },
+    {
+      "text": "80 rupaye kilo",
+      "previous": "hinglish",
+      "expected": "hinglish",
+      "actual": "hinglish",
+      "correct": true
+    },
+    {
+      "text": "10 kilo daal",
+      "previous": "hi",
+      "expected": "hi",
+      "actual": "hi",
+      "correct": true
+    },
+    {
+      "text": "Rahul ka invoice create karo",
+      "previous": "en",
+      "expected": "hinglish",
+      "actual": "hinglish",
+      "correct": true
+    },
+    {
+      "text": "show outstanding payments",
+      "previous": "hinglish",
+      "expected": "en",
+      "actual": "en",
+      "correct": true
+    },
+    {
+      "text": "",
+      "previous": "hi",
+      "expected": "hi",
+      "actual": "hi",
+      "correct": true
+    },
+    {
+      "text": "राहुल",
+      "previous": "en",
+      "expected": "en",
+      "actual": "en",
+      "correct": true
+    }
+  ]
+}

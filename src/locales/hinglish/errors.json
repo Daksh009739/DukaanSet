@@ -87,5 +87,11 @@
   "SESSION_ACTIVE": "Ek hisaab session khula hai. Karobari samay badalne ya naya session kholne se pehle ise band karein.",
   "INVALID_TIME": "Session ka samay aur timezone dekhein. Naya session pichhle closing ke baad shuru hona chahiye.",
   "ACCOUNTING_LIMIT": "Hisaab ka total samarthit seema se zyada hai. Records export karke sahayata se sampark karein.",
-  "CORRECTION_SOURCE": "Is hisaab ke band hone ke baad darj len-den chunein. Purane len-den surakshit total mein pehle se shaamil hain."
+  "CORRECTION_SOURCE": "Is hisaab ke band hone ke baad darj len-den chunein. Purane len-den surakshit total mein pehle se shaamil hain.",
+  "VOICE_AUDIO_UNAVAILABLE": "Abhi speech available nahi hai. Draft safe hai; retry karein ya type karein.",
+  "VOICE_AUDIO_CONSENT": "Speech service use karne se pehle assistant settings mein cloud speech allow karein.",
+  "VOICE_LANGUAGE_UNAVAILABLE": "Yeh awaaz conversation ki bhasha nahi bol sakti. Compatible awaaz chunein ya type karein.",
+  "INVALID_VOICE_AUDIO": "Mic ki chhoti aur supported recording use karein.",
+  "STALE_VOICE_PREFERENCE": "Kisi aur session mein awaaz ki pasand badli hai. Refresh karke dobara chunein.",
+  "STALE_VOICE_DRAFT": "Stock, rate ya customer details badli hain. Save se pehle naya draft check karein."
 }

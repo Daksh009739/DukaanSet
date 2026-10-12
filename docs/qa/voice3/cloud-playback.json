@@ -1,0 +1,8 @@
+{
+  "environment": "Actual HTMLAudioElement decode/playback and CSP; synthetic WAV and mocked speech response",
+  "plays": 1,
+  "paused": 1,
+  "violations": [],
+  "requests": 2,
+  "liveProvider": false
+}

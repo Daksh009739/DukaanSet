@@ -1,4 +1,4 @@
-import {z} from 'zod';
+import {z} from '../voice/zod';
 import type {Store} from './store';
 import {access} from './access';
 import {DomainError,keys,object,string} from './validation';

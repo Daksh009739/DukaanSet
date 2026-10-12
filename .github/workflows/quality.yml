@@ -35,6 +35,8 @@ jobs:
       - run: npm test
       - name: Labelled V15 semantic intent, entity roles and financial slot regression gate
         run: npm run test:voice-eval
+      - name: VoiceOS 3 automatic language and explicit confirmation regression gate
+        run: node --import tsx scripts/qa/voice3-evaluation.ts
       - run: npm run build
       - run: npx playwright install --with-deps chromium
       - name: Approved dashboard, product media and shared mobile design checks
@@ -67,6 +69,10 @@ jobs:
         run: npm run test:e2e -- tests/e2e/voice-v15.spec.ts
       - name: V17 conversation memory, actual transactions, speech finals, frozen retries and multilingual accessibility
         run: npm run test:e2e -- tests/e2e/voice-v17.spec.ts
+      - name: VoiceOS 3 turn taking, spoken commits, encoded audio, preferences and multilingual accessibility
+        run: npm run test:e2e -- tests/e2e/voice3.spec.ts
+      - name: VoiceOS 3 compiled actions, audio playback and responsive voice selection
+        run: node scripts/qa/voice3-production-review.mjs
       - name: V17 compiled transactions, actual closing/document sources and multilingual accessibility
         run: node scripts/qa/v17-production-review.mjs
       - name: Contextual VoiceOS heroes, safe prefill, scoped records and multilingual responsive controls

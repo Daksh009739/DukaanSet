@@ -228,7 +228,7 @@
   "permissionHelp": "माइक्रोफोन अनुमति में सहायता",
   "permissionHelpText": "इस साइट की ब्राउज़र सेटिंग में माइक्रोफोन की अनुमति दें। आप हमेशा लिखकर भी काम कर सकते हैं।",
   "displayLanguage": "स्क्रीन की भाषा",
-  "independentLanguages": "इससे लेबल और जवाबों की भाषा बदलती है। बोलने की भाषा VoiceOS में अलग चुनें।",
+  "independentLanguages": "ऐप की भाषा स्क्रीन के लिए है। VoiceOS बातचीत की भाषा अपने आप अपनाता है।",
   "movementSold": "बेचा गया",
   "movementReceived": "स्टॉक मिला",
   "movementReturned": "स्टॉक में वापसी",

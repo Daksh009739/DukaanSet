@@ -87,5 +87,11 @@
   "SESSION_ACTIVE": "An accounting session is open. Close it before changing the business cutoff or opening another session.",
   "INVALID_TIME": "Check the session time and timezone. The next session must start after the last closing.",
   "ACCOUNTING_LIMIT": "The financial total exceeds the supported range. Export your records and contact support.",
-  "CORRECTION_SOURCE": "Choose a transaction recorded after this closing. Existing entries are already included in the frozen totals."
+  "CORRECTION_SOURCE": "Choose a transaction recorded after this closing. Existing entries are already included in the frozen totals.",
+  "VOICE_AUDIO_UNAVAILABLE": "Speech is unavailable right now. Your draft is safe; retry or type.",
+  "VOICE_AUDIO_CONSENT": "Allow cloud speech in assistant settings before using the speech service.",
+  "VOICE_LANGUAGE_UNAVAILABLE": "This voice does not support the conversation language. Choose a compatible voice or use text.",
+  "INVALID_VOICE_AUDIO": "Use a supported short microphone recording.",
+  "STALE_VOICE_PREFERENCE": "Voice preferences changed on another session. Refresh and choose again.",
+  "STALE_VOICE_DRAFT": "Stock, pricing or customer details changed. Review the updated draft before saving."
 }

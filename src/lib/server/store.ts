@@ -5,6 +5,7 @@ import { dirname, resolve } from "node:path";
 import type { Business, BusinessState, Customer, CustomerStatement, InventoryEntry, Invoice, InvoiceItem, Payment, Product, Purchase, SaleAttachment, Session, Supplier, User,VoiceReport } from "../contracts";
 import { salesBuckets, rankedProducts } from '../dashboard-data';
 import { migrationV8 } from './product-media-schema';
+import { migrationV9 } from './voice-audio-schema';
 import { ProductMediaService } from './product-media-service';
 import { schema } from "./schema";
 import { migrationV2, migrationV3, migrationV4, migrationV5, migrationV6 } from "./migrations";
@@ -39,8 +40,8 @@ function asAttachment(row: Row): SaleAttachment { return { id: String(row.id), u
 
 export class Store {
   readonly db: DatabaseSync;
-  readonly schemaVersion = 8;
-  readonly runtimeRevision = "v13.1";
+  readonly schemaVersion = 9;
+  readonly runtimeRevision = "voiceos-3";
   private transactionDepth = 0;
   constructor(path = process.env.DATABASE_PATH || resolve(process.cwd(), ".data", "dukaanset.sqlite")) {
     // Runtime database directories are external mutable data, never bundle assets.
@@ -48,7 +49,7 @@ export class Store {
     this.db = new DatabaseSync(path);
     this.db.exec("PRAGMA foreign_keys = ON; PRAGMA busy_timeout = 5000; PRAGMA journal_mode = WAL;");
     const version = Number((this.db.prepare("PRAGMA user_version").get() as Row).user_version);
-    if (version > 8) { this.db.close(); throw new Error("Database schema is newer than this application."); }
+    if (version > 9) { this.db.close(); throw new Error("Database schema is newer than this application."); }
     this.transaction(() => {
       if (version === 0) this.db.exec(schema);
       if (version < 2) this.db.exec(migrationV2);
@@ -58,6 +59,7 @@ export class Store {
       if (version < 6) this.db.exec(migrationV6);
       if (version < 7) this.db.exec(migrationV7);
       if (version < 8) this.db.exec(migrationV8);
+      if (version < 9) this.db.exec(migrationV9);
     });
     this.db.prepare("DELETE FROM sessions WHERE expires_at < ?").run(stamp());
     this.db.prepare("DELETE FROM attachments WHERE invoice_id IS NULL AND date < ?").run(new Date(Date.now() - 86_400_000).toISOString());
@@ -364,10 +366,11 @@ export class Store {
   /** A dependent customer + sale is one commit, including retries and audit rows. */
   createVoiceSale(userId:string,businessId:string,raw:unknown):Invoice {
     this.assertPermission(userId,businessId,'sales','voiceStock');
-    const input=object(raw);keys(input,['idempotencyKey','newCustomer','sale']);
+    const input=object(raw);keys(input,['idempotencyKey','newCustomer','sale','expected']);
     const sale=object(input.sale);keys(sale,['customerId','items','payments','discountPaise','dueDate']);
     return this.once(businessId,'voice.sale',input,()=>{
       this.assertDayOpen(businessId);let customerId=sale.customerId;
+      if(input.expected!==undefined){const expected=object(input.expected);keys(expected,['products','customer']);if(!Array.isArray(expected.products)||!expected.products.length||expected.products.length>100)throw new DomainError('INVALID_INPUT','Review a valid voice draft.');const wanted=items(sale.items),seen=new Set<string>();for(const raw of expected.products){const p=object(raw);const productId=string(p.id,'Product ID',80);if(seen.has(productId)||!wanted.some(item=>item.productId===productId))throw new DomainError('INVALID_INPUT','Review all products in this voice draft.');seen.add(productId);keys(p,['id','unit','pricePaise','quantityMilli','variation']);const actual=this.entity('products',businessId,string(p.id,'Product ID',80));if(actual.unit!==p.unit||Number(actual.price_paise)!==p.pricePaise||Number(actual.quantity_milli)!==p.quantityMilli||String(actual.variation)!==p.variation)throw new DomainError('STALE_VOICE_DRAFT','Stock or pricing changed. Review the updated draft before saving.',409);}if(wanted.some(item=>!seen.has(String(item.productId))))throw new DomainError('INVALID_INPUT','Review all products in this voice draft.');if(expected.customer!==undefined){const c=object(expected.customer);keys(c,['id','name']);if(c.id!==customerId||this.entity('customers',businessId,string(c.id,'Customer ID',80)).name!==c.name)throw new DomainError('STALE_VOICE_DRAFT','Customer details changed. Review the updated draft before saving.',409);}}
       if(input.newCustomer!==undefined){
         this.assertPermission(userId,businessId,'customers');
         if(customerId)throw new DomainError('INVALID_INPUT','Choose one customer creation or existing customer.');
@@ -696,6 +699,6 @@ export class Store {
 declare global { var dukaanStore: Store | undefined; }
 export function getStore(): Store {
   if (process.env.VERCEL === '1') throw new Error('DukaanSet SQLite requires a persistent backend. Deploy the Vercel gateway instead.');
-  if (globalThis.dukaanStore && globalThis.dukaanStore.runtimeRevision !== "v13.1") { globalThis.dukaanStore.close(); globalThis.dukaanStore = undefined; }
+  if (globalThis.dukaanStore && globalThis.dukaanStore.runtimeRevision !== "voiceos-3") { globalThis.dukaanStore.close(); globalThis.dukaanStore = undefined; }
   return globalThis.dukaanStore ??= new Store();
 }
