@@ -4,7 +4,7 @@ import {LocalizedUnit} from '@/components/localized-data';
 import { createContext, useContext, useRef, useState, type FormEvent, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Plus, Trash2 } from 'lucide-react';
-import { useApp } from './app-provider';
+import { useApp,useUnsavedBusinessWork } from './app-provider';
 import { Button, Field, FormError, Select, Sheet } from './ui';
 import { api, lineTotal, minorUnits, money, quantity } from '@/lib/client';
 import type { Category } from '@/lib/contracts';
@@ -43,6 +43,8 @@ function OperationSheet({ action, data, onClose }: { action: Action | null; data
   const submitting = useRef(false);
   const voiceItemsApplied=useRef(false);
   const [error, setError] = useState('');
+  const [dirty,setDirty]=useState(false);
+  useUnsavedBusinessWork(Boolean(action&&(dirty||voiceUsed||busy||write.pending)));
   const [idempotencyKey] = useState(() => crypto.randomUUID());
   const [productId, setProductId] = useState(data.productId || app.state?.products[0]?.id || '');
   const [customerId, setCustomerId] = useState(data.customerId || '');
@@ -109,7 +111,7 @@ function OperationSheet({ action, data, onClose }: { action: Action | null; data
   };
   const unavailable = action === 'stock' && !state.products.length || action === 'payment' && !creditCustomers.length || action === 'purchase' && (!state.products.length || !state.suppliers.length);
   return <Sheet title={t(titles[action])} description={t(action === 'payment' ? 'paymentNote' : action === 'purchase' ? 'purchaseHint' : action === 'stock' ? 'stockHint' : 'onboardingHint')} open onOpenChange={open => { if (!open && !submitting.current) onClose(); }} wide={action === 'purchase'}>
-    <form onSubmit={submit} className="operation-form">
+    <form onSubmit={submit} onChangeCapture={()=>setDirty(true)} className="operation-form">
       {['customer','supplier','payment','purchase','expense'].includes(action)&&<div className="sheet-body"><VoicePanel intent={action as VoiceIntent} seed={data.voiceCommand} onApply={applyVoice} disabled={locked} onBlockedChange={setVoiceBlocked} onCancel={onClose} getContext={command=>formVoiceContext(command,{...values,customerId},action==='purchase'&&voiceItemsApplied.current?items.map(row=>({productId:row.productId,quantity:row.quantity,price:row.cost||undefined})):[],state.products)}/></div>}
       <fieldset disabled={locked} style={{border:0,padding:0,margin:0,minWidth:0}}>
       <div className="sheet-body form-grid">

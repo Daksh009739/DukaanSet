@@ -3,9 +3,10 @@ import type { V3State } from '../v3-contracts';
 import { minorUnits,lineTotal } from '../client';
 import { detectIntent,interpretVoice,resolveContact,resolveVoiceProduct,spokenText,voiceAllowed,voiceQuantity,voiceIntents,type VoiceCommand,type VoiceIntent } from './os';
 import {canonicalUnit,canonicalProductName} from './parser';
-import {prepareStockCommand} from './stock-command';
+import {prepareStockCommand,stockRowsFromCommand} from './stock-command';
 import {z} from 'zod';
-import {extractVoiceRoles,interpretedSlotsSchema,type InterpretedSlots} from './semantics';
+import {extractVoiceRoles,interpretedSlotsSchema,type InterpretedSlots,requiresRecordCorrectionReview} from './semantics';
+import {prepareCatalogueCommand,catalogueQuestion} from './catalogue-command';
 
 const voiceActionRouting:Record<VoiceIntent,{safety:'read'|'navigate'|'write'|'review';destination?:string}>={
  sale:{safety:'write'},stock:{safety:'write'},customer:{safety:'write'},payment:{safety:'write'},expense:{safety:'write'},supplier:{safety:'review'},purchase:{safety:'review'},demand:{safety:'review'},closing:{safety:'review',destination:'/app/daily-closing'},report:{safety:'read'},document:{safety:'review'},reorder:{safety:'review'},followup:{safety:'review'},simulation:{safety:'read'},scan:{safety:'review'},insights:{safety:'read'},open:{safety:'navigate'},cancel:{safety:'navigate'},unknown:{safety:'review'}
@@ -13,7 +14,7 @@ const voiceActionRouting:Record<VoiceIntent,{safety:'read'|'navigate'|'write'|'r
 export const voiceCommandSchema=z.object({intent:z.enum(voiceIntents),transcript:z.string().max(5000),fields:z.record(z.string(),z.string().max(5000)).refine(value=>Object.keys(value).length<=50),items:z.array(z.object({id:z.string().max(150),query:z.string().max(150),productId:z.string().max(150),candidates:z.array(z.string().max(150)).max(2000),quantity:z.string().max(150),unit:z.string().max(150),price:z.string().max(150),priceBasis:z.enum(['','unit','total','unclear'])})).max(100),changed:z.array(z.string()).max(50),changedItems:z.array(z.string()).max(100),warnings:z.array(z.string()).max(100),removedProducts:z.array(z.string()).max(100).optional()});
 export const voiceCapabilities={
  sale:{service:'Store.createVoiceSale',permission:'sales',required:['products','quantities','payment'],entities:['customer','product'],confirmation:'write',retry:'frozen idempotency key'},
- stock:{service:'Store.receiveStockBatch',permission:'inventory',required:['products','quantities','new product selling rates'],entities:['product'],confirmation:'write',retry:'frozen batch and key'},
+ stock:{service:'Store.receiveStockBatch / SaaSService.importCatalogue',permission:'inventory',required:['products','quantities for stock','new product selling rates and unit'],entities:['product'],confirmation:'write',retry:'frozen batch or catalog product and key'},
  customer:{service:'Store.createContact',permission:'customers',required:['name'],entities:['customer'],confirmation:'write',retry:'frozen idempotency key'},
  payment:{service:'Store.receivePayment',permission:'payments',required:['customer','amount','method'],entities:['customer'],confirmation:'write',retry:'frozen idempotency key'},
  expense:{service:'Store.createExpense',permission:'reports',required:['description','amount','method'],entities:[],confirmation:'write',retry:'frozen idempotency key'},
@@ -59,10 +60,35 @@ export function commandCustomerName(raw:string):string {
   ||raw.match(/^\s*(.+?)\s+(?:ke naam se|naam (?:ka|ki)|customer add|को|का|के नाम से|नाम का|नाम की|ko|ka)(?=\s|$)/u)?.[1]?.trim()||'';
  return /^(?:new|naya|naye|create|add|नया|नए)$/i.test(name)||/^\d+\s/.test(spokenText(name))?'':name;
 }
+/** Corrections target an existing semantic role or one unambiguous row, never append an item. */
+function conversationCorrection(raw:string,state:V3State,previous:VoiceCommand):VoiceCommand|null{
+ const text=spokenText(raw),negation='(?:nahi|nahin|नहीं|instead of)',fields={...previous.fields},items=previous.items.map(item=>({...item}));
+ const result=(changed:string[]=[],changedItems:string[]=[])=>({...previous,transcript:raw,fields,items,changed,changedItems,warnings:voiceAllowed(previous.intent,state)?[]:['permission']});
+ const replacement=text.match(new RegExp(`^(.+?)\\s+${negation}\\s+(.+?)\\s*(?:karo|kar do|करो)?$`,'u'));
+ if(replacement&&['sale','payment','report','document'].includes(previous.intent)&&!/[0-9]/.test(replacement[1])&&(canonicalProductName(replacement[1])===canonicalProductName(fields.customerQuery||'')||resolveContact(replacement[1],state.customers).includes(fields.customerId))){
+  const name=raw.match(/(?:nahi|nahin|नहीं)\s*[,،]?\s*(.+)/iu)?.[1]?.replace(/\s+(?:ke naam.*|karo|kar do|करो).*$/iu,'').replace(/[.!।]+$/,'').trim()||replacement[2];
+  const ids=resolveContact(name,state.customers);fields.customerQuery=name;fields.customerId=ids.length===1?ids[0]:'';delete fields.createCustomer;delete fields.name;return result(['customerQuery','customerId']);
+ }
+ if(['sale','stock','purchase'].includes(previous.intent)){
+  const change=text.match(new RegExp(`^(\\d+(?:\\.\\d{1,3})?)\\s*(kg|kilo|packet|piece|किलो|पीस|पैकेट)?\\s+${negation}\\s+(\\d+(?:\\.\\d{1,3})?)\\s*(kg|kilo|packet|piece|किलो|पीस|पैकेट)?\\s*(?:karo|kar do|करो)?$`,'u'));
+  if(change){const targets=items.filter(item=>Number(item.quantity)===Number(change[1])&&(!change[2]||canonicalUnit(item.unit)===canonicalUnit(change[2])));if(targets.length!==1)return{...result(),warnings:['correction']};targets[0].quantity=change[3];if(change[4])targets[0].unit=canonicalUnit(change[4]);delete fields.total;return result([], [targets[0].id]);}
+  const reversed=text.match(new RegExp(`^(.+?)\\s+(?:hai|है)\\s+(.+?)\\s+${negation}$`,'u'));
+  if(reversed){const oldTokens=new Set(canonicalProductName(reversed[2]).split(' ')),targets=items.filter(item=>canonicalProductName(item.query).split(' ').every(token=>oldTokens.has(token)));if(targets.length===1){const matched=resolveVoiceProduct(reversed[1],state.products),item=targets[0];item.query=reversed[1];item.productId=matched.exact&&matched.ids.length===1?matched.ids[0]:'';item.candidates=matched.ids;item.price='';item.priceBasis='';delete fields.total;return result([], [item.id]);}}
+ }
+ return null;
+}
 /** Conversation state is scoped by the provider; explicit cross-module commands win. */
 export function advanceVoice(raw:string,state:V3State,previous?:VoiceCommand,selectedCustomerId?:string,contextIntent?:VoiceIntent):VoiceCommand {
  raw=normalizeVoiceInstruction(raw);
+ if(requiresRecordCorrectionReview(raw))return{intent:'open',transcript:raw,fields:{screen:/write[ -]?off|credit reversal|बकाया माफ/iu.test(raw)?'customers':/payment|भुगतान/iu.test(raw)?'payments':'sales',highRiskReview:'true'},items:[],warnings:[],changed:[],changedItems:[]};
+ if(/(?:closing|hisaab|हिसाब|दुकान).*(?:summary|सारांश)|(?:summary|सारांश).*(?:closing|hisaab|हिसाब)/iu.test(raw))return{intent:'closing',transcript:raw,fields:{closingAction:'summary'},items:[],warnings:voiceAllowed('closing',state)?[]:['permission'],changed:[],changedItems:[]};
+ const record=raw.match(/^(?:open|show|view|खोलो|दिखाओ)?\s*(.+?)\s+(?:ka|ke|ki|का|के|की)\s+(account|khata|details|detail|profile|खाता|जानकारी)\s*(?:kholo|dikhao|open|show|खोलो|दिखाओ)?[.!।]?$/iu);
+ if(record){const query=record[1].replace(/^(?:customer|product|supplier|ग्राहक|प्रोडक्ट|सप्लायर)\s+/iu,''),customers=resolveContact(query,state.customers),products=resolveVoiceProduct(query,state.products),suppliers=resolveContact(query,state.suppliers),kind=/product|प्रोडक्ट/iu.test(record[1])?'product':/supplier|सप्लायर/iu.test(record[1])?'supplier':/account|khata|खाता/iu.test(record[2])?'customer':customers.length?'customer':products.exact?'product':'supplier',ids=kind==='customer'?customers:kind==='product'?products.ids:suppliers;
+  return{intent:'open',transcript:raw,fields:{screen:kind==='customer'?'customerAccount':kind==='product'?'productDetail':'supplierDetail',query,[kind+'Id']:ids.length===1?ids[0]:''},items:[],warnings:[],changed:[],changedItems:[]};}
  if(previous&&spokenText(raw)===spokenText(normalizeVoiceInstruction(previous.transcript)))return previous;
+ if(previous&&/^(?:change karna hai|change|edit|badalna hai|बदलना है|बदलाव करना है)$/.test(spokenText(raw)))return{...previous,transcript:raw,fields:{...previous.fields,editRequested:'true'},changed:['editRequested'],changedItems:[]};
+ const catalogue=prepareCatalogueCommand(raw,state,previous);if(catalogue)return catalogue;
+ if(previous){const correction=conversationCorrection(raw,state,previous);if(correction)return correction;}
  if(previous?.intent==='sale'&&/nahi|nahin|नहीं/.test(spokenText(raw))){
   const t=spokenText(raw),replacement=t.match(/^(.+?)\s+(?:nahi|nahin|नहीं)\s+(.+?)(?:\s+(?:karo|kar do|करो))?$/u),rate=t.match(/(?:nahi|nahin|नहीं)\s+(\d+(?:\.\d{1,2})?)\s*(?:rupaye|rupees|रुपये)?\s*(kilo|kg|किलो)?/);
   if(rate&&/₹|price|rate|rupaye|rupees|रुपये|रेट|दाम/.test(raw)&&previous.items.length===1){const product=state.products.find(p=>p.id===previous.items[0].productId),price=product?voiceRateInCatalogueUnit(rate[1],rate[2]||product.unit,product):null;if(price!==null)return{...previous,transcript:raw,fields:{...previous.fields,total:''},warnings:[],items:[{...previous.items[0],price,priceBasis:'unit'}],changedItems:[previous.items[0].id]};}
@@ -85,8 +111,8 @@ export function advanceVoice(raw:string,state:V3State,previous?:VoiceCommand,sel
 
   /nahi|nahin|नहीं|instead|correct/.test(text)&&!(detected==='demand'&&/mili|mila|available|मिली|मिला|उपलब्ध/.test(text))||detected==='unknown'||previous.intent==='sale'&&detected==='stock'&&!/stock|स्टॉक|selling|purchase cost|cost price/.test(text));
  const intent:VoiceIntent=detected==='cancel'?'cancel':isReply?previous!.intent:detected==='unknown'&&contextIntent?contextIntent:detected;
- let source=raw;
- const unitPrice=text.match(/(\d+(?:\.\d{1,2})?)\s*(?:rupaye|rupees|rupee|रुपये|रुपए)?\s*(kilos?|kg|piece|pieces|packet|किलो|पीस)\s*(?:mein|में|per|each)(?=\s|$)/),total=(!unitPrice?text.match(/(?:total\s+|kul\s+|कुल\s+)?(?:₹\s*)?(\d+(?:\.\d{1,2})?)\s*(?:rupaye|rupees|rupee|रुपये|रुपए)?\s*(?:mein|में)(?=\s|$)/):null)
+ let source=raw.replace(/\b(?:bill|invoice)\s+(?:banana|banani|karna)\s+(?:hai|hain)\b/gi,'bill').replace(/बिल\s+(?:बनाना|बनानी|करना)\s+है/gu,'बिल');
+ const unitPrice=text.match(/(\d+(?:\.\d{1,2})?)\s*(?:rupaye|rupees|rupee|रुपये|रुपए)?\s*(kilos?|kg|piece|pieces|packet|किलो|पीस)\s*(?:mein|में|per|each)(?=\s|$)/)||text.match(/(\d+(?:\.\d{1,2})?)\s*(?:rupaye|rupees|rupee|रुपये|रुपए)\s*(kilos?|kg|piece|pieces|packet|किलो|पीस)(?=\s|$)/),total=(!unitPrice?text.match(/(?:total\s+|kul\s+|कुल\s+)?(?:₹\s*)?(\d+(?:\.\d{1,2})?)\s*(?:rupaye|rupees|rupee|रुपये|रुपए)?\s*(?:mein|में)(?=\s|$)/):null)
   ||text.match(/(\d+(?:\.\d{1,2})?)\s*(?:rupaye|rupees|रुपये)?\s*(?:(?:ka|का)\s*)?(?:bill|बिल)/)
   ||text.match(/(\d+(?:\.\d{1,2})?)\s*(?:rupaye|rupees|रुपये)?\s*(?:ka|का)(?=\s+.*(?:bill|बिल))/)
   ||(previous?.intent==='sale'&&nextVoiceQuestion(previous,state)!=='price'?text.match(/^(\d+(?:\.\d{1,2})?)\s*(?:rupaye|rupees|रुपये)\.?$/):null);
@@ -94,6 +120,7 @@ export function advanceVoice(raw:string,state:V3State,previous?:VoiceCommand,sel
  const combined=intent==='sale'&&/customer.*(?:add|create|जोड़)|(?:add|create|जोड़).*customer/.test(text);
  if(intent==='sale'){
   source=total?text.replace(total[0],' '):text;
+  source=source.replace(/\b(?:bill|invoice)\s+(?:banana|banani|karna)\s+(?:hai|hain)\b/gi,'bill').replace(/बिल\s+(?:बनाना|बनानी|करना)\s+है/gu,'बिल');
   if(unitPrice&&Number(unitPrice.index)>0)source=source.replace(unitPrice[0],unitPrice[1]+' ki ek ');
   if(/^\d+\s*(?:kilo|kg|packet|piece|किलो|पीस)/.test(source))source=source.replace(/\s+(?:ka|का)\s+(?:bill|बिल)\s+(?:banao|bana do|बनाओ)/,' sold');
   if(combined&&customerName)source=source.replace(/^.*?\b(?:aur|and)\b/,'').replace(/\b(?:uska|usko)\b/g,customerName+' ka');
@@ -103,11 +130,17 @@ export function advanceVoice(raw:string,state:V3State,previous?:VoiceCommand,sel
   if(previous&&/^(?:cash|upi|credit|udhaar|nakad|नकद|उधार|कैश|यूपीआई)(?:\s|$)/.test(text)&&!/^\w+\s+\d/.test(text))source='';
  }
  if(previous?.intent==='sale'&&(customerCorrection||/^(?:cash|upi|credit|udhaar|nakad|नकद|उधार|कैश|यूपीआई)(?:\s|$)/.test(text)&&!/[0-9]/.test(text)))source='';
- const priceReply=previous?.intent==='sale'&&previous.items.length===1&&nextVoiceQuestion(previous,state)==='price'?text.match(/^(\d+(?:\.\d{1,2})?)\s*(?:rupaye|rupees|रुपये)\s*$/):null;
+ const priceReply=previous?.intent==='sale'&&previous.items.length===1&&nextVoiceQuestion(previous,state)==='price'?text.match(/^(\d+(?:\.\d{1,2})?)\s*(?:rupaye|rupees|रुपये)?\s*$/):null;
  if(priceReply)source='';
  const result=source?interpretVoice(source,state,intent,previous?.intent===intent?previous:undefined,true):previous?{...previous,fields:{...previous.fields},items:previous.items.map(i=>({...i})),changed:[],changedItems:[],warnings:[],transcript:raw}:interpretVoice(raw,state);
  result.intent=intent;result.transcript=raw.slice(0,5000);
  if(!voiceAllowed(intent,state)){result.warnings=['permission'];return result;}
+ if(previous?.intent===intent){
+  const missing=nextVoiceQuestion(previous,state);
+  if(['customer','supplier'].includes(intent)&&!previous.fields.name&&detected==='unknown'&&!/^(?:yes|no|haan|nahi|हाँ|नहीं)$/.test(text)&&!/phone|mobile|फोन|मोबाइल/.test(text))result.fields.name=raw.replace(/[.!।]+$/,'').trim();
+  if(['payment','expense'].includes(intent)&&missing==='amount'&&/^\d+(?:\.\d{1,2})?$/.test(text))result.fields.amount=text;
+  if(missing==='customer'&&detected==='unknown'&&!/\d/.test(text)){const ids=resolveContact(raw,state.customers);if(ids.length){result.fields.customerQuery=raw.trim();result.fields.customerId=ids.length===1?ids[0]:'';}}
+ }
  if(supplierPayment){
   const payment=interpretVoice(text,state,'payment');result.fields={...result.fields,...payment.fields,operation:'supplierPayment'};
   const query=text.match(/^(.*?)\s+(?:ko|ke|ka|se|को|के|का|से)\s/)?.[1]?.replace(/(?:^|\s)supplier(?=\s|$)|सप्लायर/g,' ').trim()||'';
@@ -126,6 +159,8 @@ export function advanceVoice(raw:string,state:V3State,previous?:VoiceCommand,sel
   if(combined&&!ids.length){result.fields.createCustomer='true';result.fields.name=customerName;}
  }
  if(intent==='sale'){
+  const payment=interpretVoice(raw,state,'sale',previous?.intent==='sale'?previous:undefined).fields;for(const key of ['cash','upi','mode','discount']){if(payment[key]!==undefined)result.fields[key]=payment[key];else delete result.fields[key];}
+  if(unitPrice&&result.items.length===1){const item=result.items[0],product=state.products.find(p=>p.id===item.productId),rate=product?voiceRateInCatalogueUnit(unitPrice[1],unitPrice[2],product):null;if(rate!==null){item.price=rate;item.priceBasis='unit';}else if(product)result.warnings.push('priceInvalid');}
   if(priceReply){result.items[0].price=priceReply[1];result.items[0].priceBasis='unit';delete result.fields.total;}
   if(!result.fields.customerQuery&&!result.fields.customerId&&selectedCustomerId&&state.customers.some(c=>c.id===selectedCustomerId))result.fields.customerId=selectedCustomerId;
   if(total)result.fields.total=total[1];
@@ -151,7 +186,15 @@ export function advanceVoice(raw:string,state:V3State,previous?:VoiceCommand,sel
  }
  if(intent==='payment'&&customerName){const ids=resolveContact(customerName,state.customers);result.fields.customerQuery=customerName;result.fields.customerId=ids.length===1?ids[0]:'';const amount=text.match(/(\d+(?:\.\d{1,2})?)\s*(?:udhaar|cash|rupaye|rupees|उधार|रुपये|कैश)/)?.[1];if(amount)result.fields.amount=amount;}
  if(intent==='customer'&&result.fields.name){result.fields.name=customerName||result.fields.name;result.fields.phone=result.fields.phone||'';}
- if(selectedCustomerId&&state.customers.some(c=>c.id===selectedCustomerId)&&/this customer|is customer|iska|uska|इस ग्राहक|इसके|इसका/.test(text)&&['sale','payment','report','document','open'].includes(intent)){result.fields.customerId=selectedCustomerId;result.fields.customerQuery=state.customers.find(c=>c.id===selectedCustomerId)!.name;}
+ if(intent==='stock'){
+  const prior=previous?.intent==='stock'?stockRowsFromCommand(previous,state.products):[];
+  const rows=prepareStockCommand(extractVoiceRoles(spokenText(raw)).productText,state.products,prior);
+  result.fields.preparedItems='true';
+  result.items=rows.map(row=>({id:row.id,query:row.query,productId:row.productId,candidates:row.candidates,quantity:row.quantity,unit:row.unit,price:row.sellingPrice||row.newProduct?.price||row.unclearAmount||'',priceBasis:row.sellingPrice||row.newProduct?.price?'unit':row.unclearAmount?'unclear':''}));
+  for(const row of rows){if(row.purchaseCost)result.fields['purchaseCost.'+row.id]=row.purchaseCost;if(row.purchaseTotal)result.fields['purchaseTotal.'+row.id]=row.purchaseTotal;if(row.priceUnit)result.fields['priceUnit.'+row.id]=row.priceUnit;if(row.costUnit)result.fields['costUnit.'+row.id]=row.costUnit;}
+  if(rows.some(row=>row.issues.includes('correction')))result.warnings.push('correction');
+ }
+ if((!customerName||/^(?:this customer|is customer|iska|uska|इस ग्राहक|इसके|इसका)$/iu.test(customerName))&&selectedCustomerId&&state.customers.some(c=>c.id===selectedCustomerId)&&/this customer|is customer|iska|uska|इस ग्राहक|इसके|इसका/.test(text)&&['sale','payment','report','document','open'].includes(intent)){result.fields.customerId=selectedCustomerId;result.fields.customerQuery=state.customers.find(c=>c.id===selectedCustomerId)!.name;}
  result.warnings=result.warnings.filter(w=>w!=='customer'||!result.fields.customerId&&result.fields.createCustomer!=='true');
  return result;
 }
@@ -168,11 +211,23 @@ export function salePreview(command:VoiceCommand,products:Product[]){
 export function nextVoiceQuestion(command:VoiceCommand,state:V3State):string {
  if(command.warnings.includes('intentChoice'))return'intentChoice';
  if(command.warnings.includes('permission'))return'permission';
+ const catalogue=command.intent==='stock'?catalogueQuestion(command):null;if(catalogue!==null)return catalogue;
+ if(command.intent==='stock'){
+  const rows=stockRowsFromCommand(command,state.products);if(!rows.length)return'items';
+  if(rows.some(row=>row.issues.includes('ambiguous')))return'product';
+  if(rows.some(row=>row.issues.includes('quantity')))return'quantity';
+  if(rows.some(row=>row.issues.includes('unit')||row.issues.includes('conversion')))return'quantityUnit';
+  if(rows.some(row=>row.issues.includes('priceMeaning')))return'priceBasis';
+  if(rows.some(row=>row.newProduct&&!row.newProduct.price))return'productPrice';
+  if(rows.some(row=>row.issues.length))return'reviewDetails';
+ }
  if(command.intent==='unknown')return'unknown';
  for(const warning of ['correction','priceInvalid','splitCollection','phone','wrongWorkflow','interpretationReview'])if(command.warnings.includes(warning))return warning;
  const f=command.fields;
  if(f.operation==='editCustomer'&&!f.customerId)return'customer';
  if(f.operation==='editProduct'&&!f.productId)return'product';
+ if(command.intent==='open'&&f.screen==='customerAccount'&&!f.customerId)return'customer';
+ if(command.intent==='open'&&['productDetail','supplierDetail'].includes(f.screen)&&!f[f.screen==='productDetail'?'productId':'supplierId'])return'choose';
  if(command.intent==='sale'){
   if(f.customerQuery&&!f.customerId&&f.createCustomer!=='true')return'customer';
   if(!command.items.length)return'items';if(command.items.some(i=>!i.productId))return'product';
@@ -183,7 +238,7 @@ export function nextVoiceQuestion(command:VoiceCommand,state:V3State):string {
   if(!f.mode)return'salePayment';if(!salePreview(command,state.products).valid)return'priceInvalid';
   if(salePreview(command,state.products).pending>0&&!f.customerId&&f.createCustomer!=='true')return'customer';
  }
- if(command.intent==='customer'&&!f.name)return'name';
+ if(['customer','supplier'].includes(command.intent)&&!f.name)return'name';
  if(command.intent==='payment'&&!f.customerId)return'customer';
  if(command.intent==='expense'&&!f.description?.trim())return'description';
  if(command.intent==='payment'||command.intent==='expense'){try{if(!f.amount||minorUnits(f.amount)<=0)return'amount';}catch{return'amount';}if(!['cash','upi'].includes(f.method))return'method';}
@@ -193,6 +248,7 @@ export function nextVoiceQuestion(command:VoiceCommand,state:V3State):string {
 export function buildVoiceRequest(command:VoiceCommand,state:V3State,key:string):{path:string;body:Record<string,unknown>}|null{
  if(!voiceCommandSchema.safeParse(command).success||!voiceAllowed(command.intent,state)||nextVoiceQuestion(command,state))return null;
  const f=command.fields,body:Record<string,unknown>={idempotencyKey:key};
+ if(command.intent==='stock'&&f.operation==='catalogueProduct')return{path:'/catalogue-import',body:{...body,products:[{name:f.name,unit:f.unit,pricePaise:minorUnits(f.price),quantityMilli:0,rejectDuplicate:true}]}};
  if(command.intent==='sale'){const sale=salePreview(command,state.products);if(!sale.valid)return null;return{path:'/voice-sale',body:{...body,...f.createCustomer==='true'?{newCustomer:{name:f.name,phone:f.phone||''}}:{},sale:{customerId:f.customerId||null,items:sale.items,discountPaise:sale.discount,payments:[{method:'cash',amountPaise:sale.cash},{method:'upi',amountPaise:sale.upi}].filter(p=>p.amountPaise>0),dueDate:null}}};}
  if(command.intent==='customer')return{path:'/customers',body:{...body,name:f.name,phone:f.phone||'',rejectDuplicate:true}};
  if(command.intent==='payment')return{path:'/payments',body:{...body,customerId:f.customerId,amountPaise:minorUnits(f.amount),method:f.method}};
@@ -201,13 +257,13 @@ export function buildVoiceRequest(command:VoiceCommand,state:V3State,key:string)
 }
 export type VoiceSavedResult={intent:VoiceIntent;invoice?:Invoice;id?:string};
 /** A model suggests semantic slots; resolution and write validation remain deterministic. */
-export function resolveInterpretedSlots(raw:InterpretedSlots,transcript:string,state:V3State):VoiceCommand {
- const slots=interpretedSlotsSchema.parse(raw),roles=extractVoiceRoles(spokenText(transcript)),local=advanceVoice(transcript,state),command:VoiceCommand={intent:slots.intent,transcript:transcript.slice(0,5000),fields:{...local.intent===slots.intent?local.fields:{},interpretation:'provider'},items:[],changed:[],changedItems:[],warnings:[]};
+export function resolveInterpretedSlots(raw:InterpretedSlots,transcript:string,state:V3State,previous?:VoiceCommand,localDraft?:VoiceCommand):VoiceCommand {
+ const slots=interpretedSlotsSchema.parse(raw),roles=extractVoiceRoles(spokenText(transcript)),local=localDraft||advanceVoice(transcript,state,previous),command:VoiceCommand={intent:slots.intent,transcript:transcript.slice(0,5000),fields:{...local.intent===slots.intent?local.fields:{},interpretation:'provider'},items:[],changed:[],changedItems:[],warnings:[]};
  if(roles.conditional)command.intent='simulation';
  if(roles.actionAmbiguous){command.fields.sourceTranscript=transcript;command.warnings.push('intentChoice');}
  if(slots.customerName){if(command.intent==='customer')command.fields.name=slots.customerName;const ids=resolveContact(slots.customerName,state.customers);command.fields.customerQuery=slots.customerName;command.fields.customerId=ids.length===1?ids[0]:'';}
  if(slots.supplierName){if(command.intent==='supplier')command.fields.name=slots.supplierName;const ids=resolveContact(slots.supplierName,state.suppliers);command.fields.supplierQuery=slots.supplierName;command.fields.supplierId=ids.length===1?ids[0]:'';}
- command.items=slots.items.map((item,index)=>{const matches=resolveVoiceProduct(item.productName,state.products),product=matches.exact&&matches.ids.length===1?state.products.find(p=>p.id===matches.ids[0]):undefined,spokenPrice=command.intent==='purchase'?item.purchaseCost:item.unitPrice,price=spokenPrice&&product?voiceRateInCatalogueUnit(spokenPrice,item.unit||product.unit,product):spokenPrice;if(spokenPrice&&price===null)command.warnings.push('priceInvalid');if(command.intent==='stock'&&item.purchaseCost)command.fields['purchaseCost.'+index]=item.purchaseCost;return{id:String(index),query:item.productName,productId:matches.exact&&matches.ids.length===1?matches.ids[0]:'',candidates:matches.ids,quantity:item.quantity||'',unit:item.unit||'',price:price||item.lineTotal||'',priceBasis:price?'unit':item.lineTotal?'total':''};});
+ command.items=slots.items.map((item,index)=>{const matches=resolveVoiceProduct(item.productName,state.products),product=matches.exact&&matches.ids.length===1?state.products.find(p=>p.id===matches.ids[0]):undefined,prior=local.items.filter(row=>product&&row.productId===product.id||canonicalProductName(row.query)===canonicalProductName(item.productName)),known=prior.length===1?prior[0]:undefined,spokenPrice=command.intent==='purchase'?item.purchaseCost:item.unitPrice,price=spokenPrice&&product?voiceRateInCatalogueUnit(spokenPrice,item.priceUnit||item.unit||product.unit,product):spokenPrice;if(spokenPrice&&price===null)command.warnings.push('priceInvalid');if(command.intent==='stock'&&item.purchaseCost)command.fields['purchaseCost.'+(known?.id||String(index))]=item.purchaseCost; if(command.intent==='stock'){command.fields['priceUnit.'+(known?.id||String(index))]=product?.unit||item.priceUnit||item.unit||'';command.fields['costUnit.'+(known?.id||String(index))]=item.priceUnit||item.unit||'';};return{id:known?.id||String(index),query:item.productName,productId:matches.exact&&matches.ids.length===1?matches.ids[0]:'',candidates:matches.ids,quantity:item.quantity||(!slots.uncertainties.includes('quantity')?known?.quantity:'')||'',unit:item.unit||(!slots.uncertainties.includes('unit')?known?.unit:'')||'',price:price||item.lineTotal||(!slots.uncertainties.includes('price')?known?.price:'')||'',priceBasis:price?'unit':item.lineTotal?'total':!slots.uncertainties.includes('price')?known?.priceBasis||'':''};});
  if(slots.payment){command.fields.mode=slots.payment;command.fields.method=slots.payment;}if(slots.cash)command.fields.cash=slots.cash;if(slots.upi)command.fields.upi=slots.upi;if(slots.amount)command.fields.amount=slots.amount;
  for(const uncertainty of slots.uncertainties){
   if(uncertainty==='intent'&&!roles.conditional)command.intent='unknown';
@@ -217,11 +273,18 @@ export function resolveInterpretedSlots(raw:InterpretedSlots,transcript:string,s
   for(const item of command.items){if(uncertainty==='product')item.productId='';if(uncertainty==='quantity'||uncertainty==='unit')item.quantity='';if(uncertainty==='price'){item.price='';item.priceBasis='unclear';}}
  }
  command.warnings.push('interpretationReview');
- if(!voiceAllowed(command.intent,state))command.warnings=['permission'];
+ if(!slots.items.length&&previous?.intent===command.intent)command.items=local.items;
+ if(command.fields.operation==='catalogueProduct'&&slots.items[0]){command.fields.name=slots.items[0].productName;command.fields.unit=slots.items[0].unit||command.fields.unit||'';command.fields.price=slots.items[0].unitPrice||command.fields.price||'';command.items=[];}
+ if(command.fields.operation==='catalogueProduct'){if(slots.uncertainties.includes('product'))command.fields.name='';if(slots.uncertainties.includes('unit'))command.fields.unit='';if(slots.uncertainties.includes('price'))command.fields.price='';const matched=resolveVoiceProduct(command.fields.name||'',state.products);command.fields.existingProductId=matched.exact&&matched.ids.length===1?matched.ids[0]:'';}
+ if(local.warnings.includes('intentChoice')&&!command.warnings.includes('intentChoice'))command.warnings.push('intentChoice');
+ if(local.fields.operation==='productMeaning')command.fields.operation='productMeaning';
+ if(!voiceAllowed(command.intent,state)||local.warnings.includes('permission'))command.warnings=['permission'];
  if(command.intent==='stock'){delete command.fields.customerId;delete command.fields.customerQuery;}
  command.changed=Object.keys(command.fields);command.changedItems=command.items.map(item=>item.id);
  return voiceCommandSchema.parse(command);
 }
+/** The merchant's one Confirm action reviews a provider draft; all other validation stays active. */
+export function reviewedVoiceDraft(command:VoiceCommand){return{...command,warnings:command.warnings.filter(warning=>warning!=='interpretationReview')};}
 export function voiceRateInCatalogueUnit(price:string,spokenUnit:string,product:Product):string|null{
  const item={id:'rate',query:product.name,productId:product.id,candidates:[product.id],quantity:'1',unit:spokenUnit||product.unit,price:'',priceBasis:'' as const},quantity=voiceQuantity(item,[product]);
  if(quantity===null)return null;try{const amount=BigInt(minorUnits(price))*1000n;if(amount%BigInt(quantity)!==0n)return null;return String(Number(amount/BigInt(quantity))/100);}catch{return null;}

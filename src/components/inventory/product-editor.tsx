@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import type { Product } from '@/lib/contracts';
 import {unitText} from '@/lib/locale';
 import { minorUnits } from '@/lib/client';
-import { useApp } from '../app-provider';
+import { useApp,useUnsavedBusinessWork } from '../app-provider';
 import { Button, Field, FormError, Sheet } from '../ui';
 
 export function ProductEditor({ product, initialPrice, onClose }: { product: Product; initialPrice?:string; onClose: () => void }) {
@@ -14,6 +14,7 @@ export function ProductEditor({ product, initialPrice, onClose }: { product: Pro
   const [minimum, setMinimum] = useState(String(product.minStockMilli / 1000)); const [expiry, setExpiry] = useState(product.expiryDate || ''); const [aliases, setAliases] = useState((product.aliases || []).join(', ')); const [barcode, setBarcode] = useState(product.barcode || ''); const [variation, setVariation] = useState(product.variation || ''); const [pack, setPack] = useState(product.packSize ? String(product.packSize) : '');
   const [displayNames,setDisplayNames]=useState(product.displayNames||{});
   const [error, setError] = useState(''); const [busy, setBusy] = useState(false);
+  useUnsavedBusinessWork(busy||name!==product.name||sku!==product.sku||price!==String(product.pricePaise/100)||cost!==String(product.costPaise/100)||minimum!==String(product.minStockMilli/1000)||expiry!==(product.expiryDate||'')||aliases!==(product.aliases||[]).join(', ')||barcode!==(product.barcode||'')||variation!==(product.variation||'')||pack!==(product.packSize?String(product.packSize):'')||JSON.stringify(displayNames)!==JSON.stringify(product.displayNames||{}));
   async function save(event: FormEvent) {
     event.preventDefault(); setBusy(true); setError('');
     try {

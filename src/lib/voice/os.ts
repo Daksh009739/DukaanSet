@@ -13,9 +13,9 @@ const scale:Record<string,number>={hundred:100,sau:100,'सौ':100,thousand:100
 
 /** Convert spoken amounts without using floating-point currency arithmetic. */
 export function spokenText(raw:string):string {
-  const words=normalize(raw.replace(/(?<=\d),(?=\d{3}(?:\D|$))/g,'')).split(' '), out:string[]=[];
+  const words=normalize(raw.replace(/₹\s*(\d+(?:\.\d{1,2})?)/g,'$1 rupaye').replace(/(?<=\d),(?=\d{3}(?:\D|$))/g,'')).split(' '), out:string[]=[];
   for(let i=0;i<words.length;i++){
-    if(['do','दो'].includes(words[i])&&['kar','karo','jod','jodo','bana','add','rakh','save','bech','कर','करो','जोड़ो','बना','बेच'].includes(words[i-1])){out.push(words[i]);continue;}
+    if(['do','दो'].includes(words[i])&&['kar','karo','jod','jodo','bana','add','rakh','save','bech','daal','dal','badha','badhaa','कर','करो','जोड़ो','बना','बेच','डाल','बढ़ा'].includes(words[i-1])&&!/^(?:kilo|kg|packet|piece|litre|gram|किलो|पैकेट|पीस|लीटर|ग्राम)$/.test(words[i+1]||'')){out.push(words[i]);continue;}
     if(numbers[words[i]]===undefined){out.push(words[i]);continue;}
     let n=numbers[words[i]], group=n, total=0, end=i;
     while(end+1<words.length){const next=words[end+1], factor=scale[next];
@@ -66,12 +66,13 @@ export function voiceAllowed(intent:VoiceIntent,state:V3State):boolean {
 }
 export function detectIntent(raw:string,context?:VoiceIntent):VoiceIntent {
   const t=spokenText(raw);
+  if(/recommend|suggest.*product|product.*suggest|product.*sujhao|उत्पाद.*सुझा/.test(t))return'insights';
   if(extractVoiceRoles(t).conditional)return'simulation';
   if(/(?:scan|extract|upload|स्कैन).*(?:bill|invoice|बिल)|(?:bill|invoice|बिल).*(?:scan|extract|स्कैन)/.test(t))return'scan';
-  if(/profitpilot|business.*(?:dhyan|attention)|ध्यान|insights|profit.*(?:bata|show)|business.*problem/.test(t))return'insights';
+  if(/profitpilot|business.*(?:dhyan|attention|kya chal|how.*going)|business mein.*(?:chal|haal)|ध्यान|insights|profit.*(?:bata|show)|business.*problem|बिजनेस.*(?:कैसा|चल)|कारोबार.*(?:कैसा|चल)/.test(t))return'insights';
   if(/(?:kitna|how much|कितना).*(?:mangw|order|मंगव)|(?:mangw|मंगव).*(?:kitna|कितना)/.test(t))return'reorder';
   if(/^(?:(?:today|week|weekly|all time|aaj|आज|is hafte|इस हफ्ते)\s+)?(?:sales?|collections?|expenses?|low stock|outstanding)$/.test(t))return'report';
-  if(/^(?:cancel|discard|radd|रद्द)(?:\s+(?:draft|ड्राफ्ट))?$/.test(t))return'cancel';
+  if(/^(?:cancel|discard|radd|रद्द)(?:\s+(?:draft|ड्राफ्ट))?(?:\s+(?:karo|kar do|करो|कर दो))?$/.test(t))return'cancel';
   if(/(?:closing|daily.*(?:hisaab|report)|shop.*report|दैनिक.*(?:हिसाब|रिपोर्ट)|दुकान.*हिसाब)/.test(t)&&/pdf|report|पीडीएफ|रिपोर्ट/.test(t))return'closing';
   if(/(?:close|band|बंद).*(?:today|aaj|shop|dukaan|आज|दुकान)|(?:today|aaj|shop|dukaan|आज|दुकान).*(?:close|band|बंद)/.test(t))return'closing';
   if(/pdf|statement|whatsapp|पीडीएफ|व्हाट्सएप|रसीद.*(?:बना|दिखा)|receipt.*(?:generate|show|bana)|hisaab.*(?:bana|dikha)|हिसाब.*(?:बना|दिखा)/.test(t))return'document';
@@ -80,6 +81,7 @@ export function detectIntent(raw:string,context?:VoiceIntent):VoiceIntent {
   if(/message|sandesh|संदेश|मैसेज/.test(t))return'followup';
   if(/actual cash|opening cash|closing|hisaab.*(?:bharo|band|close|confirm)|हिसाब.*(?:बंद|पक्का|भर)|वास्तविक नकद/.test(t))return'closing';
   if(/purane|purana|old.*(?:dues|credit)|udhaar.*(?:diye|diya|paid)|पुराने|पुराना/.test(t)&&new RegExp(`${paidWords}|payment|भुगतान`).test(t))return'payment';
+  if(/\d+(?:\.\d+)?/.test(t)&&new RegExp(cashWords+'|'+onlineWords).test(t)&&/(?:se|से|from)\b|से\s/.test(t)&&new RegExp(paidWords+'|jama|जमा').test(t)&&!/stock|inventory|bill|invoice|purchase|sold|sell|sale|bech|बिल|स्टॉक|बेच/.test(t))return'payment';
   if(/kitni|kitna|dikhao|batao|show|how much|how many|report|कितन|दिखाओ|बताओ/.test(t)&&!/bill.*(?:banao|बनाओ)|closing|हिसाब/.test(t))return'report';
   if(/maang|mang|maangi|maanga|chahiye|demand|unavailable|out of stock|मांग|माँग|चाहिए|उपलब्ध नहीं/.test(t))return'demand';
   if(/expense|kharcha|bijli|rent|खर्च|बिजली|किराया/.test(t))return'expense';
@@ -87,7 +89,7 @@ export function detectIntent(raw:string,context?:VoiceIntent):VoiceIntent {
   if(/(?:new|naya|naye|नया|नए).*(?:supplier|सप्लायर)|(?:supplier|सप्लायर).*(?:add|jodo|जोड़)/.test(t))return'supplier';
   if(/bill|invoice|बिल/.test(t)&&/bana|create|beche|sold|बना|बेच/.test(t)||/bech|बेच/.test(t)&&/customer.*(?:create|add)|ग्राहक/.test(t))return'sale';
   if(/customer|ग्राहक/.test(t)&&/add|create|new|naya|naye|naam|name|नया|नए|जोड़/.test(t))return'customer';
-  if(/(?:stock|स्टॉक)/.test(t)&&/add|jodo|rakh|जोड़/.test(t)||/add|jodo|जोड़/.test(t)&&/selling (?:price|rate|value)|purchase cost|cost price|batch cost/.test(t))return'stock';
+  if(/(?:stock|inventory|स्टॉक|इन्वेंटरी)/.test(t)&&/add|jodo|rakh|daal|dal|badha|बढ़ा|डाल|जोड़/.test(t)||/add|jodo|जोड़/.test(t)&&/selling (?:price|rate|value)|purchase cost|cost price|batch cost/.test(t))return'stock';
   if(/purchase|kharid|खरीद|(?:traders|supplier|सप्लायर).*?(?:aayi|aaya|received|आई|आया)|\bse\b.*(?:aayi|aaya)/.test(t))return'purchase';
   if(/\b(?:sold|sell|sale|bechi|becha|beche|bill|invoice)\b|बेच|बिल/.test(t))return'sale';
   if(/stock|add|jodo|जोड़|स्टॉक/.test(t))return'stock';
@@ -162,7 +164,7 @@ export function interpretVoice(raw:string,state:V3State,context?:VoiceIntent,pre
     if(phoneRaw){const digits=phoneRaw.split(' ').map(w=>/^\d+$/.test(w)?w:numbers[w]!==undefined&&numbers[w]<10?String(numbers[w]):'').join('');set('phone',digits);if(!/^\d{10}$/.test(digits))result.warnings.push('phone');}
     const nameText=text.replace(/(?:phone|mobile|number|फोन|मोबाइल|नंबर).*/u,'');
     const explicitName=nameText.match(/(?:naam|name(?:d)?|नाम)\s+(.+)/u)?.[1];
-    const name=(explicitName||(!previous?nameText:'')).replace(/\b(?:create|a|new|naya|naye|customer|supplier|add|karo|kar|do|naam|name|is)\b|नया|नए|ग्राहक|सप्लायर|जोड़ो|करो|कर|दो|नाम/gu,' ').replace(/\s+/g,' ').trim();if(name)set('name',name);
+    const name=(explicitName||(!previous?nameText:'')).replace(/\b(?:create|a|new|naya|naye|customer|supplier|add|karo|karna|kar|do|naam|name|is|hai|bana|banao|banana|ek|1)\b|नया|नए|ग्राहक|सप्लायर|जोड़ो|करना|करो|कर|दो|नाम|बनाना|बनाओ|बना|है|एक/gu,' ').replace(/\s+/g,' ').trim();if(name)set('name',name);
     if(result.fields.name&&resolveContact(result.fields.name,intent==='customer'?state.customers:state.suppliers).length)result.warnings.push('duplicateContact');
   }
   if(intent==='closing'){set('actual',text.match(/(?:actual cash|actual|counted cash|cash count|gina cash|वास्तविक नकद|गिना नकद)\s*(\d+(?:\.\d{1,2})?)/)?.[1]);set('opening',text.match(/(?:opening cash|opening|शुरुआती नकद)\s*(\d+(?:\.\d{1,2})?)/)?.[1]);set('closingAction',/pdf|पीडीएफ/.test(text)?'pdf':/report|रिपोर्ट|yesterday|kal|कल/.test(text)?'history':'review');set('closingPeriod',/yesterday|kal|कल/.test(text)?'yesterday':'today');}
@@ -205,6 +207,8 @@ export function interpretVoice(raw:string,state:V3State,context?:VoiceIntent,pre
 export function voiceNavigation(command:VoiceCommand,state:V3State):string|null{
  if(!voiceAllowed('open',state))return null;const screen=command.fields.screen;
  if(screen==='customerAccount')return state.configuration.permissions.customers&&state.customers.some(c=>c.id===command.fields.customerId)?'/app/customers/'+command.fields.customerId:null;
+ if(screen==='productDetail')return state.configuration.permissions.inventory&&state.products.some(p=>p.id===command.fields.productId)?'/app/stock/'+command.fields.productId:null;
+ if(screen==='supplierDetail')return state.configuration.permissions.purchases&&state.suppliers.some(p=>p.id===command.fields.supplierId)?'/app/suppliers/'+command.fields.supplierId:null;
  const permissions:Record<string,Permission>={customers:'customers',suppliers:'purchases',purchases:'purchases',payments:'payments',expenses:'reports','daily-closing':'reports',demand:'demand',reports:'reports',sales:'sales'};
  if(screen==='stock')return state.configuration.permissions.inventory||state.configuration.permissions.sales||state.configuration.permissions.demand?'/app/stock':null;
  if(screen==='home')return'/app';if(!permissions[screen]||!state.configuration.permissions[permissions[screen]])return null;
