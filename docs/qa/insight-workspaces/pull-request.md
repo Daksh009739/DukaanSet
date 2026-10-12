@@ -6,4 +6,6 @@ UI validation: 6 new browser scenarios, 3 closing regressions and 2 demand/staff
 
 The dashboard quick actions and four summary cards also have a richer emerald/blue/violet/mint/amber palette, stronger number hierarchy and polished hover/focus states. Semantic action colors remain stable under permission filtering. Four dashboard browser scenarios and 15 compiled layouts/six accessibility scans passed, with exact recorded totals and no ledger changes. See the [dashboard card QA report](docs/qa/dashboard-cards/REPORT.md).
 
+The application header now pairs a deep emerald gradient with a translucent search field, accessible control states and a clear user/active-shop account group. Search shortcuts, updates, language preferences, profile focus and protected shop switching remain functional. Two header scenarios, the protected-switching regression, and 36 compiled layouts/12 accessibility scans passed. See the [header QA report](docs/qa/application-header/REPORT.md).
+
 This targets `dev` and includes the sidebar/workspace baseline from PR #13. Review that dependency with the cumulative diff. Production domains are not promoted. Live human microphone, cloud speech and physical-device acceptance remain outside the automated evidence.

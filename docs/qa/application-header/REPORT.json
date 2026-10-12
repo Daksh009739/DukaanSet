@@ -1,0 +1,190 @@
+{
+  "checkedAt": "2026-10-12T20:40:50.106Z",
+  "environment": "Compiled application; isolated fictional shops",
+  "layouts": [
+    {
+      "language": "en",
+      "route": "/app",
+      "width": 320
+    },
+    {
+      "language": "en",
+      "route": "/app",
+      "width": 390
+    },
+    {
+      "language": "en",
+      "route": "/app",
+      "width": 768
+    },
+    {
+      "language": "en",
+      "route": "/app",
+      "width": 1100
+    },
+    {
+      "language": "en",
+      "route": "/app",
+      "width": 1440
+    },
+    {
+      "language": "en",
+      "route": "/app",
+      "width": 1920
+    },
+    {
+      "language": "en",
+      "route": "/app/stock",
+      "width": 320
+    },
+    {
+      "language": "en",
+      "route": "/app/stock",
+      "width": 390
+    },
+    {
+      "language": "en",
+      "route": "/app/stock",
+      "width": 768
+    },
+    {
+      "language": "en",
+      "route": "/app/stock",
+      "width": 1100
+    },
+    {
+      "language": "en",
+      "route": "/app/stock",
+      "width": 1440
+    },
+    {
+      "language": "en",
+      "route": "/app/stock",
+      "width": 1920
+    },
+    {
+      "language": "hi",
+      "route": "/app",
+      "width": 320
+    },
+    {
+      "language": "hi",
+      "route": "/app",
+      "width": 390
+    },
+    {
+      "language": "hi",
+      "route": "/app",
+      "width": 768
+    },
+    {
+      "language": "hi",
+      "route": "/app",
+      "width": 1100
+    },
+    {
+      "language": "hi",
+      "route": "/app",
+      "width": 1440
+    },
+    {
+      "language": "hi",
+      "route": "/app",
+      "width": 1920
+    },
+    {
+      "language": "hi",
+      "route": "/app/stock",
+      "width": 320
+    },
+    {
+      "language": "hi",
+      "route": "/app/stock",
+      "width": 390
+    },
+    {
+      "language": "hi",
+      "route": "/app/stock",
+      "width": 768
+    },
+    {
+      "language": "hi",
+      "route": "/app/stock",
+      "width": 1100
+    },
+    {
+      "language": "hi",
+      "route": "/app/stock",
+      "width": 1440
+    },
+    {
+      "language": "hi",
+      "route": "/app/stock",
+      "width": 1920
+    },
+    {
+      "language": "hinglish",
+      "route": "/app",
+      "width": 320
+    },
+    {
+      "language": "hinglish",
+      "route": "/app",
+      "width": 390
+    },
+    {
+      "language": "hinglish",
+      "route": "/app",
+      "width": 768
+    },
+    {
+      "language": "hinglish",
+      "route": "/app",
+      "width": 1100
+    },
+    {
+      "language": "hinglish",
+      "route": "/app",
+      "width": 1440
+    },
+    {
+      "language": "hinglish",
+      "route": "/app",
+      "width": 1920
+    },
+    {
+      "language": "hinglish",
+      "route": "/app/stock",
+      "width": 320
+    },
+    {
+      "language": "hinglish",
+      "route": "/app/stock",
+      "width": 390
+    },
+    {
+      "language": "hinglish",
+      "route": "/app/stock",
+      "width": 768
+    },
+    {
+      "language": "hinglish",
+      "route": "/app/stock",
+      "width": 1100
+    },
+    {
+      "language": "hinglish",
+      "route": "/app/stock",
+      "width": 1440
+    },
+    {
+      "language": "hinglish",
+      "route": "/app/stock",
+      "width": 1920
+    }
+  ],
+  "accessibilityScans": 12,
+  "runtimeErrors": [],
+  "cspViolations": [],
+  "ledgerUnchanged": true
+}

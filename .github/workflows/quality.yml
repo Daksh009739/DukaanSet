@@ -55,6 +55,10 @@ jobs:
         run: node scripts/qa/insight-workspaces-production.mjs
       - name: Workspace search, update actions, hero controls and multilingual dialog accessibility
         run: npm run test:e2e -- tests/e2e/workspace-overlays.spec.ts
+      - name: Premium application header controls, responsive fit and accessible contrast
+        run: npm run test:e2e -- tests/e2e/application-header.spec.ts
+      - name: Compiled application header and three-language viewport checks
+        run: node scripts/qa/application-header-production.mjs
       - name: Compiled workspace overlays and responsive dashboard controls
         run: node scripts/qa/workspace-overlays-production.mjs
       - name: Smart sidebar, persisted rail, protected shop switching and multilingual accessible drawers
