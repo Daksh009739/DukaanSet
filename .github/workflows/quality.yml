@@ -45,6 +45,8 @@ jobs:
         run: npm run test:e2e -- tests/e2e/approved-dashboard-v16.spec.ts
       - name: Dashboard card colors, styled native pickers, hover feedback and exact session information
         run: npm run test:e2e -- tests/e2e/dashboard-polish.spec.ts
+      - name: Compiled dashboard card palette, exact totals and multilingual accessibility
+        run: node scripts/qa/dashboard-cards-production.mjs
       - name: Premium module filters, signed refund summaries and multilingual responsive accessibility
         run: npm run test:e2e -- tests/e2e/premium-modules.spec.ts
       - name: Premium insight pages, task filtering, account navigation and acknowledged closing

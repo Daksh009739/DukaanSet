@@ -4,4 +4,6 @@ This branch also contains the VoiceOS reliability changes: finalized-turn delive
 
 UI validation: 6 new browser scenarios, 3 closing regressions and 2 demand/staff-role regressions; 63 dev layouts across English/Hindi/Hinglish; 63 compiled layouts with 42 accessibility scans, no runtime/CSP errors and an unchanged ledger; production build, typecheck, lint and locale parity. Screenshots and results are in the [workspace QA report](docs/qa/insight-workspaces/REPORT.md).
 
+The dashboard quick actions and four summary cards also have a richer emerald/blue/violet/mint/amber palette, stronger number hierarchy and polished hover/focus states. Semantic action colors remain stable under permission filtering. Four dashboard browser scenarios and 15 compiled layouts/six accessibility scans passed, with exact recorded totals and no ledger changes. See the [dashboard card QA report](docs/qa/dashboard-cards/REPORT.md).
+
 This targets `dev` and includes the sidebar/workspace baseline from PR #13. Review that dependency with the cumulative diff. Production domains are not promoted. Live human microphone, cloud speech and physical-device acceptance remain outside the automated evidence.
