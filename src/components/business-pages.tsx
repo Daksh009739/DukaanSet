@@ -7,25 +7,23 @@ import './v2.css';
 import { ProductEditor } from './inventory/product-editor';
 
 import { Customer360 } from './customers/customer-360';
-import {SalesOverviewChart,TopProductsPanel} from './dashboard-panels';
 import { BusinessInsights } from './business-insights';
 import { downloadBlob, inventoryCsv } from '@/lib/browser-documents';
 import { useEffect, useState, type FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Package, Plus, Search, ArrowUpRight, UsersRound, Wallet, Truck, ReceiptText, Sparkles, CircleCheck, Download, Settings2, Check, CircleHelp, ShieldCheck, AlertCircle } from 'lucide-react';
+import { Package, Plus, Search, ArrowUpRight, UsersRound, Wallet, Truck, ReceiptText, Sparkles, CircleCheck, Download, Settings2, Check, AlertCircle } from 'lucide-react';
 import { useApp } from './app-provider';
 import { useOperations } from './operations';
 import { PageHeading, InvoiceList } from './dashboard';
 import { Button, CardTitle, Empty, Field, FormError } from './ui';
 import { api, money, quantity, today, minorUnits, businessDay } from '@/lib/client';
-import { taskText, taskHref } from '@/lib/presentation';
 import { DemandButton } from './demand/capture';
 import { ModuleMetrics, ModuleToolbar, ModuleFilters } from './module-ui';
 import { ChevronRight, CircleDollarSign, Building2, RotateCcw, Smartphone } from 'lucide-react';
 import { ContextVoiceButton } from './voice/global-voice';
 import { VoicePanel } from './voice/voice-panel';
 import type { VoiceCommand } from '@/lib/voice/os';
-import { DemandPreview,DemandReport } from './demand/demand-page';
+import { DemandPreview } from './demand/demand-page';
 import { useSearchParams } from 'next/navigation';
 import { CatalogueImport } from './inventory/catalogue-import';
 import { useDemandWrite } from './demand/write-provider';
@@ -76,9 +74,11 @@ export function ExpensesPage({payments=false}: {payments?:boolean}) {
     <div className="record-list">{payments?shown.map(p=><Link className="module-contact-row" key={p.id} href={`/app/payments/${p.id}`}><span className={`avatar module-payment-avatar ${p.kind==='refund'?'refund':''}`}>{p.kind==='refund'?<RotateCcw size={19}/>:p.method==='upi'?<Smartphone size={19}/>:<Wallet size={19}/>}</span><div className="module-record-person"><b>{state!.customers.find(c=>c.id===p.customerId)?.name||t('walkIn')}</b><small><span className="module-method">{t(p.method)}</span> · {p.kind==='refund'?w('moduleUi.refunds'):t(p.kind==='repayment'?'olderDues':'sales')}</small></div><time className="module-record-date" dateTime={p.date}><LocalizedDate value={p.date} options={{day:'numeric',month:'short',year:'numeric'}}/></time><div className="module-record-amount"><b className={p.kind==='refund'?'negative':'positive'}>{p.kind==='refund'?'−':''}{money(Math.abs(p.amountPaise))}</b></div><ChevronRight size={17} aria-hidden/></Link>):state!.expenses.map(e=><div className="record-row" key={e.id}><div><b>{e.description}</b><small>{t(e.method)} · <LocalizedDate value={e.date} options={{day:'numeric',month:'long',year:'numeric'}}/></small></div><b>{money(e.amountPaise)}</b></div>)}</div>
     {!(payments?shown:state!.expenses).length&&<Empty icon={<Wallet/>} title={payments&&state!.payments.length?t('noResults'):t(payments?'noPayments':'noExpenses')} action={payments&&state!.payments.length?<Button variant="secondary" onClick={()=>{setQuery('');setFilter('all');}}>{w('moduleUi.resetFilters')}</Button>:<Button onClick={()=>open(payments?'payment':'expense')}>{t(payments?'addPayment':'addExpense')}</Button>}/>}</section></>;
 }
-export function WorkPage() {const {t}=useTranslation();const {state,session}=useApp();return <><PageHeading title={t('work')} subtitle={t('attention')}/><div className="work-page-grid">{state!.tasks.map(task=><Link href={taskHref(task)} className="card task-page-card" key={task.id}><span className="quick-icon amber">{task.type==='credit'?<Wallet/>:<Package/>}</span><h2>{t(task.type==='credit'?'taskCredit':task.type==='demand'?'taskDemand':task.type==='expiry'?'taskExpiry':'taskStock')}</h2><p>{taskText(task,t,session?.user.language||'en')}</p><span className="text-link">{t(task.type==='credit'?'viewCustomers':'reviewStock')}<ArrowUpRight size={16}/></span></Link>)}{state!.configuration.features.dailyClosing&&state!.configuration.permissions.reports&&<Link className="card task-page-card" href="/app/daily-closing"><span className="quick-icon mint"><CircleCheck/></span><h2>{t('closing')}</h2><p>{t('closingHint')}</p><span className="text-link">{t('startClosing')}<ArrowUpRight size={16}/></span></Link>}</div></>;}
-export function ReportsPage() {const {t}=useTranslation();const app=useApp();const state=app.state!;const [busy,setBusy]=useState(false);const exportData=async()=>{setBusy(true);try{const data=await api(`/businesses/${app.businessId}/export`);const url=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));const anchor=document.createElement('a');anchor.href=url;anchor.download=`dukaanset-${state.business.name}.json`;anchor.click();URL.revokeObjectURL(url);}catch(error){app.notify(app.errorText(error));}finally{setBusy(false);}};const metrics=[['netSales',state.totals.salesPaise],['moneyReceived',state.totals.receivedPaise],['outstanding',state.metrics.outstandingPaise],['expenseTotal',state.totals.expensesPaise],['supplierDue',state.suppliers.reduce((s,p)=>s+p.balancePaise,0)],['stockValue',state.metrics.stockValuePaise]] as const;return <><PageHeading title={t('reports')} subtitle={t('reportHint')} action={<div className="button-row"><ContextVoiceButton intent="report"/>{state.configuration.features.dailyClosing&&<Link className="btn btn-secondary" href="/app/reports/closings">{t('workspace:closingHistory')}</Link>}{state.configuration.permissions.settings&&<Button busy={busy} variant="secondary" onClick={exportData}><Download size={17}/>{t('export')}</Button>}</div>}/><p className="eyebrow">{t('v3:allTime')}</p><div className="report-grid">{metrics.map(([label,value])=><div className="card report-metric" key={label}><span>{t(label)}</span><strong>{money(value)}</strong></div>)}</div><p className="form-note">{t('profitNotice')}</p><div className="report-visual-grid"><SalesOverviewChart/><TopProductsPanel/></div><DemandReport/><div className="card below-card"><CardTitle>{t('last7')}</CardTitle><div className="record-list">{state.weeklySales.map(d=><div className="record-row" key={d.date}><span><LocalizedDate value={d.date}/></span><b>{money(d.salesPaise)}</b></div>)}</div></div></>;}
+
+
 export {SmartClosingPage as ClosingPage} from './closing/closing-page';
 export { SaaSSettings as SettingsPage } from './saas-settings';
 export function AiPage() {return <BusinessInsights/>;}
-export function HelpPage() {const {t}=useTranslation();return <><PageHeading title={t('help')} subtitle={t('billingHelp')}/><div className="help-grid">{[['newBill','guideBilling','/app/sales/new',ReceiptText],['stock','guideStock','/app/stock',Package],['closing','guideClosing','/app/daily-closing',CircleCheck]].map(([title,description,href,Icon])=><section className="card help-card" key={String(title)}><Icon size={24}/><h2>{t(String(title))}</h2><p>{t(String(description))}</p><Link href={String(href)} className="text-link">{t('next')}<ArrowUpRight size={16}/></Link></section>)}</div></>;}
+
+
+export {WorkPage,ReportsPage,HelpPage} from './insight-pages';

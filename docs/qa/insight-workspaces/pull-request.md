@@ -1,0 +1,7 @@
+Business pages spread important totals and actions across large plain cards, and the account panel was difficult to scan on a phone. This change refreshes DemandPulse, Reports, Shop Closing, Business Intelligence, Today’s Work, Help and account controls with compact VoiceOS strips, clear metric hierarchy, responsive task/guide directories, useful filters and accessible focus return. Closing now enables confirmation only after explicit acknowledgement; records, permissions and existing stock/payment/reorder safeguards remain in place.
+
+This branch also contains the VoiceOS reliability changes: finalized-turn delivery, app-language defaults, scoped asynchronous results and authenticated saved-customer readback. See the [VoiceOS QA report](docs/qa/voice31/REPORT.md) for its existing verification and live-audio limits.
+
+UI validation: 6 new browser scenarios, 3 closing regressions and 2 demand/staff-role regressions; 63 dev layouts across English/Hindi/Hinglish; 63 compiled layouts with 42 accessibility scans, no runtime/CSP errors and an unchanged ledger; production build, typecheck, lint and locale parity. Screenshots and results are in the [workspace QA report](docs/qa/insight-workspaces/REPORT.md).
+
+This targets `dev` and includes the sidebar/workspace baseline from PR #13. Review that dependency with the cumulative diff. Production domains are not promoted. Live human microphone, cloud speech and physical-device acceptance remain outside the automated evidence.

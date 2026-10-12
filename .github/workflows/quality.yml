@@ -47,6 +47,10 @@ jobs:
         run: npm run test:e2e -- tests/e2e/dashboard-polish.spec.ts
       - name: Premium module filters, signed refund summaries and multilingual responsive accessibility
         run: npm run test:e2e -- tests/e2e/premium-modules.spec.ts
+      - name: Premium insight pages, task filtering, account navigation and acknowledged closing
+        run: npm run test:e2e -- tests/e2e/insight-workspaces.spec.ts
+      - name: Compiled insight workspaces, account focus and multilingual accessibility
+        run: node scripts/qa/insight-workspaces-production.mjs
       - name: Workspace search, update actions, hero controls and multilingual dialog accessibility
         run: npm run test:e2e -- tests/e2e/workspace-overlays.spec.ts
       - name: Compiled workspace overlays and responsive dashboard controls
