@@ -68,7 +68,7 @@ function SidebarContent({compact=false,collapse,onNavigate,onProfile}:{compact?:
       </nav>
     </div>
     <footer className={styles.footer}>
-      <Link href="/pricing" className={styles.upgrade} aria-label={w('sidebar.planInfo')} onClick={onNavigate}><Crown size={23}/>{!compact&&<span><b>{w('v16.dukaanPro')}</b><small>{w('sidebar.proHint')}</small></span>}{!compact&&<ArrowRight size={17}/ >}{compact&&<span className={styles.tooltip}>{w('sidebar.planInfo')}</span>}</Link>
+      <Link href="/pricing" data-tone="inverse" className={styles.upgrade} aria-label={w('sidebar.planInfo')} onClick={onNavigate}><Crown size={23}/>{!compact&&<span><b>{w('v16.dukaanPro')}</b><small>{w('sidebar.proHint')}</small></span>}{!compact&&<ArrowRight size={17}/ >}{compact&&<span className={styles.tooltip}>{w('sidebar.planInfo')}</span>}</Link>
       <button className={styles.user} aria-label={w('sidebar.profileActions')} onClick={onProfile}><span className={styles.userAvatar} aria-hidden>{initials(app.session?.user.name||'')||<Store size={18}/>}</span>{!compact&&<><span><b>{app.session?.user.name||w('profileMenu')}</b><small title={app.session?.user.email}>{app.session?.user.email}</small></span><MoreVertical size={18}/></>}{compact&&<span className={styles.tooltip}>{w('sidebar.profileActions')}</span>}</button>
     </footer>
   </div>;

@@ -386,5 +386,20 @@
     "voiceHint": "Bolein. Check karein. Save karein.",
     "trySaying": "BOLKAR TRY KAREIN",
     "reviewHint": "Save se pehle har badlav aap check karte hain."
+  },
+  "dashboardExtra": {
+    "money": "Session ka hisaab",
+    "sessionHint": "Chalu trading session mein record hue paise.",
+    "cash": "Cash mila",
+    "upi": "UPI mila",
+    "credit": "Nayi udhaar sales",
+    "expenses": "Kharch",
+    "oldDues": "Purane udhaar se mile paise",
+    "reports": "Paise ki report dekhein",
+    "work": "Aapke dhyan ke liye",
+    "taskCount": "{{count}} kaam",
+    "workHint": "Stock, customer udhaar aur missed requests dekhein.",
+    "allClear": "Sab kaam ho gaye",
+    "allWork": "Saare kaam dekhein"
   }
 }

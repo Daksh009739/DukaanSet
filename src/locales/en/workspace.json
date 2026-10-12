@@ -386,5 +386,20 @@
     "voiceHint": "Speak. Review. Save.",
     "trySaying": "TRY SAYING",
     "reviewHint": "You review every change before saving."
+  },
+  "dashboardExtra": {
+    "money": "Session money",
+    "sessionHint": "Money recorded in the active trading session.",
+    "cash": "Cash received",
+    "upi": "UPI received",
+    "credit": "New credit sales",
+    "expenses": "Expenses",
+    "oldDues": "Collected against earlier dues",
+    "reports": "View money report",
+    "work": "Needs your attention",
+    "taskCount": "{{count}} tasks",
+    "workHint": "Stock, customer dues and missed requests to review.",
+    "allClear": "All caught up",
+    "allWork": "View all tasks"
   }
 }

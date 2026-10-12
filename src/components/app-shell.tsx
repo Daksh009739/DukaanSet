@@ -11,6 +11,7 @@ import { DemoReset } from './demo-reset';
 import { GlobalVoiceLauncher } from './voice/global-voice';
 import './v2.css';
 import './premium-ux.css';
+import './interaction.css';
 import {LanguageOptions} from './locale-provider';
 import { GlobalSearch } from './global-search';
 import { WorkspaceUpdates } from './workspace-updates';
