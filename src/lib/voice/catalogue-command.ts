@@ -25,11 +25,13 @@ export function prepareCatalogueCommand(raw:string,state:V3State,previous?:Voice
  if(/recommend|suggest|sujhao|सुझा|recommendation/.test(text))return null;
  if(!continuing&&/bill|invoice|sold|bech|purchase|supplier|बिल|बेच|खरीद|सप्लायर/iu.test(raw))return null;
  // Explicit opening quantities belong to the atomic product+stock draft.
- if(/\d+(?:\.\d+)?\s+(?:kg|kilo|packet|piece|box|litre|किलो|पैकेट|पीस)/iu.test(text)&&!/selling price|selling rate|unit price|बिक्री दर/.test(text)){
+ const opening=text.replace(/(?:selling price|selling rate|unit price|बिक्री दर).*$/iu,'').match(/(\d+(?:\.\d+)?)\s+(kg|kilo|packets?|pieces?|box|litre|किलो|पैकेट|पीस)/iu);
+ if(opening){
   if(!continuing||!previous?.fields.name)return null;
-  const rows=prepareStockCommand(previous.fields.name+' '+raw,state.products);if(rows.length!==1)return null;
-  const row=rows[0];if(row.newProduct){row.newProduct.price=previous.fields.price||'';row.sellingPrice=row.newProduct.price;}
-  return{intent:'stock',transcript:raw,fields:{preparedItems:'true',['newUnit.'+row.id]:previous.fields.unit||row.unit},items:[{id:row.id,query:row.query,productId:row.productId,candidates:row.candidates,quantity:row.quantity,unit:row.unit,price:row.sellingPrice||'',priceBasis:row.sellingPrice?'unit':''}],changed:['operation'],changedItems:[row.id],warnings:state.configuration.permissions.inventory?[]:['permission']};
+  const pricing=text.match(/(?:selling price|selling rate|purchase cost|cost price|total purchase cost|बिक्री दर).*$/iu)?.[0]||'';
+  const rows=prepareStockCommand(opening[1]+' '+opening[2]+' '+previous.fields.name+' '+pricing,state.products);if(rows.length!==1)return null;
+  const row=rows[0];if(row.newProduct){row.newProduct.name=previous.fields.name;row.query=previous.fields.name;row.newProduct.price=row.sellingPrice||previous.fields.price||'';row.sellingPrice=row.newProduct.price;}
+  return{intent:'stock',transcript:raw,fields:{preparedItems:'true',['newUnit.'+row.id]:previous.fields.unit||row.unit,['priceUnit.'+row.id]:row.priceUnit||previous.fields.unit||row.unit,...row.purchaseCost?{['purchaseCost.'+row.id]:row.purchaseCost,['costUnit.'+row.id]:row.costUnit||row.unit}:{}},items:[{id:row.id,query:row.query,productId:row.productId,candidates:row.candidates,quantity:row.quantity,unit:row.unit,price:row.sellingPrice||'',priceBasis:row.sellingPrice?'unit':''}],changed:['operation'],changedItems:[row.id],warnings:state.configuration.permissions.inventory?[]:['permission']};
  }
  const fields:Record<string,string>={...continuing?previous?.fields:{},operation:'catalogueProduct'};
  if(generic.test(text)&&!declared)fields.operation='productMeaning';
