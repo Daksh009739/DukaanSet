@@ -80,6 +80,7 @@ function conversationCorrection(raw:string,state:V3State,previous:VoiceCommand):
 }
 /** Conversation state is scoped by the provider; explicit cross-module commands win. */
 export function advanceVoice(raw:string,state:V3State,previous?:VoiceCommand,selectedCustomerId?:string,contextIntent?:VoiceIntent):VoiceCommand {
+ if(/kitne|kitni|how many|count|number of|कितने|कितनी/iu.test(raw)&&!/create|add|jodo|जोड़/iu.test(raw)&&/(?:duniya|world|worldwide|globally|दुनिया|विश्व).*(?:customers?|grahak|ग्राहक)|(?:customers?|ग्राहक).*(?:world|दुनिया)/iu.test(raw))return{intent:'unknown',transcript:raw.slice(0,5000),fields:{operation:'shopScope'},items:[],changed:[],changedItems:[],warnings:[]};
  raw=normalizeVoiceInstruction(raw);
  if(requiresRecordCorrectionReview(raw))return{intent:'open',transcript:raw,fields:{screen:/write[ -]?off|credit reversal|बकाया माफ/iu.test(raw)?'customers':/payment|भुगतान/iu.test(raw)?'payments':'sales',highRiskReview:'true'},items:[],warnings:[],changed:[],changedItems:[]};
  if(/(?:closing|hisaab|हिसाब|दुकान).*(?:summary|सारांश)|(?:summary|सारांश).*(?:closing|hisaab|हिसाब)/iu.test(raw))return{intent:'closing',transcript:raw,fields:{closingAction:'summary'},items:[],warnings:voiceAllowed('closing',state)?[]:['permission'],changed:[],changedItems:[]};
@@ -294,5 +295,5 @@ export function voiceRateInCatalogueUnit(price:string,spokenUnit:string,product:
 }
 export type VoiceConversationState='idle'|'permission'|'listening'|'interpreting'|'clarifying'|'reviewing'|'awaitingConfirmation'|'executing'|'success'|'failure'|'retry';
 export function voiceConversationState(command:VoiceCommand|null,state:V3State,options:{capture?:string;busy?:boolean;pending?:boolean;saved?:boolean;error?:boolean;interpreting?:boolean}={}):VoiceConversationState{
- if(options.busy)return'executing';if(options.pending)return'retry';if(options.error)return'failure';if(options.saved)return'success';if(options.interpreting)return'interpreting';if(options.capture==='permissionState')return'permission';if(options.capture==='listening')return'listening';if(!command)return'idle';if(nextVoiceQuestion(command,state))return'clarifying';return voiceActionRegistry[command.intent].safety==='write'?'awaitingConfirmation':'reviewing';
+ if(options.busy)return'executing';if(options.pending)return'retry';if(options.error||options.capture==='error')return'failure';if(options.saved)return'success';if(options.interpreting||options.capture==='finalizing')return'interpreting';if(options.capture==='permissionState')return'permission';if(options.capture==='listening'||options.capture==='speechDetected')return'listening';if(!command)return'idle';if(nextVoiceQuestion(command,state))return'clarifying';return voiceActionRegistry[command.intent].safety==='write'?'awaitingConfirmation':'reviewing';
 }

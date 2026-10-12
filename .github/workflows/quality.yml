@@ -73,6 +73,8 @@ jobs:
         run: npm run test:e2e -- tests/e2e/voice-v17.spec.ts
       - name: VoiceOS 3 turn taking, spoken commits, encoded audio, preferences and multilingual accessibility
         run: npm run test:e2e -- tests/e2e/voice3.spec.ts
+      - name: VoiceOS 3.1 automatic endpoints, exact customer commits, language precedence and stale response isolation
+        run: npm run test:e2e -- tests/e2e/voice31.spec.ts
       - name: VoiceOS 3 compiled actions, audio playback and responsive voice selection
         run: node scripts/qa/voice3-production-review.mjs
       - name: V17 compiled transactions, actual closing/document sources and multilingual accessibility

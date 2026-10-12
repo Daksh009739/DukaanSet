@@ -34,6 +34,20 @@
 .wave i:nth-child(2){height:19px;animation-delay:.2s}.wave i:nth-child(3){height:8px;animation-delay:.4s}.wave i:nth-child(4){animation-delay:.3s}
 @keyframes voice-wave{to{transform:scaleY(.5)}}
 .headerSettings{display:grid;place-items:center;min-height:40px;width:40px;border:1px solid #dbe9e1;border-radius:12px;background:#fff;color:#41665a}
+.headerStatus{font-size:10px;line-height:1.5;padding:5px 8px;border-radius:20px;background:#e9f7f1;color:#285e4e;max-width:105px;text-align:center}
+.sheet:global(.sheet.conversation-sheet){overflow:hidden}
+.sheet:global(.sheet.conversation-sheet)>:global(.sheet-header){position:relative;flex:none}
+.sheet:global(.sheet.conversation-sheet)>:global(.conversation-body){min-height:0;overflow:auto;flex:1;overscroll-behavior:contain;scroll-padding-block:18px 110px}
+@media(max-width:700px){.headerStatus{display:none}.historyFeed{max-height:130px}}
+.historyFeed{display:flex;flex-direction:column;gap:10px;max-height:220px;overflow:auto;overscroll-behavior:contain;scrollbar-width:thin;padding:12px 4px 4px}
+.historyFeed article{border:1px solid #dfebe7;background:#f4faf7;border-radius:14px 14px 14px 4px;padding:10px 13px;max-width:90%;align-self:flex-start;color:#153f37}
+.historyFeed article[data-role=user]{align-self:flex-end;border-color:#b7e7dd;background:#e7f7f1;border-radius:14px 14px 4px 14px}
+.historyFeed small{display:flex;gap:16px;justify-content:space-between;font-size:10px;font-weight:700;color:#456c60}
+.historyFeed time{font-weight:400;white-space:nowrap}
+.historyFeed p{margin:5px 0 0;font-size:12px;line-height:1.65;overflow-wrap:anywhere}
+.historyFeed:focus-visible{outline:2px solid #089777;outline-offset:3px}
+.sheet :global(.assistant-history){margin-bottom:16px}
+.sheet :global(.conversation-actions){position:sticky;bottom:0;z-index:3;background:rgba(255,255,255,.97);padding:14px 0 max(14px,env(safe-area-inset-bottom));border-top:1px solid #e1ece6}
 .sheet :global(.sheet-header-tools){display:flex;align-items:center;gap:8px;flex:none}
 .sheet :global(.sheet-header-tools>.icon-btn){margin:0;min-height:40px;width:40px;border:1px solid #dbe9e1;border-radius:12px;background:#fff;color:#41665a}
 .sheet :global(.sheet-heading){min-width:0}

@@ -1,0 +1,9 @@
+{
+  "audio": "Actual MediaRecorder and WAV decoding of a synthetic Web Audio stream",
+  "pauseWithinSentenceMs": 1200,
+  "recordedSeconds": 4.26,
+  "transcriptionRequests": 1,
+  "manualStop": false,
+  "liveHumanMicrophone": false,
+  "liveCloudProvider": false
+}

@@ -1,0 +1,54 @@
+{
+  "layouts": [
+    {
+      "language": "en",
+      "width": 320
+    },
+    {
+      "language": "en",
+      "width": 390
+    },
+    {
+      "language": "en",
+      "width": 768
+    },
+    {
+      "language": "en",
+      "width": 1440
+    },
+    {
+      "language": "hi",
+      "width": 320
+    },
+    {
+      "language": "hi",
+      "width": 390
+    },
+    {
+      "language": "hi",
+      "width": 768
+    },
+    {
+      "language": "hi",
+      "width": 1440
+    },
+    {
+      "language": "hinglish",
+      "width": 320
+    },
+    {
+      "language": "hinglish",
+      "width": 390
+    },
+    {
+      "language": "hinglish",
+      "width": 768
+    },
+    {
+      "language": "hinglish",
+      "width": 1440
+    }
+  ],
+  "accessibilityScans": 3,
+  "realMobileDevices": false
+}

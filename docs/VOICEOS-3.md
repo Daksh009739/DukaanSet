@@ -1,5 +1,7 @@
 # VoiceOS 3.0
 
+VoiceOS 3.1 supersedes the initial language/default and endpoint behavior below. See [VOICEOS-3.1.md](VOICEOS-3.1.md) for root causes, finalized turns and outstanding live audio gates.
+
 VoiceOS uses the existing authenticated application, semantic draft engine and business services. App display language remains separate from conversational language. There is no input or reply language picker. English, Hindi and Hinglish follow each full utterance; short answers retain the current conversation language. The language, draft and bounded conversation history recover in the existing user/shop session. Talk Mode starts only after the merchant starts the microphone, pauses recognition during a reply and resumes after successful playback. Quick Mode handles one turn at a time.
 
 Writes use reviewed domain requests and one explicit screen or spoken confirmation. A spoken yes binds to the current complete draft and current shop. Financial and inventory results come from verified backend responses. Frozen retries retain their idempotency key; stale sale product/customer snapshots fail before creating records. Existing stock, unit, payment, permission, trading-day and audit validation still applies. Ambiguous generic product counts ask sale versus stock and require actual product names. High-risk reversals, refunds, closing and document delivery keep their existing review and authorization flows.
