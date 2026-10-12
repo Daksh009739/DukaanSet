@@ -151,7 +151,8 @@ export class Store {
     this.assertPermission(userId,businessId,"inventory");
     this.assertMember(userId, businessId); this.limitEntities("products", businessId);
     const input = object(raw), id = uid(), name = string(input.name, "Product name", 100), sku = string(input.sku, "SKU", 64, true), unit = validateUnit(input.unit), price = integer(input.pricePaise, "Selling price"), cost = integer(input.costPaise ?? 0, "Cost price"), quantity = integer(input.quantityMilli ?? 0, "Stock quantity"), minimum = integer(input.minStockMilli ?? 5000, "Minimum stock"), expiry = date(input.expiryDate), names = aliases(input.aliases), barcode = string(input.barcode, "Barcode", 80, true), variation = string(input.variation, "Variation", 100, true), packSize = input.packSize === undefined || input.packSize === null ? null : integer(input.packSize, "Pack size", 1, 100000);
-    keys(input, ["name", "sku", "unit", "pricePaise", "costPaise", "quantityMilli", "minStockMilli", "expiryDate", "aliases", "barcode", "variation", "packSize", "displayNames"]);
+    keys(input, ["name", "sku", "unit", "pricePaise", "costPaise", "quantityMilli", "minStockMilli", "expiryDate", "aliases", "barcode", "variation", "packSize", "displayNames", "rejectDuplicate"]);
+    if(input.rejectDuplicate!==undefined&&typeof input.rejectDuplicate!=='boolean')throw new DomainError('INVALID_INPUT','Duplicate protection must be true or false.');
     if(variation)this.assertPermission(userId,businessId,'inventory','variants');
     if(expiry)this.assertPermission(userId,businessId,'inventory','expiryTracking');
     if(packSize)this.assertPermission(userId,businessId,'inventory','unitConversion');
@@ -159,6 +160,7 @@ export class Store {
     lineTotal(cost, quantity);
     if (sku && this.row("SELECT id FROM products WHERE business_id=? AND sku=?", businessId, sku)) throw new DomainError("SKU_EXISTS", "This SKU already exists in this business.", 409);
     this.transaction(() => {
+      if(input.rejectDuplicate&&this.rows('SELECT * FROM products WHERE business_id=?',businessId).map(asProduct).some(product=>canonicalUnit(product.unit)===canonicalUnit(unit)&&(canonicalProductName(product.name)===canonicalProductName(name)&&product.variation.normalize('NFKC').trim().toLowerCase()===variation.normalize('NFKC').trim().toLowerCase()||matchProducts(name+' '+variation,[product]).exact)))throw new DomainError('PRODUCT_EXISTS','A matching product already exists. Review the catalogue match before retrying.',409);
       if(quantity&&new ClosingService(this).current(businessId).status==='closed')throw new DomainError('DAY_CLOSED','Open the next session before adding opening stock.',409);
       this.run("INSERT INTO products VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", id, businessId, name, sku, unit, price, cost, quantity, minimum, expiry, JSON.stringify(names), barcode, variation, packSize, JSON.stringify(displayNames(input.displayNames)));
       if (quantity) this.run("INSERT INTO movements VALUES(?,?,?,?,?,?,?)", uid(), businessId, id, quantity, "opening", stamp(), null);

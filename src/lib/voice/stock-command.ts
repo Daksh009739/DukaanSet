@@ -1,6 +1,6 @@
 import type { Product, StockBatchItem } from '../contracts';
 import { canonicalProductName, canonicalUnit, catalogueUnits, matchProducts, newProductDraft, parseVoiceTranscript, validateRow, voicePricePaise, type VoiceRow } from './parser';
-import { spokenStockText } from './os';
+import { spokenStockText, type VoiceCommand } from './os';
 import {minorUnits} from '../client';
 
 const number='(\\d+(?:\\.\\d{1,2})?)';
@@ -33,7 +33,13 @@ export function exactUnitCost(total:string,qty:string):string|null {
 }
 /** This is shared by the global assistant and focused stock workspace. No writes. */
 export function prepareStockCommand(raw:string,products:Product[],previous:VoiceRow[]=[]):VoiceRow[] {
- const text=spokenStockText(raw.replace(/₹\s*(\d+(?:\.\d{1,2})?)/g,'$1 rupaye')).trim(),rows:VoiceRow[]=previous.map(row=>({...row,newProduct:row.newProduct?{...row.newProduct}:undefined}));
+ const instruction=raw.replace(/\s+(?:naam (?:ka|ki)|नाम (?:का|की))\s+(?:product|item|प्रोडक्ट|उत्पाद)\s*/giu,' ').replace(/\s+(?:to|in|into)\s+(?:the\s+)?(?:stock|inventory)\b/gi,' ').replace(/(?:^|\s)(?:stock|inventory|स्टॉक|इन्वेंटरी)\s+(?:mein|me|में)(?=\s|$)/gi,' ').replace(/\s+(?:daal|dal|badha|badhaa|डाल|बढ़ा)\s+(?:do|दो)\s*[.!।]?$/iu,'');
+ const text=spokenStockText(instruction.replace(/₹\s*(\d+(?:\.\d{1,2})?)/g,'$1 rupaye')).trim(),rows:VoiceRow[]=previous.map(row=>({...row,newProduct:row.newProduct?{...row.newProduct}:undefined}));
+ const priceReply=text.match(/^(\d+(?:\.\d{1,2})?)\s*(?:rupaye|rupees|रुपये)?\s*$/);
+ const missingPrice=rows.filter(row=>row.newProduct&&voicePricePaise(row.newProduct.price)===null);
+ if(priceReply&&missingPrice.length===1){missingPrice[0].sellingPrice=priceReply[1];missingPrice[0].priceUnit=missingPrice[0].newProduct!.unit;missingPrice[0].newProduct!.price=priceReply[1];return rows.map(row=>normalizeStockPrices(row,products));}
+ const bareCorrection=text.replace(/[,;।]/g,' ').replace(/\s+/g,' ').trim().match(new RegExp(`^(\\d+(?:\\.\\d{1,3})?)\\s*(${unitWords})?\\s+(?:nahi|nahin|नहीं)\\s+(\\d+(?:\\.\\d{1,3})?)\\s*(${unitWords})?\\s*(?:karo|kar do|करो)?$`));
+ if(bareCorrection&&rows.length){const targets=rows.filter(row=>Number(row.quantity)===Number(bareCorrection[1])&&(!bareCorrection[2]||canonicalUnit(row.unit)===canonicalUnit(bareCorrection[2])));if(targets.length!==1)return rows.map(row=>({...row,issues:[...row.issues,'correction']}));targets[0].quantity=bareCorrection[3];if(bareCorrection[4])targets[0].unit=canonicalUnit(bareCorrection[4]);return rows.map(row=>normalizeStockPrices(row,products));}
  const trailingCorrection=text.match(new RegExp(`^\\d+(?:\\.\\d+)?\\s+(?:nahi|nahin|नहीं)\\s+${number}\\s+(${unitWords})\\s+(.+?)\\s*(?:karo|kar do|करो)?$`));
  if(trailingCorrection&&rows.length){const query=trailingCorrection[3].replace(/\s+(?:karo|kar do|करो)$/,'').trim();return prepareStockCommand(`${query} 0 nahi ${trailingCorrection[1]} ${trailingCorrection[2]}`,products,rows);}
  // A quantity/rate correction targets a catalogue identity, never appends stock.
@@ -86,6 +92,13 @@ export function prepareStockCommand(raw:string,products:Product[],previous:Voice
   const baseQuantity=stockBaseQuantity(row,products);
   if(row.sellingTotal){const rate=baseQuantity===null?null:exactUnitCost(row.sellingTotal,String(baseQuantity/1000));if(rate!==null){row.sellingPrice=rate;row.priceUnit=products.find(p=>p.id===row.productId)?.unit||row.newProduct?.unit;if(row.newProduct)row.newProduct.price=rate;}else row.unclearAmount=row.sellingTotal;}
   if(row.newProduct&&row.purchaseCost)row.newProduct.cost=row.purchaseCost;
+  return normalizeStockPrices(row,products);
+ });
+}
+/** Restore the edited semantic rows, including their explicit rate basis. */
+export function stockRowsFromCommand(command:VoiceCommand,products:Product[]):VoiceRow[]{
+ return command.items.map(item=>{let row:VoiceRow={...item,quantityMilli:null,issues:[],source:'voice',sellingPrice:item.priceBasis==='unit'?item.price:undefined,priceUnit:command.fields['priceUnit.'+item.id]||products.find(p=>p.id===item.productId)?.unit||item.unit,purchaseCost:command.fields['purchaseCost.'+item.id],purchaseTotal:command.fields['purchaseTotal.'+item.id],costUnit:command.fields['costUnit.'+item.id]||item.unit,unclearAmount:item.priceBasis==='unclear'||item.priceBasis==='total'?item.price:undefined};
+  if(!row.productId&&!row.candidates.length){row.newProduct=newProductDraft(row);row.newProduct.price=row.sellingPrice||'';row.newProduct.cost=row.purchaseCost||'';row.newProduct.unit=command.fields['newUnit.'+item.id]||item.unit;row.newProduct.sku=command.fields['sku.'+item.id]||'';row.newProduct.variation=command.fields['variation.'+item.id]||'';}
   return normalizeStockPrices(row,products);
  });
 }

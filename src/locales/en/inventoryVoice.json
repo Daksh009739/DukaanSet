@@ -51,6 +51,7 @@
   "addition": "Stock in",
   "remove": "Remove",
   "confirm": "Save All Stock",
+  "retry": "Retry saved request",
   "unsaved": "Draft only — stock has not been updated.",
   "offline": "You are offline. Your draft stays on this device; reconnect before confirming.",
   "restored": "Recovered your unsaved draft for this business.",

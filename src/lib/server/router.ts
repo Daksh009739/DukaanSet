@@ -122,7 +122,7 @@ export async function handleRequest(request: Request, store: Store = getStore())
     store.assertMember(userId, businessId);
     if(action==='weather'&&!recordId&&verb==='GET')return json(await shopWeather().current(access(store.db,userId,businessId).location));
     const closing=new ClosingService(store),media=new ProductMediaService(store);
-    if(action==='voice-interpret'&&!recordId){const service=new VoiceInterpreterService(store);if(verb==='GET')return json(service.status(userId,businessId));if(verb!=='POST')throw new DomainError('METHOD_NOT_ALLOWED','Use GET or POST.',405);throttle(`interpret:${userId}`,5);return json(await service.interpret(userId,businessId,await body(request)));}
+    if(action==='voice-interpret'&&!recordId){const service=new VoiceInterpreterService(store);if(verb==='GET')return json(service.status(userId,businessId));if(verb!=='POST')throw new DomainError('METHOD_NOT_ALLOWED','Use GET or POST.',405);throttle(`interpret:${userId}`,5);return json(await service.interpret(userId,businessId,await body(request),request.signal));}
     if(action==='intelligence'&&!recordId&&verb==='GET')return json(new IntelligenceService(store).overview(userId,businessId));
     if(action==='reorder-plan'&&!recordId&&verb==='GET')return json(new IntelligenceService(store).reorder(userId,businessId,{productId:url.searchParams.get('productId'),leadDays:Number(url.searchParams.get('leadDays')??7),coverageDays:Number(url.searchParams.get('coverageDays')??7)}));
     if(action==='simulate'&&!recordId&&verb==='POST')return json(new IntelligenceService(store).simulate(userId,businessId,await body(request)));

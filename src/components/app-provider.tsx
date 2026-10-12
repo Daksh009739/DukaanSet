@@ -82,6 +82,7 @@ function Provider({children}: {children:ReactNode}) {
       for(let index=sessionStorage.length-1;index>=0;index--){
         const key=sessionStorage.key(index);if(!key)continue;
         let keep=Boolean(writeRecoveryPrefix&&key.startsWith(writeRecoveryPrefix));
+        if(session&&(key.startsWith(`ds-conversation-${session.user.id}-`)||key.startsWith(`ds-voice-draft-${session.user.id}-`))){try{const value=JSON.parse(sessionStorage.getItem(key)||'null');keep=Boolean(value?.pending||value?.submitted);}catch{keep=true;}}
         if(recoveryPrefix&&key.startsWith(recoveryPrefix)){
           const raw=sessionStorage.getItem(key);
           if(raw){if(key.endsWith('-customer'))keep=true;else{try{const value=JSON.parse(raw);keep=Boolean(value?.pendingSale||value?.recoveryBlocked);}catch{keep=true;}}}

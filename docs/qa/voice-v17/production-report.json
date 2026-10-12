@@ -1,0 +1,230 @@
+{
+  "checkedAt": "2026-10-12T08:16:34.341Z",
+  "environment": "Isolated compiled production build; fictional business; external interpretation disabled",
+  "checks": [
+    "Five-turn corrected sale creates one exact invoice, collection and stock deduction",
+    "Old-dues collection updates the ledger without creating a sale",
+    "Reviewed catalog creation stores the given price and unit with zero opening stock",
+    "One stock confirmation atomically receives existing and new products with corrected quantities",
+    "Closing summary reads authoritative trading-session totals and does not close the shop",
+    "Latest bill resolves to the actual document studio without creating or delivering a transaction",
+    "Interpreter availability correctly reports an unconfigured provider",
+    "All display languages fit 11 widths; nine draft accessibility scans and keyboard dismissals pass without writes or runtime errors"
+  ],
+  "layouts": [
+    {
+      "language": "en",
+      "width": 320,
+      "state": "idle"
+    },
+    {
+      "language": "en",
+      "width": 360,
+      "state": "idle"
+    },
+    {
+      "language": "en",
+      "width": 375,
+      "state": "idle"
+    },
+    {
+      "language": "en",
+      "width": 390,
+      "state": "idle"
+    },
+    {
+      "language": "en",
+      "width": 412,
+      "state": "idle"
+    },
+    {
+      "language": "en",
+      "width": 430,
+      "state": "idle"
+    },
+    {
+      "language": "en",
+      "width": 768,
+      "state": "idle"
+    },
+    {
+      "language": "en",
+      "width": 1024,
+      "state": "idle"
+    },
+    {
+      "language": "en",
+      "width": 1280,
+      "state": "idle"
+    },
+    {
+      "language": "en",
+      "width": 1440,
+      "state": "idle"
+    },
+    {
+      "language": "en",
+      "width": 1920,
+      "state": "idle"
+    },
+    {
+      "language": "en",
+      "width": 320,
+      "state": "review"
+    },
+    {
+      "language": "en",
+      "width": 390,
+      "state": "review"
+    },
+    {
+      "language": "en",
+      "width": 1440,
+      "state": "review"
+    },
+    {
+      "language": "hi",
+      "width": 320,
+      "state": "idle"
+    },
+    {
+      "language": "hi",
+      "width": 360,
+      "state": "idle"
+    },
+    {
+      "language": "hi",
+      "width": 375,
+      "state": "idle"
+    },
+    {
+      "language": "hi",
+      "width": 390,
+      "state": "idle"
+    },
+    {
+      "language": "hi",
+      "width": 412,
+      "state": "idle"
+    },
+    {
+      "language": "hi",
+      "width": 430,
+      "state": "idle"
+    },
+    {
+      "language": "hi",
+      "width": 768,
+      "state": "idle"
+    },
+    {
+      "language": "hi",
+      "width": 1024,
+      "state": "idle"
+    },
+    {
+      "language": "hi",
+      "width": 1280,
+      "state": "idle"
+    },
+    {
+      "language": "hi",
+      "width": 1440,
+      "state": "idle"
+    },
+    {
+      "language": "hi",
+      "width": 1920,
+      "state": "idle"
+    },
+    {
+      "language": "hi",
+      "width": 320,
+      "state": "review"
+    },
+    {
+      "language": "hi",
+      "width": 390,
+      "state": "review"
+    },
+    {
+      "language": "hi",
+      "width": 1440,
+      "state": "review"
+    },
+    {
+      "language": "hinglish",
+      "width": 320,
+      "state": "idle"
+    },
+    {
+      "language": "hinglish",
+      "width": 360,
+      "state": "idle"
+    },
+    {
+      "language": "hinglish",
+      "width": 375,
+      "state": "idle"
+    },
+    {
+      "language": "hinglish",
+      "width": 390,
+      "state": "idle"
+    },
+    {
+      "language": "hinglish",
+      "width": 412,
+      "state": "idle"
+    },
+    {
+      "language": "hinglish",
+      "width": 430,
+      "state": "idle"
+    },
+    {
+      "language": "hinglish",
+      "width": 768,
+      "state": "idle"
+    },
+    {
+      "language": "hinglish",
+      "width": 1024,
+      "state": "idle"
+    },
+    {
+      "language": "hinglish",
+      "width": 1280,
+      "state": "idle"
+    },
+    {
+      "language": "hinglish",
+      "width": 1440,
+      "state": "idle"
+    },
+    {
+      "language": "hinglish",
+      "width": 1920,
+      "state": "idle"
+    },
+    {
+      "language": "hinglish",
+      "width": 320,
+      "state": "review"
+    },
+    {
+      "language": "hinglish",
+      "width": 390,
+      "state": "review"
+    },
+    {
+      "language": "hinglish",
+      "width": 1440,
+      "state": "review"
+    }
+  ],
+  "limitations": [
+    "Browser speech finalization is separately simulated in E2E, not a live acoustic test.",
+    "No live OpenAI request or hosted staging health is established by this local review."
+  ]
+}
