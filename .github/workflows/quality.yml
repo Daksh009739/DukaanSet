@@ -33,6 +33,9 @@ jobs:
       - run: npm run lint
       - run: npm run typecheck
       - run: npm test
+      - name: Require real desktop and Android VoiceOS acceptance before main promotion
+        if: github.ref == 'refs/heads/main' || github.base_ref == 'main'
+        run: node scripts/qa/voice33-release-gate.mjs
       - name: Labelled V15 semantic intent, entity roles and financial slot regression gate
         run: npm run test:voice-eval
       - name: VoiceOS 3 automatic language and explicit confirmation regression gate
@@ -85,6 +88,8 @@ jobs:
         run: npm run test:e2e -- tests/e2e/voice3.spec.ts
       - name: VoiceOS 3.1 automatic endpoints, exact customer commits, language precedence and stale response isolation
         run: npm run test:e2e -- tests/e2e/voice31.spec.ts
+      - name: VoiceOS 3.3 default hands-free, separate same-name customers, pause latch and verified spoken confirmation
+        run: npm run test:e2e -- tests/e2e/voice33.spec.ts
       - name: VoiceOS 3 compiled actions, audio playback and responsive voice selection
         run: node scripts/qa/voice3-production-review.mjs
       - name: V17 compiled transactions, actual closing/document sources and multilingual accessibility

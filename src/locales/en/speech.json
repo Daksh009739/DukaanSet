@@ -103,8 +103,17 @@
   "newBill": "New Bill",
   "stockAddition": "Stock Addition",
   "askShopScope": "I can check customers in your active shop. Do you mean your shop’s customer records? I cannot verify a worldwide customer count.",
-  "customerExists": "This customer already exists in your shop. Open the record below instead of creating a duplicate.",
+  "customerExists": "{{name}} already exists. Open that customer, or create a separate customer with the same name?",
   "minimize": "Minimize assistant",
   "readyReview": "Ready to review",
-  "completed": "Completed"
+  "completed": "Completed",
+  "readySeparateCustomer": "A separate customer named {{name}} is ready. Shall I save it?",
+  "createSeparate": "Create a separate customer",
+  "pause": "Pause",
+  "resume": "Resume",
+  "paused": "Conversation paused",
+  "microphoneStatus": "Microphone status",
+  "handsFreeHint": "Speak naturally. I’ll listen again after each reply.",
+  "askPhone": "Check the phone number. An existing customer’s number cannot be reused for a separate customer.",
+  "nextTask": "What would you like to do next?"
 }

@@ -103,8 +103,17 @@
   "newBill": "Naya Bill",
   "stockAddition": "Stock jodein",
   "askShopScope": "Main aapki active shop ke customers check kar sakta hoon. Kya aap shop ke customer records pooch rahe hain? Duniya bhar ka customer count verify nahi kar sakta.",
-  "customerExists": "Yeh customer aapki shop mein pehle se hai. Duplicate banane ke bajaye neeche record kholiye.",
+  "customerExists": "{{name}} naam ka customer pehle se hai. Usi ko kholna hai ya same naam se alag customer banana hai?",
   "minimize": "Assistant minimize karein",
   "readyReview": "Review ke liye ready",
-  "completed": "Complete ho gaya"
+  "completed": "Complete ho gaya",
+  "readySeparateCustomer": "{{name}} ka alag customer ready hai. Save kar doon?",
+  "createSeparate": "Alag customer bana do",
+  "pause": "Rokein",
+  "resume": "Phir shuru karein",
+  "paused": "Conversation paused hai",
+  "microphoneStatus": "Microphone ki sthiti",
+  "handsFreeHint": "Aaram se bolo. Har reply ke baad main phir sununga.",
+  "askPhone": "Phone number check karo. Alag customer ke liye existing customer ka number use nahi kar sakte.",
+  "nextTask": "Ab kya karna hai?"
 }

@@ -26,6 +26,7 @@ export function spokenControl(raw:string):'confirm'|'cancel'|'stop'|null{
   if(/^(?:stop speaking|stop listening|ruko|ruk jao|रुको|बोलना बंद करो)$/.test(text))return'stop';
   if(/^(?:cancel(?: (?:it|conversation|this|the draft|operation))?|cancel kar(?: do|o)?|रद्द कर(?: दो|ें)|बातचीत बंद करो)$/.test(text))return'cancel';
   if(/^(?:yes|haan|han|हाँ|हां|जी)$/.test(text))return'confirm';
+  if(/^(?:bilkul bana do|बिल्कुल बना दो|yes confirm|yes please confirm)$/.test(text))return'confirm';
   if(/^(?:(?:yes|yeah|haan|han|ji|okay|ok|हाँ|हां|जी)\s+)?(?:(?:please\s+)?(?:save|confirm)(?:\s+(?:it|this|the bill|the draft|all stock|karo|kar do|kar|do|करो|कर दो))?|(?:save|confirm)\s+kar(?:o|\s+do)|सहेज(?:ो|ें)|सेव\s+कर(?:ो|\s+दो))$/.test(text))return'confirm';
   return null;
 }

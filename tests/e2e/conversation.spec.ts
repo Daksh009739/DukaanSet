@@ -1,3 +1,4 @@
+import {messages} from '../../src/locales/registry';
 import {test,expect,type Page} from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 import {mkdirSync} from 'node:fs';
@@ -13,8 +14,8 @@ async function launch(page:Page){await page.getByRole('button',{name:'Open Voice
 test('minimal global assistant prepares multi-turn bills from Customers, then saves one real transaction',async({page})=>{
  const f=await setup(page),id=f.business.id,potato=f.state.products.find(p=>p.name==='Potatoes')!;
  await page.goto('/app/customers');const dialog=await launch(page);await expect(dialog.locator('.conversation-microphone')).toBeVisible();await expect(dialog.locator('textarea')).toHaveCount(0);await expect(dialog.getByLabel('Language',{exact:true})).toHaveCount(0);
- await say(page,'Chetna ka bill banao');await expect(dialog.getByRole('heading',{name:'Say which products and quantities.',exact:true})).toBeVisible();await expect(dialog.getByRole('button',{name:/^Confirm & Save(?: Bill| Customer)?$/})).toBeDisabled();
- await say(page,'5 kilo aloo');await say(page,'200 rupaye');await expect(dialog.getByRole('heading',{name:/Cash, UPI or credit/})).toBeVisible();await say(page,'Cash');await expect(dialog.locator('.conversation-total dd').first()).toHaveText('₹200');expect((await state(page,id)).invoices.length).toBe(f.state.invoices.length);
+ await say(page,'Chetna ka bill banao');await expect(dialog.locator('[data-reply-kind=question]')).toContainText(/Chetna.*(?:products|samaan)/);await expect(dialog.getByRole('button',{name:/^Confirm & Save(?: Bill| Customer)?$/})).toBeDisabled();
+ await say(page,'5 kilo aloo');await say(page,'200 rupaye');await expect(dialog.locator('[data-reply-kind=question]')).toContainText(/cash|UPI/);await say(page,'Cash');await expect(dialog.locator('.conversation-total dd').first()).toHaveText('₹200');expect((await state(page,id)).invoices.length).toBe(f.state.invoices.length);
  await dialog.getByRole('button',{name:/^Confirm & Save(?: Bill| Customer)?$/}).evaluate(button=>{(button as HTMLButtonElement).click();(button as HTMLButtonElement).click();});await expect(dialog.getByText('Saved successfully',{exact:true})).toBeVisible();
  const after=await state(page,id);expect(after.invoices.length).toBe(f.state.invoices.length+1);expect(after.products.find(p=>p.id===potato.id)!.quantityMilli).toBe(potato.quantityMilli-5000);expect(after.invoices[0].totalPaise).toBe(20000);expect(after.invoices[0].paidPaise).toBe(20000);
 });
@@ -35,7 +36,7 @@ test('global stock from Customers shares the focused engine and preserves costs 
 });
 test('mobile conversational panel, language independence and keyboard controls pass accessibility',async({page})=>{
  await setup(page);await launch(page);const dialog=page.getByRole('dialog');mkdirSync('.local/qa/v12',{recursive:true});for(const width of [320,390,768,1440]){await page.setViewportSize({width,height:844});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);await expect(dialog.getByRole('button',{name:'Close',exact:true})).toBeVisible();await page.screenshot({path:'.local/qa/v12/assistant-'+width+'.png'});}
- await dialog.getByText('Microphone help',{exact:true}).click();await expect(dialog.getByLabel('Spoken language',{exact:true})).toHaveCount(0);const axe=await new AxeBuilder({page}).include('.conversation-sheet').withTags(['wcag2a','wcag2aa']).analyze();expect(axe.violations).toEqual([]);await dialog.getByRole('button',{name:'Close',exact:true}).click();await page.getByLabel('Language',{exact:true}).selectOption('hi');await page.getByRole('button',{name:'VoiceOS खोलें',exact:true}).click();await expect(page.getByRole('dialog').getByText('अपनी बात बोलें या लिखें।',{exact:true})).toBeVisible();await page.keyboard.press('Escape');await expect(page.getByRole('dialog')).toBeHidden();
+ await expect(dialog.getByRole('button',{name:'Assistant settings',exact:true})).toBeVisible();await expect(dialog.getByLabel('Spoken language',{exact:true})).toHaveCount(0);const axe=await new AxeBuilder({page}).include('.conversation-sheet').withTags(['wcag2a','wcag2aa']).analyze();expect(axe.violations).toEqual([]);await dialog.getByRole('button',{name:'Close',exact:true}).click();await page.getByLabel('Language',{exact:true}).selectOption('hi');await page.getByRole('button',{name:'VoiceOS खोलें',exact:true}).click();await expect(page.getByRole('dialog').locator('[data-reply-kind=welcome]')).toContainText(messages.hi.speech.welcome);await page.keyboard.press('Escape');await expect(page.getByRole('dialog')).toBeHidden();
 });
 
 test('a new catalogue match appearing before save can be selected and retried without duplicates',async({page})=>{

@@ -1,5 +1,5 @@
 [
-  {"text":"Rahul naam ka customer bana do.","intent":"customer","name":"Rahul","question":""},
+  {"text":"Rahul naam ka customer bana do.","intent":"customer","name":"Rahul","question":"duplicateContact"},
   {"text":"Ek naya customer add karna hai.","intent":"customer","question":"name"},
   {"text":"एक नया ग्राहक बनाना है","intent":"customer","question":"name"},
   {"text":"10 kilo daal stock mein daal do.","intent":"stock","products":["daal"],"quantities":["10"]},

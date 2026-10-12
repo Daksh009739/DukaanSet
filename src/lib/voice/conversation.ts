@@ -7,6 +7,7 @@ import {prepareStockCommand,stockRowsFromCommand} from './stock-command';
 import {z} from './zod';
 import {extractVoiceRoles,interpretedSlotsSchema,type InterpretedSlots,requiresRecordCorrectionReview} from './semantics';
 import {prepareCatalogueCommand,catalogueQuestion} from './catalogue-command';
+import {customerDuplicateQuestion,resolveCustomerDecision,separateCustomer} from './customer-decision';
 
 const voiceActionRouting:Record<VoiceIntent,{safety:'read'|'navigate'|'write'|'review';destination?:string}>={
  sale:{safety:'write'},stock:{safety:'write'},customer:{safety:'write'},payment:{safety:'write'},expense:{safety:'write'},supplier:{safety:'review'},purchase:{safety:'review'},demand:{safety:'review'},closing:{safety:'review',destination:'/app/daily-closing'},report:{safety:'read'},document:{safety:'review'},reorder:{safety:'review'},followup:{safety:'review'},simulation:{safety:'read'},scan:{safety:'review'},insights:{safety:'read'},open:{safety:'navigate'},cancel:{safety:'navigate'},unknown:{safety:'review'}
@@ -66,6 +67,9 @@ function conversationCorrection(raw:string,state:V3State,previous:VoiceCommand):
  const text=spokenText(raw),negation='(?:nahi|nahin|नहीं|instead of)',fields={...previous.fields},items=previous.items.map(item=>({...item}));
  const result=(changed:string[]=[],changedItems:string[]=[])=>({...previous,transcript:raw,fields,items,changed,changedItems,warnings:voiceAllowed(previous.intent,state)?[]:['permission']});
  const replacement=text.match(new RegExp(`^(.+?)\\s+${negation}\\s+(.+?)\\s*(?:karo|kar do|करो)?$`,'u'));
+ if(replacement&&previous.intent==='customer'&&canonicalProductName(replacement[1])===canonicalProductName(fields.name||'')){
+  fields.name=raw.match(/(?:nahi|nahin|नहीं)\s*[,،]?\s*(.+)/iu)?.[1]?.replace(/[.!।]+$/,'').trim()||replacement[2];delete fields.duplicateDecision;delete fields.duplicateName;delete fields.customerId;return result(['name']);
+ }
  if(replacement&&['sale','payment','report','document'].includes(previous.intent)&&!/[0-9]/.test(replacement[1])&&(canonicalProductName(replacement[1])===canonicalProductName(fields.customerQuery||'')||resolveContact(replacement[1],state.customers).includes(fields.customerId))){
   const name=raw.match(/(?:nahi|nahin|नहीं)\s*[,،]?\s*(.+)/iu)?.[1]?.replace(/\s+(?:ke naam.*|karo|kar do|करो).*$/iu,'').replace(/[.!।]+$/,'').trim()||replacement[2];
   const ids=resolveContact(name,state.customers);fields.customerQuery=name;fields.customerId=ids.length===1?ids[0]:'';delete fields.createCustomer;delete fields.name;return result(['customerQuery','customerId']);
@@ -82,6 +86,7 @@ function conversationCorrection(raw:string,state:V3State,previous:VoiceCommand):
 export function advanceVoice(raw:string,state:V3State,previous?:VoiceCommand,selectedCustomerId?:string,contextIntent?:VoiceIntent):VoiceCommand {
  if(/kitne|kitni|how many|count|number of|कितने|कितनी/iu.test(raw)&&!/create|add|jodo|जोड़/iu.test(raw)&&/(?:duniya|world|worldwide|globally|दुनिया|विश्व).*(?:customers?|grahak|ग्राहक)|(?:customers?|ग्राहक).*(?:world|दुनिया)/iu.test(raw))return{intent:'unknown',transcript:raw.slice(0,5000),fields:{operation:'shopScope'},items:[],changed:[],changedItems:[],warnings:[]};
  raw=normalizeVoiceInstruction(raw);
+ if(previous){const decision=resolveCustomerDecision(raw,previous,state.customers);if(decision)return decision;}
  if(requiresRecordCorrectionReview(raw))return{intent:'open',transcript:raw,fields:{screen:/write[ -]?off|credit reversal|बकाया माफ/iu.test(raw)?'customers':/payment|भुगतान/iu.test(raw)?'payments':'sales',highRiskReview:'true'},items:[],warnings:[],changed:[],changedItems:[]};
  if(/(?:closing|hisaab|हिसाब|दुकान).*(?:summary|सारांश)|(?:summary|सारांश).*(?:closing|hisaab|हिसाब)/iu.test(raw))return{intent:'closing',transcript:raw,fields:{closingAction:'summary'},items:[],warnings:voiceAllowed('closing',state)?[]:['permission'],changed:[],changedItems:[]};
  const record=raw.match(/^(?:open|show|view|खोलो|दिखाओ)?\s*(.+?)\s+(?:ka|ke|ki|का|के|की)\s+(account|khata|details|detail|profile|खाता|जानकारी)\s*(?:kholo|dikhao|open|show|खोलो|दिखाओ)?[.!।]?$/iu);
@@ -243,6 +248,8 @@ export function nextVoiceQuestion(command:VoiceCommand,state:V3State):string {
   if(salePreview(command,state.products).pending>0&&!f.customerId&&f.createCustomer!=='true')return'customer';
  }
  if(['customer','supplier'].includes(command.intent)&&!f.name)return'name';
+ if(command.intent==='customer'&&customerDuplicateQuestion(command,state.customers))return'duplicateContact';
+ if(command.intent==='customer'&&f.phone&&state.customers.some(c=>c.phone&&c.phone.replace(/\D/g,'')===f.phone.replace(/\D/g,'')))return'phone';
  if(command.intent==='payment'&&!f.customerId)return'customer';
  if(command.intent==='expense'&&!f.description?.trim())return'description';
  if(command.intent==='payment'||command.intent==='expense'){try{if(!f.amount||minorUnits(f.amount)<=0)return'amount';}catch{return'amount';}if(!['cash','upi'].includes(f.method))return'method';}
@@ -254,7 +261,7 @@ export function buildVoiceRequest(command:VoiceCommand,state:V3State,key:string)
  const f=command.fields,body:Record<string,unknown>={idempotencyKey:key};
  if(command.intent==='stock'&&f.operation==='catalogueProduct')return{path:'/catalogue-import',body:{...body,products:[{name:f.name,unit:f.unit,pricePaise:minorUnits(f.price),quantityMilli:0,rejectDuplicate:true}]}};
  if(command.intent==='sale'){const sale=salePreview(command,state.products);if(!sale.valid)return null;return{path:'/voice-sale',body:{...body,expected:{products:[...new Set(sale.items.map(item=>item.productId))].map(id=>{const p=state.products.find(p=>p.id===id)!;return{id:p.id,unit:p.unit,pricePaise:p.pricePaise,quantityMilli:p.quantityMilli,variation:p.variation};}),...f.customerId?{customer:{id:f.customerId,name:state.customers.find(c=>c.id===f.customerId)?.name||''}}:{}},...f.createCustomer==='true'?{newCustomer:{name:f.name,phone:f.phone||''}}:{},sale:{customerId:f.customerId||null,items:sale.items,discountPaise:sale.discount,payments:[{method:'cash',amountPaise:sale.cash},{method:'upi',amountPaise:sale.upi}].filter(p=>p.amountPaise>0),dueDate:null}}};}
- if(command.intent==='customer')return{path:'/customers',body:{...body,name:f.name,phone:f.phone||'',rejectDuplicate:true}};
+ if(command.intent==='customer')return{path:'/customers',body:{...body,name:f.name,phone:f.phone||'',rejectDuplicate:true,...separateCustomer(command)?{allowSameName:true}:{}}};
  if(command.intent==='payment')return{path:'/payments',body:{...body,customerId:f.customerId,amountPaise:minorUnits(f.amount),method:f.method}};
  if(command.intent==='expense')return{path:'/expenses',body:{...body,description:f.description,amountPaise:minorUnits(f.amount),method:f.method}};
  return null;

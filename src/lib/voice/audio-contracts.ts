@@ -1,5 +1,4 @@
 import type {Language} from '../contracts';
-export type ConversationMode='quick'|'talk';
 export type AssistantVoice={id:string;name:string;provider:'azure'|'device';locales:string[];gender?:'female'|'male';local?:boolean};
 export type VoicePreferences={voiceId:string;cloudAudioConsent:boolean;audible:boolean;revision:number};
 export type VoiceAudioStatus={preferences:VoicePreferences;sttConfigured:boolean;ttsConfigured:boolean;catalogueAvailable:boolean;voices:AssistantVoice[];usage:{requests:number;characters:number;audioSeconds:number;estimatedCostUsd:number|null};limits:{audioBytes:number;turnMs:number}};

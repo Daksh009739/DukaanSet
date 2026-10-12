@@ -10,6 +10,7 @@ import { ArrowLeft, Check, CheckCircle2, History, Mic, Plus, RotateCcw, ShieldCh
 import type { InventoryEntry } from '@/lib/contracts';
 import { quantity, money, RequestError } from '@/lib/client';
 import { draftStorageKey, newVoiceDraft,  restoreVoiceRow, validateRow, canonicalUnit, newProductDraft, type VoiceDraft, type VoiceRow, type RowIssue } from '@/lib/voice/parser';
+import {recoverVoiceAction} from '@/lib/voice/action-status';
 import { useVoiceCapture,useVoiceOS } from './voice-os-provider';
 import type { VoiceCommand } from '@/lib/voice/os';
 import { prepareStockCommand,stockRowsFromCommand, stockBatchItem, exactUnitCost,stockBaseQuantity,normalizeStockPrices } from '@/lib/voice/stock-command';
@@ -63,7 +64,7 @@ export function VoiceStockPage({embedded=false,seed,onCommitted,onExecuting,onDr
     try{sessionStorage.setItem(storageKey,JSON.stringify({...draft,submitted,updatedAt:Date.now()}));}catch{setStorageError(true);return;}
     const savingBusiness=app.businessId;saving.current=true;setPhase('saving');setSaveError('');setDraft(previous=>({...previous,submitted}));onExecuting?.(true);
     try{
-      const entry=await app.mutation<InventoryEntry>('/stockbatch',{idempotencyKey:draft.key,source:submitted.source,items:submitted.items});
+      const body={idempotencyKey:draft.key,source:submitted.source,items:submitted.items};const entry=draft.submitted?await recoverVoiceAction<InventoryEntry>(savingBusiness,'/stockbatch',body,()=>app.mutation('/stockbatch',body),()=>active.current&&scopeRef.current===savingBusiness,app.refresh):await app.mutation<InventoryEntry>('/stockbatch',body);
       if(!active.current||scopeRef.current!==savingBusiness)return;
       const remaining={...newVoiceDraft(),rows:submitted.rowIds?draft.rows.filter(row=>!submitted.rowIds!.includes(row.id)):rows.filter(row=>row.issues.length)};
       setSummary({entry,skipped});setDraft(remaining);try{sessionStorage.setItem(storageKey,JSON.stringify(remaining));}catch{setStorageError(true);}setNote(null);app.notify(copy.success);onCommitted?.(entry);

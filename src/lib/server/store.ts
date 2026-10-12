@@ -195,10 +195,11 @@ export class Store {
     this.assertPermission(userId,businessId,table==='suppliers'?'purchases':'customers');
     this.assertMember(userId, businessId);
     const input = object(raw), name = string(input.name, "Name", 100), phone = string(input.phone, "Phone", 30, true);
-    keys(input, ["name", "phone", "idempotencyKey", "rejectDuplicate"]);
+    keys(input, ["name", "phone", "idempotencyKey", "rejectDuplicate", "allowSameName"]);
     if(input.rejectDuplicate!==undefined&&typeof input.rejectDuplicate!=='boolean')throw new DomainError('INVALID_INPUT','Invalid contact duplicate policy.');
+    if(input.allowSameName!==undefined&&(typeof input.allowSameName!=='boolean'||table!=='customers'||input.rejectDuplicate!==true))throw new DomainError('INVALID_INPUT','Separate customers must retain duplicate identifier protection.');
     const work = (): Customer | Supplier => {
-      if(input.rejectDuplicate){const label=(value:string)=>value.normalize('NFKC').toLowerCase().trim().replace(/\s+/g,' ');if(this.rows(`SELECT name,phone FROM ${table} WHERE business_id=?`,businessId).some(row=>label(String(row.name))===label(name)||(phone&&String(row.phone).replace(/\D/g,'')===phone.replace(/\D/g,''))))throw new DomainError('CONTACT_EXISTS','A matching contact already exists. Choose it or deliberately create a separate contact.',409);}
+      if(input.rejectDuplicate){const label=(value:string)=>value.normalize('NFKC').toLowerCase().trim().replace(/\s+/g,' '),contacts=this.rows(`SELECT name,phone FROM ${table} WHERE business_id=?`,businessId);if(phone&&contacts.some(row=>String(row.phone).replace(/\D/g,'')===phone.replace(/\D/g,'')))throw new DomainError('CONTACT_EXISTS','This phone number already belongs to a contact. Use another number or open the existing contact.',409);if(!input.allowSameName&&contacts.some(row=>label(String(row.name))===label(name)))throw new DomainError('CONTACT_EXISTS','A matching contact already exists. Choose it or deliberately create a separate contact.',409);}
       this.limitEntities(table, businessId);
       const id = uid();
       this.run(`INSERT INTO ${table} VALUES(?,?,?,?)`, id, businessId, name, phone);
@@ -262,6 +263,23 @@ export class Store {
       this.run("INSERT INTO idempotency VALUES(?,?,?,?,?,?)", businessId, operation, key, hash, JSON.stringify(result), stamp());
       return result;
     });
+  }
+  voiceActionStatus(userId:string,businessId:string,raw:unknown){
+    const input=object(raw);keys(input,['path','body']);
+    const actions={
+      '/customers':{operation:'contact.customers',permission:'customers'},
+      '/voice-sale':{operation:'voice.sale',permission:'sales'},
+      '/payments':{operation:'payment',permission:'payments'},
+      '/expenses':{operation:'expense',permission:'reports'},
+      '/stockbatch':{operation:'stockbatch',permission:'inventory'},
+      '/catalogue-import':{operation:'v3.catalogue.import',permission:'inventory'},
+    }as const;
+    const path=string(input.path,'Action',100);if(!Object.hasOwn(actions,path))throw new DomainError('INVALID_INPUT','Choose a registered voice action.');
+    const action=actions[path as keyof typeof actions];this.assertPermission(userId,businessId,action.permission,'voiceStock');
+    const body=object(input.body),key=string(body.idempotencyKey,'Idempotency key',120),prior=this.row('SELECT fingerprint,result_json FROM idempotency WHERE business_id=? AND operation=? AND key=?',businessId,action.operation,key);
+    if(!prior)return{status:'not_found' as const};
+    if(prior.fingerprint!==fingerprint(body))throw new DomainError('IDEMPOTENCY_CONFLICT','The saved request has different details.',409);
+    return{status:'committed' as const,result:JSON.parse(String(prior.result_json)) as unknown};
   }
   receiveStockBatch(userId: string, businessId: string, raw: unknown): InventoryEntry {
     this.assertPermission(userId,businessId,"inventory");

@@ -185,6 +185,7 @@ export async function handleRequest(request: Request, store: Store = getStore())
     }
     if (action === "state" && !recordId && verb === "GET") return json(saas.state(userId, businessId));
     if(action==='voice-report'&&!recordId&&verb==='GET')return json(store.voiceReport(userId,businessId,url.searchParams.get('period')||'today'));
+    if(action==='voice-action-status'&&!recordId&&verb==='POST')return json(store.voiceActionStatus(userId,businessId,await body(request)));
     if(action==='catalogue-import'&&!recordId&&verb==='POST')return json(saas.importCatalogue(userId,businessId,await body(request)),201);
     if(action==='configuration'&&!recordId)return json(verb==='GET'?saas.configuration(userId,businessId):saas.saveConfiguration(userId,businessId,await body(request)));
     if(action==='team'){if(!recordId)return json(verb==='GET'?saas.team(userId,businessId):await auth.invite(userId,businessId,await body(request)));if(verb==='POST'&&!subAction)return json(saas.updateMember(userId,businessId,recordId,await body(request)));}

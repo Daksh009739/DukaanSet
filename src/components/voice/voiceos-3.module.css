@@ -1,4 +1,5 @@
 .picker{padding:20px 24px;overflow:auto;min-height:0;overscroll-behavior:contain;scrollbar-width:thin}
+.cloudConsent{padding:0 24px 20px;flex:none;background:#f7faf8}
 .settingsHint{font-size:12px;line-height:1.7;color:#526d65;margin:0 0 14px}
 .voiceGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px;margin:16px 0}
 .voiceCard{border:1px solid #dbe8e1;border-radius:15px;padding:13px;background:#fff;min-width:0;transition:border-color .15s,box-shadow .15s}
@@ -52,6 +53,23 @@
 .sheet :global(.sheet-header-tools>.icon-btn){margin:0;min-height:40px;width:40px;border:1px solid #dbe9e1;border-radius:12px;background:#fff;color:#41665a}
 .sheet :global(.sheet-heading){min-width:0}
 .sheet :global(.sheet-header p){max-width:100%;overflow-wrap:anywhere}
+.minimal:global(.sheet-body.conversation-body){display:flex;flex-direction:column;padding:0;overflow:hidden;gap:0;background:#f7faf8;color:#1a2624}
+.conversationScroll{min-height:0;flex:1;overflow:auto;overscroll-behavior:contain;padding:20px 24px 12px;scrollbar-width:thin;scroll-padding:16px}
+.composer{flex:none;padding:12px 24px max(12px,env(safe-area-inset-bottom));border-top:1px solid #dce9e1;background:#fff;box-shadow:0 -8px 22px #062f2905}
+.minimal :global(.voice-conversation-mic),.minimal :global(.voice-conversation-input[data-initial=true] .voice-conversation-mic),.minimal :global(.voice-conversation-input[data-initial=false] .voice-conversation-mic){display:flex;align-items:center;gap:12px;text-align:left;margin:0 0 12px;padding:0;background:none;border-radius:0}
+.minimal :global(.voice-conversation-mic)>div{min-width:0;flex:1}
+.minimal :global(.voice-conversation-mic h2){font-size:13px;letter-spacing:0;line-height:1.5}
+.minimal :global(.voice-conversation-mic p){font-size:10px;line-height:1.5;margin:2px 0 0;color:#4c6a61}
+.minimal :global(.voice-conversation-mic .btn){font-size:11px;min-height:40px;padding:8px 11px;flex:none;border-color:#c6e5d9;color:#103b36;background:#f0faf5}
+.minimal :global(.voice-conversation-input .conversation-microphone){width:40px;height:40px;flex:none;margin:0;border:0;background:#103b36;color:#fff;box-shadow:0 0 0 5px #e7f8f0}
+.minimal :global(.voice-conversation-input .conversation-microphone svg){width:21px;height:21px}
+.minimal :global(.conversation-actions){position:relative;padding:10px 0 0;margin:0;border:0;background:transparent;backdrop-filter:none}
+.minimal :global(.conversation-actions .btn){min-height:42px;font-size:12px}
+.minimal .reply{border-color:#d4e9df;background:#fff;border-radius:18px;padding:18px;margin-bottom:16px;box-shadow:0 5px 20px #062f2905}
+.minimal .reply>p{font-size:16px;line-height:1.65;max-height:none;margin:6px 0;color:#103b36}
+.minimal :global(.conversation-type input){font-size:13px}
+.minimal .controls{margin:0;justify-content:flex-end}
+@media(max-width:700px){.conversationScroll{padding:15px 16px 10px}.composer{padding:12px 16px max(12px,env(safe-area-inset-bottom))}.minimal .reply>p{font-size:14px}.minimal :global(.voice-conversation-mic p){display:none}.minimal :global(.conversation-type input){font-size:16px}.minimal :global(.conversation-draft){padding:13px}}
 .sheet :global(.voice-conversation-mic){position:relative}
 .sheet :global(.conversation-listening-wave){display:flex;justify-content:center;gap:4px;height:20px;align-items:center;margin:6px 0;color:#14a77e}
 .sheet :global(.conversation-listening-wave i){display:block;height:14px;width:4px;background:currentColor;border-radius:4px;animation:voice-wave .65s ease-in-out infinite alternate}

@@ -1,11 +1,11 @@
 'use client';
 import {useTranslation} from 'react-i18next';
-import {Mic,Volume2,Square,LoaderCircle,X} from 'lucide-react';
+import {Volume2,Square,LoaderCircle,X} from 'lucide-react';
 import {useVoiceOS} from './voice-os-provider';
 import type {SpokenReply} from '@/lib/voice/audio-contracts';
 import {Button} from '../ui';
 import styles from './voiceos-3.module.css';
-export function ConversationControls({onCancel}:{onCancel:()=>void}){const voice=useVoiceOS(),s=useTranslation('speech').t;return <div className={styles.controls}><div className={styles.mode} role="group" aria-label={s('mode')}>{(['quick','talk']as const).map(mode=><button key={mode} type="button" aria-pressed={voice.mode===mode} onClick={()=>voice.setMode(mode)}>{mode==='talk'?<Mic size={14}/>:<Volume2 size={14}/>} {s(mode)}</button>)}</div><button type="button" className={styles.cancel} aria-label={s('cancelConversation')} onClick={onCancel}><X size={15}/><span>{s('cancelConversation')}</span></button><p>{s(voice.mode==='talk'?'talkHint':'quickHint')}</p></div>;}
+export function ConversationControls({onCancel}:{onCancel:()=>void}){const s=useTranslation('speech').t;return <div className={styles.controls}><button type="button" className={styles.cancel} aria-label={s('cancelConversation')} onClick={onCancel}><X size={15}/><span>{s('cancelConversation')}</span></button></div>;}
 export function ConversationReply({reply,thinking=false}:{reply:SpokenReply|null;thinking?:boolean}){
  const voice=useVoiceOS(),s=useTranslation('speech').t;if(!reply&&!thinking)return null;
  return <section className={styles.reply} data-reply-kind={reply?.kind} aria-label="VoiceOS">
