@@ -42,6 +42,12 @@ jobs:
         run: node --import tsx scripts/qa/voice3-evaluation.ts
       - run: npm run build
       - run: npx playwright install --with-deps chromium
+      - name: Compiled merchant profile, verified UPI fixtures and multilingual accessibility
+        run: node scripts/qa/upi18-production-review.mjs
+      - name: Compiled My Voice AI enrollment, private profiles and synthetic audio acceptance
+        run: node scripts/qa/voice34-production-review.mjs
+      - name: Premium PDF exports, actual business sources and multilingual printing controls
+        run: npm run test:e2e -- tests/e2e/pdf-suite.spec.ts
       - name: Approved dashboard, product media and shared mobile design checks
         run: npm run test:e2e -- tests/e2e/approved-dashboard.spec.ts
       - name: V16.1 approved composition, cash accuracy, weather fallback and multilingual viewport checks
