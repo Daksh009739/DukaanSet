@@ -4,14 +4,14 @@ Verified on 14 October 2026 IST. This report distinguishes implementation checks
 
 ## Executed checks
 
-- **358/358 repository tests passed**, including 18 dedicated Smart UPI tests. Existing billing, closing, document, authentication, permissions and VoiceOS tests passed.
+- **359/359 repository tests passed**, including 19 dedicated Smart UPI tests. Existing billing, closing, document, authentication, permissions and VoiceOS tests passed.
 - **Typecheck, lint and production build passed.** The production build ran in an isolated checkout so the existing port-3000 preview and real shop database were not disturbed.
 - **English, Hindi and Hinglish compiled-browser workflows passed.** These exercised QR upload; camera denial/recovery and actual QR decoding from synthetic video frames; explicit destination confirmation; saved status without a false tracking claim; the official OAuth redirect and server exchange through a fixture; signed provider observations; repeat-payer linking; unchanged balances on customer linking; confirmed invoice payment; matching an existing manual receipt without double posting; exact provider-QR invoice allocation; unverified statement import; CSV download; typed VoiceOS queries; private avatar storage; account-name refresh after saving; and disconnection.
 - **24 responsive layouts passed:** profile and payment centre, three languages, widths 320/390/768/1440 pixels. No horizontal document overflow.
 - **Six scoped WCAG 2 A/AA axe scans passed with zero detected violations**, one per page/language at 390 pixels. This is automated coverage, not a claim of complete accessibility certification.
 - Final screenshots were visually inspected on desktop and mobile. Profile category labels, readable CTA text and muted-text contrast were repaired after inspection. The browser assertions now check the real translated category and reject translation fallback text.
 
-Dedicated tests cover tenant/role isolation, HTTP action routing and method rejection, single-use OAuth state, encrypted private tokens, signed and rotated-secret validation, duplicate/out-of-order events, stable payer references without inferred names, allocation idempotency, manual-receipt matching, advances, partial refund reversal, unverified CSV imports, timezone/date validation, private images/session cleanup, branding primary consistency, test-money exclusion and all approved natural UPI queries.
+Dedicated tests cover tenant/role isolation, HTTP action routing and method rejection, single-use OAuth state, encrypted private tokens, signed and rotated-secret validation, duplicate/out-of-order events, stable payer references without inferred names, allocation idempotency, manual-receipt matching, advances, partial refund reversal, unverified CSV imports, timezone/date validation, private images/session cleanup, branding primary consistency, test-money exclusion, retained test-to-live authorisation labels and all approved natural UPI queries.
 
 ## Fixtures and evidence
 
