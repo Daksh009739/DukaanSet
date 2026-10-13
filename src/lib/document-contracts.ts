@@ -1,6 +1,6 @@
 import type { Invoice, Language, Payment } from './contracts';
 
-export type DocumentKind = 'invoice' | 'statement' | 'receipt';
+export type DocumentKind = 'invoice' | 'statement' | 'receipt' | 'purchase' | 'purchase-order' | 'stock-report' | 'business-report' | 'closing-preview';
 export type DocumentFormat = 'a4' | 'mono' | '58mm' | '80mm';
 export interface Branding {
   name: string; address: string; phone: string; email: string; website: string;
@@ -19,13 +19,17 @@ export interface CustomerLedger {
   receipts: { id: string; date: string; amountPaise: number; method: string; kind: string }[];
 }
 export interface DocumentModel {
+  stockReport?: { rows: { id:string; name:string; variation:string; sku:string; unit:string; quantityMilli:number; minStockMilli:number }[]; healthy:number; low:number; out:number };
+  businessReport?: { start:string; end:string; salesPaise:number; receivedPaise:number; expensesPaise:number; outstandingPaise:number; supplierDuePaise:number; stockValuePaise:number; rows:{date:string;reference:string;customer:string;totalPaise:number;paidPaise:number;balancePaise:number;status:Invoice['status']}[] };
+  procurement?: { date:string; status:'draft'|'received'|'cancelled'; supplier:{id:string|null;name:string;phone:string}; items:{name:string;variation?:string;unit:string;quantityMilli:number;costPaise:number;totalPaise:number}[]; totalPaise:number; paidPaise?:number; balancePaise?:number; purchaseId?:string|null };
   closingReport?: import('./closing-contracts').ClosingReport;
+  closingPreview?: import('./closing-contracts').ClosingPreview;
   kind: DocumentKind; sourceId: string; businessId: string; reference: string; language: Language;
   format: DocumentFormat; detailed: boolean; generatedAt: string; merchant: Branding;
   customer: { id: string | null; name: string; phone: string }; legacy: boolean;
   invoice?: Invoice & { originalPaidPaise: number; originalBalancePaise: number };
   ledger?: CustomerLedger;
-  receipt?: { id: string; date: string; method: string; kind: string; amountPaise: number; allocations: { invoiceId: string; number: string; amountPaise: number }[]; balanceAsOfPaise: number };
+  receipt?: { id: string; date: string; method: string; kind: string; amountPaise: number; allocations: { invoiceId: string; number: string; amountPaise: number }[]; balanceAsOfPaise: number; balanceBeforePaise?:number; balanceAfterPaise?:number };
   originalPayments?: Payment[];
   purchaseDetails?: Record<string, import('./contracts').InvoiceItem[]>;
 }

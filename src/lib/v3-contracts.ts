@@ -2,7 +2,7 @@ import type { BusinessState, Category } from './contracts';
 export const moduleKeys = ['voiceStock','photoSales','demandPulse','todaysWork','assistant','dailyClosing','expiryTracking','wastageTracking','variants','unitConversion'] as const;
 export type ModuleKey = typeof moduleKeys[number];
 export type Features = Record<ModuleKey,boolean>;
-export const permissionKeys = ['sales','customers','payments','inventory','purchases','reports','demand','settings','team'] as const;
+export const permissionKeys = ['sales','customers','payments','inventory','purchases','reports','demand','settings','team','paymentAccounts'] as const;
 export type Permission = typeof permissionKeys[number];
 export type Permissions = Record<Permission,boolean>;
 export type Role = 'owner'|'manager'|'staff';
@@ -17,5 +17,5 @@ export interface BusinessConfiguration { features:Features; role:Role; permissio
 export interface TeamMember { userId:string; name:string; email:string; role:Role; permissions:Permissions }
 export interface V3State extends BusinessState { configuration:BusinessConfiguration; demand:DemandSummary; closing:import('./closing-contracts').ClosingOverview|null }
 export function featureDefaults(category:Category, legacy=false):Features { return {voiceStock:true,photoSales:legacy||['clothing','mobile','general'].includes(category),demandPulse:true,todaysWork:true,assistant:true,dailyClosing:true,expiryTracking:legacy||category==='grocery',wastageTracking:legacy||category==='vegetables',variants:legacy||['clothing','hardware','mobile'].includes(category),unitConversion:legacy||['grocery','hardware','vegetables'].includes(category)}; }
-export function rolePermissions(role:Role):Permissions { return Object.fromEntries(permissionKeys.map(key=>[key,role==='owner'||(role==='manager'&&!['settings','team'].includes(key))||(role==='staff'&&['sales','customers','payments','demand'].includes(key))])) as Permissions; }
+export function rolePermissions(role:Role):Permissions { return Object.fromEntries(permissionKeys.map(key=>[key,role==='owner'||(role==='manager'&&!['settings','team','paymentAccounts'].includes(key))||(role==='staff'&&['sales','customers','payments','demand'].includes(key))])) as Permissions; }
 export function equivalentUnits(a:string,b:string){const aliases:Record<string,string>={pcs:'piece',pieces:'piece',unit:'piece',kilogram:'kg',gram:'g',grams:'g',liter:'litre',l:'litre',metre:'meter',m:'meter'};return (aliases[a]||a)===(aliases[b]||b);}

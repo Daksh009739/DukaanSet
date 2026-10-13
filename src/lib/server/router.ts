@@ -1,6 +1,6 @@
 import type { Store } from "./store";
 import { getStore } from "./store";
-import { DomainError, isDomainError, object, keys, language } from "./validation";
+import { DomainError, isDomainError, object, keys, language, oneOf } from "./validation";
 import { createHash } from "node:crypto";
 import { decodePhoto, MAX_IMAGE_BYTES } from "./images";
 import { SaaSService } from './saas';
@@ -11,12 +11,14 @@ import { AssistantService } from './assistant';
 import { IntelligenceService } from './intelligence';
 import { VoiceInterpreterService } from './voice-interpreter';
 import { VoiceAudioService } from './voice-audio';
+import {MyVoiceService} from './my-voice-service';
 import { MAX_VOICE_AUDIO_BYTES } from '../voice/audio-contracts';
 import { DocumentService } from './documents';
 import { DeliveryService } from './whatsapp';
 import { ClosingService } from './closing';
 import { renderPdf } from './pdf-renderer';
 import { RecordService } from './records';
+import {SmartUpiService} from './smart-upi-service';
 
 import { ProductMediaService } from './product-media-service';
 
@@ -81,6 +83,7 @@ export async function handleRequest(request: Request, store: Store = getStore())
     const url = new URL(request.url), path = url.pathname.replace(/\/$/, ""), verb = request.method, saas=new SaaSService(store), auth=new AuthenticationService(store);
     if (!["GET", "POST"].includes(verb)) return json({ error: { code: "METHOD_NOT_ALLOWED", message: "Method not supported." } }, 405, { Allow: "GET, POST" });
     if(path==='/api/whatsapp/webhook') { const delivery=new DeliveryService(store); if(verb==='GET')return new Response(delivery.verifyWebhook(url),{headers:{'Cache-Control':'no-store'}});const bytes=await readBody(request,262144);return json(delivery.webhook(bytes,request.headers.get('x-hub-signature-256')||'')); }
+    if(path==='/api/upi/razorpay/webhook'&&verb==='POST'){throttle('upi:webhook',1000);return json(await new SmartUpiService(store).webhook(await readBody(request,262144),request.headers.get('x-razorpay-signature')||'',request.headers.get('x-razorpay-event-id')||''));}
     if (verb === "POST") requireSameOrigin(request);
     if (path.startsWith("/api/auth/") && verb === "POST") {
       throttle("auth:global", 40);
@@ -114,21 +117,49 @@ export async function handleRequest(request: Request, store: Store = getStore())
     throttle(`user:${userId}`, 180);
     if (path === "/api/session" && verb === "GET") return json(store.session(userId));
     if(path==='/api/account/voice'){const service=new VoiceAudioService(store);return json(verb==='GET'?await service.status(userId,request.signal):await service.savePreferences(userId,await body(request),request.signal));}
+    if(path.startsWith('/api/account/my-voice')){
+      const service=new MyVoiceService(store),action=path.slice('/api/account/my-voice'.length);
+      if(action===''&&verb==='GET')return json(await service.status(userId,url.searchParams.get('refresh')==='1'));
+      if(verb!=='POST')throw new DomainError('METHOD_NOT_ALLOWED','Use the supported personal voice operation.',405);
+      if(action==='/challenge'){throttle('my-voice-challenge:'+userId,4);return json(service.challenge(userId,await body(request)),201);}
+      if(action==='/generate'){throttle('my-voice-generation:'+userId,3);return json(await service.generate(userId,await body(request,650000)),202);}
+      if(action==='/preview'){throttle('my-voice-preview:'+userId,12);const preview=await service.preview(userId,await body(request));return new Response(preview.bytes,{headers:{'Content-Type':'audio/wav','Cache-Control':'private, no-store','X-Content-Type-Options':'nosniff','X-Voice-Preview':preview.previewId}});}
+      if(action==='/activate')return json(service.activate(userId,await body(request)));
+      if(action==='/delete')return json(await service.remove(userId,await body(request)));
+      throw new DomainError('NOT_FOUND','Personal voice operation not found.',404);
+    }
     if (path === "/api/account/language" && verb === "POST") return json(store.updateLanguage(userId, await body(request)));
     if(path==='/api/account/profile'&&verb==='POST')return json(auth.account(userId,await body(request)));
+    if(path==='/api/account/avatar'){const upi=new SmartUpiService(store);if(verb==='GET')return new Response(new Uint8Array(upi.avatar(userId)),{headers:{'Content-Type':'image/webp','Cache-Control':'private, no-store','X-Content-Type-Options':'nosniff'}});throttle('avatar:'+userId,10);return json(await upi.saveAvatar(userId,await readBody(request,MAX_IMAGE_BYTES),request.headers.get('content-type')||''));}
+    if(path==='/api/account/sessions/revoke-others'&&verb==='POST'){throttle('sessions:'+userId,5);return json(new SmartUpiService(store).revokeOtherSessions(userId,token(request)!));}
+    if(path==='/api/upi/razorpay/callback'&&verb==='GET'){const result=await new SmartUpiService(store).callback(userId,url.searchParams);return new Response(null,{status:303,headers:{Location:'/app/settings/account?upi='+ (result.success?'authorised':'cancelled')+'&shop='+encodeURIComponent(result.businessId),'Cache-Control':'no-store','Referrer-Policy':'no-referrer'}});}
     if(path==='/api/account/password'&&verb==='POST')return json(auth.changePassword(userId,await body(request)),200,{'Set-Cookie':cookie('',request,true)});
     if(path==='/api/onboarding'&&verb==='POST')return json(saas.onboard(userId,await body(request)),201);
     if (path === "/api/businesses" && verb === "POST") return json(saas.createAdditionalBusiness(userId, await body(request)), 201);
-    const match = path.match(/^\/api\/businesses\/([a-f0-9-]{36})\/([a-z-]+)(?:\/([a-f0-9-]{36})(?:\/([a-z]+))?)?$/);
+    const upiMatch = path.match(/^\/api\/businesses\/([a-f0-9-]{36})\/(smart-upi)(?:\/([a-z-]+)(?:\/([a-f0-9-]{36}))?)?$/);
+    const match = upiMatch || path.match(/^\/api\/businesses\/([a-f0-9-]{36})\/([a-z-]+)(?:\/([a-f0-9-]{36})(?:\/([a-z]+))?)?$/);
     if (!match) throw new DomainError("NOT_FOUND", "Endpoint not found.", 404);
     const [, businessId, action, recordId, subAction] = match;
+    if (action === 'smart-upi' && !['GET', 'POST'].includes(verb)) throw new DomainError('METHOD_NOT_ALLOWED', 'Use GET or POST.', 405);
+    if (action === 'smart-upi' && verb === 'GET' && ![undefined, 'export', 'transaction', 'options', 'voice'].includes(recordId)) throw new DomainError('METHOD_NOT_ALLOWED', 'Use POST for this operation.', 405);
     store.assertMember(userId, businessId);
     if(action==='weather'&&!recordId&&verb==='GET')return json(await shopWeather().current(access(store.db,userId,businessId).location));
     const closing=new ClosingService(store),media=new ProductMediaService(store);
     if(action==='voice-interpret'&&!recordId){const service=new VoiceInterpreterService(store);if(verb==='GET')return json(service.status(userId,businessId));if(verb!=='POST')throw new DomainError('METHOD_NOT_ALLOWED','Use GET or POST.',405);throttle(`interpret:${userId}`,5);return json(await service.interpret(userId,businessId,await body(request),request.signal));}
     if(action==='voice-transcribe'&&!recordId&&verb==='POST'){throttle(`voice-stt:${userId}`,30);return json(await new VoiceAudioService(store).transcribe(userId,businessId,await readBody(request,MAX_VOICE_AUDIO_BYTES),request.headers.get('content-type')||'',request.signal));}
-    if(action==='voice-speech'&&!recordId&&verb==='POST'){throttle(`voice-tts:${userId}`,30);const bytes=await new VoiceAudioService(store).synthesize(userId,businessId,await body(request),request.signal);return new Response(bytes,{headers:{'Content-Type':'audio/mpeg','Cache-Control':'private, no-store','X-Content-Type-Options':'nosniff'}});}
+    if(action==='voice-speech'&&!recordId&&verb==='POST'){throttle(`voice-tts:${userId}`,30);const bytes=await new VoiceAudioService(store).synthesize(userId,businessId,await body(request),request.signal);return new Response(bytes,{headers:{'Content-Type':Buffer.from(bytes.subarray(0,4)).toString()==='RIFF'?'audio/wav':'audio/mpeg','Cache-Control':'private, no-store','X-Content-Type-Options':'nosniff'}});}
     if(action==='intelligence'&&!recordId&&verb==='GET')return json(new IntelligenceService(store).overview(userId,businessId));
+    if(action==='merchant-profile'){const upi=new SmartUpiService(store);return json(verb==='GET'?upi.profile(userId,businessId):upi.saveProfile(userId,businessId,await body(request)));}
+    if(action==='merchant-shop'&&verb==='POST')return json(new SmartUpiService(store).saveShop(userId,businessId,await body(request)));
+    if(action==='smart-upi'&&recordId==='export'&&verb==='GET')return new Response(new SmartUpiService(store).exportCsv(userId,businessId,Object.fromEntries(url.searchParams)),{headers:{'Content-Type':'text/csv; charset=utf-8','Content-Disposition':'attachment; filename="dukaanset-upi.csv"','Cache-Control':'private, no-store','X-Content-Type-Options':'nosniff'}});
+    if(action==='smart-upi'&&recordId==='transaction'&&subAction&&verb==='GET')return json(new SmartUpiService(store).getTransaction(userId,businessId,subAction));
+    if(action==='smart-upi'&&recordId==='options'&&subAction&&verb==='GET')return json(new SmartUpiService(store).options(userId,businessId,subAction));
+    if(action==='smart-upi'&&recordId==='voice'&&verb==='GET')return json(new SmartUpiService(store).voiceQuery(userId,businessId,url.searchParams.get('query')||'',language(url.searchParams.get('language')||store.session(userId).user.language)));
+    if(action==='smart-upi'&&recordId==='import'&&verb==='POST')return json(new SmartUpiService(store).importStatement(userId,businessId,await body(request,262144)),201);
+    if(action==='smart-upi'&&recordId==='advance'&&subAction&&verb==='POST')return json(new SmartUpiService(store).applyAdvance(userId,businessId,subAction,await body(request)),201);
+    if(action==='smart-upi'&&recordId==='refund'&&subAction&&verb==='POST')return json(new SmartUpiService(store).reconcileRefund(userId,businessId,subAction,await body(request)),201);
+    if(action==='smart-upi'){const upi=new SmartUpiService(store);throttle('upi:'+userId,90);if(verb==='GET')return json(upi.centre(userId,businessId,Object.fromEntries(url.searchParams)));if(recordId==='qr')return json(await upi.readQr(userId,businessId,await readBody(request,MAX_IMAGE_BYTES),request.headers.get('content-type')||''));if(recordId==='destinations')return json(upi.saveDestination(userId,businessId,await body(request)),201);if(recordId==='primary')return json(upi.setPrimary(userId,businessId,String(object(await body(request)).id)));if(recordId==='authorise')return json(upi.begin(userId,businessId));if(recordId==='sync')return json(await upi.sync(userId,businessId,await body(request)));if(recordId==='disconnect')return json(await upi.disconnect(userId,businessId,String(object(await body(request)).id)));if(recordId==='link'&&subAction)return json(upi.linkCustomer(userId,businessId,subAction,await body(request)));if(recordId==='reconcile'&&subAction)return json(upi.reconcile(userId,businessId,subAction,await body(request)),201);if(recordId==='payment-request'&&subAction)return json(await upi.requestQr(userId,businessId,subAction),201);}
+    if(action==='customer-upi'&&recordId&&verb==='GET')return json(new SmartUpiService(store).customerHistory(userId,businessId,recordId));
     if(action==='reorder-plan'&&!recordId&&verb==='GET')return json(new IntelligenceService(store).reorder(userId,businessId,{productId:url.searchParams.get('productId'),leadDays:Number(url.searchParams.get('leadDays')??7),coverageDays:Number(url.searchParams.get('coverageDays')??7)}));
     if(action==='simulate'&&!recordId&&verb==='POST')return json(new IntelligenceService(store).simulate(userId,businessId,await body(request)));
     if(action==='purchase-extract'&&!recordId&&verb==='POST'){throttle(`purchase-extract:${userId}`,10);return json(new IntelligenceService(store).extractPurchase(userId,businessId,await body(request)));}
@@ -150,7 +181,7 @@ export async function handleRequest(request: Request, store: Store = getStore())
     if(action==='closing-sessions'&&!recordId&&verb==='POST')return json(closing.open(userId,businessId,await body(request)),201);
     if(action==='closing-opening'&&!recordId&&verb==='POST')return json(closing.setOpening(userId,businessId,await body(request)),201);
     if(action==='closing-reports'){
-      if(verb==='GET'&&recordId&&subAction==='pdf'){throttle(`pdf:${userId}`,12);const report=closing.report(userId,businessId,recordId,url.searchParams.has('version')?Number(url.searchParams.get('version')):undefined),selected=language(url.searchParams.get('language')||'en');const result=await renderPdf({kind:'statement',closingReport:report,sourceId:report.id,businessId,reference:report.reference,language:selected,format:'a4',detailed:true,generatedAt:report.asOf,merchant:report.merchant,customer:{id:null,name:'',phone:''},legacy:false});return new Response(new Uint8Array(result.bytes),{headers:{'Content-Type':'application/pdf','Cache-Control':'private, no-store','X-Content-Type-Options':'nosniff','Content-Disposition':`inline; filename="${report.reference}-v${report.version}-${selected}.pdf"`}});}
+      if(verb==='GET'&&recordId&&subAction==='pdf'){throttle(`pdf:${userId}`,12);const report=closing.report(userId,businessId,recordId,url.searchParams.has('version')?Number(url.searchParams.get('version')):undefined),selected=language(url.searchParams.get('language')||'en');const result=await renderPdf({kind:'statement',closingReport:report,sourceId:report.id,businessId,reference:report.reference,language:selected,format:oneOf(url.searchParams.get('format')||'a4','Format',['a4','mono','58mm','80mm'] as const),detailed:true,generatedAt:report.asOf,merchant:report.merchant,customer:{id:null,name:'',phone:''},legacy:false});store.assertPermission(userId,businessId,'reports','dailyClosing');return new Response(new Uint8Array(result.bytes),{headers:{'Content-Type':'application/pdf','Cache-Control':'private, no-store','X-Content-Type-Options':'nosniff','Content-Disposition':`inline; filename="${report.reference}-v${report.version}-${selected}.pdf"`}});}
       if(verb==='GET'&&!recordId)return json(closing.history(userId,businessId,url.searchParams.get('start')||undefined,url.searchParams.get('end')||undefined));
       if(verb==='GET'&&recordId&&subAction==='versions')return json(closing.versions(userId,businessId,recordId));
       if(verb==='GET'&&recordId&&!subAction)return json(closing.report(userId,businessId,recordId,url.searchParams.has('version')?Number(url.searchParams.get('version')):undefined));

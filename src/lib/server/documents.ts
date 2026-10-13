@@ -8,6 +8,7 @@ import { businessDay } from '../client';
 import { renderPdf } from './pdf-renderer';
 import {access} from './access';
 import sharp from 'sharp';
+import { operationalDocument } from './operational-documents';
 
 type Row = Record<string, string | number | null>;
 const notFound = () => new DomainError('NOT_FOUND', 'Document source not found.', 404);
@@ -18,7 +19,7 @@ export class DocumentService {
   private rows(sql: string, ...args: (string | number | null)[]) { return this.store.db.prepare(sql).all(...args) as Row[]; }
   private row(sql: string, ...args: (string | number | null)[]) { return this.store.db.prepare(sql).get(...args) as Row | undefined; }
   private customer(businessId: string, id: string) { const r = this.row('SELECT * FROM customers WHERE business_id=? AND id=?', businessId, id); if (!r) throw notFound(); return { id, name: String(r.name), phone: String(r.phone) }; }
-  private permit(userId: string, businessId: string, kind: string) { this.store.assertPermission(userId, businessId, kind === 'invoice' ? 'sales' : kind === 'receipt' ? 'payments' : 'customers'); }
+  private permit(userId: string, businessId: string, kind: string) { this.store.assertPermission(userId, businessId, kind === 'invoice' ? 'sales' : kind === 'receipt' ? 'payments' : kind === 'stock-report' ? 'inventory' : ['business-report','closing-preview'].includes(kind) ? 'reports' : ['purchase','purchase-order'].includes(kind) ? 'purchases' : 'customers',kind==='closing-preview'?'dailyClosing':undefined); }
   getBranding(userId: string, businessId: string) { this.store.assertMember(userId, businessId); return branding(this.store.db, businessId); }
   async saveBranding(userId: string, businessId: string, raw: unknown) {
     this.store.assertPermission(userId, businessId, 'settings');
@@ -35,10 +36,13 @@ export class DocumentService {
     if (value.upiId && !value.payee) throw new DomainError('INVALID_INPUT', 'Payee required.');
     if (value.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.email)) throw new DomainError('INVALID_INPUT', 'Invalid email.');
     if (value.website && !/^https:\/\/[^\s]+$/i.test(value.website)) throw new DomainError('INVALID_INPUT', 'Use HTTPS.');
-    return this.store.transaction(() => { this.store.assertPermission(userId,businessId,'settings');const previous = branding(this.store.db, businessId); if (Number(input.revision) !== previous.revision) throw new DomainError('CONFLICT', 'Settings changed.', 409); value.revision = previous.revision + 1; this.store.db.prepare('INSERT INTO invoice_branding VALUES(?,?,?) ON CONFLICT(business_id) DO UPDATE SET data_json=excluded.data_json,revision=excluded.revision').run(businessId, JSON.stringify(value), value.revision); this.store.audit(userId, businessId, 'documents.branding', 'Invoice branding updated'); return value; });
+    return this.store.transaction(() => { this.store.assertPermission(userId,businessId,'settings');const previous = branding(this.store.db, businessId);const upiChanged=value.upiId!==previous.upiId||value.payee!==previous.payee;if(upiChanged)this.store.assertPermission(userId,businessId,'paymentAccounts'); if (Number(input.revision) !== previous.revision) throw new DomainError('CONFLICT', 'Settings changed.', 409); value.revision = previous.revision + 1; this.store.db.prepare('INSERT INTO invoice_branding VALUES(?,?,?) ON CONFLICT(business_id) DO UPDATE SET data_json=excluded.data_json,revision=excluded.revision').run(businessId, JSON.stringify(value), value.revision); if(upiChanged){this.store.db.prepare('UPDATE upi_destinations SET is_primary=0 WHERE business_id=?').run(businessId);if(value.upiId)this.store.db.prepare("INSERT INTO upi_destinations(id,business_id,upi_id,payee,state,is_primary,created_at) VALUES(?,?,?,?, 'saved',1,?) ON CONFLICT(business_id,upi_id) DO UPDATE SET payee=excluded.payee,is_primary=1").run(randomUUID(),businessId,value.upiId.toLowerCase(),value.payee,new Date().toISOString());}this.store.audit(userId, businessId, 'documents.branding', 'Invoice branding updated'); return value; });
   }
   ledger(userId: string, businessId: string, customerId: string, start: string, end: string): CustomerLedger {
     this.permit(userId, businessId, 'statement');
+    return this.customerLedger(businessId,customerId,start,end);
+  }
+  private customerLedger(businessId:string,customerId:string,start:string,end:string):CustomerLedger {
     if (!date(start) || !date(end) || start > end || end > businessDay()) throw new DomainError('DOCUMENT_RANGE', 'Invalid statement period.');
     return this.store.transaction(() => {
       const customer = this.customer(businessId, customerId), asOf = new Date().toISOString();
@@ -55,7 +59,10 @@ export class DocumentService {
       }
       for (const p of payments) events.push({ id: `p:${p.id}`, date: String(p.date), reference: String(p.number || p.receipt_id || p.id), kind: p.kind as LedgerRow['kind'], debitPaise: p.kind === 'refund' ? Number(p.amount_paise) : 0, creditPaise: p.kind === 'refund' ? 0 : Number(p.amount_paise), invoiceId: p.invoice_id as string | null, paymentId: String(p.id) });
       const rank = { purchase: 0, sale: 1, repayment: 2, cancellation: 3, refund: 4 };
-      events.sort((a,b)=>a.date.localeCompare(b.date)||rank[a.kind]-rank[b.kind]||a.id.localeCompare(b.id));
+      // Keep allocations of a single receipt adjacent when independent receipts
+      // share a millisecond. A receipt's account impact must exclude other payments.
+      const groupKeys=new Map(payments.map(p=>[`p:${p.id}`,String(p.receipt_id||p.id)]));
+      events.sort((a,b)=>a.date.localeCompare(b.date)||rank[a.kind]-rank[b.kind]||(groupKeys.get(a.id)||a.id).localeCompare(groupKeys.get(b.id)||b.id)||a.id.localeCompare(b.id));
       let openingPaise = 0, balance = 0, debitsPaise = 0, creditsPaise = 0; const rows: LedgerRow[] = [];
       for (const entry of events) { const day = businessDay(entry.date); if (day > end || entry.date > asOf) continue; balance += entry.debitPaise - entry.creditPaise; if (!Number.isSafeInteger(balance)) throw new DomainError('DOCUMENT_INCOMPLETE', 'Unsafe ledger sum.', 409); if (day < start) openingPaise = balance; else { rows.push({ ...entry, balancePaise: balance }); debitsPaise += entry.debitPaise; creditsPaise += entry.creditPaise; } }
       const receiptGroups = new Map<string, { id: string; date: string; amountPaise: number; method: string; kind: string }>();
@@ -67,12 +74,13 @@ export class DocumentService {
   invoiceView(userId:string,businessId:string,id:string):DocumentModel {const p=access(this.store.db,userId,businessId).permissions;if(!p.sales&&!p.customers&&!p.payments)throw new DomainError('FORBIDDEN','Your role cannot view this invoice.',403);return this.buildModel(userId,businessId,{kind:'invoice',sourceId:id,language:'en',format:'a4'},true);}
   private buildModel(userId: string, businessId: string, raw: unknown,view=false): DocumentModel {
     const input = object(raw); keys(input, ['kind', 'sourceId', 'language', 'format', 'start', 'end', 'detailed']);
-    const kind = oneOf(input.kind, 'Document type', ['invoice','statement','receipt'] as const), sourceId = string(input.sourceId, 'Record', 80);
+    const kind = oneOf(input.kind, 'Document type', ['invoice','statement','receipt','purchase','purchase-order','stock-report','business-report','closing-preview'] as const), sourceId = string(input.sourceId, 'Record', 80);
     if(!view)this.permit(userId, businessId, kind);
     const selectedLanguage = language(input.language), format = oneOf(input.format || 'a4', 'Format', ['a4','mono','58mm','80mm'] as const);
     if(input.detailed!==undefined&&typeof input.detailed!=='boolean')throw new DomainError('INVALID_INPUT','Invalid detail setting.');
     return this.store.transaction(() => {
       const base: DocumentModel = { kind, sourceId, businessId, language: selectedLanguage, format, detailed: input.detailed !== false, generatedAt: new Date().toISOString(), merchant: branding(this.store.db,businessId), customer: {id:null,name:'',phone:''}, reference: '', legacy: false };
+      if(['stock-report','business-report','purchase','purchase-order','closing-preview'].includes(kind))return operationalDocument(this.store,base,input,userId);
       if (kind === 'statement') { const ledger = this.ledger(userId,businessId,sourceId,String(input.start || ''),String(input.end || '')); const purchaseDetails:DocumentModel['purchaseDetails']={};if(base.detailed)for(const invoice of this.rows('SELECT id,items_json FROM invoices WHERE business_id=? AND customer_id=?',businessId,sourceId))if(ledger.invoices.some(i=>i.id===invoice.id))purchaseDetails[String(invoice.id)]=JSON.parse(String(invoice.items_json));return { ...base, ledger, purchaseDetails, customer: ledger.customer, reference: `HS-${sourceId.slice(0,8)}-${ledger.start}-${ledger.end}` }; }
       if (kind === 'invoice') {
         const row = this.row('SELECT * FROM invoices WHERE business_id=? AND id=?',businessId,sourceId); if (!row) throw notFound();
@@ -87,12 +95,14 @@ export class DocumentService {
       const customer=first.customer_id?this.customer(businessId,String(first.customer_id)):{id:null,name:'',phone:''};
       // Existing allocation rows form one receipt; no payment is inserted during rendering.
       const amountPaise=group.reduce((n,r)=>n+Number(r.amount_paise)*(r.kind==='refund'?-1:1),0);
-      const balanceAsOfPaise=customer.id?this.ledger(userId,businessId,customer.id,'1970-01-01',businessDay()).closingPaise:0;
-      return {...base,sourceId:receiptId,customer,reference:`PR-${receiptId}`,receipt:{id:receiptId,date:String(first.date),method:String(first.method),kind:String(first.kind),amountPaise,allocations:group.map(r=>({invoiceId:String(r.invoice_id||''),number:String(r.number||''),amountPaise:Number(r.amount_paise)*(r.kind==='refund'?-1:1)})),balanceAsOfPaise}};
+      const ledger=customer.id?this.customerLedger(businessId,customer.id,'1970-01-01',businessDay()):null;
+      const entries=ledger?.rows.filter(r=>group.some(p=>p.id===r.paymentId))||[];
+      const impact=entries.length?{balanceBeforePaise:entries[0].balancePaise-entries[0].debitPaise+entries[0].creditPaise,balanceAfterPaise:entries.at(-1)!.balancePaise}:{};
+      return {...base,sourceId:receiptId,customer,reference:`PR-${receiptId}`,receipt:{id:receiptId,date:String(first.date),method:String(first.method),kind:String(first.kind),amountPaise,allocations:group.map(r=>({invoiceId:String(r.invoice_id||''),number:String(r.number||''),amountPaise:Number(r.amount_paise)*(r.kind==='refund'?-1:1)})),balanceAsOfPaise:ledger?.closingPaise||0,...impact}};
     });
   }
   async prepare(userId: string, businessId: string, raw: unknown): Promise<PreparedDocument> {
-    const model=this.model(userId,businessId,raw), keyModel={...model,generatedAt:undefined,...model.ledger?{ledger:{...model.ledger,asOf:undefined}}:{}},cacheKey=createHash('sha256').update(JSON.stringify(keyModel)).digest('hex');
+    const model=this.model(userId,businessId,raw), keyModel={...model,generatedAt:undefined,...model.ledger?{ledger:{...model.ledger,asOf:undefined}}:{}},cacheKey=createHash('sha256').update('premium-pdf-suite-1:').update(JSON.stringify(keyModel)).digest('hex');
     const cached=this.row('SELECT id FROM documents WHERE business_id=? AND cache_key=? AND pdf IS NOT NULL AND expires_at>? ORDER BY created_at DESC LIMIT 1',businessId,cacheKey,new Date().toISOString());if(cached)return this.metadata(userId,businessId,String(cached.id));
     const rendered=await renderPdf(model), id=randomUUID(),expiresAt=new Date(Date.now()+7*86400000).toISOString(),filename=safeFilename(model.reference,model.kind,model.language);
     if(rendered.bytes.length>10*1024*1024)throw new DomainError('DOCUMENT_LIMIT','PDF too large.',413);

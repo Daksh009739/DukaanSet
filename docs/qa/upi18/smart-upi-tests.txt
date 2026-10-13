@@ -1,0 +1,26 @@
+✔ existing UPI and decoded QR stay saved without transaction verification; primary updates only future branding (265.196ms)
+✔ official OAuth state is account-bound, single-use, encrypted and scope-isolated (152.3933ms)
+✔ signed provider fetch, duplicate and out-of-order events preserve one authoritative transaction (110.0468ms)
+✔ stable provider payer linking changes no balances and does not derive identities from handles (102.0703ms)
+✔ confirmed invoice and udhaar reconciliation reuses ledger service and cannot double-post (117.8309ms)
+✔ matching an existing manually recorded receipt changes no ledger totals (110.3537ms)
+✔ advances remain separate from dues until explicitly applied and provider refunds reverse once (107.9316ms)
+✔ statement import is unverified, atomic, deduplicated and cannot clear dues (86.6594ms)
+✔ staff cannot change destinations; disconnected accounts reject future sync/events and keep history (158.261ms)
+✔ profile image storage strips metadata and is private; session cleanup keeps the current session (159.7874ms)
+✔ Razorpay adapter calls documented endpoints with server bearer tokens and validates responses (81.2195ms)
+✔ provider test money cannot pay real invoices or create a real-bill payment QR (91.3076ms)
+✔ VoiceOS reads verified UPI and prepares review only; existing sales stay in their workflow (173.1899ms)
+✔ export permissions and timezone boundaries use real scoped observations (161.8562ms)
+✔ UPI HTTP operations accept action names, reject wrong verbs and keep scoped authorisation (151.789ms)
+✔ profile and shop updates expose current identity; branding keeps one saved primary and invoice snapshots (120.5556ms)
+✔ rotated webhook secrets verify retries; real customer history excludes provider test money (96.8961ms)
+✔ all approved natural UPI questions stay read-only and amount queries never invent a payer (101.4746ms)
+ℹ tests 18
+ℹ suites 0
+ℹ pass 18
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 6998.284

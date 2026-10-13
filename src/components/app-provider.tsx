@@ -29,7 +29,8 @@ function Provider({children}: {children:ReactNode}) {
       if(controller.signal.aborted)return;
       setSession(value);confirmedLanguage.current=value.user.language;if(value.user.verificationRequired&&!value.user.emailVerified){routerRef.current.replace('/verify-email');return;}if(!value.businesses.length){routerRef.current.replace('/onboarding/setup');return;}if(i18n.language!==value.user.language)void i18n.changeLanguage(value.user.language);
       let remembered:string|null=null;try{remembered=sessionStorage.getItem(`ds-business-${value.user.id}`);}catch{}
-      const selected=value.businesses.some(b=>b.id===remembered)?remembered!:value.businesses[0]?.id||'';
+      const requestedShop=window.location.pathname==='/app/settings/account'?new URL(window.location.href).searchParams.get('shop'):null;
+      const selected=value.businesses.some(b=>b.id===requestedShop)?requestedShop!:value.businesses.some(b=>b.id===remembered)?remembered!:value.businesses[0]?.id||'';
       currentBusiness.current=selected;setBusinessId(selected);
       if(!selected){setLoading(false);setError(i18n.t('emptyBusiness'));}
     }).catch(error=>{
@@ -44,8 +45,8 @@ function Provider({children}: {children:ReactNode}) {
     const requestEpoch=++epoch.current;activeLoad.current?.abort();const controller=new AbortController();activeLoad.current=controller;
     setLoading(true);setError('');
     try{
-      const next=await api<V3State>(`/businesses/${selected}/state`,undefined,controller.signal);
-      if(mounted.current&&!controller.signal.aborted&&requestEpoch===epoch.current&&currentBusiness.current===selected)setState(next);
+      const [next,identity]=await Promise.all([api<V3State>(`/businesses/${selected}/state`,undefined,controller.signal),api<Session>('/session',undefined,controller.signal)]);
+      if(mounted.current&&!controller.signal.aborted&&requestEpoch===epoch.current&&currentBusiness.current===selected){setState(next);setSession(previous=>({...identity,user:{...identity.user,language:previous?.user.language||identity.user.language}}));}
     }catch(error){
       if(mounted.current&&!controller.signal.aborted&&requestEpoch===epoch.current&&currentBusiness.current===selected){setError(errorText(error));if(error instanceof RequestError&&error.status===401)routerRef.current.replace('/login');}
     }finally{

@@ -6,6 +6,9 @@ import type { Business, BusinessState, Customer, CustomerStatement, InventoryEnt
 import { salesBuckets, rankedProducts } from '../dashboard-data';
 import { migrationV8 } from './product-media-schema';
 import { migrationV9 } from './voice-audio-schema';
+import { migrationV10 } from './my-voice-schema';
+import {startUpiWorker} from './smart-upi-worker';
+import {migrationV11,migrationV12} from './smart-upi-schema';
 import { ProductMediaService } from './product-media-service';
 import { schema } from "./schema";
 import { migrationV2, migrationV3, migrationV4, migrationV5, migrationV6 } from "./migrations";
@@ -35,13 +38,13 @@ function asUser(row: Row): User { return { id: String(row.id), name: String(row.
 function asBusiness(row: Row): Business { return { id: String(row.id), name: String(row.name), category: row.category as Business["category"] }; }
 function asProduct(row: Row): Product { return { id: String(row.id), name: String(row.name), sku: String(row.sku), unit: String(row.unit), pricePaise: Number(row.price_paise), costPaise: Number(row.cost_paise), quantityMilli: Number(row.quantity_milli), minStockMilli: Number(row.min_stock_milli), expiryDate: row.expiry_date as string | null, aliases: JSON.parse(String(row.aliases_json)), barcode: String(row.barcode), variation: String(row.variation), displayNames: JSON.parse(String(row.display_names_json || "{}")), packSize: row.pack_size === null ? null : Number(row.pack_size) }; }
 function asInvoice(row: Row, payments: Payment[] = []): Invoice { return { id: String(row.id), number: String(row.number), date: String(row.date), customerId: row.customer_id as string | null, customerName: String(row.customer_name), items: JSON.parse(String(row.items_json)), subtotalPaise: Number(row.subtotal_paise), discountPaise: Number(row.discount_paise), totalPaise: Number(row.total_paise), paidPaise: row.status === "cancelled" ? 0 : Number(row.paid_paise), balancePaise: row.status === "cancelled" ? 0 : Number(row.balance_paise), paymentMethod: row.payment_method as Invoice["paymentMethod"], payments, status: row.status as Invoice["status"], dueDate: row.due_date as string | null }; }
-function asPayment(row: Row): Payment { return { id: String(row.id), customerId: row.customer_id as string | null, invoiceId: row.invoice_id as string | null, amountPaise: (row.kind === "refund" ? -1 : 1) * Number(row.amount_paise), method: row.method as Payment["method"], date: String(row.date), kind: row.kind as Payment["kind"] }; }
+function asPayment(row: Row): Payment { return { ...row.provider_reference?{providerVerified:true,providerReference:String(row.provider_reference)}:{}, id: String(row.id), customerId: row.customer_id as string | null, invoiceId: row.invoice_id as string | null, amountPaise: (row.kind === "refund" ? -1 : 1) * Number(row.amount_paise), method: row.method as Payment["method"], date: String(row.date), kind: row.kind as Payment["kind"] }; }
 function asAttachment(row: Row): SaleAttachment { return { id: String(row.id), url: `/api/businesses/${row.business_id}/attachments/${row.id}`, productId: String(row.product_id), mime: row.mime as SaleAttachment["mime"], size: Number(row.size), date: String(row.date) }; }
 
 export class Store {
   readonly db: DatabaseSync;
-  readonly schemaVersion = 9;
-  readonly runtimeRevision = "voiceos-3";
+  readonly schemaVersion = 12;
+  readonly runtimeRevision = "smart-upi-v18.1.2";
   private transactionDepth = 0;
   constructor(path = process.env.DATABASE_PATH || resolve(process.cwd(), ".data", "dukaanset.sqlite")) {
     // Runtime database directories are external mutable data, never bundle assets.
@@ -49,7 +52,7 @@ export class Store {
     this.db = new DatabaseSync(path);
     this.db.exec("PRAGMA foreign_keys = ON; PRAGMA busy_timeout = 5000; PRAGMA journal_mode = WAL;");
     const version = Number((this.db.prepare("PRAGMA user_version").get() as Row).user_version);
-    if (version > 9) { this.db.close(); throw new Error("Database schema is newer than this application."); }
+    if (version > 12) { this.db.close(); throw new Error("Database schema is newer than this application."); }
     this.transaction(() => {
       if (version === 0) this.db.exec(schema);
       if (version < 2) this.db.exec(migrationV2);
@@ -60,6 +63,9 @@ export class Store {
       if (version < 7) this.db.exec(migrationV7);
       if (version < 8) this.db.exec(migrationV8);
       if (version < 9) this.db.exec(migrationV9);
+      if (version < 10) this.db.exec(migrationV10);
+      if (version < 11) this.db.exec(migrationV11);
+      if (version < 12) this.db.exec(migrationV12);
     });
     this.db.prepare("DELETE FROM sessions WHERE expires_at < ?").run(stamp());
     this.db.prepare("DELETE FROM attachments WHERE invoice_id IS NULL AND date < ?").run(new Date(Date.now() - 86_400_000).toISOString());
@@ -95,7 +101,7 @@ export class Store {
   private limitEntities(table: "products" | "customers" | "suppliers", businessId: string) {
     if (Number(this.row(`SELECT COUNT(*) AS count FROM ${table} WHERE business_id=?`, businessId)!.count) >= 2000) throw new DomainError("LIMIT_REACHED", "This local workspace supports 2,000 records of each type.", 409);
   }
-  private assertDayOpen(businessId: string) {
+  assertDayOpen(businessId: string) {
     const legacy=this.row("SELECT date FROM closings WHERE business_id=? AND business_day=?",businessId,businessDay()),active=this.row('SELECT opened_at FROM business_sessions WHERE business_id=? ORDER BY opened_at DESC,rowid DESC LIMIT 1',businessId);
     if (legacy&&(!active||String(active.opened_at)<=String(legacy.date))) throw new DomainError("DAY_CLOSED", "Open the next session before recording new transactions.", 409);
     new ClosingService(this).assertWritable(businessId);
@@ -575,7 +581,7 @@ export class Store {
     });
   }
   state(userId: string, businessId: string): BusinessState {
-    const business = this.assertMember(userId, businessId), products = new ProductMediaService(this).decorateProducts(businessId,this.rows("SELECT * FROM products WHERE business_id=? ORDER BY name", businessId).map(asProduct)), allPayments = this.rows("SELECT * FROM payments WHERE business_id=? ORDER BY date DESC,id DESC", businessId).map(asPayment), today = businessDay();
+    const business = this.assertMember(userId, businessId), products = new ProductMediaService(this).decorateProducts(businessId,this.rows("SELECT * FROM products WHERE business_id=? ORDER BY name", businessId).map(asProduct)), allPayments = this.rows("SELECT p.*,t.reference provider_reference FROM payments p LEFT JOIN upi_allocations a ON a.payment_id=p.id AND a.business_id=p.business_id LEFT JOIN upi_transactions t ON t.id=a.transaction_id AND t.business_id=p.business_id AND t.verified=1 WHERE p.business_id=? ORDER BY p.date DESC,p.id DESC", businessId).map(asPayment), today = businessDay();
     const receipts = new Map<string, Payment[]>();
     for (const payment of allPayments) if (payment.invoiceId) receipts.set(payment.invoiceId, [...(receipts.get(payment.invoiceId) ?? []), payment]);
     const allInvoices = this.rows("SELECT * FROM invoices WHERE business_id=? ORDER BY date DESC,id DESC", businessId).map(row => asInvoice(row, receipts.get(String(row.id)) ?? []));
@@ -717,6 +723,7 @@ export class Store {
 declare global { var dukaanStore: Store | undefined; }
 export function getStore(): Store {
   if (process.env.VERCEL === '1') throw new Error('DukaanSet SQLite requires a persistent backend. Deploy the Vercel gateway instead.');
-  if (globalThis.dukaanStore && globalThis.dukaanStore.runtimeRevision !== "voiceos-3") { globalThis.dukaanStore.close(); globalThis.dukaanStore = undefined; }
-  return globalThis.dukaanStore ??= new Store();
+  if (globalThis.dukaanStore && globalThis.dukaanStore.runtimeRevision !== "smart-upi-v18.1.2") { globalThis.dukaanStore.close(); globalThis.dukaanStore = undefined; }
+  if(!globalThis.dukaanStore){globalThis.dukaanStore=new Store();startUpiWorker(globalThis.dukaanStore);}
+  return globalThis.dukaanStore;
 }

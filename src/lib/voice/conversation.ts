@@ -8,6 +8,7 @@ import {z} from './zod';
 import {extractVoiceRoles,interpretedSlotsSchema,type InterpretedSlots,requiresRecordCorrectionReview} from './semantics';
 import {prepareCatalogueCommand,catalogueQuestion} from './catalogue-command';
 import {customerDuplicateQuestion,resolveCustomerDecision,separateCustomer} from './customer-decision';
+import {smartUpiVoice} from './smart-upi';
 
 const voiceActionRouting:Record<VoiceIntent,{safety:'read'|'navigate'|'write'|'review';destination?:string}>={
  sale:{safety:'write'},stock:{safety:'write'},customer:{safety:'write'},payment:{safety:'write'},expense:{safety:'write'},supplier:{safety:'review'},purchase:{safety:'review'},demand:{safety:'review'},closing:{safety:'review',destination:'/app/daily-closing'},report:{safety:'read'},document:{safety:'review'},reorder:{safety:'review'},followup:{safety:'review'},simulation:{safety:'read'},scan:{safety:'review'},insights:{safety:'read'},open:{safety:'navigate'},cancel:{safety:'navigate'},unknown:{safety:'review'}
@@ -84,6 +85,7 @@ function conversationCorrection(raw:string,state:V3State,previous:VoiceCommand):
 }
 /** Conversation state is scoped by the provider; explicit cross-module commands win. */
 export function advanceVoice(raw:string,state:V3State,previous?:VoiceCommand,selectedCustomerId?:string,contextIntent?:VoiceIntent):VoiceCommand {
+ const upi=smartUpiVoice(raw,state);if(upi)return upi;
  if(/kitne|kitni|how many|count|number of|कितने|कितनी/iu.test(raw)&&!/create|add|jodo|जोड़/iu.test(raw)&&/(?:duniya|world|worldwide|globally|दुनिया|विश्व).*(?:customers?|grahak|ग्राहक)|(?:customers?|ग्राहक).*(?:world|दुनिया)/iu.test(raw))return{intent:'unknown',transcript:raw.slice(0,5000),fields:{operation:'shopScope'},items:[],changed:[],changedItems:[],warnings:[]};
  raw=normalizeVoiceInstruction(raw);
  if(previous){const decision=resolveCustomerDecision(raw,previous,state.customers);if(decision)return decision;}

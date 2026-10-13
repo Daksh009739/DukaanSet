@@ -16,6 +16,8 @@ export function ConversationInput({onSubmit,disabled=false,initial=false,prefill
  useEffect(()=>{if(disabled)capture.abort();},[disabled]);
  useEffect(()=>{if(prefill){capture.abort();setText(prefill.text);}},[prefill?.id]);
  useEffect(()=>{const id=voice.loop.sessionId+':'+reply?.id;if(!reply||!reply.continueTurn||!mayAutoListen(voice.loop)||voice.completedReply!==reply.id||voice.playback!=='idle'||capture.recording||disabled||resumed.current===id||prefill?.text)return;const timer=setTimeout(()=>{resumed.current=id;capture.start(locale,true);},450);return()=>clearTimeout(timer);},[reply?.id,voice.completedReply,voice.loop,voice.playback,voice.capture.phase,disabled,locale,prefill?.text]);
+ const setupResumed=useRef('');
+ useEffect(()=>{const request=voice.setupResume;if(!request||request.sessionId!==voice.loop.sessionId||request.id===setupResumed.current||!mayAutoListen(voice.loop)||!reply?.continueTurn||disabled||voice.playback!=='idle'||capture.recording)return;setupResumed.current=request.id;capture.start(locale,true);},[voice.setupResume,voice.loop,disabled,voice.playback,capture.recording,locale,reply?.id]);
  const problem=capture.problem==='language'?'languageError':capture.problem==='aborted'?'speechError':capture.problem;
  const review=()=>{if(!text.trim()||disabled)return;voice.interruptConversation();voice.resumeConversation();submit.current(text);setText('');};
  const local=reply===undefined,paused=(!local&&(voice.loop.paused||!voice.loop.active||Boolean(voice.audioProblem&&voice.audioProblem!=='voiceFallback')))||Boolean(problem);

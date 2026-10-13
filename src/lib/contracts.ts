@@ -13,7 +13,7 @@ export interface InvoiceItem { productId: string; name: string; unit: string; qu
 /** Cancelled bills retain their original total; current received/due amounts are zero. */
 export interface Invoice { id: string; number: string; date: string; customerId: string | null; customerName: string; items: InvoiceItem[]; subtotalPaise: number; discountPaise: number; totalPaise: number; paidPaise: number; balancePaise: number; paymentMethod: PaymentMethod | "split"; payments: Payment[]; status: "paid" | "partial" | "unpaid" | "cancelled"; dueDate: string | null }
 /** amountPaise is signed: sale/repayment positive, refund negative. */
-export interface Payment { id: string; customerId: string | null; invoiceId: string | null; amountPaise: number; method: PaymentMethod; date: string; kind: "sale" | "repayment" | "refund" }
+export interface Payment { providerVerified?:boolean; providerReference?:string; id: string; customerId: string | null; invoiceId: string | null; amountPaise: number; method: PaymentMethod; date: string; kind: "sale" | "repayment" | "refund" }
 export interface Movement { id: string; productId: string; productName: string; quantityMilli: number; reason: string; date: string; referenceId: string | null }
 export interface InventoryEntry { id: string; date: string; source: "voice" | "manual" | "mixed"; items: { productId: string; name: string; unit: string; quantityMilli: number; movementId: string; created?:boolean; previousPricePaise?:number; sellingPricePaise?:number; purchaseCostPaise?:number; purchaseTotalPaise?:number }[] }
 export interface StockProductInput { name: string; unit: string; pricePaise: number; costPaise: number; sku: string; variation: string }
