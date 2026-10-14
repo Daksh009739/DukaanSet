@@ -18,6 +18,7 @@ import { DeliveryService } from './whatsapp';
 import { ClosingService } from './closing';
 import { renderPdf } from './pdf-renderer';
 import { RecordService } from './records';
+import {CustomerReminderService} from './customer-reminders';
 import {SmartUpiService} from './smart-upi-service';
 
 import { ProductMediaService } from './product-media-service';
@@ -141,7 +142,7 @@ export async function handleRequest(request: Request, store: Store = getStore())
     if (!match) throw new DomainError("NOT_FOUND", "Endpoint not found.", 404);
     const [, businessId, action, recordId, subAction] = match;
     if (action === 'smart-upi' && !['GET', 'POST'].includes(verb)) throw new DomainError('METHOD_NOT_ALLOWED', 'Use GET or POST.', 405);
-    if (action === 'smart-upi' && verb === 'GET' && ![undefined, 'export', 'transaction', 'options', 'voice'].includes(recordId)) throw new DomainError('METHOD_NOT_ALLOWED', 'Use POST for this operation.', 405);
+    if (action === 'smart-upi' && verb === 'GET' && ![undefined, 'export', 'transaction', 'options', 'voice', 'insights', 'reminder'].includes(recordId)) throw new DomainError('METHOD_NOT_ALLOWED', 'Use POST for this operation.', 405);
     store.assertMember(userId, businessId);
     if(action==='weather'&&!recordId&&verb==='GET')return json(await shopWeather().current(access(store.db,userId,businessId).location));
     const closing=new ClosingService(store),media=new ProductMediaService(store);
@@ -151,6 +152,10 @@ export async function handleRequest(request: Request, store: Store = getStore())
     if(action==='intelligence'&&!recordId&&verb==='GET')return json(new IntelligenceService(store).overview(userId,businessId));
     if(action==='merchant-profile'){const upi=new SmartUpiService(store);return json(verb==='GET'?upi.profile(userId,businessId):upi.saveProfile(userId,businessId,await body(request)));}
     if(action==='merchant-shop'&&verb==='POST')return json(new SmartUpiService(store).saveShop(userId,businessId,await body(request)));
+    if(action==='customer-reminders'&&recordId){const service=new CustomerReminderService(store);if(verb==='GET'&&!subAction)return json(service.context(userId,businessId,recordId));if(verb==='POST'&&subAction==='preferences')return json(service.savePreferences(userId,businessId,recordId,await body(request)));if(verb==='POST'&&subAction==='preview')return json(service.preview(userId,businessId,recordId,await body(request)));throw new DomainError('METHOD_NOT_ALLOWED','Use the supported reminder operation.',405);}
+    if(action==='smart-upi'&&recordId==='insights'&&verb==='GET')return json(new SmartUpiService(store).insights(userId,businessId));
+    if(action==='smart-upi'&&recordId==='keep-unmatched'&&subAction&&verb==='POST')return json(new SmartUpiService(store).keepUnmatched(userId,businessId,subAction,await body(request)));
+    if(action==='smart-upi'&&recordId==='create-customer'&&subAction&&verb==='POST')return json(new SmartUpiService(store).createAndLink(userId,businessId,subAction,await body(request)),201);
     if(action==='smart-upi'&&recordId==='export'&&verb==='GET')return new Response(new SmartUpiService(store).exportCsv(userId,businessId,Object.fromEntries(url.searchParams)),{headers:{'Content-Type':'text/csv; charset=utf-8','Content-Disposition':'attachment; filename="dukaanset-upi.csv"','Cache-Control':'private, no-store','X-Content-Type-Options':'nosniff'}});
     if(action==='smart-upi'&&recordId==='transaction'&&subAction&&verb==='GET')return json(new SmartUpiService(store).getTransaction(userId,businessId,subAction));
     if(action==='smart-upi'&&recordId==='options'&&subAction&&verb==='GET')return json(new SmartUpiService(store).options(userId,businessId,subAction));

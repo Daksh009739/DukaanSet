@@ -1,0 +1,46 @@
+✔ existing UPI and decoded QR stay saved without transaction verification; primary updates only future branding (281.246ms)
+✔ official OAuth state is account-bound, single-use, encrypted and scope-isolated (106.4494ms)
+✔ signed provider fetch, duplicate and out-of-order events preserve one authoritative transaction (78.7941ms)
+✔ stable provider payer linking changes no balances and does not derive identities from handles (72.0103ms)
+✔ confirmed invoice and udhaar reconciliation reuses ledger service and cannot double-post (80.8449ms)
+✔ matching an existing manually recorded receipt changes no ledger totals (67.8334ms)
+✔ advances remain separate from dues until explicitly applied and provider refunds reverse once (78.7367ms)
+✔ statement import is unverified, atomic, deduplicated and cannot clear dues (58.6527ms)
+✔ staff cannot change destinations; disconnected accounts reject future sync/events and keep history (111.4243ms)
+✔ profile image storage strips metadata and is private; session cleanup keeps the current session (107.3165ms)
+✔ Razorpay adapter calls documented endpoints with server bearer tokens and validates responses (57.4046ms)
+✔ provider test money cannot pay real invoices or create a real-bill payment QR (64.9048ms)
+✔ VoiceOS reads verified UPI and prepares review only; existing sales stay in their workflow (150.6771ms)
+✔ export permissions and timezone boundaries use real scoped observations (107.8607ms)
+✔ UPI HTTP operations accept action names, reject wrong verbs and keep scoped authorisation (114.5702ms)
+✔ profile and shop updates expose current identity; branding keeps one saved primary and invoice snapshots (76.8995ms)
+✔ rotated webhook secrets verify retries; real customer history excludes provider test money (73.6015ms)
+✔ all approved natural UPI questions stay read-only and amount queries never invent a payer (83.0806ms)
+✔ a retained disconnected test authorisation cannot label current live observations as test money (64.0068ms)
+✔ same-name UPI queries require an identifying shortlist; selecting an ID remembers only the intended person (100.329ms)
+✔ same-name billing and balance follow-ups keep selected IDs; ambiguous identifiers never pick the first record (71.878ms)
+✔ provider names are unconfirmed hints; anonymous payers need no account or customer registration (106.9839ms)
+✔ confirmed repeat-payer linking audits associations while every original payment and ledger row stays intact (95.8023ms)
+✔ original status and timestamp survive provider lifecycle updates and payer renaming (93.6745ms)
+✔ customer selections, payer links and immutable payment originals remain business scoped (118.4651ms)
+✔ official provider name enrichment uses the merchant bearer and never infers names from a VPA (1.403ms)
+✔ ambiguous allocation and pronoun queries return clarification without any financial draft or write (74.1142ms)
+✔ an exact short customer name cannot hide another customer sharing the spoken name (69.846ms)
+✔ why-linked evidence explains merchant and reliable-payer associations without changing history (82.641ms)
+✔ review inbox deferral is idempotent and never hides or rewrites the original transaction (95.8641ms)
+✔ confirmed customer creation links an existing observation once and preserves every financial row (71.3911ms)
+✔ monthly conversational UPI queries keep customer context and view filters use the same date range (123.7236ms)
+✔ insights are deterministic, avoid double counting and distinguish overdue dates from merely pending balances (106.6109ms)
+✔ reminder preparation requires real overdue balances, current consent and approval; it never sends or posts money (87.5711ms)
+✔ reminder consent is invalidated by changed contact details and stale balance approval fails closed (75.1239ms)
+✔ companion routes isolate businesses and new reviews cannot mutate foreign payments or contacts (130.8257ms)
+✔ existing communication opt-outs override reminder-specific permission and contact preferences stay separate (72.5024ms)
+✔ payment-only roles receive no customer-balance facts and cannot prepare customer reminders (80.383ms)
+ℹ tests 38
+ℹ suites 0
+ℹ pass 38
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 7111.2828

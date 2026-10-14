@@ -1,4 +1,5 @@
 'use client';
+import Link from 'next/link';
 import { useEffect,useRef,useState } from 'react';
 import {createPortal} from 'react-dom';
 import { useRouter,usePathname } from 'next/navigation';
@@ -148,7 +149,8 @@ export function GlobalVoiceLauncher({hideLauncher=false}:{hideLauncher?:boolean}
 
  {intelligence&&command&&!command.warnings.includes('permission')&&<IntelligencePanel command={command}/>}
  {command&&customerDuplicateQuestion(command,state.customers)&&<div className="conversation-existing"><Button variant="secondary" onClick={()=>understand(speech('createSeparate'))}>{speech('createSeparate')}</Button>{state.customers.filter(c=>resolveContact(command.fields.name,[c]).length).map(customer=><Button key={customer.id} variant="secondary" onClick={()=>{router.push('/app/customers/'+customer.id);close(true);}}>{copy.customerExists} · {customer.name}</Button>)}</div>}
- {isUpi&&<UpiVoiceReview result={upiValue} query={command?.fields.upiQuery||''}/>}
+ {command?.fields.report==='outstandingList'&&<Link className="text-link" onClick={()=>close()} href="/app/customers">{copy.view}<ArrowUpRight size={16}/></Link>}
+ {isUpi&&<UpiVoiceReview onNavigate={()=>close()} result={upiValue} query={command?.fields.upiQuery||''}/>}
  {command?.intent==='report'&&<section className="voiceos-answer" aria-label={copy.result}><h3>{copy.result} · {copy[(command.fields.period||'today') as 'today'|'week'|'all'|'yesterday'|'month'|'lastWeek'|'twoDaysAgo']}</h3><dl>{answer.map((row,i)=><div key={i}><dt>{row.label}</dt><dd>{row.value}</dd></div>)}</dl>{!answer.length&&<p role="status">{needsStats&&!stats&&!error?copy.loading:copy.noResults}</p>}<p className="card-note">{copy.range}</p></section>}
  {command?.fields.operation&&['editCustomer','editProduct','language'].includes(command.fields.operation)&&<section className="conversation-draft"><b>{copy.draft}</b><p>{command.fields.query||command.fields.language} · {command.fields.phone||command.fields.price}</p><small>{copy.notSaved}</small></section>}
  {(choices.length>1||isUpi&&Boolean(upiValue?.customers?.length))&&(customerChoices?<section className="conversation-existing" role="group" aria-label={copy.customerLabel}>{choices.map(c=><Button key={c.id} variant="secondary" disabled={busy||Boolean(pending)} onClick={()=>selectChoice(c.id)}>{c.label}</Button>)}</section>:<Select label={copy.choose} value={chosen} onChange={event=>selectChoice(event.target.value)}><option value="">—</option>{choices.map(c=><option key={c.id} value={c.id}>{c.label}</option>)}</Select>)}

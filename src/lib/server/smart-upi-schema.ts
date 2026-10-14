@@ -32,3 +32,11 @@ CREATE TRIGGER upi_links_audit_no_update BEFORE UPDATE ON upi_customer_link_audi
 CREATE TRIGGER upi_links_audit_no_delete BEFORE DELETE ON upi_customer_link_audit BEGIN SELECT RAISE(ABORT,'Customer link audit is immutable'); END;
 PRAGMA user_version=13;
 `;
+export const migrationV14=`
+CREATE TABLE upi_identity_reviews(transaction_id TEXT PRIMARY KEY REFERENCES upi_transactions(id),business_id TEXT NOT NULL REFERENCES businesses(id),actor_id TEXT NOT NULL REFERENCES users(id),reviewed_at TEXT NOT NULL);
+CREATE TABLE upi_invoice_link_proofs(transaction_id TEXT PRIMARY KEY REFERENCES upi_transactions(id),business_id TEXT NOT NULL REFERENCES businesses(id),customer_id TEXT NOT NULL REFERENCES customers(id),reference TEXT NOT NULL,created_at TEXT NOT NULL);
+CREATE TRIGGER upi_invoice_proofs_no_update BEFORE UPDATE ON upi_invoice_link_proofs BEGIN SELECT RAISE(ABORT,'Invoice link proofs are immutable'); END;
+CREATE TRIGGER upi_invoice_proofs_no_delete BEFORE DELETE ON upi_invoice_link_proofs BEGIN SELECT RAISE(ABORT,'Invoice link proofs are immutable'); END;
+CREATE TABLE customer_reminder_preferences(business_id TEXT NOT NULL REFERENCES businesses(id),customer_id TEXT NOT NULL REFERENCES customers(id),consent INTEGER NOT NULL DEFAULT 0 CHECK(consent IN (0,1)),channel TEXT NOT NULL CHECK(channel IN ('none','manual')),language TEXT NOT NULL,phone_snapshot TEXT NOT NULL,revision INTEGER NOT NULL,actor_id TEXT NOT NULL REFERENCES users(id),updated_at TEXT NOT NULL,PRIMARY KEY(business_id,customer_id));
+PRAGMA user_version=14;
+`;
