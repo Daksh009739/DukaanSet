@@ -283,5 +283,6 @@
   "highRiskReview": "Open the saved record to review this correction. Check its amount and impact before confirming.",
   "sales": "Sales",
   "collections": "Payments received",
-  "cashBalance": "Expected cash"
+  "cashBalance": "Expected cash",
+  "tomorrow": "Tomorrow"
 }

@@ -1,15 +1,15 @@
 export type Language = "en" | "hi" | "hinglish";
-export type Category = "grocery" | "hardware" | "vegetables" | "mobile" | "clothing" | "general";
+export type Category = typeof import('./business-modes').businessCategories[number];
 export type PaymentMethod = "cash" | "upi";
 export interface User { id: string; name: string; email: string; language: Language; demo: boolean; emailVerified: boolean; verificationRequired: boolean }
 export interface Business { id: string; name: string; category: Category }
 export interface Session { user: User; businesses: Business[] }
-export interface Product { media?: import('./product-media').ProductMedia; displayNames?: Partial<Record<Language,string>>; id: string; name: string; sku: string; unit: string; pricePaise: number; costPaise: number; quantityMilli: number; minStockMilli: number; expiryDate: string | null; aliases: string[]; barcode: string; variation: string; packSize: number | null }
+export interface Product { stockTracked?:boolean; media?: import('./product-media').ProductMedia; displayNames?: Partial<Record<Language,string>>; id: string; name: string; sku: string; unit: string; pricePaise: number; costPaise: number; quantityMilli: number; minStockMilli: number; expiryDate: string | null; aliases: string[]; barcode: string; variation: string; packSize: number | null }
 export interface Customer { purchaseCount?:number; lastPurchase?:string|null; lastPayment?:string|null; id: string; name: string; phone: string; balancePaise: number; totalSalesPaise: number; netReceivedPaise: number }
 export interface CustomerStatement { customer: Customer; invoices: Invoice[]; payments: Payment[] }
 export interface Supplier { id: string; name: string; phone: string; balancePaise: number }
 export interface SaleAttachment { id: string; url: string; productId: string; mime: "image/jpeg" | "image/png" | "image/webp"; size: number; date: string }
-export interface InvoiceItem { productId: string; name: string; unit: string; quantityMilli: number; pricePaise: number; totalPaise: number; variation?: string; attachmentIds?: string[]; attachments?: SaleAttachment[] }
+export interface InvoiceItem { stockTracked?:boolean; productId: string; name: string; unit: string; quantityMilli: number; pricePaise: number; totalPaise: number; variation?: string; attachmentIds?: string[]; attachments?: SaleAttachment[] }
 /** Cancelled bills retain their original total; current received/due amounts are zero. */
 export interface Invoice { id: string; number: string; date: string; customerId: string | null; customerName: string; items: InvoiceItem[]; subtotalPaise: number; discountPaise: number; totalPaise: number; paidPaise: number; balancePaise: number; paymentMethod: PaymentMethod | "split"; payments: Payment[]; status: "paid" | "partial" | "unpaid" | "cancelled"; dueDate: string | null }
 /** amountPaise is signed: sale/repayment positive, refund negative. */

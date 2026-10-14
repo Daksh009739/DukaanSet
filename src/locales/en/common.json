@@ -415,5 +415,12 @@
     "dozen_one": "dozen",
     "dozen_other": "dozens",
     "bag": "{{count}} bags"
-  }
+  },
+  "retail": "Retail",
+  "medical": "Medical / pharmacy",
+  "restaurant": "Restaurant",
+  "salon": "Salon",
+  "electronics": "Electronics",
+  "wholesale": "Wholesale",
+  "services": "Services"
 }

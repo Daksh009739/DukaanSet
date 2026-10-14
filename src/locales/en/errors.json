@@ -121,5 +121,6 @@
   "UPI_EXPORT_LIMIT": "The payment details could not be accepted. Check the connection, destination and available receipt amount, then try again.",
   "UPI_REFUND_REVIEW": "The payment details could not be accepted. Check the connection, destination and available receipt amount, then try again.",
   "UPI_TEST_MONEY": "Test payments cannot pay real invoices. Use a designated test workspace.",
-  "UPI_QR_PENDING": "A payment QR request is still being confirmed. Refresh before creating another."
+  "UPI_QR_PENDING": "A payment QR request is still being confirmed. Refresh before creating another.",
+  "BOOKING_CONFLICT": "This time overlaps an active appointment. Choose another time."
 }

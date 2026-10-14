@@ -18,6 +18,7 @@ import { DeliveryService } from './whatsapp';
 import { ClosingService } from './closing';
 import { renderPdf } from './pdf-renderer';
 import { RecordService } from './records';
+import {BusinessGrowthService} from './business-growth';
 import {CustomerReminderService} from './customer-reminders';
 import {SmartUpiService} from './smart-upi-service';
 
@@ -138,12 +139,14 @@ export async function handleRequest(request: Request, store: Store = getStore())
     if(path==='/api/onboarding'&&verb==='POST')return json(saas.onboard(userId,await body(request)),201);
     if (path === "/api/businesses" && verb === "POST") return json(saas.createAdditionalBusiness(userId, await body(request)), 201);
     const upiMatch = path.match(/^\/api\/businesses\/([a-f0-9-]{36})\/(smart-upi)(?:\/([a-z-]+)(?:\/([a-f0-9-]{36}))?)?$/);
-    const match = upiMatch || path.match(/^\/api\/businesses\/([a-f0-9-]{36})\/([a-z-]+)(?:\/([a-f0-9-]{36})(?:\/([a-z]+))?)?$/);
+    const growthMatch=path.match(/^\/api\/businesses\/([a-f0-9-]{36})\/(business-growth)(?:\/([a-z-]+)(?:\/([a-f0-9-]{36}))?)?$/);
+    const match = upiMatch || growthMatch || path.match(/^\/api\/businesses\/([a-f0-9-]{36})\/([a-z-]+)(?:\/([a-f0-9-]{36})(?:\/([a-z]+))?)?$/);
     if (!match) throw new DomainError("NOT_FOUND", "Endpoint not found.", 404);
     const [, businessId, action, recordId, subAction] = match;
     if (action === 'smart-upi' && !['GET', 'POST'].includes(verb)) throw new DomainError('METHOD_NOT_ALLOWED', 'Use GET or POST.', 405);
     if (action === 'smart-upi' && verb === 'GET' && ![undefined, 'export', 'transaction', 'options', 'voice', 'insights', 'reminder'].includes(recordId)) throw new DomainError('METHOD_NOT_ALLOWED', 'Use POST for this operation.', 405);
     store.assertMember(userId, businessId);
+    if(action==='business-growth'){const growth=new BusinessGrowthService(store);if(verb==='GET'){if(!recordId)return json(growth.trust(userId,businessId));if(recordId==='mode')return json(growth.mode(userId,businessId));if(recordId==='summary')return json(growth.summary(userId,businessId));if(recordId==='voice')return json(growth.voice(userId,businessId,url.searchParams.get('kind')||'shopSummary',language(url.searchParams.get('language')||store.session(userId).user.language),url.searchParams.get('period')||'today'));if(recordId==='activities')return json(growth.activities(userId,businessId,Object.fromEntries(url.searchParams)));if(recordId==='export')return json(growth.export(userId,businessId));}if(verb==='POST'){const input=await body(request);if(recordId==='mode')return json(growth.saveMode(userId,businessId,input));if(recordId==='activity')return json(growth.createActivity(userId,businessId,input),201);if(recordId==='status'&&subAction)return json(growth.transition(userId,businessId,subAction,input));if(recordId==='service')return json(growth.createService(userId,businessId,input),201);if(recordId==='referral')return json(growth.referral(userId,businessId,input));if(recordId==='feedback')return json(growth.feedback(userId,businessId,input),201);}throw new DomainError('METHOD_NOT_ALLOWED','Use a supported business operation.',405);}
     if(action==='weather'&&!recordId&&verb==='GET')return json(await shopWeather().current(access(store.db,userId,businessId).location));
     const closing=new ClosingService(store),media=new ProductMediaService(store);
     if(action==='voice-interpret'&&!recordId){const service=new VoiceInterpreterService(store);if(verb==='GET')return json(service.status(userId,businessId));if(verb!=='POST')throw new DomainError('METHOD_NOT_ALLOWED','Use GET or POST.',405);throttle(`interpret:${userId}`,5);return json(await service.interpret(userId,businessId,await body(request),request.signal));}

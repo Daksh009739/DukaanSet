@@ -12,7 +12,7 @@ export function operationalDocument(store:Store, base:DocumentModel, input:Recor
   const entity=(table:string,id:string)=>{const r=store.db.prepare(`SELECT * FROM ${table} WHERE business_id=? AND id=?`).get(businessId,id) as Row|undefined;if(!r)throw new DomainError('NOT_FOUND','Document source not found.',404);return r;};
   if(kind==='closing-preview'){const preview=new ClosingService(store).preview(userId,businessId);if(preview.session.status==='closed')throw new DomainError('ALREADY_CLOSED','Download the saved closing report for a closed session.',409);return {...base,sourceId:businessId,reference:`PREVIEW-${preview.session.businessDate}`,generatedAt:preview.asOf,closingPreview:preview};}
   if(kind==='stock-report') {
-    const products=rows('SELECT * FROM products WHERE business_id=? ORDER BY name,id',businessId);
+    const products=rows('SELECT * FROM products WHERE business_id=? AND stock_tracked=1 ORDER BY name,id',businessId);
     if(products.length>5000)throw new DomainError('DOCUMENT_LIMIT','Report exceeds 5,000 products.',413);
     const data=products.map(p=>({id:String(p.id),name:JSON.parse(String(p.display_names_json||'{}'))[base.language]||String(p.name),variation:String(p.variation),sku:String(p.sku),unit:String(p.unit),quantityMilli:Number(p.quantity_milli),minStockMilli:Number(p.min_stock_milli)}));
     return {...base,sourceId:businessId,reference:`STOCK-${businessDay(base.generatedAt)}`,stockReport:{rows:data,healthy:data.filter(p=>p.quantityMilli>p.minStockMilli).length,low:data.filter(p=>p.quantityMilli>0&&p.quantityMilli<=p.minStockMilli).length,out:data.filter(p=>p.quantityMilli<=0).length}};

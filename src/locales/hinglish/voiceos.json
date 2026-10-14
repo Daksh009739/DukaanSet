@@ -283,5 +283,6 @@
   "highRiskReview": "Is correction ke liye saved record kholein. Confirm karne se pehle amount aur asar check karein.",
   "sales": "Bikri",
   "collections": "Mile hue payments",
-  "cashBalance": "Anumaanit cash"
+  "cashBalance": "Anumaanit cash",
+  "tomorrow": "Kal"
 }

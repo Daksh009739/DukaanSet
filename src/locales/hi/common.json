@@ -415,5 +415,12 @@
     "dozen_one": "दर्जन",
     "dozen_other": "दर्जन",
     "bag": "{{count}} बोरी"
-  }
+  },
+  "retail": "खुदरा कारोबार",
+  "medical": "मेडिकल / फार्मेसी",
+  "restaurant": "रेस्टोरेंट",
+  "salon": "सैलून",
+  "electronics": "इलेक्ट्रॉनिक्स",
+  "wholesale": "थोक कारोबार",
+  "services": "सेवा कारोबार"
 }

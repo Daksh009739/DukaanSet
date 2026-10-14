@@ -1,3 +1,4 @@
+import {businessContextCommand} from './business-context';
 import type { Invoice, Product } from '../contracts';
 import type { V3State } from '../v3-contracts';
 import { minorUnits,lineTotal } from '../client';
@@ -86,6 +87,7 @@ function conversationCorrection(raw:string,state:V3State,previous:VoiceCommand):
 }
 /** Conversation state is scoped by the provider; explicit cross-module commands win. */
 export function advanceVoice(raw:string,state:V3State,previous?:VoiceCommand,selectedCustomerId?:string,contextIntent?:VoiceIntent):VoiceCommand {
+ const businessQuery=businessContextCommand(raw,state);if(businessQuery)return businessQuery;
  if(previous&&!previous.fields.customerId&&(previous.fields.customerQuery||previous.fields.query)&&(['sale','payment','report','document'].includes(previous.intent)||previous.intent==='open'&&(previous.fields.screen==='customerAccount'||previous.fields.operation==='editCustomer'))){const candidates=state.customers.filter(c=>resolveContact(previous.fields.customerQuery||previous.fields.query,[c]).length),id=chooseCustomerByIdentifier(raw,candidates);if(id)return{...previous,fields:{...previous.fields,customerId:id},warnings:previous.warnings.filter(w=>w!=='customer'),changed:['customerId'],changedItems:[]};}const continuation=previous?.fields.report==='smartUpi'&&/^(?:(?:and|aur|और)\s+)?(?:this month|is mahine|इस महीने|kal|yesterday|today|aaj|week|कल|आज|इस हफ्ते)[?.!। ]*$/iu.test(raw);const upiText=continuation?raw+' UPI collections '+(previous?.fields.customerId?'this customer':previous?.fields.customerQuery||''):raw;const upi=smartUpiVoice(upiText,state,selectedCustomerId||previous?.fields.customerId);if(upi)return upi;
  if(/kitne|kitni|how many|count|number of|कितने|कितनी/iu.test(raw)&&!/create|add|jodo|जोड़/iu.test(raw)&&/(?:duniya|world|worldwide|globally|दुनिया|विश्व).*(?:customers?|grahak|ग्राहक)|(?:customers?|ग्राहक).*(?:world|दुनिया)/iu.test(raw))return{intent:'unknown',transcript:raw.slice(0,5000),fields:{operation:'shopScope'},items:[],changed:[],changedItems:[],warnings:[]};
  if(/(?:kaunse|kaun|which|who|कौन).*(?:customers?|grahak|ग्राहक).*(?:udhaar|dues|pending|outstanding|उधार|बकाया)|(?:customers?|ग्राहक).*(?:overdue|बकाया).*(?:which|कौन)/iu.test(raw))return{intent:'report',transcript:raw,fields:{report:'outstandingList',period:'all'},items:[],changed:[],changedItems:[],warnings:state.configuration.permissions.customers&&state.configuration.permissions.reports?[]:['permission']};
@@ -214,7 +216,7 @@ export function advanceVoice(raw:string,state:V3State,previous?:VoiceCommand,sel
 }
 export function salePreview(command:VoiceCommand,products:Product[]){
  let total=0;const items:{productId:string;quantityMilli:number;pricePaise?:number}[]=[];let valid=true;
- try{for(const item of command.items){const product=products.find(p=>p.id===item.productId),qty=voiceQuantity(item,products);if(!product||qty===null||qty>product.quantityMilli||item.priceBasis==='unclear'||item.priceBasis==='total'){valid=false;continue;}
+ try{for(const item of command.items){const product=products.find(p=>p.id===item.productId),qty=voiceQuantity(item,products);if(!product||qty===null||product.stockTracked!==false&&qty>product.quantityMilli||item.priceBasis==='unclear'||item.priceBasis==='total'){valid=false;continue;}
   const price=item.priceBasis==='unit'?minorUnits(item.price):product.pricePaise;if(price>1_000_000_000){valid=false;continue;}total+=lineTotal(price,qty);items.push({productId:product.id,quantityMilli:qty,...item.priceBasis==='unit'?{pricePaise:price}:{}});}
   const discount=minorUnits(command.fields.discount||'0');total-=discount;if(total<0||total>1_000_000_000_000)valid=false;
   const mode=command.fields.mode,cash=mode==='cash'?total:mode==='split'?minorUnits(command.fields.cash||'0'):0,upi=mode==='upi'?total:mode==='split'?minorUnits(command.fields.upi||'0'):0;
@@ -246,7 +248,7 @@ export function nextVoiceQuestion(command:VoiceCommand,state:V3State):string {
   if(f.customerQuery&&!f.customerId&&f.createCustomer!=='true')return'customer';
   if(!command.items.length)return'items';if(command.items.some(i=>!i.productId))return'product';
   if(command.items.some(i=>!i.quantity))return'quantity';if(command.items.some(i=>voiceQuantity(i,state.products)===null))return'quantityUnit';
-  if(command.items.some(i=>{const product=state.products.find(p=>p.id===i.productId),qty=voiceQuantity(i,state.products);return product&&qty!==null&&qty>product.quantityMilli;}))return'insufficientStock';
+  if(command.items.some(i=>{const product=state.products.find(p=>p.id===i.productId),qty=voiceQuantity(i,state.products);return product&&product.stockTracked!==false&&qty!==null&&qty>product.quantityMilli;}))return'insufficientStock';
   if(command.items.some(i=>i.priceBasis==='unclear'||i.priceBasis==='total'))return'priceBasis';
   if(command.items.some(i=>!i.price&&!(state.products.find(p=>p.id===i.productId)?.pricePaise)))return'price';
   if(!f.mode)return'salePayment';if(!salePreview(command,state.products).valid)return'priceInvalid';

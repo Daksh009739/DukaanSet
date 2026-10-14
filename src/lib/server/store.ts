@@ -8,6 +8,7 @@ import { migrationV8 } from './product-media-schema';
 import { migrationV9 } from './voice-audio-schema';
 import { migrationV10 } from './my-voice-schema';
 import {startUpiWorker} from './smart-upi-worker';
+import {migrationV15,migrationV16} from './growth-schema';
 import {migrationV11,migrationV12,migrationV13,migrationV14} from './smart-upi-schema';
 import { ProductMediaService } from './product-media-service';
 import { schema } from "./schema";
@@ -36,15 +37,15 @@ export function verifyPassword(value: string, encoded: string): boolean {
 }
 function asUser(row: Row): User { return { id: String(row.id), name: String(row.name), email: String(row.email), language: row.language as User["language"], demo: Boolean(row.demo), emailVerified: Boolean(row.email_verified), verificationRequired: Boolean(row.verification_required) }; }
 function asBusiness(row: Row): Business { return { id: String(row.id), name: String(row.name), category: row.category as Business["category"] }; }
-function asProduct(row: Row): Product { return { id: String(row.id), name: String(row.name), sku: String(row.sku), unit: String(row.unit), pricePaise: Number(row.price_paise), costPaise: Number(row.cost_paise), quantityMilli: Number(row.quantity_milli), minStockMilli: Number(row.min_stock_milli), expiryDate: row.expiry_date as string | null, aliases: JSON.parse(String(row.aliases_json)), barcode: String(row.barcode), variation: String(row.variation), displayNames: JSON.parse(String(row.display_names_json || "{}")), packSize: row.pack_size === null ? null : Number(row.pack_size) }; }
+function asProduct(row: Row): Product { return {...Number(row.stock_tracked)===0?{stockTracked:false}:{}, id: String(row.id), name: String(row.name), sku: String(row.sku), unit: String(row.unit), pricePaise: Number(row.price_paise), costPaise: Number(row.cost_paise), quantityMilli: Number(row.quantity_milli), minStockMilli: Number(row.min_stock_milli), expiryDate: row.expiry_date as string | null, aliases: JSON.parse(String(row.aliases_json)), barcode: String(row.barcode), variation: String(row.variation), displayNames: JSON.parse(String(row.display_names_json || "{}")), packSize: row.pack_size === null ? null : Number(row.pack_size) }; }
 function asInvoice(row: Row, payments: Payment[] = []): Invoice { return { id: String(row.id), number: String(row.number), date: String(row.date), customerId: row.customer_id as string | null, customerName: String(row.customer_name), items: JSON.parse(String(row.items_json)), subtotalPaise: Number(row.subtotal_paise), discountPaise: Number(row.discount_paise), totalPaise: Number(row.total_paise), paidPaise: row.status === "cancelled" ? 0 : Number(row.paid_paise), balancePaise: row.status === "cancelled" ? 0 : Number(row.balance_paise), paymentMethod: row.payment_method as Invoice["paymentMethod"], payments, status: row.status as Invoice["status"], dueDate: row.due_date as string | null }; }
 function asPayment(row: Row): Payment { return { ...row.provider_reference?{providerVerified:true,providerReference:String(row.provider_reference)}:{}, id: String(row.id), customerId: row.customer_id as string | null, invoiceId: row.invoice_id as string | null, amountPaise: (row.kind === "refund" ? -1 : 1) * Number(row.amount_paise), method: row.method as Payment["method"], date: String(row.date), kind: row.kind as Payment["kind"] }; }
 function asAttachment(row: Row): SaleAttachment { return { id: String(row.id), url: `/api/businesses/${row.business_id}/attachments/${row.id}`, productId: String(row.product_id), mime: row.mime as SaleAttachment["mime"], size: Number(row.size), date: String(row.date) }; }
 
 export class Store {
   readonly db: DatabaseSync;
-  readonly schemaVersion = 13;
-  readonly runtimeRevision = "smart-upi-v18.1.4";
+  readonly schemaVersion = 16;
+  readonly runtimeRevision = "business-growth-v18.1.6";
   private transactionDepth = 0;
   constructor(path = process.env.DATABASE_PATH || resolve(process.cwd(), ".data", "dukaanset.sqlite")) {
     // Runtime database directories are external mutable data, never bundle assets.
@@ -52,7 +53,7 @@ export class Store {
     this.db = new DatabaseSync(path);
     this.db.exec("PRAGMA foreign_keys = ON; PRAGMA busy_timeout = 5000; PRAGMA journal_mode = WAL;");
     const version = Number((this.db.prepare("PRAGMA user_version").get() as Row).user_version);
-    if (version > 14) { this.db.close(); throw new Error("Database schema is newer than this application."); }
+    if (version > 16) { this.db.close(); throw new Error("Database schema is newer than this application."); }
     this.transaction(() => {
       if (version === 0) this.db.exec(schema);
       if (version < 2) this.db.exec(migrationV2);
@@ -68,6 +69,8 @@ export class Store {
       if (version < 12) this.db.exec(migrationV12);
       if (version < 13) this.db.exec(migrationV13);
       if (version < 14) this.db.exec(migrationV14);
+      if (version < 15) this.db.exec(migrationV15);
+      if (version < 16) this.db.exec(migrationV16);
     });
     this.db.prepare("DELETE FROM sessions WHERE expires_at < ?").run(stamp());
     this.db.prepare("DELETE FROM attachments WHERE invoice_id IS NULL AND date < ?").run(new Date(Date.now() - 86_400_000).toISOString());
@@ -161,7 +164,9 @@ export class Store {
     this.assertPermission(userId,businessId,"inventory");
     this.assertMember(userId, businessId); this.limitEntities("products", businessId);
     const input = object(raw), id = uid(), name = string(input.name, "Product name", 100), sku = string(input.sku, "SKU", 64, true), unit = validateUnit(input.unit), price = integer(input.pricePaise, "Selling price"), cost = integer(input.costPaise ?? 0, "Cost price"), quantity = integer(input.quantityMilli ?? 0, "Stock quantity"), minimum = integer(input.minStockMilli ?? 5000, "Minimum stock"), expiry = date(input.expiryDate), names = aliases(input.aliases), barcode = string(input.barcode, "Barcode", 80, true), variation = string(input.variation, "Variation", 100, true), packSize = input.packSize === undefined || input.packSize === null ? null : integer(input.packSize, "Pack size", 1, 100000);
-    keys(input, ["name", "sku", "unit", "pricePaise", "costPaise", "quantityMilli", "minStockMilli", "expiryDate", "aliases", "barcode", "variation", "packSize", "displayNames", "rejectDuplicate"]);
+    keys(input, ["name", "sku", "unit", "pricePaise", "costPaise", "quantityMilli", "minStockMilli", "expiryDate", "aliases", "barcode", "variation", "packSize", "displayNames", "rejectDuplicate", "stockTracked"]);
+    if(input.stockTracked!==undefined&&typeof input.stockTracked!=='boolean')throw new DomainError('INVALID_INPUT','Choose inventory tracking.');
+    if(input.stockTracked===false&&(quantity||expiry||minimum&&input.minStockMilli!==undefined))throw new DomainError('INVALID_INPUT','Services cannot have physical stock, expiry or minimum stock.');
     if(input.rejectDuplicate!==undefined&&typeof input.rejectDuplicate!=='boolean')throw new DomainError('INVALID_INPUT','Duplicate protection must be true or false.');
     if(variation)this.assertPermission(userId,businessId,'inventory','variants');
     if(expiry)this.assertPermission(userId,businessId,'inventory','expiryTracking');
@@ -172,7 +177,7 @@ export class Store {
     this.transaction(() => {
       if(input.rejectDuplicate&&this.rows('SELECT * FROM products WHERE business_id=?',businessId).map(asProduct).some(product=>canonicalUnit(product.unit)===canonicalUnit(unit)&&(canonicalProductName(product.name)===canonicalProductName(name)&&product.variation.normalize('NFKC').trim().toLowerCase()===variation.normalize('NFKC').trim().toLowerCase()||matchProducts(name+' '+variation,[product]).exact)))throw new DomainError('PRODUCT_EXISTS','A matching product already exists. Review the catalogue match before retrying.',409);
       if(quantity&&new ClosingService(this).current(businessId).status==='closed')throw new DomainError('DAY_CLOSED','Open the next session before adding opening stock.',409);
-      this.run("INSERT INTO products VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", id, businessId, name, sku, unit, price, cost, quantity, minimum, expiry, JSON.stringify(names), barcode, variation, packSize, JSON.stringify(displayNames(input.displayNames)));
+      this.run("INSERT INTO products VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", id, businessId, name, sku, unit, price, cost, quantity, input.stockTracked===false?0:minimum, expiry, JSON.stringify(names), barcode, variation, packSize, JSON.stringify(displayNames(input.displayNames)),input.stockTracked===false?0:1);
       if (quantity) this.run("INSERT INTO movements VALUES(?,?,?,?,?,?,?)", uid(), businessId, id, quantity, "opening", stamp(), null);
       this.run("INSERT INTO product_media(product_id,business_id,available_at,updated_at) VALUES(?,?,?,?)",id,businessId,stamp(),stamp());
       this.audit(userId, businessId, "product.created", name);
@@ -187,6 +192,7 @@ export class Store {
     return this.transaction(() => {
       const prior = asProduct(this.entity("products", businessId, productId));
       const next = { ...prior, displayNames: input.displayNames===undefined?prior.displayNames:displayNames(input.displayNames), name: input.name === undefined ? prior.name : string(input.name, "Product name", 100), sku: input.sku === undefined ? prior.sku : string(input.sku, "SKU", 64, true), unit: input.unit === undefined ? prior.unit : validateUnit(input.unit), pricePaise: input.pricePaise === undefined ? prior.pricePaise : integer(input.pricePaise, "Selling price"), costPaise: input.costPaise === undefined ? prior.costPaise : integer(input.costPaise, "Cost price"), minStockMilli: input.minStockMilli === undefined ? prior.minStockMilli : integer(input.minStockMilli, "Minimum stock"), expiryDate: input.expiryDate === undefined ? prior.expiryDate : date(input.expiryDate), aliases: input.aliases === undefined ? prior.aliases : aliases(input.aliases), barcode: input.barcode === undefined ? prior.barcode : string(input.barcode, "Barcode", 80, true), variation: input.variation === undefined ? prior.variation : string(input.variation, "Variation", 100, true), packSize: input.packSize === undefined ? prior.packSize : input.packSize === null ? null : integer(input.packSize, "Pack size", 1, 100000) };
+      if(prior.stockTracked===false&&(next.minStockMilli||next.expiryDate||next.packSize))throw new DomainError('INVALID_INPUT','Services cannot have physical stock metadata.');
       if(next.variation&&next.variation!==prior.variation)this.assertPermission(userId,businessId,'inventory','variants');
       if(next.expiryDate&&next.expiryDate!==prior.expiryDate)this.assertPermission(userId,businessId,'inventory','expiryTracking');
       if(next.packSize&&next.packSize!==prior.packSize)this.assertPermission(userId,businessId,'inventory','unitConversion');
@@ -247,7 +253,7 @@ export class Store {
     if (!quantity) throw new DomainError("INVALID_INPUT", "Stock change cannot be zero.");
     const work = () => {
       this.assertDayOpen(businessId);
-      const product = asProduct(this.entity("products", businessId, productId)), delta = reason === "wastage" ? -quantity : quantity;
+      const product = asProduct(this.entity("products", businessId, productId));if(product.stockTracked===false)throw new DomainError("INVALID_INPUT","Services do not have stock movements.");const delta = reason === "wastage" ? -quantity : quantity;
       assertWholeUnit(product.unit, delta);
       const next = product.quantityMilli + delta;
       if (next < 0 || next > 1_000_000_000) throw new DomainError("INSUFFICIENT_STOCK", "Stock change would exceed the allowed stock range.", 409);
@@ -319,6 +325,7 @@ export class Store {
             created.set(identity,{product,fingerprint:digest});
           }
         } else product=asProduct(this.entity('products',businessId,string(item.productId,'Product ID',80)));
+        if(product.stockTracked===false)throw new DomainError("INVALID_INPUT","Services cannot receive physical stock.");
         const productId=product.id, quantity = integer(item.quantityMilli, "Quantity", 1), from = item.unit === undefined ? product.unit : validateUnit(item.unit);
         assertWholeUnit(from, quantity);
         if(from!==product.unit)this.assertPermission(userId,businessId,'inventory','unitConversion');
@@ -452,7 +459,7 @@ export class Store {
         integer(quantity, "Combined quantity", 1);
         const p = asProduct(this.entity("products", businessId, id));
         assertWholeUnit(p.unit, quantity);
-        if (p.quantityMilli < quantity) throw new DomainError("INSUFFICIENT_STOCK", "Requested quantity exceeds available stock.", 409, {name:p.name,quantityMilli:p.quantityMilli,unit:p.unit});
+        if (p.stockTracked!==false && p.quantityMilli < quantity) throw new DomainError("INSUFFICIENT_STOCK", "Requested quantity exceeds available stock.", 409, {name:p.name,quantityMilli:p.quantityMilli,unit:p.unit});
         if (attachmentIds.length > 3) throw new DomainError("INVALID_INPUT", "Use at most three photos per item.");
         const attachments = attachmentIds.map(photoId => {
           const photo = this.row("SELECT id,business_id,product_id,invoice_id,mime,size,date FROM attachments WHERE id=? AND business_id=? AND product_id=?", photoId, businessId, id);
@@ -462,7 +469,7 @@ export class Store {
           return asAttachment(photo);
         });
         const sellingPrice=pricePaise??p.pricePaise;
-        return { productId: id, name: p.name, unit: p.unit, quantityMilli: quantity, pricePaise: sellingPrice, totalPaise: lineTotal(sellingPrice, quantity), ...(p.variation ? { variation: p.variation } : {}), ...(attachments.length ? { attachmentIds, attachments } : {}) };
+        return { ...p.stockTracked===false?{stockTracked:false}:{}, productId: id, name: p.name, unit: p.unit, quantityMilli: quantity, pricePaise: sellingPrice, totalPaise: lineTotal(sellingPrice, quantity), ...(p.variation ? { variation: p.variation } : {}), ...(attachments.length ? { attachmentIds, attachments } : {}) };
       });
       const subtotal = integer(lines.reduce((sum, item) => sum + item.totalPaise, 0), "Invoice subtotal", 0, 1_000_000_000_000);
       if (discount > subtotal) throw new DomainError("INVALID_DISCOUNT", "Discount cannot exceed the subtotal.");
@@ -472,8 +479,8 @@ export class Store {
       const id = uid(), at = stamp(), count = Number(this.row("SELECT COUNT(*) AS count FROM invoices WHERE business_id=?", businessId)!.count), number = `DS-${String(count + 1).padStart(5, "0")}`;
       this.run("INSERT INTO invoices(id,business_id,number,date,customer_id,customer_name,items_json,subtotal_paise,discount_paise,total_paise,paid_paise,original_paid_paise,balance_paise,payment_method,status,due_date,issued_json) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", id, businessId, number, at, customerId, customer ? String(customer.name) : "Walk-in customer", JSON.stringify(lines), subtotal, discount, total, paid, paid, total - paid, paymentMethod, status(paid, total), dueDate, JSON.stringify(captureIssued(this.db,businessId,customerId,customer ? String(customer.name) : "Walk-in customer")));
       for (const item of lines) {
-        this.run("UPDATE products SET quantity_milli=quantity_milli-? WHERE id=? AND business_id=?", item.quantityMilli, item.productId, businessId);
-        this.run("INSERT INTO movements VALUES(?,?,?,?,?,?,?)", uid(), businessId, item.productId, -item.quantityMilli, "sale", at, id);
+        if(item.stockTracked!==false){this.run("UPDATE products SET quantity_milli=quantity_milli-? WHERE id=? AND business_id=?", item.quantityMilli, item.productId, businessId);
+        this.run("INSERT INTO movements VALUES(?,?,?,?,?,?,?)", uid(), businessId, item.productId, -item.quantityMilli, "sale", at, id);}
         for (const photoId of item.attachmentIds ?? []) this.run("UPDATE attachments SET invoice_id=? WHERE id=? AND business_id=?", id, photoId, businessId);
       }
       for (const receipt of receipts) { const paymentId=uid(); this.run("INSERT INTO payments VALUES(?,?,?,?,?,?,?,?,?)", paymentId, businessId, customerId, id, receipt.amountPaise, receipt.method, at, "sale", paymentId); }
@@ -513,6 +520,7 @@ export class Store {
       const supplier = this.entity("suppliers", businessId, supplierId), seen = new Set<string>();
       const lines = requested.map((item) => {
         const productId = string(item.productId, "Product ID", 80), quantity = integer(item.quantityMilli, "Quantity", 1), cost = integer(item.costPaise, "Cost price"), product = asProduct(this.entity("products", businessId, productId));
+        if(product.stockTracked===false)throw new DomainError("INVALID_INPUT","Services cannot receive stock purchases.");
         if (seen.has(productId)) throw new DomainError("DUPLICATE_ITEM", "Include each product once in a purchase.");
         seen.add(productId); assertWholeUnit(product.unit, quantity);
         if (product.quantityMilli + quantity > 1_000_000_000) throw new DomainError("STOCK_LIMIT", "Stock would exceed the supported limit.", 409);
@@ -541,6 +549,7 @@ export class Store {
       if (this.row("SELECT id FROM payments WHERE business_id=? AND invoice_id=? AND kind='repayment'", businessId, invoiceId)) throw new DomainError("REPAYMENT_EXISTS", "This bill has later credit repayments. Cancellation requires a reviewed adjustment.", 409);
       const at = stamp();
       for (const item of invoice.items) {
+        if(item.stockTracked===false)continue;
         const p = asProduct(this.entity("products", businessId, item.productId));
         if (p.quantityMilli + item.quantityMilli > 1_000_000_000) throw new DomainError("STOCK_LIMIT", "Reversal would exceed the stock limit.", 409);
         lineTotal(p.costPaise, p.quantityMilli + item.quantityMilli);
@@ -548,6 +557,7 @@ export class Store {
         this.run("INSERT INTO movements VALUES(?,?,?,?,?,?,?)", uid(), businessId, item.productId, item.quantityMilli, "cancellation", at, invoiceId);
       }
       for (const receipt of invoice.payments.filter(payment => payment.kind === "sale")) { const paymentId=uid(); this.run("INSERT INTO payments VALUES(?,?,?,?,?,?,?,?,?)", paymentId, businessId, invoice.customerId, invoiceId, receipt.amountPaise, receipt.method, at, "refund",paymentId); }
+      this.run("INSERT INTO invoice_cancellations VALUES(?,?,?,?)",invoiceId,businessId,at,userId);
       // Historical invoice amounts remain intact; cancelled invoices are excluded from receivables and sales.
       this.run("UPDATE invoices SET status='cancelled' WHERE id=? AND business_id=?", invoiceId, businessId);
       this.audit(userId, businessId, "invoice.cancelled", `${invoice.number}: stock returned; original payment refunded`, at);
@@ -589,7 +599,7 @@ export class Store {
     const allInvoices = this.rows("SELECT * FROM invoices WHERE business_id=? ORDER BY date DESC,id DESC", businessId).map(row => asInvoice(row, receipts.get(String(row.id)) ?? []));
     const customers = this.customers(businessId);
     const suppliers = this.rows("SELECT s.*,COALESCE((SELECT SUM(p.balance_paise) FROM purchases p WHERE p.supplier_id=s.id AND p.business_id=s.business_id),0) balance_paise FROM suppliers s WHERE s.business_id=? ORDER BY s.name", businessId).map(r => ({ id: String(r.id), name: String(r.name), phone: String(r.phone), balancePaise: Number(r.balance_paise) }));
-    const active = allInvoices.filter(i => i.status !== "cancelled"), todayInvoices = active.filter(i => businessDay(i.date) === today), todayPayments = allPayments.filter(p => businessDay(p.date) === today), low = products.filter(p => p.quantityMilli <= p.minStockMilli);
+    const active = allInvoices.filter(i => i.status !== "cancelled"), todayInvoices = active.filter(i => businessDay(i.date) === today), todayPayments = allPayments.filter(p => businessDay(p.date) === today), low = products.filter(p => p.stockTracked!==false && p.quantityMilli <= p.minStockMilli);
     const todayStart = new Date(`${today}T00:00:00+05:30`).toISOString(), tomorrowStart = new Date(Date.parse(todayStart) + 86_400_000).toISOString();
     const expenses = this.row("SELECT COALESCE(SUM(amount_paise),0) total,COALESCE(SUM(CASE WHEN method='cash' AND date>=? AND date<? THEN amount_paise ELSE 0 END),0) today_cash,COALESCE(SUM(CASE WHEN date>=? AND date<? THEN amount_paise ELSE 0 END),0) today_total FROM expenses WHERE business_id=?", todayStart, tomorrowStart, todayStart, tomorrowStart, businessId)!;
     const purchases = this.row("SELECT COUNT(*) count,COALESCE(SUM(paid_paise),0) cash FROM purchases WHERE business_id=? AND date>=? AND date<?", businessId, todayStart, tomorrowStart)!;
@@ -633,7 +643,7 @@ export class Store {
     this.assertPermission(userId,businessId,"settings");
     this.assertMember(userId, businessId);
     const data: Record<string, unknown> = { version: this.schemaVersion, exportedAt: stamp(), business: this.assertMember(userId, businessId), currency: "INR", quantityScale: 1000 };
-    for (const table of ["products", "customers", "suppliers", "invoices", "payments", "movements", "inventory_entries", "purchases", "expenses", "closings", "audit", "business_settings", "demand_requests", "demand_followups", "demand_conversions", "reorder_drafts", "demand_dismissals", "invoice_branding", "communication_preferences", "whatsapp_connections", "closing_settings", "business_sessions", "closing_versions", "cash_movements", "supplier_payments", "closing_jobs", "closing_notices"] as const) data[table] = this.rows(`SELECT * FROM ${table} WHERE business_id=?`, businessId);
+    for (const table of ["invoice_cancellations", "products", "customers", "suppliers", "invoices", "payments", "movements", "inventory_entries", "purchases", "expenses", "closings", "audit", "business_settings", "demand_requests", "demand_followups", "demand_conversions", "reorder_drafts", "demand_dismissals", "invoice_branding", "communication_preferences", "whatsapp_connections", "closing_settings", "business_sessions", "closing_versions", "cash_movements", "supplier_payments", "closing_jobs", "closing_notices"] as const) data[table] = this.rows(`SELECT * FROM ${table} WHERE business_id=?`, businessId);
     data.documents=this.rows("SELECT id,business_id,customer_id,kind,source_id,model_json,filename,pages,created_at,expires_at FROM documents WHERE business_id=?",businessId);
     data.deliveries=this.rows("SELECT * FROM deliveries WHERE business_id=?",businessId);
     data.attachments = this.rows("SELECT id,business_id,product_id,invoice_id,mime,size,sha256,date FROM attachments WHERE business_id=?", businessId);
@@ -653,8 +663,8 @@ export class Store {
       for (const business of session.businesses) {
         if (this.row("SELECT user_id FROM memberships WHERE business_id=? AND user_id!=? LIMIT 1", business.id, userId)) throw new DomainError("DEMO_ONLY", "A shared business cannot be reset as demo data.", 403);
         this.run('DELETE FROM delivery_events WHERE delivery_id IN (SELECT id FROM deliveries WHERE business_id=?)',business.id);
-        for(const table of ['product_media','media_assets','media_settings','closing_notices','closing_jobs','closing_versions','cash_movements','supplier_payments','business_sessions','closing_settings'])this.run(`DELETE FROM ${table} WHERE business_id=?`,business.id);
-        for (const table of ["deliveries","documents","communication_preferences","whatsapp_inbound","whatsapp_connections","invoice_branding","demand_followups", "demand_conversions", "reorder_drafts", "demand_dismissals", "demand_requests", "attachments", "idempotency", "payments", "movements", "inventory_entries", "purchases", "invoices", "expenses", "closings", "audit", "products", "customers", "suppliers"]) this.run(`DELETE FROM ${table} WHERE business_id=?`, business.id);
+        for(const table of ['business_activities','business_growth_settings','business_feedback','product_media','media_assets','media_settings','closing_notices','closing_jobs','closing_versions','cash_movements','supplier_payments','business_sessions','closing_settings'])this.run(`DELETE FROM ${table} WHERE business_id=?`,business.id);
+        for (const table of ["invoice_cancellations","deliveries","documents","communication_preferences","whatsapp_inbound","whatsapp_connections","invoice_branding","demand_followups", "demand_conversions", "reorder_drafts", "demand_dismissals", "demand_requests", "attachments", "idempotency", "payments", "movements", "inventory_entries", "purchases", "invoices", "expenses", "closings", "audit", "products", "customers", "suppliers"]) this.run(`DELETE FROM ${table} WHERE business_id=?`, business.id);
         this.run('DELETE FROM business_settings WHERE business_id=?',business.id);
       }
       const result = session.businesses.length===1&&session.businesses[0].category==='clothing'?this.seedClosingDemo(userId,session.businesses[0]):this.seedDemo(userId, session.businesses);
@@ -725,7 +735,7 @@ export class Store {
 declare global { var dukaanStore: Store | undefined; }
 export function getStore(): Store {
   if (process.env.VERCEL === '1') throw new Error('DukaanSet SQLite requires a persistent backend. Deploy the Vercel gateway instead.');
-  if (globalThis.dukaanStore && globalThis.dukaanStore.runtimeRevision !== "smart-upi-v18.1.4") { globalThis.dukaanStore.close(); globalThis.dukaanStore = undefined; }
+  if (globalThis.dukaanStore && globalThis.dukaanStore.runtimeRevision !== "business-growth-v18.1.6") { globalThis.dukaanStore.close(); globalThis.dukaanStore = undefined; }
   if(!globalThis.dukaanStore){globalThis.dukaanStore=new Store();startUpiWorker(globalThis.dukaanStore);}
   return globalThis.dukaanStore;
 }

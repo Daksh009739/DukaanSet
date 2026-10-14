@@ -415,5 +415,12 @@
     "dozen_one": "darjan",
     "dozen_other": "darjan",
     "bag": "{{count}} bori"
-  }
+  },
+  "retail": "Retail ka business",
+  "medical": "Medical ya pharmacy",
+  "restaurant": "Restaurant ka business",
+  "salon": "Salon ka business",
+  "electronics": "Electronics ka business",
+  "wholesale": "Wholesale ka business",
+  "services": "Services ka business"
 }

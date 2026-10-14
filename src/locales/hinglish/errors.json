@@ -121,5 +121,6 @@
   "UPI_EXPORT_LIMIT": "Payment details accept nahi hui. Connection, payment address aur available rakam check karke dobara try karein.",
   "UPI_REFUND_REVIEW": "Payment details accept nahi hui. Connection, payment address aur available rakam check karke dobara try karein.",
   "UPI_TEST_MONEY": "Test payments real bills nahi chuka sakte. Designated test shop use karein.",
-  "UPI_QR_PENDING": "Payment QR request confirm ho rahi hai. Doosri request se pehle refresh karein."
+  "UPI_QR_PENDING": "Payment QR request confirm ho rahi hai. Doosri request se pehle refresh karein.",
+  "BOOKING_CONFLICT": "Yeh time active appointment se overlap karta hai. Doosra time chunein."
 }

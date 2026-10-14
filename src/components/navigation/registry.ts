@@ -1,4 +1,4 @@
-import {LayoutDashboard,ShoppingCart,ReceiptText,Package,UsersRound,Wallet,Truck,MessageSquare,ChartNoAxesCombined,Timer,BrainCircuit,Sparkles,CircleHelp,Settings2,type LucideIcon} from 'lucide-react';
+import {ShieldCheck,CalendarDays,LayoutDashboard,ShoppingCart,ReceiptText,Package,UsersRound,Wallet,Truck,MessageSquare,ChartNoAxesCombined,Timer,BrainCircuit,Sparkles,CircleHelp,Settings2,type LucideIcon} from 'lucide-react';
 import type {V3State} from '@/lib/v3-contracts';
 
 export type NavEntry={id:string;key:string;namespace?:'workspace'|'v3';href:string;icon:LucideIcon;badge?:number|'AI';badgeKey?:string};
@@ -16,7 +16,7 @@ export function navigationFor(state:V3State|null){
   add(p?.sales,{id:'sale',key:'newBill',href:'/app/sales/new',icon:ShoppingCart});
   add(p?.sales,{id:'bills',key:'bills',href:'/app/sales',icon:ReceiptText});
   add(p?.inventory||p?.sales||p?.demand,{id:'stock',key:'v16.stock',namespace:'workspace',href:'/app/stock',icon:Package});
-  add(p?.customers,{id:'customers',key:'customers',href:'/app/customers',icon:UsersRound});
+  add(p?.customers,{id:'customers',key:state&&['services','salon'].includes(state.business.category)?'growth.clients':'customers',...state&&['services','salon'].includes(state.business.category)?{namespace:'workspace' as const}:{},href:'/app/customers',icon:UsersRound});
   add(p?.payments,{id:'payments',key:'payments',href:'/app/payments',icon:Wallet});
   add(p?.purchases,{id:'purchases',key:'purchases',href:'/app/purchases',icon:Truck});
   add(p?.purchases,{id:'suppliers',key:'suppliers',href:'/app/suppliers',icon:Truck});
@@ -28,6 +28,8 @@ export function navigationFor(state:V3State|null){
   const tools:NavEntry[]=[];
   if(f?.todaysWork)tools.push({id:'work',key:'work',href:'/app/todays-work',icon:LayoutDashboard});
   if(p?.reports&&f?.assistant)tools.push({id:'ai',key:'ai',href:'/app/ai',icon:Sparkles,badge:'AI'});
+  tools.push({id:'trust',key:'growth.trustTitle',namespace:'workspace',href:'/app/trust',icon:ShieldCheck});
+  if(p?.sales)tools.push({id:'business-tools',key:'growth.businessTools',namespace:'workspace',href:'/app/business-tools',icon:CalendarDays});
   tools.push({id:'help',key:'help',href:'/app/help',icon:CircleHelp});
   const settings:NavEntry={id:'settings',key:'settings',href:'/app/settings',icon:Settings2};
   return {primary,tools,settings};
