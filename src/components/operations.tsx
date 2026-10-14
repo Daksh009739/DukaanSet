@@ -15,7 +15,7 @@ import { VoicePanel } from './voice/voice-panel';
 import { useDemandWrite } from './demand/write-provider';
 
 export type Action = 'product' | 'customer' | 'supplier' | 'payment' | 'stock' | 'expense' | 'purchase' | 'business';
-type ActionData = { productId?: string; customerId?: string; supplierId?:string; invoiceId?:string; voiceCommand?:VoiceCommand };
+type ActionData = { nameHint?:string; productId?: string; customerId?: string; supplierId?:string; invoiceId?:string; voiceCommand?:VoiceCommand };
 type PurchaseDraft = { productId: string; quantity: string; cost: string };
 const Operations = createContext<(action: Action, data?: ActionData) => void>(() => {});
 export const useOperations = () => useContext(Operations);
@@ -37,7 +37,7 @@ function OperationSheet({ action, data, onClose }: { action: Action | null; data
   const { t } = useTranslation();
   const app = useApp();
   const write=useDemandWrite(),copy=osCopy(useTranslation().i18n.language);
-  const [values,setValues]=useState<Record<string,string>>({supplierId:data.supplierId||''});
+  const [values,setValues]=useState<Record<string,string>>({supplierId:data.supplierId||'',name:data.nameHint||''});
   const [voiceBlocked,setVoiceBlocked]=useState(false),[voiceUsed,setVoiceUsed]=useState(Boolean(data.voiceCommand)),[allowDuplicate,setAllowDuplicate]=useState(false);
   const [busy, setBusy] = useState(false);
   const submitting = useRef(false);

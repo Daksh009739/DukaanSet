@@ -1,7 +1,8 @@
 'use client';
 import {useTranslation} from 'react-i18next';
+import {customerChoice,customerChoiceLabel} from '@/lib/voice/customer-identity';
 import {osCopy} from '@/lib/voice/os-copy';
-import {resolveContact,voiceQuantity,type VoiceCommand} from '@/lib/voice/os';
+import {resolveContact,resolveCustomerContact,voiceQuantity,type VoiceCommand} from '@/lib/voice/os';
 import {salePreview} from '@/lib/voice/conversation';
 import {money,quantity,minorUnits} from '@/lib/client';
 import {useApp} from '../app-provider';
@@ -16,13 +17,13 @@ export function ConversationDraft({command,onChange,disabled}:{command:VoiceComm
  const app=useApp(),state=app.state!,language=useTranslation().i18n.language,copy=osCopy(language),f=command.fields;
  const field=(key:string,value:string)=>{const fields={...f,[key]:value,editRequested:''};if(f.operation==='catalogueProduct'&&key==='name'){const match=resolveVoiceProduct(value,state.products);fields.existingProductId=match.exact&&match.ids.length===1?match.ids[0]:'';}onChange({...command,fields,warnings:command.warnings.filter(w=>w!=='phone')});};
  const s=useTranslation('speech').t,title=command.intent==='customer'?s('newCustomer'):command.intent==='sale'?s('newBill'):command.intent==='stock'?s('stockAddition'):copy.draft;
- const candidates=resolveContact(f.customerQuery||f.name||'',state.customers);
+ const candidates=resolveCustomerContact(f.customerQuery||f.name||'',state.customers);
  const editItem=(id:string,changes:Partial<VoiceCommand['items'][number]>)=>onChange({...command,fields:{...f,total:''},warnings:[],items:command.items.map(item=>item.id===id?{...item,...changes}:item)});
  const preview=command.intent==='sale'?salePreview(command,state.products):null;
  return <section className="conversation-draft" aria-label={title}><div className="conversation-draft-title"><b>{title}</b><span>{copy.notSaved}</span></div>
  {f.operation==='catalogueProduct'&&<div className="conversation-product-fields"><Field label={copy.productNameLabel} value={f.name||''} maxLength={100} disabled={disabled} onChange={event=>field('name',event.target.value)}/><div className="conversation-fields"><Select label={copy.productUnitLabel} value={f.unit||''} disabled={disabled} onChange={event=>field('unit',event.target.value)}><option value="">—</option>{catalogueUnits.map(unit=><option key={unit} value={unit}>{unitText(unit,language)}</option>)}</Select><Field label={copy.productPriceLabel} value={f.price||''} inputMode="decimal" disabled={disabled} onChange={event=>field('price',event.target.value)}/></div><p className="conversation-impact">{copy.openingStockNone}</p></div>}
  {['sale','customer','payment'].includes(command.intent)&&<>
- {f.createCustomer==='true'||command.intent==='customer'?<Field label={copy.customerName} value={f.name||''} disabled={disabled} maxLength={100} onChange={event=>field('name',event.target.value)}/>:<Select label={copy.customerLabel} value={f.customerId||''} disabled={disabled} onChange={event=>onChange({...command,fields:{...f,customerId:event.target.value,customerQuery:state.customers.find(c=>c.id===event.target.value)?.name||''},warnings:[]})}><option value="">{copy.selectCustomer}</option>{state.customers.filter(c=>!f.customerQuery||!candidates.length||candidates.includes(c.id)).map(c=><option key={c.id} value={c.id}>{c.name} · {c.phone}</option>)}</Select>}
+ {f.createCustomer==='true'||command.intent==='customer'?<Field label={copy.customerName} value={f.name||''} disabled={disabled} maxLength={100} onChange={event=>field('name',event.target.value)}/>:<Select label={copy.customerLabel} value={f.customerId||''} disabled={disabled} onChange={event=>onChange({...command,fields:{...f,customerId:event.target.value,customerQuery:state.customers.find(c=>c.id===event.target.value)?.name||''},warnings:[]})}><option value="">{copy.selectCustomer}</option>{state.customers.filter(c=>!f.customerQuery||!candidates.length||candidates.includes(c.id)).map(c=><option key={c.id} value={c.id}>{customerChoiceLabel(customerChoice(c),state.customers.map(customerChoice))}</option>)}</Select>}
  {(f.createCustomer==='true'||command.intent==='customer')&&<Field label={copy.optionalPhone} value={f.phone||''} disabled={disabled} maxLength={30} onChange={event=>field('phone',event.target.value)}/>}
  </>}
  {command.intent==='sale'&&command.items.map((item,index)=>{const product=state.products.find(p=>p.id===item.productId),qty=voiceQuantity(item,state.products),price=item.priceBasis==='unit'&&item.price!==''?Number(item.price)*100:product?.pricePaise;return <article className="conversation-sale-row" key={item.id}><>{product&&<ProductImage product={product} size={42}/>}</><b>{product?.name||item.query}{product?.variation?' · '+product.variation:''}</b><span>{item.quantity||'—'} <LocalizedUnit value={item.unit}/> {price!==undefined?' · '+money(price,language)+' / '+unitText(product?.unit||item.unit,language):''}</span>

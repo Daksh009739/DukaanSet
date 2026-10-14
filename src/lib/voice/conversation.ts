@@ -1,13 +1,14 @@
 import type { Invoice, Product } from '../contracts';
 import type { V3State } from '../v3-contracts';
 import { minorUnits,lineTotal } from '../client';
-import { detectIntent,interpretVoice,resolveContact,resolveVoiceProduct,spokenText,voiceAllowed,voiceQuantity,voiceIntents,type VoiceCommand,type VoiceIntent } from './os';
+import { detectIntent,interpretVoice,resolveContact,resolveCustomerContact,resolveVoiceProduct,spokenText,voiceAllowed,voiceQuantity,voiceIntents,type VoiceCommand,type VoiceIntent } from './os';
 import {canonicalUnit,canonicalProductName} from './parser';
 import {prepareStockCommand,stockRowsFromCommand} from './stock-command';
 import {z} from './zod';
 import {extractVoiceRoles,interpretedSlotsSchema,type InterpretedSlots,requiresRecordCorrectionReview} from './semantics';
 import {prepareCatalogueCommand,catalogueQuestion} from './catalogue-command';
 import {customerDuplicateQuestion,resolveCustomerDecision,separateCustomer} from './customer-decision';
+import {chooseCustomerByIdentifier} from './customer-identity';
 import {smartUpiVoice} from './smart-upi';
 
 const voiceActionRouting:Record<VoiceIntent,{safety:'read'|'navigate'|'write'|'review';destination?:string}>={
@@ -54,7 +55,7 @@ export function chooseVoiceIntent(command:VoiceCommand,intent:'stock'|'sale',sta
  result.items=rows.map(row=>({id:row.id,query:row.query,productId:row.productId,candidates:row.candidates,quantity:row.quantity,unit:row.unit,price:row.sellingPrice||'',priceBasis:row.sellingPrice?'unit':''}));
  result.fields.sourceTranscript=original;result.transcript=clean;result.warnings=result.warnings.filter(w=>w!=='wrongWorkflow');
  if(command.fields.genericItems==='true'){result.items=[];result.fields.genericItems='true';}
- if(intent==='sale'){if(/cash|nakad|कैश|नकद/.test(spokenText(original)))result.fields.mode='cash';if(roles.customer.spokenName){result.fields.customerQuery=roles.customer.spokenName;const ids=resolveContact(roles.customer.spokenName,state.customers);result.fields.customerId=ids.length===1?ids[0]:'';}}
+ if(intent==='sale'){if(/cash|nakad|कैश|नकद/.test(spokenText(original)))result.fields.mode='cash';if(roles.customer.spokenName){result.fields.customerQuery=roles.customer.spokenName;const ids=resolveCustomerContact(roles.customer.spokenName,state.customers);result.fields.customerId=ids.length===1?ids[0]:'';}}
  if(!voiceAllowed(intent,state))result.warnings=['permission'];
  return result;
 }
@@ -71,9 +72,9 @@ function conversationCorrection(raw:string,state:V3State,previous:VoiceCommand):
  if(replacement&&previous.intent==='customer'&&canonicalProductName(replacement[1])===canonicalProductName(fields.name||'')){
   fields.name=raw.match(/(?:nahi|nahin|नहीं)\s*[,،]?\s*(.+)/iu)?.[1]?.replace(/[.!।]+$/,'').trim()||replacement[2];delete fields.duplicateDecision;delete fields.duplicateName;delete fields.customerId;return result(['name']);
  }
- if(replacement&&['sale','payment','report','document'].includes(previous.intent)&&!/[0-9]/.test(replacement[1])&&(canonicalProductName(replacement[1])===canonicalProductName(fields.customerQuery||'')||resolveContact(replacement[1],state.customers).includes(fields.customerId))){
+ if(replacement&&['sale','payment','report','document'].includes(previous.intent)&&!/[0-9]/.test(replacement[1])&&(canonicalProductName(replacement[1])===canonicalProductName(fields.customerQuery||'')||resolveCustomerContact(replacement[1],state.customers).includes(fields.customerId))){
   const name=raw.match(/(?:nahi|nahin|नहीं)\s*[,،]?\s*(.+)/iu)?.[1]?.replace(/\s+(?:ke naam.*|karo|kar do|करो).*$/iu,'').replace(/[.!।]+$/,'').trim()||replacement[2];
-  const ids=resolveContact(name,state.customers);fields.customerQuery=name;fields.customerId=ids.length===1?ids[0]:'';delete fields.createCustomer;delete fields.name;return result(['customerQuery','customerId']);
+  const ids=resolveCustomerContact(name,state.customers);fields.customerQuery=name;fields.customerId=ids.length===1?ids[0]:'';delete fields.createCustomer;delete fields.name;return result(['customerQuery','customerId']);
  }
  if(['sale','stock','purchase'].includes(previous.intent)){
   const change=text.match(new RegExp(`^(\\d+(?:\\.\\d{1,3})?)\\s*(kg|kilo|packet|piece|किलो|पीस|पैकेट)?\\s+${negation}\\s+(\\d+(?:\\.\\d{1,3})?)\\s*(kg|kilo|packet|piece|किलो|पीस|पैकेट)?\\s*(?:karo|kar do|करो)?$`,'u'));
@@ -85,14 +86,14 @@ function conversationCorrection(raw:string,state:V3State,previous:VoiceCommand):
 }
 /** Conversation state is scoped by the provider; explicit cross-module commands win. */
 export function advanceVoice(raw:string,state:V3State,previous?:VoiceCommand,selectedCustomerId?:string,contextIntent?:VoiceIntent):VoiceCommand {
- const upi=smartUpiVoice(raw,state);if(upi)return upi;
+ if(previous&&!previous.fields.customerId&&(previous.fields.customerQuery||previous.fields.query)&&(['sale','payment','report','document'].includes(previous.intent)||previous.intent==='open'&&(previous.fields.screen==='customerAccount'||previous.fields.operation==='editCustomer'))){const candidates=state.customers.filter(c=>resolveContact(previous.fields.customerQuery||previous.fields.query,[c]).length),id=chooseCustomerByIdentifier(raw,candidates);if(id)return{...previous,fields:{...previous.fields,customerId:id},warnings:previous.warnings.filter(w=>w!=='customer'),changed:['customerId'],changedItems:[]};}const continuation=previous?.fields.report==='smartUpi'&&/^(?:(?:and|aur|और)\s+)?(?:kal|yesterday|today|aaj|week|कल|आज|इस हफ्ते)[?.!। ]*$/iu.test(raw);const upiText=continuation?raw+' UPI collections '+(previous?.fields.customerId?'this customer':previous?.fields.customerQuery||''):raw;const upi=smartUpiVoice(upiText,state,selectedCustomerId||previous?.fields.customerId);if(upi)return upi;
  if(/kitne|kitni|how many|count|number of|कितने|कितनी/iu.test(raw)&&!/create|add|jodo|जोड़/iu.test(raw)&&/(?:duniya|world|worldwide|globally|दुनिया|विश्व).*(?:customers?|grahak|ग्राहक)|(?:customers?|ग्राहक).*(?:world|दुनिया)/iu.test(raw))return{intent:'unknown',transcript:raw.slice(0,5000),fields:{operation:'shopScope'},items:[],changed:[],changedItems:[],warnings:[]};
  raw=normalizeVoiceInstruction(raw);
  if(previous){const decision=resolveCustomerDecision(raw,previous,state.customers);if(decision)return decision;}
  if(requiresRecordCorrectionReview(raw))return{intent:'open',transcript:raw,fields:{screen:/write[ -]?off|credit reversal|बकाया माफ/iu.test(raw)?'customers':/payment|भुगतान/iu.test(raw)?'payments':'sales',highRiskReview:'true'},items:[],warnings:[],changed:[],changedItems:[]};
  if(/(?:closing|hisaab|हिसाब|दुकान).*(?:summary|सारांश)|(?:summary|सारांश).*(?:closing|hisaab|हिसाब)/iu.test(raw))return{intent:'closing',transcript:raw,fields:{closingAction:'summary'},items:[],warnings:voiceAllowed('closing',state)?[]:['permission'],changed:[],changedItems:[]};
  const record=raw.match(/^(?:open|show|view|खोलो|दिखाओ)?\s*(.+?)\s+(?:ka|ke|ki|का|के|की)\s+(account|khata|details|detail|profile|खाता|जानकारी)\s*(?:kholo|dikhao|open|show|खोलो|दिखाओ)?[.!।]?$/iu);
- if(record){const query=record[1].replace(/^(?:customer|product|supplier|ग्राहक|प्रोडक्ट|सप्लायर)\s+/iu,''),customers=resolveContact(query,state.customers),products=resolveVoiceProduct(query,state.products),suppliers=resolveContact(query,state.suppliers),kind=/product|प्रोडक्ट/iu.test(record[1])?'product':/supplier|सप्लायर/iu.test(record[1])?'supplier':/account|khata|खाता/iu.test(record[2])?'customer':customers.length?'customer':products.exact?'product':'supplier',ids=kind==='customer'?customers:kind==='product'?products.ids:suppliers;
+ if(record){const query=record[1].replace(/^(?:customer|product|supplier|ग्राहक|प्रोडक्ट|सप्लायर)\s+/iu,''),customers=resolveCustomerContact(query,state.customers),products=resolveVoiceProduct(query,state.products),suppliers=resolveContact(query,state.suppliers),kind=/product|प्रोडक्ट/iu.test(record[1])?'product':/supplier|सप्लायर/iu.test(record[1])?'supplier':/account|khata|खाता/iu.test(record[2])?'customer':customers.length?'customer':products.exact?'product':'supplier',ids=kind==='customer'?customers:kind==='product'?products.ids:suppliers;
   return{intent:'open',transcript:raw,fields:{screen:kind==='customer'?'customerAccount':kind==='product'?'productDetail':'supplierDetail',query,[kind+'Id']:ids.length===1?ids[0]:''},items:[],warnings:[],changed:[],changedItems:[]};}
  if(previous&&spokenText(raw)===spokenText(normalizeVoiceInstruction(previous.transcript)))return previous;
  if(previous&&/^(?:change karna hai|change|edit|badalna hai|बदलना है|बदलाव करना है)$/.test(spokenText(raw)))return{...previous,transcript:raw,fields:{...previous.fields,editRequested:'true'},changed:['editRequested'],changedItems:[]};
@@ -110,7 +111,7 @@ export function advanceVoice(raw:string,state:V3State,previous?:VoiceCommand,sel
  const languageMatch=editText.match(/(?:language|bhasha|भाषा)\s+(?:to\s+)?(english|hindi|hinglish|अंग्रेजी|हिंदी)\s*(?:karo|change|update|करो|बदलो)?/);
  if(editMatch||rateMatch||languageMatch){
   const fields:Record<string,string>={},warnings:string[]=[];
-  if(editMatch){const ids=resolveContact(editMatch[1],state.customers);Object.assign(fields,{operation:'editCustomer',query:editMatch[1],customerId:ids.length===1?ids[0]:'',phone:editMatch[2].replace(/\s/g,'')});if(!state.configuration.permissions.customers)warnings.push('permission');}
+  if(editMatch){const ids=resolveCustomerContact(editMatch[1],state.customers);Object.assign(fields,{operation:'editCustomer',query:editMatch[1],customerId:ids.length===1?ids[0]:'',phone:editMatch[2].replace(/\s/g,'')});if(!state.configuration.permissions.customers)warnings.push('permission');}
   if(rateMatch){const ids=resolveVoiceProduct(rateMatch[1],state.products).ids;Object.assign(fields,{operation:'editProduct',query:rateMatch[1],productId:ids.length===1?ids[0]:'',price:rateMatch[2],rateUnit:/kilo|kg|किलो/.test(rateMatch[0])?'kg':''});if(!state.configuration.permissions.inventory)warnings.push('permission');}
   if(languageMatch)Object.assign(fields,{operation:'language',language:/hindi|हिंदी/.test(languageMatch[1])?'hi':languageMatch[1]==='hinglish'?'hinglish':'en'});
   return{intent:'open',transcript:raw,fields,items:[],warnings,changed:Object.keys(fields),changedItems:[]};
@@ -150,7 +151,7 @@ export function advanceVoice(raw:string,state:V3State,previous?:VoiceCommand,sel
   const missing=nextVoiceQuestion(previous,state);
   if(['customer','supplier'].includes(intent)&&!previous.fields.name&&detected==='unknown'&&!/^(?:yes|no|haan|nahi|हाँ|नहीं)$/.test(text)&&!/phone|mobile|फोन|मोबाइल/.test(text))result.fields.name=raw.replace(/[.!।]+$/,'').trim();
   if(['payment','expense'].includes(intent)&&missing==='amount'&&/^\d+(?:\.\d{1,2})?$/.test(text))result.fields.amount=text;
-  if(missing==='customer'&&detected==='unknown'&&!/\d/.test(text)){const ids=resolveContact(raw,state.customers);if(ids.length){result.fields.customerQuery=raw.trim();result.fields.customerId=ids.length===1?ids[0]:'';}}
+  if(missing==='customer'&&detected==='unknown'&&!/\d/.test(text)){const ids=resolveCustomerContact(raw,state.customers);if(ids.length){result.fields.customerQuery=raw.trim();result.fields.customerId=ids.length===1?ids[0]:'';}}
  }
  if(supplierPayment){
   const payment=interpretVoice(text,state,'payment');result.fields={...result.fields,...payment.fields,operation:'supplierPayment'};
@@ -165,7 +166,7 @@ export function advanceVoice(raw:string,state:V3State,previous?:VoiceCommand,sel
   const invoice=state.invoices.find(invoice=>text.includes(invoice.number.toLowerCase())||text.includes(invoice.id.toLowerCase()));if(invoice){result.fields.invoiceId=invoice.id;result.fields.customerId=invoice.customerId||'';result.fields.documentKind='invoice';}
  }
  if(['sale','customer'].includes(intent)&&customerName){
-  const ids=resolveContact(customerName,state.customers);result.fields.customerQuery=customerName;result.fields.customerId=ids.length===1?ids[0]:'';
+  const ids=resolveCustomerContact(customerName,state.customers);result.fields.customerQuery=customerName;result.fields.customerId=ids.length===1?ids[0]:'';
   if(intent==='customer')result.fields.name=customerName;
   if(combined&&!ids.length){result.fields.createCustomer='true';result.fields.name=customerName;}
  }
@@ -177,7 +178,7 @@ export function advanceVoice(raw:string,state:V3State,previous?:VoiceCommand,sel
   if(total)result.fields.total=total[1];
   result.items=result.items.filter(item=>item.query&&!/^(?:cash|upi|rupaye|uska|naam|ka|ke naam se|kar do|bana do)$/.test(item.query));
   if(previous&&/customer.*(?:nahi|nahin|नहीं)/.test(text)){
-   const name=text.match(/(?:nahi|nahin|नहीं)\s+(.+?)(?:\s+(?:karo|kar|करो))?$/)?.[1]?.trim();if(name){const ids=resolveContact(name,state.customers);result.fields.customerQuery=name;result.fields.customerId=ids.length===1?ids[0]:'';}
+   const name=text.match(/(?:nahi|nahin|नहीं)\s+(.+?)(?:\s+(?:karo|kar|करो))?$/)?.[1]?.trim();if(name){const ids=resolveCustomerContact(name,state.customers);result.fields.customerQuery=name;result.fields.customerId=ids.length===1?ids[0]:'';}
   }
   if(/cash nahi|cash nahin|कैश नहीं|nakad nahi/.test(text)&&/upi|यूपीआई/.test(text)){result.fields.mode='upi';delete result.fields.cash;delete result.fields.upi;}
   else if(/(?:^|\s)(?:cash|nakad|नकद|कैश)(?:\s|$)/.test(text)&&!result.fields.cash&&!result.fields.upi)result.fields.mode='cash';
@@ -195,7 +196,7 @@ export function advanceVoice(raw:string,state:V3State,previous?:VoiceCommand,sel
   }
   result.changed=[...new Set([...result.changed,...Object.keys(result.fields)])];result.changedItems=result.items.map(item=>item.id);
  }
- if(intent==='payment'&&customerName){const ids=resolveContact(customerName,state.customers);result.fields.customerQuery=customerName;result.fields.customerId=ids.length===1?ids[0]:'';const amount=text.match(/(\d+(?:\.\d{1,2})?)\s*(?:udhaar|cash|rupaye|rupees|उधार|रुपये|कैश)/)?.[1];if(amount)result.fields.amount=amount;}
+ if(intent==='payment'&&customerName){const ids=resolveCustomerContact(customerName,state.customers);result.fields.customerQuery=customerName;result.fields.customerId=ids.length===1?ids[0]:'';const amount=text.match(/(\d+(?:\.\d{1,2})?)\s*(?:udhaar|cash|rupaye|rupees|उधार|रुपये|कैश)/)?.[1];if(amount)result.fields.amount=amount;}
  if(intent==='customer'&&result.fields.name){result.fields.name=customerName||result.fields.name;result.fields.phone=result.fields.phone||'';}
  if(intent==='stock'){
   const prior=previous?.intent==='stock'?stockRowsFromCommand(previous,state.products):[];
@@ -206,6 +207,7 @@ export function advanceVoice(raw:string,state:V3State,previous?:VoiceCommand,sel
   if(rows.some(row=>row.issues.includes('correction')))result.warnings.push('correction');
  }
  if((!customerName||/^(?:this customer|is customer|iska|uska|इस ग्राहक|इसके|इसका)$/iu.test(customerName))&&selectedCustomerId&&state.customers.some(c=>c.id===selectedCustomerId)&&/this customer|is customer|iska|uska|इस ग्राहक|इसके|इसका/.test(text)&&['sale','payment','report','document','open'].includes(intent)){result.fields.customerId=selectedCustomerId;result.fields.customerQuery=state.customers.find(c=>c.id===selectedCustomerId)!.name;}
+ if(!result.fields.customerId&&selectedCustomerId&&['sale','payment','report','document','open'].includes(result.intent)){const ids=resolveCustomerContact(result.fields.customerQuery||result.fields.query||'',state.customers);if(ids.includes(selectedCustomerId))result.fields.customerId=selectedCustomerId;}
  result.warnings=result.warnings.filter(w=>w!=='customer'||!result.fields.customerId&&result.fields.createCustomer!=='true');
  return result;
 }
@@ -274,7 +276,7 @@ export function resolveInterpretedSlots(raw:InterpretedSlots,transcript:string,s
  const slots=interpretedSlotsSchema.parse(raw),roles=extractVoiceRoles(spokenText(transcript)),local=localDraft||advanceVoice(transcript,state,previous),command:VoiceCommand={intent:slots.intent,transcript:transcript.slice(0,5000),fields:{...local.intent===slots.intent?local.fields:{},interpretation:'provider'},items:[],changed:[],changedItems:[],warnings:[]};
  if(roles.conditional)command.intent='simulation';
  if(roles.actionAmbiguous){command.fields.sourceTranscript=transcript;command.warnings.push('intentChoice');}
- if(slots.customerName){if(command.intent==='customer')command.fields.name=slots.customerName;const ids=resolveContact(slots.customerName,state.customers);command.fields.customerQuery=slots.customerName;command.fields.customerId=ids.length===1?ids[0]:'';}
+ if(slots.customerName){if(command.intent==='customer')command.fields.name=slots.customerName;const ids=resolveCustomerContact(slots.customerName,state.customers);command.fields.customerQuery=slots.customerName;command.fields.customerId=ids.length===1?ids[0]:'';}
  if(slots.supplierName){if(command.intent==='supplier')command.fields.name=slots.supplierName;const ids=resolveContact(slots.supplierName,state.suppliers);command.fields.supplierQuery=slots.supplierName;command.fields.supplierId=ids.length===1?ids[0]:'';}
  command.items=slots.items.map((item,index)=>{const matches=resolveVoiceProduct(item.productName,state.products),product=matches.exact&&matches.ids.length===1?state.products.find(p=>p.id===matches.ids[0]):undefined,prior=local.items.filter(row=>product&&row.productId===product.id||canonicalProductName(row.query)===canonicalProductName(item.productName)),known=prior.length===1?prior[0]:undefined,spokenPrice=command.intent==='purchase'?item.purchaseCost:item.unitPrice,price=spokenPrice&&product?voiceRateInCatalogueUnit(spokenPrice,item.priceUnit||item.unit||product.unit,product):spokenPrice;if(spokenPrice&&price===null)command.warnings.push('priceInvalid');if(command.intent==='stock'&&item.purchaseCost)command.fields['purchaseCost.'+(known?.id||String(index))]=item.purchaseCost; if(command.intent==='stock'){command.fields['priceUnit.'+(known?.id||String(index))]=product?.unit||item.priceUnit||item.unit||'';command.fields['costUnit.'+(known?.id||String(index))]=item.priceUnit||item.unit||'';};return{id:known?.id||String(index),query:item.productName,productId:matches.exact&&matches.ids.length===1?matches.ids[0]:'',candidates:matches.ids,quantity:item.quantity||(!slots.uncertainties.includes('quantity')?known?.quantity:'')||'',unit:item.unit||(!slots.uncertainties.includes('unit')?known?.unit:'')||'',price:price||item.lineTotal||(!slots.uncertainties.includes('price')?known?.price:'')||'',priceBasis:price?'unit':item.lineTotal?'total':!slots.uncertainties.includes('price')?known?.priceBasis||'':''};});
  if(slots.payment){command.fields.mode=slots.payment;command.fields.method=slots.payment;}if(slots.cash)command.fields.cash=slots.cash;if(slots.upi)command.fields.upi=slots.upi;if(slots.amount)command.fields.amount=slots.amount;

@@ -47,6 +47,16 @@ VoiceOS answers the approved UPI questions using authenticated verified observat
 
 ## Release status
 
+### V18.1 identity safeguards
+
+Same-name VoiceOS requests return a customer shortlist with phone suffixes and a distinguishing Customer ID. Selection stores the unique ID for the active conversation; matching-name and pronoun follow-ups reuse it. A new conversation, cancellation, closing VoiceOS or switching business clears that context. A different explicit customer name cannot silently reuse the previous selection. Ambiguous requests prepare no financial allocation until the merchant identifies the customer.
+
+An optional authorised [Razorpay customer lookup](https://razorpay.com/docs/api/customers/fetch-with-id/) can supply a name hint. It is displayed as provider-supplied and **identity unconfirmed**. Missing names appear as **New UPI Payer**. Names, handles and matching shop contact names never create or confirm a customer automatically. The existing editable customer form can accept a hint; merchant confirmation and explicit linking remain separate steps. An anonymous payer can pay without registering or supplying a DukaanSet Customer ID. Automatic future linking still requires a reliable provider identifier and an approved business-scoped binding.
+
+Schema 13 adds immutable original-payment snapshots and an append-only association audit with old/new Customer IDs, actor, reason and timestamp. Linking and renaming do not change payment amounts, references, source statuses/timestamps, invoices, dues or ledger entries. Legitimate provider lifecycle updates still update current status/refunds while preserving the original snapshot. Existing observations receive their unchanged available source snapshot during migration; unavailable earlier provider history is not fabricated. Detailed association audits include confirmed backfill, future bindings, automatic reliable-payer links and explicit allocation associations. Repeating the same link does not create another financial transaction or another association change.
+
+Identity acceptance results are in `docs/qa/upi18-identity/REPORT.md`.
+
 Local implementation and simulated-provider acceptance are complete. No actual Razorpay credentials, approved partner application or authorised merchant were present in the workspace. Live/sandbox-provider acceptance, physical Android camera/microphone acceptance, QR entitlement and remote revocation must still be verified. Universal bank history, settlement reporting, direct refund initiation and subscription billing are unsupported and are not claimed by the UI.
 
 Use the existing feature → dev → main workflow. Keep this payment release in review until genuine provider acceptance passes; do not deploy it to production on the strength of fixtures. See `docs/qa/upi18/REPORT.md` for executed results and external acceptance steps.

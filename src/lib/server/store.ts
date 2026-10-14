@@ -8,7 +8,7 @@ import { migrationV8 } from './product-media-schema';
 import { migrationV9 } from './voice-audio-schema';
 import { migrationV10 } from './my-voice-schema';
 import {startUpiWorker} from './smart-upi-worker';
-import {migrationV11,migrationV12} from './smart-upi-schema';
+import {migrationV11,migrationV12,migrationV13} from './smart-upi-schema';
 import { ProductMediaService } from './product-media-service';
 import { schema } from "./schema";
 import { migrationV2, migrationV3, migrationV4, migrationV5, migrationV6 } from "./migrations";
@@ -43,8 +43,8 @@ function asAttachment(row: Row): SaleAttachment { return { id: String(row.id), u
 
 export class Store {
   readonly db: DatabaseSync;
-  readonly schemaVersion = 12;
-  readonly runtimeRevision = "smart-upi-v18.1.2";
+  readonly schemaVersion = 13;
+  readonly runtimeRevision = "smart-upi-v18.1.3";
   private transactionDepth = 0;
   constructor(path = process.env.DATABASE_PATH || resolve(process.cwd(), ".data", "dukaanset.sqlite")) {
     // Runtime database directories are external mutable data, never bundle assets.
@@ -52,7 +52,7 @@ export class Store {
     this.db = new DatabaseSync(path);
     this.db.exec("PRAGMA foreign_keys = ON; PRAGMA busy_timeout = 5000; PRAGMA journal_mode = WAL;");
     const version = Number((this.db.prepare("PRAGMA user_version").get() as Row).user_version);
-    if (version > 12) { this.db.close(); throw new Error("Database schema is newer than this application."); }
+    if (version > 13) { this.db.close(); throw new Error("Database schema is newer than this application."); }
     this.transaction(() => {
       if (version === 0) this.db.exec(schema);
       if (version < 2) this.db.exec(migrationV2);
@@ -66,6 +66,7 @@ export class Store {
       if (version < 10) this.db.exec(migrationV10);
       if (version < 11) this.db.exec(migrationV11);
       if (version < 12) this.db.exec(migrationV12);
+      if (version < 13) this.db.exec(migrationV13);
     });
     this.db.prepare("DELETE FROM sessions WHERE expires_at < ?").run(stamp());
     this.db.prepare("DELETE FROM attachments WHERE invoice_id IS NULL AND date < ?").run(new Date(Date.now() - 86_400_000).toISOString());
@@ -723,7 +724,7 @@ export class Store {
 declare global { var dukaanStore: Store | undefined; }
 export function getStore(): Store {
   if (process.env.VERCEL === '1') throw new Error('DukaanSet SQLite requires a persistent backend. Deploy the Vercel gateway instead.');
-  if (globalThis.dukaanStore && globalThis.dukaanStore.runtimeRevision !== "smart-upi-v18.1.2") { globalThis.dukaanStore.close(); globalThis.dukaanStore = undefined; }
+  if (globalThis.dukaanStore && globalThis.dukaanStore.runtimeRevision !== "smart-upi-v18.1.3") { globalThis.dukaanStore.close(); globalThis.dukaanStore = undefined; }
   if(!globalThis.dukaanStore){globalThis.dukaanStore=new Store();startUpiWorker(globalThis.dukaanStore);}
   return globalThis.dukaanStore;
 }

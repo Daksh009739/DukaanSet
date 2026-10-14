@@ -1,0 +1,36 @@
+✔ existing UPI and decoded QR stay saved without transaction verification; primary updates only future branding (394.8357ms)
+✔ official OAuth state is account-bound, single-use, encrypted and scope-isolated (211.8105ms)
+✔ signed provider fetch, duplicate and out-of-order events preserve one authoritative transaction (159.6185ms)
+✔ stable provider payer linking changes no balances and does not derive identities from handles (157.5854ms)
+✔ confirmed invoice and udhaar reconciliation reuses ledger service and cannot double-post (175.3815ms)
+✔ matching an existing manually recorded receipt changes no ledger totals (139.329ms)
+✔ advances remain separate from dues until explicitly applied and provider refunds reverse once (158.2651ms)
+✔ statement import is unverified, atomic, deduplicated and cannot clear dues (140.6841ms)
+✔ staff cannot change destinations; disconnected accounts reject future sync/events and keep history (229.6913ms)
+✔ profile image storage strips metadata and is private; session cleanup keeps the current session (231.0603ms)
+✔ Razorpay adapter calls documented endpoints with server bearer tokens and validates responses (121.253ms)
+✔ provider test money cannot pay real invoices or create a real-bill payment QR (149.1011ms)
+✔ VoiceOS reads verified UPI and prepares review only; existing sales stay in their workflow (266.048ms)
+✔ export permissions and timezone boundaries use real scoped observations (273.2196ms)
+✔ UPI HTTP operations accept action names, reject wrong verbs and keep scoped authorisation (274.8625ms)
+✔ profile and shop updates expose current identity; branding keeps one saved primary and invoice snapshots (195.6637ms)
+✔ rotated webhook secrets verify retries; real customer history excludes provider test money (124.8092ms)
+✔ all approved natural UPI questions stay read-only and amount queries never invent a payer (173.2323ms)
+✔ a retained disconnected test authorisation cannot label current live observations as test money (137.0306ms)
+✔ same-name UPI queries require an identifying shortlist; selecting an ID remembers only the intended person (200.9067ms)
+✔ same-name billing and balance follow-ups keep selected IDs; ambiguous identifiers never pick the first record (130.0327ms)
+✔ provider names are unconfirmed hints; anonymous payers need no account or customer registration (154.0859ms)
+✔ confirmed repeat-payer linking audits associations while every original payment and ledger row stays intact (155.7379ms)
+✔ original status and timestamp survive provider lifecycle updates and payer renaming (139.8457ms)
+✔ customer selections, payer links and immutable payment originals remain business scoped (227.6303ms)
+✔ official provider name enrichment uses the merchant bearer and never infers names from a VPA (1.3412ms)
+✔ ambiguous allocation and pronoun queries return clarification without any financial draft or write (175.1541ms)
+✔ an exact short customer name cannot hide another customer sharing the spoken name (129.6151ms)
+ℹ tests 28
+ℹ suites 0
+ℹ pass 28
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 10743.6853

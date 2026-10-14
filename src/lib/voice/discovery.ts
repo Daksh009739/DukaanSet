@@ -54,9 +54,9 @@ export function voiceHeroForPage(path:string,state:V3State,tool?:VoiceIntent):He
 }
 
 /** Resolve typed page references only against the current authorised state; reuse the shared engine. */
-export function advancePageVoice(raw:string,state:V3State,previous:VoiceCommand|undefined,context:VoicePageContext):VoiceCommand{
+export function advancePageVoice(raw:string,state:V3State,previous:VoiceCommand|undefined,context:VoicePageContext,rememberedCustomerId?:string):VoiceCommand{
  const customer=state.configuration.permissions.customers&&state.customers.find(c=>c.id===context.customerId);
- let command=advanceVoice(raw,state,previous,customer?customer.id:undefined,context.intent);
+ let command=advanceVoice(raw,state,previous,rememberedCustomerId&&state.customers.some(c=>c.id===rememberedCustomerId)?rememberedCustomerId:customer?customer.id:undefined,context.intent);
  if(!voiceActionRegistry[command.intent].permitted(state))return command;
  const product=state.products.find(p=>p.id===context.productId);
  const productReference=/this product|is product|इस उत्पाद|इस प्रोडक्ट|यह उत्पाद|\bisme\b|इसमें/i;

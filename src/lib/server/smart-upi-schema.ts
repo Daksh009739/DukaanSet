@@ -20,3 +20,15 @@ CREATE TABLE IF NOT EXISTS upi_test_workspaces(business_id TEXT PRIMARY KEY REFE
 ALTER TABLE upi_requests ADD COLUMN image_url TEXT;
 PRAGMA user_version=12;
 `;
+export const migrationV13=`
+CREATE TABLE upi_payment_origins(transaction_id TEXT PRIMARY KEY REFERENCES upi_transactions(id),business_id TEXT NOT NULL REFERENCES businesses(id),reference TEXT NOT NULL,bank_reference TEXT NOT NULL,amount_paise INTEGER NOT NULL,status TEXT NOT NULL,occurred_at TEXT NOT NULL,observed_at TEXT NOT NULL);
+INSERT INTO upi_payment_origins SELECT id,business_id,reference,bank_reference,amount_paise,status,occurred_at,observed_at FROM upi_transactions;
+CREATE TRIGGER upi_origins_no_update BEFORE UPDATE ON upi_payment_origins BEGIN SELECT RAISE(ABORT,'Payment originals are immutable'); END;
+CREATE TRIGGER upi_origins_no_delete BEFORE DELETE ON upi_payment_origins BEGIN SELECT RAISE(ABORT,'Payment originals are immutable'); END;
+CREATE TRIGGER upi_transaction_original_fields BEFORE UPDATE OF reference,bank_reference,amount_paise,occurred_at ON upi_transactions WHEN NEW.reference!=OLD.reference OR NEW.bank_reference!=OLD.bank_reference OR NEW.amount_paise!=OLD.amount_paise OR NEW.occurred_at!=OLD.occurred_at BEGIN SELECT RAISE(ABORT,'Payment source fields are immutable'); END;
+CREATE TABLE upi_payer_hints(transaction_id TEXT PRIMARY KEY REFERENCES upi_transactions(id),provider_name TEXT NOT NULL,observed_at TEXT NOT NULL);
+CREATE TABLE upi_customer_link_audit(id TEXT PRIMARY KEY,business_id TEXT NOT NULL REFERENCES businesses(id),transaction_id TEXT REFERENCES upi_transactions(id),payer_key TEXT,previous_customer_id TEXT REFERENCES customers(id),customer_id TEXT NOT NULL REFERENCES customers(id),actor_id TEXT NOT NULL REFERENCES users(id),reason TEXT NOT NULL,created_at TEXT NOT NULL);
+CREATE TRIGGER upi_links_audit_no_update BEFORE UPDATE ON upi_customer_link_audit BEGIN SELECT RAISE(ABORT,'Customer link audit is immutable'); END;
+CREATE TRIGGER upi_links_audit_no_delete BEFORE DELETE ON upi_customer_link_audit BEGIN SELECT RAISE(ABORT,'Customer link audit is immutable'); END;
+PRAGMA user_version=13;
+`;

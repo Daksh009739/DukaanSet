@@ -608,6 +608,11 @@
     "refundAmount": "Refund hui rakam",
     "mode": "Payment ka environment",
     "liveMode": "Live payment account",
-    "verifiedLedger": "UPI · provider se verified"
+    "verifiedLedger": "UPI · provider se verified",
+    "newPayer": "Naya UPI Payer",
+    "providerName": "Provider se mila naam",
+    "providerUnconfirmed": "Provider ka naam · identity confirm nahi hai",
+    "assignCustomerName": "Customer ka naam dein",
+    "ambiguousCustomer": "Is naam ke kai customers hain. Phone ke last digits ya Customer ID se chunein."
   }
 }

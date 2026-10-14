@@ -608,6 +608,11 @@
     "refundAmount": "Refunded amount",
     "mode": "Payment environment",
     "liveMode": "Live account",
-    "verifiedLedger": "UPI · provider verified"
+    "verifiedLedger": "UPI · provider verified",
+    "newPayer": "New UPI Payer",
+    "providerName": "Provider name",
+    "providerUnconfirmed": "Provider-supplied name · identity unconfirmed",
+    "assignCustomerName": "Assign a customer name",
+    "ambiguousCustomer": "More than one customer has this name. Choose the phone suffix or Customer ID."
   }
 }
