@@ -13,7 +13,7 @@ concurrency:
 jobs:
   validate:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 90
     env:
       NEXT_TELEMETRY_DISABLED: '1'
       DUKAANSET_ENV: local
@@ -46,6 +46,10 @@ jobs:
         run: node scripts/qa/upi18-production-review.mjs
       - name: Compiled My Voice AI enrollment, private profiles and synthetic audio acceptance
         run: node scripts/qa/voice34-production-review.mjs
+      - name: Compiled business modes, isolated daily intelligence and mobile growth tools
+        run: node scripts/qa/growth18-production-review.mjs
+      - name: Compiled reviewed document capture, repeat-safe saves and business health
+        run: node scripts/qa/automation18-production-review.mjs
       - name: Premium PDF exports, actual business sources and multilingual printing controls
         run: npm run test:e2e -- tests/e2e/pdf-suite.spec.ts
       - name: Approved dashboard, product media and shared mobile design checks

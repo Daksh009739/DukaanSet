@@ -25,9 +25,9 @@
 .header.header .account.account>div {flex:1;min-width:0;max-width:178px}
 .header.header .account.account :global(.profile-menu-trigger) {display:grid;place-items:center;flex:none;width:42px;height:42px;min-width:42px;border-radius:12px;background:linear-gradient(145deg,#cdfbe2,#a7ebc7);color:#145b40;border:1px solid #d0fce4;font-size:14px;font-weight:800;box-shadow:0 2px 5px #002e231a}
 .header.header .account.account :global(.profile-menu-trigger:hover) {background:#e6fff0;color:#084c33;border-color:#fff;box-shadow:0 3px 10px #002b272b}
-.header.header .account.account :global(.profile-name) {display:block;text-align:left;color:#fff;font-size:12px;font-weight:750;line-height:1.5;max-width:100%;min-height:22px;width:max-content;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;background:transparent;border-radius:5px;padding:0 3px;margin-left:-3px}
+.header.header .account.account :global(.profile-name) {display:block;text-align:left;color:#fff;font-size:12px;font-weight:750;line-height:1.5;max-width:100%;min-height:28px;width:max-content;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;background:transparent;border-radius:5px;padding:0 3px;margin-left:-3px}
 .header.header .account.account :global(.profile-name:hover) {color:#d2ffe4;background:#ffffff16}
-.header.header .account.account :global(select) {font-size:11px;font-weight:500;color:var(--header-muted);line-height:1.5;max-width:100%;min-width:0;width:100%;min-height:22px;padding:0;background:transparent;border:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;border-radius:5px;gap:5px}
+.header.header .account.account :global(select) {font-size:11px;font-weight:500;color:var(--header-muted);line-height:1.5;max-width:100%;min-width:0;width:100%;min-height:28px;padding:0;background:transparent;border:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;border-radius:5px;gap:5px}
 .header.header .account.account :global(select:hover:not(:disabled)) {color:#effff5;background:#ffffff12}
 .header.header .account.account:focus-within {border-color:#b1f2cc;background:#ffffff14}
 .header.header :global(.voiceos-launcher) {background:#ddfbed;color:#08654a;border-color:#a8efd0;box-shadow:0 0 0 5px #91e8bd16,0 2px 8px #012e2526}

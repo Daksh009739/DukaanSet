@@ -122,5 +122,15 @@
   "UPI_REFUND_REVIEW": "Payment details accept nahi hui. Connection, payment address aur available rakam check karke dobara try karein.",
   "UPI_TEST_MONEY": "Test payments real bills nahi chuka sakte. Designated test shop use karein.",
   "UPI_QR_PENDING": "Payment QR request confirm ho rahi hai. Doosri request se pehle refresh karein.",
-  "BOOKING_CONFLICT": "Yeh time active appointment se overlap karta hai. Doosra time chunein."
+  "BOOKING_CONFLICT": "Yeh time active appointment se overlap karta hai. Doosra time chunein.",
+  "CAPTURE_REVIEW": "Review se pehle product, quantity, unit aur rate meaning sudharein. Repeated rows combine karein.",
+  "CAPTURE_IMAGE": "8 MB aur 16 megapixels ke andar valid JPEG, PNG ya WebP photo chunein.",
+  "CAPTURE_LIMIT": "Document evidence storage full hai. Data export karke support se baat karein.",
+  "CAPTURE_CONSENT": "AI extraction se pehle image bhejne ki permission dein.",
+  "CAPTURE_BUSY": "Yeh document read ho raha hai. Wait karke dobara kholein.",
+  "CAPTURE_TAX_REVIEW": "Save se pehle final tax-inclusive rates aur source adjustments review karein.",
+  "CAPTURE_TOTAL": "Reviewed total document se alag hai. Rates, quantities ya source total sudharein.",
+  "CAPTURE_PARTY": "Sahi unique customer ya supplier chunein. Imported bills unpaid rehte hain.",
+  "CAPTURE_CONFIRM": "Original check karke final changes explicitly confirm karein.",
+  "CAPTURE_DUPLICATE": "Matching document ya source reference pehle import ho chuka hai. Existing record kholein; naya transaction post nahi hua."
 }

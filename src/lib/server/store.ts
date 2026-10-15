@@ -9,6 +9,7 @@ import { migrationV9 } from './voice-audio-schema';
 import { migrationV10 } from './my-voice-schema';
 import {startUpiWorker} from './smart-upi-worker';
 import {migrationV15,migrationV16} from './growth-schema';
+import {migrationV17} from './capture-schema';
 import {migrationV11,migrationV12,migrationV13,migrationV14} from './smart-upi-schema';
 import { ProductMediaService } from './product-media-service';
 import { schema } from "./schema";
@@ -44,8 +45,8 @@ function asAttachment(row: Row): SaleAttachment { return { id: String(row.id), u
 
 export class Store {
   readonly db: DatabaseSync;
-  readonly schemaVersion = 16;
-  readonly runtimeRevision = "business-growth-v18.1.6";
+  readonly schemaVersion = 17;
+  readonly runtimeRevision = "document-automation-v18.1.7";
   private transactionDepth = 0;
   constructor(path = process.env.DATABASE_PATH || resolve(process.cwd(), ".data", "dukaanset.sqlite")) {
     // Runtime database directories are external mutable data, never bundle assets.
@@ -53,7 +54,7 @@ export class Store {
     this.db = new DatabaseSync(path);
     this.db.exec("PRAGMA foreign_keys = ON; PRAGMA busy_timeout = 5000; PRAGMA journal_mode = WAL;");
     const version = Number((this.db.prepare("PRAGMA user_version").get() as Row).user_version);
-    if (version > 16) { this.db.close(); throw new Error("Database schema is newer than this application."); }
+    if (version > 17) { this.db.close(); throw new Error("Database schema is newer than this application."); }
     this.transaction(() => {
       if (version === 0) this.db.exec(schema);
       if (version < 2) this.db.exec(migrationV2);
@@ -71,6 +72,7 @@ export class Store {
       if (version < 14) this.db.exec(migrationV14);
       if (version < 15) this.db.exec(migrationV15);
       if (version < 16) this.db.exec(migrationV16);
+      if (version < 17) this.db.exec(migrationV17);
     });
     this.db.prepare("DELETE FROM sessions WHERE expires_at < ?").run(stamp());
     this.db.prepare("DELETE FROM attachments WHERE invoice_id IS NULL AND date < ?").run(new Date(Date.now() - 86_400_000).toISOString());
@@ -644,6 +646,7 @@ export class Store {
     this.assertMember(userId, businessId);
     const data: Record<string, unknown> = { version: this.schemaVersion, exportedAt: stamp(), business: this.assertMember(userId, businessId), currency: "INR", quantityScale: 1000 };
     for (const table of ["invoice_cancellations", "products", "customers", "suppliers", "invoices", "payments", "movements", "inventory_entries", "purchases", "expenses", "closings", "audit", "business_settings", "demand_requests", "demand_followups", "demand_conversions", "reorder_drafts", "demand_dismissals", "invoice_branding", "communication_preferences", "whatsapp_connections", "closing_settings", "business_sessions", "closing_versions", "cash_movements", "supplier_payments", "closing_jobs", "closing_notices"] as const) data[table] = this.rows(`SELECT * FROM ${table} WHERE business_id=?`, businessId);
+    data.documentCaptures=this.rows('SELECT id,business_id,scope,original_sha256,pixel_sha256,filename,mime,status,extraction_json,review_json,result_json,created_at,committed_at FROM document_captures WHERE business_id=?',businessId);
     data.documents=this.rows("SELECT id,business_id,customer_id,kind,source_id,model_json,filename,pages,created_at,expires_at FROM documents WHERE business_id=?",businessId);
     data.deliveries=this.rows("SELECT * FROM deliveries WHERE business_id=?",businessId);
     data.attachments = this.rows("SELECT id,business_id,product_id,invoice_id,mime,size,sha256,date FROM attachments WHERE business_id=?", businessId);
@@ -663,7 +666,7 @@ export class Store {
       for (const business of session.businesses) {
         if (this.row("SELECT user_id FROM memberships WHERE business_id=? AND user_id!=? LIMIT 1", business.id, userId)) throw new DomainError("DEMO_ONLY", "A shared business cannot be reset as demo data.", 403);
         this.run('DELETE FROM delivery_events WHERE delivery_id IN (SELECT id FROM deliveries WHERE business_id=?)',business.id);
-        for(const table of ['business_activities','business_growth_settings','business_feedback','product_media','media_assets','media_settings','closing_notices','closing_jobs','closing_versions','cash_movements','supplier_payments','business_sessions','closing_settings'])this.run(`DELETE FROM ${table} WHERE business_id=?`,business.id);
+        for(const table of ['document_import_claims','document_captures','business_activities','business_growth_settings','business_feedback','product_media','media_assets','media_settings','closing_notices','closing_jobs','closing_versions','cash_movements','supplier_payments','business_sessions','closing_settings'])this.run(`DELETE FROM ${table} WHERE business_id=?`,business.id);
         for (const table of ["invoice_cancellations","deliveries","documents","communication_preferences","whatsapp_inbound","whatsapp_connections","invoice_branding","demand_followups", "demand_conversions", "reorder_drafts", "demand_dismissals", "demand_requests", "attachments", "idempotency", "payments", "movements", "inventory_entries", "purchases", "invoices", "expenses", "closings", "audit", "products", "customers", "suppliers"]) this.run(`DELETE FROM ${table} WHERE business_id=?`, business.id);
         this.run('DELETE FROM business_settings WHERE business_id=?',business.id);
       }
@@ -735,7 +738,7 @@ export class Store {
 declare global { var dukaanStore: Store | undefined; }
 export function getStore(): Store {
   if (process.env.VERCEL === '1') throw new Error('DukaanSet SQLite requires a persistent backend. Deploy the Vercel gateway instead.');
-  if (globalThis.dukaanStore && globalThis.dukaanStore.runtimeRevision !== "business-growth-v18.1.6") { globalThis.dukaanStore.close(); globalThis.dukaanStore = undefined; }
+  if (globalThis.dukaanStore && globalThis.dukaanStore.runtimeRevision !== "document-automation-v18.1.7") { globalThis.dukaanStore.close(); globalThis.dukaanStore = undefined; }
   if(!globalThis.dukaanStore){globalThis.dukaanStore=new Store();startUpiWorker(globalThis.dukaanStore);}
   return globalThis.dukaanStore;
 }

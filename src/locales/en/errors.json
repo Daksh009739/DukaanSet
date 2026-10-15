@@ -122,5 +122,15 @@
   "UPI_REFUND_REVIEW": "The payment details could not be accepted. Check the connection, destination and available receipt amount, then try again.",
   "UPI_TEST_MONEY": "Test payments cannot pay real invoices. Use a designated test workspace.",
   "UPI_QR_PENDING": "A payment QR request is still being confirmed. Refresh before creating another.",
-  "BOOKING_CONFLICT": "This time overlaps an active appointment. Choose another time."
+  "BOOKING_CONFLICT": "This time overlaps an active appointment. Choose another time.",
+  "CAPTURE_REVIEW": "Correct the product, quantity, unit and rate meaning before review. Combine repeated product rows.",
+  "CAPTURE_IMAGE": "Choose a valid JPEG, PNG or WebP image below 8 MB and within 16 megapixels.",
+  "CAPTURE_LIMIT": "Document evidence storage is full. Export your data and contact support.",
+  "CAPTURE_CONSENT": "Approve sending this image before using AI extraction.",
+  "CAPTURE_BUSY": "This document is being read. Wait, then reopen it.",
+  "CAPTURE_TAX_REVIEW": "Review final tax-inclusive unit prices and source adjustments before saving.",
+  "CAPTURE_TOTAL": "The reviewed total differs from the document. Correct the rates, quantities or source total.",
+  "CAPTURE_PARTY": "Select the correct unique customer or supplier. Imported bills start unpaid.",
+  "CAPTURE_CONFIRM": "Check the original and explicitly confirm the final changes.",
+  "CAPTURE_DUPLICATE": "Matching document evidence or its source reference was already imported. Open the existing record; no new transaction was posted."
 }

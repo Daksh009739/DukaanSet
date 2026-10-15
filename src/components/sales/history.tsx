@@ -2,6 +2,7 @@
 import {LocalizedDate} from '@/components/localized-data';
 
 import Link from 'next/link';
+import {ScanDocumentButton} from '../document-capture';
 import { useSearchParams } from 'next/navigation';
 import { useState,useEffect } from 'react';
 import { ArrowUpRight, Plus, ReceiptText, Search, SlidersHorizontal, Wallet, Clock3 } from 'lucide-react';
@@ -20,7 +21,7 @@ export function SalesHistory() {
   const params = useSearchParams();
   const [documentInvoice,setDocumentInvoice]=useState<{id:string;customerId:string}|null>(null);const d=useTranslation('documents').t;
   const [query, setQuery] = useState('');
-  const [status, setStatus] = useState('all');
+  const [status, setStatus] = useState(['all','paid','partial','unpaid','cancelled','outstanding'].includes(params.get('status')||'')?params.get('status')!:'all');
   const [customer, setCustomer] = useState(params.get('customer') || '');
   const [from, setFrom] = useState('');
   const [to, setTo] = useState('');
@@ -32,10 +33,10 @@ export function SalesHistory() {
   const clear = () => { setQuery(''); setStatus('all'); setCustomer(''); setFrom(''); setTo(''); };
   return <div className="sale-history">
     <div className="sale-page-heading"><div><h1>{t('history')}</h1><p>{t('historyHint')}</p></div>{state!.configuration.permissions.sales&&<Link href="/app/sales/new" className="btn btn-primary"><Plus size={18} />{t('newSaleAction')}</Link>}</div>
-    <ModuleMetrics className="sale-history-metrics" items={[{label:t('total'),value:result?money(total):'—',icon:<ReceiptText/>,tone:'blue'},{label:t('moneyReceived'),value:result?money(received):'—',icon:<Wallet/>},{label:t('pending'),value:result?money(pending):'—',icon:<Clock3/>,tone:'amber'}]}/>
+    <div className="button-row"><ScanDocumentButton kind="sale"/></div><ModuleMetrics className="sale-history-metrics" items={[{label:t('total'),value:result?money(total):'—',icon:<ReceiptText/>,tone:'blue'},{label:t('moneyReceived'),value:result?money(received):'—',icon:<Wallet/>},{label:t('pending'),value:result?money(pending):'—',icon:<Clock3/>,tone:'amber'}]}/>
     <section className="sale-section sale-history-filters" aria-label={t('history')}>
       <label className="sale-search"><Search size={19} aria-hidden /><span className="sr-only">{t('searchSales')}</span><input type="search" aria-label={t('searchSales')} value={query} onChange={event => setQuery(event.target.value)} placeholder={t('searchSales')} /></label>
-      <div className="sale-filter-grid"><Select label={t('status')} value={status} onChange={event => setStatus(event.target.value)}>{['all', 'paid', 'partial', 'unpaid', 'cancelled'].map(value => <option key={value} value={value}>{t(value)}</option>)}</Select><Select label={t('customer')} value={customer} onChange={event => setCustomer(event.target.value)}><option value="">{t('allCustomers')}</option>{state!.customers.map(item => <option value={item.id} key={item.id}>{item.name}</option>)}</Select><Field label={t('fromDate')} type="date" value={from} onChange={event => setFrom(event.target.value)} /><Field label={t('toDate')} type="date" value={to} min={from || undefined} onChange={event => setTo(event.target.value)} /></div>
+      <div className="sale-filter-grid"><Select label={t('status')} value={status} onChange={event => setStatus(event.target.value)}>{['all', 'paid', 'partial', 'unpaid', 'cancelled', 'outstanding'].map(value => <option key={value} value={value}>{value==='outstanding'?t('workspace:capture.reviewBills'):t(value)}</option>)}</Select><Select label={t('customer')} value={customer} onChange={event => setCustomer(event.target.value)}><option value="">{t('allCustomers')}</option>{state!.customers.map(item => <option value={item.id} key={item.id}>{item.name}</option>)}</Select><Field label={t('fromDate')} type="date" value={from} onChange={event => setFrom(event.target.value)} /><Field label={t('toDate')} type="date" value={to} min={from || undefined} onChange={event => setTo(event.target.value)} /></div>
       <div className="sale-filter-footer"><span><SlidersHorizontal size={14} />{t('saleCount', { count: result?.total||0 })}</span><button type="button" className="text-link" onClick={clear}>{t('clearFilters')}</button></div>
       {invalidRange && <p role="alert" className="sale-field-error">{t('dateRangeInvalid')}</p>}
     </section>

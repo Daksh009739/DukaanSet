@@ -1,0 +1,287 @@
+{
+  "checkedAt": "2026-10-14T19:18:23.598Z",
+  "compiledApplication": true,
+  "isolatedDatabase": true,
+  "liveRecognition": false,
+  "layouts": [
+    {
+      "language": "en",
+      "section": "stock-confirmation",
+      "width": 320
+    },
+    {
+      "language": "en",
+      "section": "stock-confirmation",
+      "width": 390
+    },
+    {
+      "language": "en",
+      "section": "stock-confirmation",
+      "width": 768
+    },
+    {
+      "language": "en",
+      "section": "stock-confirmation",
+      "width": 1440
+    },
+    {
+      "language": "en",
+      "section": "purchase-confirmation",
+      "width": 320
+    },
+    {
+      "language": "en",
+      "section": "purchase-confirmation",
+      "width": 390
+    },
+    {
+      "language": "en",
+      "section": "purchase-confirmation",
+      "width": 768
+    },
+    {
+      "language": "en",
+      "section": "purchase-confirmation",
+      "width": 1440
+    },
+    {
+      "language": "en",
+      "section": "autopilot",
+      "width": 320
+    },
+    {
+      "language": "en",
+      "section": "autopilot",
+      "width": 390
+    },
+    {
+      "language": "en",
+      "section": "autopilot",
+      "width": 768
+    },
+    {
+      "language": "en",
+      "section": "autopilot",
+      "width": 1440
+    },
+    {
+      "language": "hi",
+      "section": "stock-confirmation",
+      "width": 320
+    },
+    {
+      "language": "hi",
+      "section": "stock-confirmation",
+      "width": 390
+    },
+    {
+      "language": "hi",
+      "section": "stock-confirmation",
+      "width": 768
+    },
+    {
+      "language": "hi",
+      "section": "stock-confirmation",
+      "width": 1440
+    },
+    {
+      "language": "hi",
+      "section": "purchase-confirmation",
+      "width": 320
+    },
+    {
+      "language": "hi",
+      "section": "purchase-confirmation",
+      "width": 390
+    },
+    {
+      "language": "hi",
+      "section": "purchase-confirmation",
+      "width": 768
+    },
+    {
+      "language": "hi",
+      "section": "purchase-confirmation",
+      "width": 1440
+    },
+    {
+      "language": "hi",
+      "section": "autopilot",
+      "width": 320
+    },
+    {
+      "language": "hi",
+      "section": "autopilot",
+      "width": 390
+    },
+    {
+      "language": "hi",
+      "section": "autopilot",
+      "width": 768
+    },
+    {
+      "language": "hi",
+      "section": "autopilot",
+      "width": 1440
+    },
+    {
+      "language": "hinglish",
+      "section": "stock-confirmation",
+      "width": 320
+    },
+    {
+      "language": "hinglish",
+      "section": "stock-confirmation",
+      "width": 390
+    },
+    {
+      "language": "hinglish",
+      "section": "stock-confirmation",
+      "width": 768
+    },
+    {
+      "language": "hinglish",
+      "section": "stock-confirmation",
+      "width": 1440
+    },
+    {
+      "language": "hinglish",
+      "section": "purchase-confirmation",
+      "width": 320
+    },
+    {
+      "language": "hinglish",
+      "section": "purchase-confirmation",
+      "width": 390
+    },
+    {
+      "language": "hinglish",
+      "section": "purchase-confirmation",
+      "width": 768
+    },
+    {
+      "language": "hinglish",
+      "section": "purchase-confirmation",
+      "width": 1440
+    },
+    {
+      "language": "hinglish",
+      "section": "autopilot",
+      "width": 320
+    },
+    {
+      "language": "hinglish",
+      "section": "autopilot",
+      "width": 390
+    },
+    {
+      "language": "hinglish",
+      "section": "autopilot",
+      "width": 768
+    },
+    {
+      "language": "hinglish",
+      "section": "autopilot",
+      "width": 1440
+    }
+  ],
+  "accessibility": [
+    {
+      "language": "en",
+      "section": "stock-confirmation",
+      "violations": 0
+    },
+    {
+      "language": "en",
+      "section": "purchase-confirmation",
+      "violations": 0
+    },
+    {
+      "language": "en",
+      "section": "autopilot",
+      "violations": 0
+    },
+    {
+      "language": "hi",
+      "section": "stock-confirmation",
+      "violations": 0
+    },
+    {
+      "language": "hi",
+      "section": "purchase-confirmation",
+      "violations": 0
+    },
+    {
+      "language": "hi",
+      "section": "autopilot",
+      "violations": 0
+    },
+    {
+      "language": "hinglish",
+      "section": "stock-confirmation",
+      "violations": 0
+    },
+    {
+      "language": "hinglish",
+      "section": "purchase-confirmation",
+      "violations": 0
+    },
+    {
+      "language": "hinglish",
+      "section": "autopilot",
+      "violations": 0
+    }
+  ],
+  "workflows": [
+    {
+      "language": "en",
+      "manualFallback": true,
+      "privateOriginalExact": true,
+      "stockConfirmedOnce": true,
+      "duplicatePhotoReplay": true,
+      "sourceRowsEditable": true,
+      "languageSwitchPreservesIdsAndNumbers": true,
+      "partyNotAssumed": true,
+      "billUnpaid": true,
+      "originalSourceAccessible": true,
+      "autopilotReadOnly": true,
+      "healthVoice": true,
+      "closingVerifiedContext": true
+    },
+    {
+      "language": "hi",
+      "manualFallback": true,
+      "privateOriginalExact": true,
+      "stockConfirmedOnce": true,
+      "duplicatePhotoReplay": true,
+      "sourceRowsEditable": true,
+      "languageSwitchPreservesIdsAndNumbers": true,
+      "partyNotAssumed": true,
+      "billUnpaid": true,
+      "originalSourceAccessible": true,
+      "autopilotReadOnly": true,
+      "healthVoice": true,
+      "closingVerifiedContext": true
+    },
+    {
+      "language": "hinglish",
+      "manualFallback": true,
+      "privateOriginalExact": true,
+      "stockConfirmedOnce": true,
+      "duplicatePhotoReplay": true,
+      "sourceRowsEditable": true,
+      "languageSwitchPreservesIdsAndNumbers": true,
+      "partyNotAssumed": true,
+      "billUnpaid": true,
+      "originalSourceAccessible": true,
+      "autopilotReadOnly": true,
+      "healthVoice": true,
+      "closingVerifiedContext": true
+    }
+  ],
+  "limitations": [
+    "No server AI credentials were supplied. Live Hindi/English/Hinglish handwriting recognition remains unverified.",
+    "The purchase extraction is a labelled fixture; manual upload, review and financial commits use real application endpoints.",
+    "Physical Android camera and microphone acceptance requires merchant testing."
+  ]
+}

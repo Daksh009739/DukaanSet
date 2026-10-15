@@ -23,7 +23,7 @@ test('one navigation registry serves expanded, persistent rail, nested tools and
   await nav.getByRole('link',{name:'Products & Stock',exact:true}).click();await expect(nav.getByRole('link',{name:'Products & Stock',exact:true})).toHaveAttribute('aria-current','page');
   await page.reload();await expect(page.locator('.workspace')).toHaveClass(/sidebar-collapsed/);await expect(nav).toHaveCSS('width','80px');
   expect(await(await page.request.get('/app')).text()).toMatch(/class="[^"]*workspace[^"]*sidebar-collapsed/);
-  await nav.getByRole('button',{name:'Expand navigation'}).click();await nav.getByRole('button',{name:'Open profile actions'}).click();await expect(page.getByRole('dialog')).toContainText(user.user.email);await expect(page.getByRole('dialog').getByRole('link',{name:'My profile'})).toHaveAttribute('href','/app/settings/account');await page.getByRole('dialog').getByRole('button',{name:'Close',exact:true}).click();
+  await nav.getByRole('button',{name:'Expand navigation'}).click();await nav.getByRole('button',{name:'Open profile actions'}).click();await expect(page.getByRole('dialog')).toContainText(user.user.name);await expect(page.getByRole('dialog')).toContainText('Demo account');await expect(page.getByRole('dialog').getByRole('link',{name:'My profile'})).toHaveAttribute('href','/app/settings/account');await page.getByRole('dialog').getByRole('button',{name:'Close',exact:true}).click();
   await nav.getByRole('link',{name:'Explore DukaanSet plans'}).click();await expect(page).toHaveURL(/\/pricing$/);
   expect((await ledger(page,user.businesses[0].id)).totals).toEqual(before.totals);
 });

@@ -1,0 +1,893 @@
+{
+  "fixture": "Fictional records; memory database only; not live business documents",
+  "documents": [
+    {
+      "name": "invoice-en-a4",
+      "language": "en",
+      "format": "a4",
+      "pages": 1,
+      "bytes": 227480,
+      "reference": "DS-00002"
+    },
+    {
+      "name": "statement-en-a4",
+      "language": "en",
+      "format": "a4",
+      "pages": 1,
+      "bytes": 223881,
+      "reference": "HS-cd573541-2026-10-13-2026-10-13"
+    },
+    {
+      "name": "receipt-en-a4",
+      "language": "en",
+      "format": "a4",
+      "pages": 1,
+      "bytes": 220012,
+      "reference": "PR-4872aee3-d19c-410b-922c-b0be3e737054"
+    },
+    {
+      "name": "stock-report-en-a4",
+      "language": "en",
+      "format": "a4",
+      "pages": 1,
+      "bytes": 227689,
+      "reference": "STOCK-2026-10-13"
+    },
+    {
+      "name": "purchase-order-en-a4",
+      "language": "en",
+      "format": "a4",
+      "pages": 1,
+      "bytes": 222912,
+      "reference": "PO-6dbedce4-a0c6-48a5-8a0b-0af9203c4c61"
+    },
+    {
+      "name": "purchase-en-a4",
+      "language": "en",
+      "format": "a4",
+      "pages": 1,
+      "bytes": 223005,
+      "reference": "PUR-fc746c13-a205-41ad-8361-775f7b1930fb"
+    },
+    {
+      "name": "business-report-en-a4",
+      "language": "en",
+      "format": "a4",
+      "pages": 1,
+      "bytes": 223851,
+      "reference": "REPORT-2026-10-13-2026-10-13"
+    },
+    {
+      "name": "closing-en-a4",
+      "language": "en",
+      "format": "a4",
+      "pages": 4,
+      "bytes": 808511,
+      "reference": "DS-2026-10-13-bb044c"
+    },
+    {
+      "name": "closing-preview-en-a4",
+      "language": "en",
+      "format": "a4",
+      "pages": 4,
+      "bytes": 807578,
+      "reference": "PREVIEW-2026-10-13"
+    },
+    {
+      "name": "invoice-en-mono",
+      "language": "en",
+      "format": "mono",
+      "pages": 1,
+      "bytes": 149286,
+      "reference": "DS-00002"
+    },
+    {
+      "name": "statement-en-mono",
+      "language": "en",
+      "format": "mono",
+      "pages": 1,
+      "bytes": 145688,
+      "reference": "HS-cd573541-2026-10-13-2026-10-13"
+    },
+    {
+      "name": "receipt-en-mono",
+      "language": "en",
+      "format": "mono",
+      "pages": 1,
+      "bytes": 141844,
+      "reference": "PR-4872aee3-d19c-410b-922c-b0be3e737054"
+    },
+    {
+      "name": "stock-report-en-mono",
+      "language": "en",
+      "format": "mono",
+      "pages": 1,
+      "bytes": 149496,
+      "reference": "STOCK-2026-10-13"
+    },
+    {
+      "name": "purchase-order-en-mono",
+      "language": "en",
+      "format": "mono",
+      "pages": 1,
+      "bytes": 144712,
+      "reference": "PO-6dbedce4-a0c6-48a5-8a0b-0af9203c4c61"
+    },
+    {
+      "name": "purchase-en-mono",
+      "language": "en",
+      "format": "mono",
+      "pages": 1,
+      "bytes": 144819,
+      "reference": "PUR-fc746c13-a205-41ad-8361-775f7b1930fb"
+    },
+    {
+      "name": "business-report-en-mono",
+      "language": "en",
+      "format": "mono",
+      "pages": 1,
+      "bytes": 145654,
+      "reference": "REPORT-2026-10-13-2026-10-13"
+    },
+    {
+      "name": "closing-en-mono",
+      "language": "en",
+      "format": "mono",
+      "pages": 4,
+      "bytes": 495849,
+      "reference": "DS-2026-10-13-bb044c"
+    },
+    {
+      "name": "closing-preview-en-mono",
+      "language": "en",
+      "format": "mono",
+      "pages": 4,
+      "bytes": 494913,
+      "reference": "PREVIEW-2026-10-13"
+    },
+    {
+      "name": "invoice-en-58mm",
+      "language": "en",
+      "format": "58mm",
+      "pages": 2,
+      "bytes": 258476,
+      "reference": "DS-00002"
+    },
+    {
+      "name": "statement-en-58mm",
+      "language": "en",
+      "format": "58mm",
+      "pages": 2,
+      "bytes": 254738,
+      "reference": "HS-cd573541-2026-10-13-2026-10-13"
+    },
+    {
+      "name": "receipt-en-58mm",
+      "language": "en",
+      "format": "58mm",
+      "pages": 1,
+      "bytes": 137960,
+      "reference": "PR-4872aee3-d19c-410b-922c-b0be3e737054"
+    },
+    {
+      "name": "stock-report-en-58mm",
+      "language": "en",
+      "format": "58mm",
+      "pages": 2,
+      "bytes": 258099,
+      "reference": "STOCK-2026-10-13"
+    },
+    {
+      "name": "purchase-order-en-58mm",
+      "language": "en",
+      "format": "58mm",
+      "pages": 1,
+      "bytes": 140116,
+      "reference": "PO-6dbedce4-a0c6-48a5-8a0b-0af9203c4c61"
+    },
+    {
+      "name": "purchase-en-58mm",
+      "language": "en",
+      "format": "58mm",
+      "pages": 2,
+      "bytes": 253972,
+      "reference": "PUR-fc746c13-a205-41ad-8361-775f7b1930fb"
+    },
+    {
+      "name": "business-report-en-58mm",
+      "language": "en",
+      "format": "58mm",
+      "pages": 1,
+      "bytes": 140179,
+      "reference": "REPORT-2026-10-13-2026-10-13"
+    },
+    {
+      "name": "closing-en-58mm",
+      "language": "en",
+      "format": "58mm",
+      "pages": 4,
+      "bytes": 490853,
+      "reference": "DS-2026-10-13-bb044c"
+    },
+    {
+      "name": "closing-preview-en-58mm",
+      "language": "en",
+      "format": "58mm",
+      "pages": 4,
+      "bytes": 490032,
+      "reference": "PREVIEW-2026-10-13"
+    },
+    {
+      "name": "invoice-en-80mm",
+      "language": "en",
+      "format": "80mm",
+      "pages": 2,
+      "bytes": 258364,
+      "reference": "DS-00002"
+    },
+    {
+      "name": "statement-en-80mm",
+      "language": "en",
+      "format": "80mm",
+      "pages": 2,
+      "bytes": 254720,
+      "reference": "HS-cd573541-2026-10-13-2026-10-13"
+    },
+    {
+      "name": "receipt-en-80mm",
+      "language": "en",
+      "format": "80mm",
+      "pages": 1,
+      "bytes": 137921,
+      "reference": "PR-4872aee3-d19c-410b-922c-b0be3e737054"
+    },
+    {
+      "name": "stock-report-en-80mm",
+      "language": "en",
+      "format": "80mm",
+      "pages": 2,
+      "bytes": 258113,
+      "reference": "STOCK-2026-10-13"
+    },
+    {
+      "name": "purchase-order-en-80mm",
+      "language": "en",
+      "format": "80mm",
+      "pages": 1,
+      "bytes": 140054,
+      "reference": "PO-6dbedce4-a0c6-48a5-8a0b-0af9203c4c61"
+    },
+    {
+      "name": "purchase-en-80mm",
+      "language": "en",
+      "format": "80mm",
+      "pages": 1,
+      "bytes": 140432,
+      "reference": "PUR-fc746c13-a205-41ad-8361-775f7b1930fb"
+    },
+    {
+      "name": "business-report-en-80mm",
+      "language": "en",
+      "format": "80mm",
+      "pages": 1,
+      "bytes": 140185,
+      "reference": "REPORT-2026-10-13-2026-10-13"
+    },
+    {
+      "name": "closing-en-80mm",
+      "language": "en",
+      "format": "80mm",
+      "pages": 3,
+      "bytes": 376989,
+      "reference": "DS-2026-10-13-bb044c"
+    },
+    {
+      "name": "closing-preview-en-80mm",
+      "language": "en",
+      "format": "80mm",
+      "pages": 3,
+      "bytes": 376100,
+      "reference": "PREVIEW-2026-10-13"
+    },
+    {
+      "name": "invoice-hi-a4",
+      "language": "hi",
+      "format": "a4",
+      "pages": 1,
+      "bytes": 229707,
+      "reference": "DS-00002"
+    },
+    {
+      "name": "statement-hi-a4",
+      "language": "hi",
+      "format": "a4",
+      "pages": 1,
+      "bytes": 225319,
+      "reference": "HS-cd573541-2026-10-13-2026-10-13"
+    },
+    {
+      "name": "receipt-hi-a4",
+      "language": "hi",
+      "format": "a4",
+      "pages": 1,
+      "bytes": 222004,
+      "reference": "PR-4872aee3-d19c-410b-922c-b0be3e737054"
+    },
+    {
+      "name": "stock-report-hi-a4",
+      "language": "hi",
+      "format": "a4",
+      "pages": 1,
+      "bytes": 228208,
+      "reference": "STOCK-2026-10-13"
+    },
+    {
+      "name": "purchase-order-hi-a4",
+      "language": "hi",
+      "format": "a4",
+      "pages": 1,
+      "bytes": 225902,
+      "reference": "PO-6dbedce4-a0c6-48a5-8a0b-0af9203c4c61"
+    },
+    {
+      "name": "purchase-hi-a4",
+      "language": "hi",
+      "format": "a4",
+      "pages": 1,
+      "bytes": 226980,
+      "reference": "PUR-fc746c13-a205-41ad-8361-775f7b1930fb"
+    },
+    {
+      "name": "business-report-hi-a4",
+      "language": "hi",
+      "format": "a4",
+      "pages": 1,
+      "bytes": 226667,
+      "reference": "REPORT-2026-10-13-2026-10-13"
+    },
+    {
+      "name": "closing-hi-a4",
+      "language": "hi",
+      "format": "a4",
+      "pages": 4,
+      "bytes": 813962,
+      "reference": "DS-2026-10-13-bb044c"
+    },
+    {
+      "name": "closing-preview-hi-a4",
+      "language": "hi",
+      "format": "a4",
+      "pages": 4,
+      "bytes": 812255,
+      "reference": "PREVIEW-2026-10-13"
+    },
+    {
+      "name": "invoice-hi-mono",
+      "language": "hi",
+      "format": "mono",
+      "pages": 1,
+      "bytes": 151506,
+      "reference": "DS-00002"
+    },
+    {
+      "name": "statement-hi-mono",
+      "language": "hi",
+      "format": "mono",
+      "pages": 1,
+      "bytes": 147119,
+      "reference": "HS-cd573541-2026-10-13-2026-10-13"
+    },
+    {
+      "name": "receipt-hi-mono",
+      "language": "hi",
+      "format": "mono",
+      "pages": 1,
+      "bytes": 143833,
+      "reference": "PR-4872aee3-d19c-410b-922c-b0be3e737054"
+    },
+    {
+      "name": "stock-report-hi-mono",
+      "language": "hi",
+      "format": "mono",
+      "pages": 1,
+      "bytes": 150020,
+      "reference": "STOCK-2026-10-13"
+    },
+    {
+      "name": "purchase-order-hi-mono",
+      "language": "hi",
+      "format": "mono",
+      "pages": 1,
+      "bytes": 147704,
+      "reference": "PO-6dbedce4-a0c6-48a5-8a0b-0af9203c4c61"
+    },
+    {
+      "name": "purchase-hi-mono",
+      "language": "hi",
+      "format": "mono",
+      "pages": 1,
+      "bytes": 148795,
+      "reference": "PUR-fc746c13-a205-41ad-8361-775f7b1930fb"
+    },
+    {
+      "name": "business-report-hi-mono",
+      "language": "hi",
+      "format": "mono",
+      "pages": 1,
+      "bytes": 148471,
+      "reference": "REPORT-2026-10-13-2026-10-13"
+    },
+    {
+      "name": "closing-hi-mono",
+      "language": "hi",
+      "format": "mono",
+      "pages": 4,
+      "bytes": 501286,
+      "reference": "DS-2026-10-13-bb044c"
+    },
+    {
+      "name": "closing-preview-hi-mono",
+      "language": "hi",
+      "format": "mono",
+      "pages": 4,
+      "bytes": 499576,
+      "reference": "PREVIEW-2026-10-13"
+    },
+    {
+      "name": "invoice-hi-58mm",
+      "language": "hi",
+      "format": "58mm",
+      "pages": 2,
+      "bytes": 260130,
+      "reference": "DS-00002"
+    },
+    {
+      "name": "statement-hi-58mm",
+      "language": "hi",
+      "format": "58mm",
+      "pages": 2,
+      "bytes": 255951,
+      "reference": "HS-cd573541-2026-10-13-2026-10-13"
+    },
+    {
+      "name": "receipt-hi-58mm",
+      "language": "hi",
+      "format": "58mm",
+      "pages": 1,
+      "bytes": 138772,
+      "reference": "PR-4872aee3-d19c-410b-922c-b0be3e737054"
+    },
+    {
+      "name": "stock-report-hi-58mm",
+      "language": "hi",
+      "format": "58mm",
+      "pages": 2,
+      "bytes": 258821,
+      "reference": "STOCK-2026-10-13"
+    },
+    {
+      "name": "purchase-order-hi-58mm",
+      "language": "hi",
+      "format": "58mm",
+      "pages": 1,
+      "bytes": 142468,
+      "reference": "PO-6dbedce4-a0c6-48a5-8a0b-0af9203c4c61"
+    },
+    {
+      "name": "purchase-hi-58mm",
+      "language": "hi",
+      "format": "58mm",
+      "pages": 2,
+      "bytes": 257170,
+      "reference": "PUR-fc746c13-a205-41ad-8361-775f7b1930fb"
+    },
+    {
+      "name": "business-report-hi-58mm",
+      "language": "hi",
+      "format": "58mm",
+      "pages": 1,
+      "bytes": 143243,
+      "reference": "REPORT-2026-10-13-2026-10-13"
+    },
+    {
+      "name": "closing-hi-58mm",
+      "language": "hi",
+      "format": "58mm",
+      "pages": 4,
+      "bytes": 495460,
+      "reference": "DS-2026-10-13-bb044c"
+    },
+    {
+      "name": "closing-preview-hi-58mm",
+      "language": "hi",
+      "format": "58mm",
+      "pages": 4,
+      "bytes": 493624,
+      "reference": "PREVIEW-2026-10-13"
+    },
+    {
+      "name": "invoice-hi-80mm",
+      "language": "hi",
+      "format": "80mm",
+      "pages": 2,
+      "bytes": 260059,
+      "reference": "DS-00002"
+    },
+    {
+      "name": "statement-hi-80mm",
+      "language": "hi",
+      "format": "80mm",
+      "pages": 2,
+      "bytes": 255961,
+      "reference": "HS-cd573541-2026-10-13-2026-10-13"
+    },
+    {
+      "name": "receipt-hi-80mm",
+      "language": "hi",
+      "format": "80mm",
+      "pages": 1,
+      "bytes": 138741,
+      "reference": "PR-4872aee3-d19c-410b-922c-b0be3e737054"
+    },
+    {
+      "name": "stock-report-hi-80mm",
+      "language": "hi",
+      "format": "80mm",
+      "pages": 2,
+      "bytes": 258872,
+      "reference": "STOCK-2026-10-13"
+    },
+    {
+      "name": "purchase-order-hi-80mm",
+      "language": "hi",
+      "format": "80mm",
+      "pages": 1,
+      "bytes": 142446,
+      "reference": "PO-6dbedce4-a0c6-48a5-8a0b-0af9203c4c61"
+    },
+    {
+      "name": "purchase-hi-80mm",
+      "language": "hi",
+      "format": "80mm",
+      "pages": 1,
+      "bytes": 143560,
+      "reference": "PUR-fc746c13-a205-41ad-8361-775f7b1930fb"
+    },
+    {
+      "name": "business-report-hi-80mm",
+      "language": "hi",
+      "format": "80mm",
+      "pages": 1,
+      "bytes": 143271,
+      "reference": "REPORT-2026-10-13-2026-10-13"
+    },
+    {
+      "name": "closing-hi-80mm",
+      "language": "hi",
+      "format": "80mm",
+      "pages": 3,
+      "bytes": 381658,
+      "reference": "DS-2026-10-13-bb044c"
+    },
+    {
+      "name": "closing-preview-hi-80mm",
+      "language": "hi",
+      "format": "80mm",
+      "pages": 3,
+      "bytes": 379721,
+      "reference": "PREVIEW-2026-10-13"
+    },
+    {
+      "name": "invoice-hinglish-a4",
+      "language": "hinglish",
+      "format": "a4",
+      "pages": 1,
+      "bytes": 227488,
+      "reference": "DS-00002"
+    },
+    {
+      "name": "statement-hinglish-a4",
+      "language": "hinglish",
+      "format": "a4",
+      "pages": 1,
+      "bytes": 223784,
+      "reference": "HS-cd573541-2026-10-13-2026-10-13"
+    },
+    {
+      "name": "receipt-hinglish-a4",
+      "language": "hinglish",
+      "format": "a4",
+      "pages": 1,
+      "bytes": 219852,
+      "reference": "PR-4872aee3-d19c-410b-922c-b0be3e737054"
+    },
+    {
+      "name": "stock-report-hinglish-a4",
+      "language": "hinglish",
+      "format": "a4",
+      "pages": 1,
+      "bytes": 227419,
+      "reference": "STOCK-2026-10-13"
+    },
+    {
+      "name": "purchase-order-hinglish-a4",
+      "language": "hinglish",
+      "format": "a4",
+      "pages": 1,
+      "bytes": 223971,
+      "reference": "PO-6dbedce4-a0c6-48a5-8a0b-0af9203c4c61"
+    },
+    {
+      "name": "purchase-hinglish-a4",
+      "language": "hinglish",
+      "format": "a4",
+      "pages": 1,
+      "bytes": 223540,
+      "reference": "PUR-fc746c13-a205-41ad-8361-775f7b1930fb"
+    },
+    {
+      "name": "business-report-hinglish-a4",
+      "language": "hinglish",
+      "format": "a4",
+      "pages": 1,
+      "bytes": 223844,
+      "reference": "REPORT-2026-10-13-2026-10-13"
+    },
+    {
+      "name": "closing-hinglish-a4",
+      "language": "hinglish",
+      "format": "a4",
+      "pages": 4,
+      "bytes": 808480,
+      "reference": "DS-2026-10-13-bb044c"
+    },
+    {
+      "name": "closing-preview-hinglish-a4",
+      "language": "hinglish",
+      "format": "a4",
+      "pages": 4,
+      "bytes": 807785,
+      "reference": "PREVIEW-2026-10-13"
+    },
+    {
+      "name": "invoice-hinglish-mono",
+      "language": "hinglish",
+      "format": "mono",
+      "pages": 1,
+      "bytes": 149294,
+      "reference": "DS-00002"
+    },
+    {
+      "name": "statement-hinglish-mono",
+      "language": "hinglish",
+      "format": "mono",
+      "pages": 1,
+      "bytes": 145590,
+      "reference": "HS-cd573541-2026-10-13-2026-10-13"
+    },
+    {
+      "name": "receipt-hinglish-mono",
+      "language": "hinglish",
+      "format": "mono",
+      "pages": 1,
+      "bytes": 141683,
+      "reference": "PR-4872aee3-d19c-410b-922c-b0be3e737054"
+    },
+    {
+      "name": "stock-report-hinglish-mono",
+      "language": "hinglish",
+      "format": "mono",
+      "pages": 1,
+      "bytes": 149228,
+      "reference": "STOCK-2026-10-13"
+    },
+    {
+      "name": "purchase-order-hinglish-mono",
+      "language": "hinglish",
+      "format": "mono",
+      "pages": 1,
+      "bytes": 145771,
+      "reference": "PO-6dbedce4-a0c6-48a5-8a0b-0af9203c4c61"
+    },
+    {
+      "name": "purchase-hinglish-mono",
+      "language": "hinglish",
+      "format": "mono",
+      "pages": 1,
+      "bytes": 145353,
+      "reference": "PUR-fc746c13-a205-41ad-8361-775f7b1930fb"
+    },
+    {
+      "name": "business-report-hinglish-mono",
+      "language": "hinglish",
+      "format": "mono",
+      "pages": 1,
+      "bytes": 145648,
+      "reference": "REPORT-2026-10-13-2026-10-13"
+    },
+    {
+      "name": "closing-hinglish-mono",
+      "language": "hinglish",
+      "format": "mono",
+      "pages": 4,
+      "bytes": 495813,
+      "reference": "DS-2026-10-13-bb044c"
+    },
+    {
+      "name": "closing-preview-hinglish-mono",
+      "language": "hinglish",
+      "format": "mono",
+      "pages": 4,
+      "bytes": 495116,
+      "reference": "PREVIEW-2026-10-13"
+    },
+    {
+      "name": "invoice-hinglish-58mm",
+      "language": "hinglish",
+      "format": "58mm",
+      "pages": 2,
+      "bytes": 257557,
+      "reference": "DS-00002"
+    },
+    {
+      "name": "statement-hinglish-58mm",
+      "language": "hinglish",
+      "format": "58mm",
+      "pages": 2,
+      "bytes": 253532,
+      "reference": "HS-cd573541-2026-10-13-2026-10-13"
+    },
+    {
+      "name": "receipt-hinglish-58mm",
+      "language": "hinglish",
+      "format": "58mm",
+      "pages": 1,
+      "bytes": 136676,
+      "reference": "PR-4872aee3-d19c-410b-922c-b0be3e737054"
+    },
+    {
+      "name": "stock-report-hinglish-58mm",
+      "language": "hinglish",
+      "format": "58mm",
+      "pages": 2,
+      "bytes": 257712,
+      "reference": "STOCK-2026-10-13"
+    },
+    {
+      "name": "purchase-order-hinglish-58mm",
+      "language": "hinglish",
+      "format": "58mm",
+      "pages": 1,
+      "bytes": 140356,
+      "reference": "PO-6dbedce4-a0c6-48a5-8a0b-0af9203c4c61"
+    },
+    {
+      "name": "purchase-hinglish-58mm",
+      "language": "hinglish",
+      "format": "58mm",
+      "pages": 2,
+      "bytes": 253274,
+      "reference": "PUR-fc746c13-a205-41ad-8361-775f7b1930fb"
+    },
+    {
+      "name": "business-report-hinglish-58mm",
+      "language": "hinglish",
+      "format": "58mm",
+      "pages": 1,
+      "bytes": 140373,
+      "reference": "REPORT-2026-10-13-2026-10-13"
+    },
+    {
+      "name": "closing-hinglish-58mm",
+      "language": "hinglish",
+      "format": "58mm",
+      "pages": 4,
+      "bytes": 489845,
+      "reference": "DS-2026-10-13-bb044c"
+    },
+    {
+      "name": "closing-preview-hinglish-58mm",
+      "language": "hinglish",
+      "format": "58mm",
+      "pages": 4,
+      "bytes": 489189,
+      "reference": "PREVIEW-2026-10-13"
+    },
+    {
+      "name": "invoice-hinglish-80mm",
+      "language": "hinglish",
+      "format": "80mm",
+      "pages": 2,
+      "bytes": 257385,
+      "reference": "DS-00002"
+    },
+    {
+      "name": "statement-hinglish-80mm",
+      "language": "hinglish",
+      "format": "80mm",
+      "pages": 2,
+      "bytes": 253530,
+      "reference": "HS-cd573541-2026-10-13-2026-10-13"
+    },
+    {
+      "name": "receipt-hinglish-80mm",
+      "language": "hinglish",
+      "format": "80mm",
+      "pages": 1,
+      "bytes": 136626,
+      "reference": "PR-4872aee3-d19c-410b-922c-b0be3e737054"
+    },
+    {
+      "name": "stock-report-hinglish-80mm",
+      "language": "hinglish",
+      "format": "80mm",
+      "pages": 2,
+      "bytes": 257679,
+      "reference": "STOCK-2026-10-13"
+    },
+    {
+      "name": "purchase-order-hinglish-80mm",
+      "language": "hinglish",
+      "format": "80mm",
+      "pages": 1,
+      "bytes": 140310,
+      "reference": "PO-6dbedce4-a0c6-48a5-8a0b-0af9203c4c61"
+    },
+    {
+      "name": "purchase-hinglish-80mm",
+      "language": "hinglish",
+      "format": "80mm",
+      "pages": 1,
+      "bytes": 139692,
+      "reference": "PUR-fc746c13-a205-41ad-8361-775f7b1930fb"
+    },
+    {
+      "name": "business-report-hinglish-80mm",
+      "language": "hinglish",
+      "format": "80mm",
+      "pages": 1,
+      "bytes": 140376,
+      "reference": "REPORT-2026-10-13-2026-10-13"
+    },
+    {
+      "name": "closing-hinglish-80mm",
+      "language": "hinglish",
+      "format": "80mm",
+      "pages": 3,
+      "bytes": 376090,
+      "reference": "DS-2026-10-13-bb044c"
+    },
+    {
+      "name": "closing-preview-hinglish-80mm",
+      "language": "hinglish",
+      "format": "80mm",
+      "pages": 3,
+      "bytes": 375327,
+      "reference": "PREVIEW-2026-10-13"
+    },
+    {
+      "name": "multipage-en-a4",
+      "language": "en",
+      "format": "a4",
+      "pages": 7,
+      "bytes": 1387456,
+      "reference": "DS-00002"
+    },
+    {
+      "name": "multipage-hi-a4",
+      "language": "hi",
+      "format": "a4",
+      "pages": 7,
+      "bytes": 1391065,
+      "reference": "DS-00002"
+    },
+    {
+      "name": "multipage-hinglish-a4",
+      "language": "hinglish",
+      "format": "a4",
+      "pages": 7,
+      "bytes": 1387230,
+      "reference": "DS-00002"
+    }
+  ]
+}

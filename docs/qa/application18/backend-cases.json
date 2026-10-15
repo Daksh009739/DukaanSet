@@ -1,0 +1,1719 @@
+{
+  "tests": 428,
+  "passed": 428,
+  "failed": 0,
+  "cases": [
+    {
+      "title": "minor-unit arithmetic rounds half up using integer multiplication",
+      "status": "passed"
+    },
+    {
+      "title": "a bill atomically records snapshot, payment, inventory movement, audit and discount",
+      "status": "passed"
+    },
+    {
+      "title": "insufficient stock or bad cross-tenant line leaves every ledger unchanged",
+      "status": "passed"
+    },
+    {
+      "title": "idempotency retries preserve inventory and payload changes are refused",
+      "status": "passed"
+    },
+    {
+      "title": "contact retries keep one identity and audit while separate keys allow deliberate duplicates",
+      "status": "passed"
+    },
+    {
+      "title": "stock retries record one movement and audit while binding the request payload",
+      "status": "passed"
+    },
+    {
+      "title": "expense retries survive closing without double posting cash or audit",
+      "status": "passed"
+    },
+    {
+      "title": "piece stock cannot be sold fractionally, and credit requires a customer",
+      "status": "passed"
+    },
+    {
+      "title": "the UI's piece unit rejects fractional opening stock, sales, changes and purchases",
+      "status": "passed"
+    },
+    {
+      "title": "repayment allocates oldest credit, preserves balances and rejects overpayment",
+      "status": "passed"
+    },
+    {
+      "title": "cancellation restores stock and refunds once while preserving history",
+      "status": "passed"
+    },
+    {
+      "title": "cancelling a partial cash bill removes credit and closing uses the signed net refund",
+      "status": "passed"
+    },
+    {
+      "title": "purchases receive stock and supplier credit atomically, with duplicate protection",
+      "status": "passed"
+    },
+    {
+      "title": "closing reconciles cash sales, refunds, cash expenses and paid purchases",
+      "status": "passed"
+    },
+    {
+      "title": "business-day boundaries follow India midnight rather than UTC midnight",
+      "status": "passed"
+    },
+    {
+      "title": "membership scope prevents cross-business state, product, customer and exports",
+      "status": "passed"
+    },
+    {
+      "title": "real cookie authentication, logout and CSRF are enforced by the route",
+      "status": "passed"
+    },
+    {
+      "title": "CSRF binds normalized Next URLs to the actual Host and rejects foreign or spoofed origins",
+      "status": "passed"
+    },
+    {
+      "title": "session cookies are always Secure in production and on HTTPS",
+      "status": "passed"
+    },
+    {
+      "title": "demo sessions own separate fictional businesses and inventory",
+      "status": "passed"
+    },
+    {
+      "title": "demo snapshots reconcile dated stock movements, payments and localized task data",
+      "status": "passed"
+    },
+    {
+      "title": "business records and hashed sessions survive database reopen",
+      "status": "passed"
+    },
+    {
+      "title": "V1 file migration preserves merchant ledgers, sessions and product stock across reopen",
+      "status": "passed"
+    },
+    {
+      "title": "fashion split sale records two receipts, exact credit and stock once",
+      "status": "passed"
+    },
+    {
+      "title": "split cancellation refunds each original method once and closing counts cash only",
+      "status": "passed"
+    },
+    {
+      "title": "invalid split receipts fail before any sale or stock mutation",
+      "status": "passed"
+    },
+    {
+      "title": "product edit preserves invoice snapshots, permits ambiguous aliases and locks historical units",
+      "status": "passed"
+    },
+    {
+      "title": "stock batch commits all rows, exact compatible conversions and history once",
+      "status": "passed"
+    },
+    {
+      "title": "batch failures roll back all rows and reject incompatible or imprecise quantities",
+      "status": "passed"
+    },
+    {
+      "title": "secure photos validate real bytes, enforce tenant and product scope, and lock after invoice save",
+      "status": "passed"
+    },
+    {
+      "title": "demo reset is transactional, retains session/language/business IDs and never deletes real records",
+      "status": "passed"
+    },
+    {
+      "title": "customer aggregates and complete statements remain accurate past the recent 1000-record view",
+      "status": "passed"
+    },
+    {
+      "title": "daily and lifetime expense/purchase aggregates ignore recent-history caps",
+      "status": "passed"
+    },
+    {
+      "title": "daily old-dues aggregate counts repayments against prior India business days",
+      "status": "passed"
+    },
+    {
+      "title": "V2 writes and demo reset require cookie, same origin and correct scope over HTTP",
+      "status": "passed"
+    },
+    {
+      "title": "domain errors survive module identity changes while unbranded errors stay private",
+      "status": "passed"
+    },
+    {
+      "title": "private backup CLI preserves WAL ledger history and original scan evidence across restore",
+      "status": "passed"
+    },
+    {
+      "title": "backup refuses a missing source and never fabricates a successful backup file",
+      "status": "passed"
+    },
+    {
+      "title": "all supported categories onboard with three business fields and keep existing account security",
+      "status": "passed"
+    },
+    {
+      "title": "category and optional tools update atomically without rewriting historical financial records",
+      "status": "passed"
+    },
+    {
+      "title": "recorded orders, table labels and status retries never generate sales, receipts or stock movements",
+      "status": "passed"
+    },
+    {
+      "title": "appointments check overlap in shop timezone and allow an adjacent slot or a cancelled slot",
+      "status": "passed"
+    },
+    {
+      "title": "disabling and re-enabling a category tool retains records and unique customer IDs",
+      "status": "passed"
+    },
+    {
+      "title": "activities and services enforce business scope, customer scope, permissions and revoked retry access",
+      "status": "passed"
+    },
+    {
+      "title": "service invoices reuse receipt, rounding and cancellation workflows without creating stock",
+      "status": "passed"
+    },
+    {
+      "title": "mixed service and goods invoices deduct and restore only the physical goods",
+      "status": "passed"
+    },
+    {
+      "title": "services reject stock receipts, stock correction, purchases and conversion into tracked goods",
+      "status": "passed"
+    },
+    {
+      "title": "new service snapshots remain stock-free after catalogue edits and regular history stays immutable",
+      "status": "passed"
+    },
+    {
+      "title": "Ask My Shop keeps recorded sales, manual UPI receipts and provider-verified collections distinct",
+      "status": "passed"
+    },
+    {
+      "title": "growth summaries hide disallowed balances and payments rather than inventing zero",
+      "status": "passed"
+    },
+    {
+      "title": "test collections are visibly labelled and qualified activity questions never receive aggregate counts",
+      "status": "passed"
+    },
+    {
+      "title": "cancellation migration recovers the actual audited event without changing original payment history",
+      "status": "passed"
+    },
+    {
+      "title": "business-aware voice recognises three languages, preserves sale commands and labels unsupported tools",
+      "status": "passed"
+    },
+    {
+      "title": "counts are complete beyond the 500-row list limit and cancelled activities are excluded",
+      "status": "passed"
+    },
+    {
+      "title": "trust reports genuine permissions, server response and unknown backup and checkout states",
+      "status": "passed"
+    },
+    {
+      "title": "referral retries reuse an opaque scoped link and private feedback records explicit publication permission",
+      "status": "passed"
+    },
+    {
+      "title": "demo activity reset stays isolated and does not leak sample records or invite links to real accounts",
+      "status": "passed"
+    },
+    {
+      "title": "a genuine invite attributes only the new account and grants no money, membership or entitlement",
+      "status": "passed"
+    },
+    {
+      "title": "growth endpoints require authentication, same-origin confirmation, membership and permission",
+      "status": "passed"
+    },
+    {
+      "title": "schema 17 migration preserves legacy goods, invoice snapshots, payment amounts and timestamps",
+      "status": "passed"
+    },
+    {
+      "title": "money parser preserves decimal places including pasted whitespace",
+      "status": "passed"
+    },
+    {
+      "title": "signed corrections trim before detecting the sign",
+      "status": "passed"
+    },
+    {
+      "title": "money parser rejects exponential, overprecision, nonnumbers and unsupported limits",
+      "status": "passed"
+    },
+    {
+      "title": "500 grams uses exact half-up paise rounding",
+      "status": "passed"
+    },
+    {
+      "title": "India business day includes early-morning UTC entries and crosses midnight correctly",
+      "status": "passed"
+    },
+    {
+      "title": "real transaction fixture reconciles the requested 11,000 / 10,500 / 3,500 / 6,700 example",
+      "status": "passed"
+    },
+    {
+      "title": "stale preview rejects changed receipts and split payments are counted once",
+      "status": "passed"
+    },
+    {
+      "title": "uncounted close, explicit next session and cash revisions preserve original financial snapshot",
+      "status": "passed"
+    },
+    {
+      "title": "supplier UPI allocations reduce payable without touching cash and deposits are not sales",
+      "status": "passed"
+    },
+    {
+      "title": "cancellation events keep sales, refunds and historical receivables distinct",
+      "status": "passed"
+    },
+    {
+      "title": "timezone cutoff handles after-midnight and DST offsets, and unsafe sums fail",
+      "status": "passed"
+    },
+    {
+      "title": "manager needs explicit closing grant and other businesses cannot read reports",
+      "status": "passed"
+    },
+    {
+      "title": "durable automatic queue survives restart and never invents a cash count",
+      "status": "passed"
+    },
+    {
+      "title": "dashboard and closing totals use the same server calculation",
+      "status": "passed"
+    },
+    {
+      "title": "failed automatic work backs off, survives restart and finalizes once after recovery",
+      "status": "passed"
+    },
+    {
+      "title": "owner schedule changes retime durable work and enabling on an empty shop creates a session",
+      "status": "passed"
+    },
+    {
+      "title": "closed calculations are frozen and late corrections link a tenant-scoped source without double counting",
+      "status": "passed"
+    },
+    {
+      "title": "legacy cash-only closings remain visible and permit an explicit same-day next session",
+      "status": "passed"
+    },
+    {
+      "title": "closing demo seeds authoritative isolated records and reset preserves other accounts",
+      "status": "passed"
+    },
+    {
+      "title": "current-sale repayments reconcile customer dues and closed preview ignores later catalogue edits",
+      "status": "passed"
+    },
+    {
+      "title": "dedicated histories paginate complete records and reject other-business identities",
+      "status": "passed"
+    },
+    {
+      "title": "closing voice commands prepare review or history and cash questions use recorded drawer data",
+      "status": "passed"
+    },
+    {
+      "title": "global explicit intents override page context and create/customer bill priorities",
+      "status": "passed"
+    },
+    {
+      "title": "multi-turn sale preserves customer, associates a total with quantity and asks for payment",
+      "status": "passed"
+    },
+    {
+      "title": "complete sale and split credit never invent payment methods",
+      "status": "passed"
+    },
+    {
+      "title": "dependent customer and invoice roll back as one transaction and replay only once",
+      "status": "passed"
+    },
+    {
+      "title": "stock automatically drafts absent products, exact aliases and adjacent quantities",
+      "status": "passed"
+    },
+    {
+      "title": "stock selling and purchase prices remain separate, ambiguous amounts need clarification",
+      "status": "passed"
+    },
+    {
+      "title": "stock follow-up quantity and price edits replace the same draft row",
+      "status": "passed"
+    },
+    {
+      "title": "one stock commit returns real creation counts and price snapshots; failure rolls everything back",
+      "status": "passed"
+    },
+    {
+      "title": "commit-time alias collisions and stale price changes cannot create duplicates or overwrite prices",
+      "status": "passed"
+    },
+    {
+      "title": "sale corrections preserve the old rate and require an inconsistent total to be clarified",
+      "status": "passed"
+    },
+    {
+      "title": "multi-product sale rates stay with each item and payment remains unspecified",
+      "status": "passed"
+    },
+    {
+      "title": "punctuated stock corrections, mixed units and sacks preserve their own quantities",
+      "status": "passed"
+    },
+    {
+      "title": "rates convert exactly to the catalogue unit; backend still enforces conversion permission",
+      "status": "passed"
+    },
+    {
+      "title": "recovery validates action paths, schema and expiry while retaining uncertain retries",
+      "status": "passed"
+    },
+    {
+      "title": "selling totals, purchase totals and independently spoken rate units retain exact values",
+      "status": "passed"
+    },
+    {
+      "title": "stock quantity corrections rederive an explicit batch cost in catalogue units",
+      "status": "passed"
+    },
+    {
+      "title": "original customer names and supplier payments use explicit write requests",
+      "status": "passed"
+    },
+    {
+      "title": "stock price metadata cannot redirect a global add command to sales or purchases",
+      "status": "passed"
+    },
+    {
+      "title": "choosing a catalogue match converts the reviewed draft rates without mutating its old values",
+      "status": "passed"
+    },
+    {
+      "title": "canonical aliases within a batch create one product and sum purchase cost snapshots",
+      "status": "passed"
+    },
+    {
+      "title": "week/month/year are real calendar aggregations and exclude cancelled sales",
+      "status": "passed"
+    },
+    {
+      "title": "product ranking uses revenue share across unlike units and excludes cancelled and out-of-period bills",
+      "status": "passed"
+    },
+    {
+      "title": "server chart and product totals include invoices beyond the visible 1000-row list",
+      "status": "passed"
+    },
+    {
+      "title": "gateway fails closed for wrong branches, missing secrets, production credentials and proxy loops",
+      "status": "passed"
+    },
+    {
+      "title": "backend checks require isolated durable storage, matching auth origins and real email configuration",
+      "status": "passed"
+    },
+    {
+      "title": "gateway covers pages, APIs and assets without shipping SQLite functions or secrets",
+      "status": "passed"
+    },
+    {
+      "title": "a backend cannot claim staging readiness using a local or production static-page build",
+      "status": "passed"
+    },
+    {
+      "title": "gateway readiness verifies backend commit, environment, origin and rejects redirected token requests",
+      "status": "passed"
+    },
+    {
+      "title": "explicit proxy origin permits same-site HTTPS posts without trusting forwarding headers",
+      "status": "passed"
+    },
+    {
+      "title": "health reveals no data; build details require an owner session or a narrowly scoped deployment token",
+      "status": "passed"
+    },
+    {
+      "title": "the default SQLite runtime refuses accidental Vercel execution",
+      "status": "passed"
+    },
+    {
+      "title": "image upload retains original bytes privately and deduplicates identical pixels despite metadata changes",
+      "status": "passed"
+    },
+    {
+      "title": "wrong formats, damaged images and cross-business evidence reads fail without creating records",
+      "status": "passed"
+    },
+    {
+      "title": "configured image extraction is consented, cached and read-only; mixed-language evidence stays unchanged",
+      "status": "passed"
+    },
+    {
+      "title": "unsupported numeric or product-name evidence fails closed instead of inventing a draft",
+      "status": "passed"
+    },
+    {
+      "title": "unreadable documents have no invented rows or financial changes and allow explicit manual review",
+      "status": "passed"
+    },
+    {
+      "title": "stock preview is pure and one confirmed multi-row receipt never double-increments on retries or reupload",
+      "status": "passed"
+    },
+    {
+      "title": "stock changes or a changed reviewed payload cannot bypass final preview and idempotency",
+      "status": "passed"
+    },
+    {
+      "title": "unknown rate meanings, repeated rows, invalid units and incorrect quantities require correction",
+      "status": "passed"
+    },
+    {
+      "title": "new stock items are created once and a duplicate catalogue conflict rolls back the whole receipt",
+      "status": "passed"
+    },
+    {
+      "title": "photo sales remain unpaid, use the selected unique customer and preserve source dates separately",
+      "status": "passed"
+    },
+    {
+      "title": "supplier purchase imports use existing receipt rules, create no payment, and require a selected supplier",
+      "status": "passed"
+    },
+    {
+      "title": "tax and purchase discount evidence cannot silently create another total or an inferred payment",
+      "status": "passed"
+    },
+    {
+      "title": "rephotographed bill references and identical extracted evidence cannot create a second financial record",
+      "status": "passed"
+    },
+    {
+      "title": "revoked permissions and business scope apply to saved retries and financial type changes",
+      "status": "passed"
+    },
+    {
+      "title": "image endpoints enforce same-origin upload and serve originals privately with no provider secrets",
+      "status": "passed"
+    },
+    {
+      "title": "display-language conversion preserves product IDs and source evidence",
+      "status": "passed"
+    },
+    {
+      "title": "business health uses recorded historical windows, labels a missing baseline and never changes records",
+      "status": "passed"
+    },
+    {
+      "title": "health questions are immediate read-only reports and closing commands retain confirmation review",
+      "status": "passed"
+    },
+    {
+      "title": "concurrent extraction leases make one provider call and failed providers leave finances untouched",
+      "status": "passed"
+    },
+    {
+      "title": "identical extracted text from different images blocks a second stock entry",
+      "status": "passed"
+    },
+    {
+      "title": "bill failure rolls back new catalogue entries and physical services cannot be received",
+      "status": "passed"
+    },
+    {
+      "title": "saved bill evidence is discoverable only for its authorised business and record",
+      "status": "passed"
+    },
+    {
+      "title": "business health enforces membership and report permissions without leaking another business",
+      "status": "passed"
+    },
+    {
+      "title": "stock previews match selling-price effects and declining a price update preserves current prices",
+      "status": "passed"
+    },
+    {
+      "title": "autopilot outstanding-bill action includes partial and unpaid balances, excluding paid and cancelled bills",
+      "status": "passed"
+    },
+    {
+      "title": "health and touch priorities work with voice entry disabled while assistant permission remains enforced",
+      "status": "passed"
+    },
+    {
+      "title": "invoice snapshots preserve merchant/customer, source values and issue payments after collection",
+      "status": "passed"
+    },
+    {
+      "title": "statement opening, India date boundary, cancellation and refund reconcile once",
+      "status": "passed"
+    },
+    {
+      "title": "one collection allocated across invoices produces one receipt without posting money",
+      "status": "passed"
+    },
+    {
+      "title": "server PDF formats and locales keep source totals, embedded fonts, cache and private expiry",
+      "status": "passed"
+    },
+    {
+      "title": "complete account queries pass the recent history cap and handle signed credit balances",
+      "status": "passed"
+    },
+    {
+      "title": "protected PDF routes enforce cookie, CSRF, roles and tenant ownership",
+      "status": "passed"
+    },
+    {
+      "title": "missing cancellation provenance is rejected and legacy branding is labelled honestly",
+      "status": "passed"
+    },
+    {
+      "title": "manual sharing is idempotent, masked, consent scoped and never claims delivered",
+      "status": "passed"
+    },
+    {
+      "title": "mock official adapter uploads the actual PDF, submits an approved template once, then accepts signed statuses",
+      "status": "passed"
+    },
+    {
+      "title": "uncertain provider submission blocks another copy even after PDF regeneration",
+      "status": "passed"
+    },
+    {
+      "title": "provider upload failures remain retryable failures",
+      "status": "passed"
+    },
+    {
+      "title": "VoiceOS prepares authorised documents in three languages and never posts financial events",
+      "status": "passed"
+    },
+    {
+      "title": "concurrent clicks reserve one submission and revoke permission during upload before messaging",
+      "status": "passed"
+    },
+    {
+      "title": "an unexpected exception after message submission remains uncertain rather than retryable",
+      "status": "passed"
+    },
+    {
+      "title": "signed webhook tenant/phone mismatches cannot update delivery and status timestamps settle equal ranks",
+      "status": "passed"
+    },
+    {
+      "title": "contact editing uses optimistic conflict checks, tenant roles and preserves issued snapshots",
+      "status": "passed"
+    },
+    {
+      "title": "concurrent generation retains one unchanged PDF and generated history respects document permissions",
+      "status": "passed"
+    },
+    {
+      "title": "receipt allocation aliases share one canonical source and cannot bypass pending-send protection",
+      "status": "passed"
+    },
+    {
+      "title": "all dictionaries and visible copy pass the release gate; injected defects fail it",
+      "status": "passed"
+    },
+    {
+      "title": "independent request engines never borrow another user language or fall back to English",
+      "status": "passed"
+    },
+    {
+      "title": "existing system messages change language while merchant names and exact values are retained",
+      "status": "passed"
+    },
+    {
+      "title": "India money, dates and units keep Latin digits with Hindi month names",
+      "status": "passed"
+    },
+    {
+      "title": "reviewed product display names are tenant scoped, searchable and preserve issued bill snapshots",
+      "status": "passed"
+    },
+    {
+      "title": "AI script guard preserves source names but rejects English prose for Hindi and Hinglish",
+      "status": "passed"
+    },
+    {
+      "title": "recorded financial answers use exact authorised SQL totals in all locales without calling an AI provider",
+      "status": "passed"
+    },
+    {
+      "title": "verification and reset messages use the saved profile language and retain trusted one-use URLs",
+      "status": "passed"
+    },
+    {
+      "title": "communication locale is explicit and never writes a contact attempt, sale or preference",
+      "status": "passed"
+    },
+    {
+      "title": "premium operational PDFs use complete scoped records and do not post financial events",
+      "status": "passed"
+    },
+    {
+      "title": "new PDF kinds enforce roles, tenant boundaries, source existence and date validation",
+      "status": "passed"
+    },
+    {
+      "title": "closing preview exports stay read-only and a closed session requires its saved report",
+      "status": "passed"
+    },
+    {
+      "title": "receipt account impact remains at payment time after a later bill is created",
+      "status": "passed"
+    },
+    {
+      "title": "split receipt balances exclude another payment recorded in the same millisecond",
+      "status": "passed"
+    },
+    {
+      "title": "payment staff can generate their scoped receipts without gaining statement access",
+      "status": "passed"
+    },
+    {
+      "title": "all locales and paper formats embed fonts, paginate and retain exact integer amounts",
+      "status": "passed"
+    },
+    {
+      "title": "authenticated operational download exposes PDF bytes and uses private cache headers",
+      "status": "passed"
+    },
+    {
+      "title": "verified produce aliases resolve without merging product types or branded variants",
+      "status": "passed"
+    },
+    {
+      "title": "rights and technical quality are mandatory, cooked foods and brand packaging never auto-attach",
+      "status": "passed"
+    },
+    {
+      "title": "remote URL policy rejects redirects, credentials, ports and all internal destinations",
+      "status": "passed"
+    },
+    {
+      "title": "stream limits stop oversized chunked and declared downloads",
+      "status": "passed"
+    },
+    {
+      "title": "creation queues durable enrichment without delaying product or stock commit; provider failure is independent",
+      "status": "passed"
+    },
+    {
+      "title": "licensed thumbnail, cache deduplication and suggestion association preserve financial records",
+      "status": "passed"
+    },
+    {
+      "title": "merchant upload wins over in-flight automatic lookup and another tenant cannot read or change it",
+      "status": "passed"
+    },
+    {
+      "title": "uploads require rights, decoded formats, quota, inventory permission; default selection remains pinned",
+      "status": "passed"
+    },
+    {
+      "title": "renamed products clear automatic association; stale identity results and concurrent consumers do not attach",
+      "status": "passed"
+    },
+    {
+      "title": "inventory-disabled staff cannot modify images or media settings, and storage limits are enforced",
+      "status": "passed"
+    },
+    {
+      "title": "existing UPI and decoded QR stay saved without transaction verification; primary updates only future branding",
+      "status": "passed"
+    },
+    {
+      "title": "official OAuth state is account-bound, single-use, encrypted and scope-isolated",
+      "status": "passed"
+    },
+    {
+      "title": "signed provider fetch, duplicate and out-of-order events preserve one authoritative transaction",
+      "status": "passed"
+    },
+    {
+      "title": "stable provider payer linking changes no balances and does not derive identities from handles",
+      "status": "passed"
+    },
+    {
+      "title": "confirmed invoice and udhaar reconciliation reuses ledger service and cannot double-post",
+      "status": "passed"
+    },
+    {
+      "title": "matching an existing manually recorded receipt changes no ledger totals",
+      "status": "passed"
+    },
+    {
+      "title": "advances remain separate from dues until explicitly applied and provider refunds reverse once",
+      "status": "passed"
+    },
+    {
+      "title": "statement import is unverified, atomic, deduplicated and cannot clear dues",
+      "status": "passed"
+    },
+    {
+      "title": "staff cannot change destinations; disconnected accounts reject future sync/events and keep history",
+      "status": "passed"
+    },
+    {
+      "title": "profile image storage strips metadata and is private; session cleanup keeps the current session",
+      "status": "passed"
+    },
+    {
+      "title": "Razorpay adapter calls documented endpoints with server bearer tokens and validates responses",
+      "status": "passed"
+    },
+    {
+      "title": "provider test money cannot pay real invoices or create a real-bill payment QR",
+      "status": "passed"
+    },
+    {
+      "title": "VoiceOS reads verified UPI and prepares review only; existing sales stay in their workflow",
+      "status": "passed"
+    },
+    {
+      "title": "export permissions and timezone boundaries use real scoped observations",
+      "status": "passed"
+    },
+    {
+      "title": "UPI HTTP operations accept action names, reject wrong verbs and keep scoped authorisation",
+      "status": "passed"
+    },
+    {
+      "title": "profile and shop updates expose current identity; branding keeps one saved primary and invoice snapshots",
+      "status": "passed"
+    },
+    {
+      "title": "rotated webhook secrets verify retries; real customer history excludes provider test money",
+      "status": "passed"
+    },
+    {
+      "title": "all approved natural UPI questions stay read-only and amount queries never invent a payer",
+      "status": "passed"
+    },
+    {
+      "title": "a retained disconnected test authorisation cannot label current live observations as test money",
+      "status": "passed"
+    },
+    {
+      "title": "same-name UPI queries require an identifying shortlist; selecting an ID remembers only the intended person",
+      "status": "passed"
+    },
+    {
+      "title": "same-name billing and balance follow-ups keep selected IDs; ambiguous identifiers never pick the first record",
+      "status": "passed"
+    },
+    {
+      "title": "provider names are unconfirmed hints; anonymous payers need no account or customer registration",
+      "status": "passed"
+    },
+    {
+      "title": "confirmed repeat-payer linking audits associations while every original payment and ledger row stays intact",
+      "status": "passed"
+    },
+    {
+      "title": "original status and timestamp survive provider lifecycle updates and payer renaming",
+      "status": "passed"
+    },
+    {
+      "title": "customer selections, payer links and immutable payment originals remain business scoped",
+      "status": "passed"
+    },
+    {
+      "title": "official provider name enrichment uses the merchant bearer and never infers names from a VPA",
+      "status": "passed"
+    },
+    {
+      "title": "ambiguous allocation and pronoun queries return clarification without any financial draft or write",
+      "status": "passed"
+    },
+    {
+      "title": "an exact short customer name cannot hide another customer sharing the spoken name",
+      "status": "passed"
+    },
+    {
+      "title": "why-linked evidence explains merchant and reliable-payer associations without changing history",
+      "status": "passed"
+    },
+    {
+      "title": "review inbox deferral is idempotent and never hides or rewrites the original transaction",
+      "status": "passed"
+    },
+    {
+      "title": "confirmed customer creation links an existing observation once and preserves every financial row",
+      "status": "passed"
+    },
+    {
+      "title": "monthly conversational UPI queries keep customer context and view filters use the same date range",
+      "status": "passed"
+    },
+    {
+      "title": "insights are deterministic, avoid double counting and distinguish overdue dates from merely pending balances",
+      "status": "passed"
+    },
+    {
+      "title": "reminder preparation requires real overdue balances, current consent and approval; it never sends or posts money",
+      "status": "passed"
+    },
+    {
+      "title": "reminder consent is invalidated by changed contact details and stale balance approval fails closed",
+      "status": "passed"
+    },
+    {
+      "title": "companion routes isolate businesses and new reviews cannot mutate foreign payments or contacts",
+      "status": "passed"
+    },
+    {
+      "title": "existing communication opt-outs override reminder-specific permission and contact preferences stay separate",
+      "status": "passed"
+    },
+    {
+      "title": "payment-only roles receive no customer-balance facts and cannot prepare customer reminders",
+      "status": "passed"
+    },
+    {
+      "title": "registration needs real one-use email proof before shop setup or private data",
+      "status": "passed"
+    },
+    {
+      "title": "resending retires older links and expired verification links cannot verify",
+      "status": "passed"
+    },
+    {
+      "title": "password recovery is generic, bounded, one-use and revokes existing sessions",
+      "status": "passed"
+    },
+    {
+      "title": "production registration refuses the development outbox and never silently verifies",
+      "status": "passed"
+    },
+    {
+      "title": "configured email adapter sends trusted one-use links and treats rejected delivery as unavailable",
+      "status": "passed"
+    },
+    {
+      "title": "invitations require the intended account, verified identity and owner authority",
+      "status": "passed"
+    },
+    {
+      "title": "legacy accounts stay accessible without a fabricated email verification claim",
+      "status": "passed"
+    },
+    {
+      "title": "requests do not alter stock or finances; repeat people, units and records stay separate",
+      "status": "passed"
+    },
+    {
+      "title": "uncatalogued and wrong-size demand is retained without borrowing unrelated stock",
+      "status": "passed"
+    },
+    {
+      "title": "requests, catalogue association, suppliers and invoices reject cross-business IDs",
+      "status": "passed"
+    },
+    {
+      "title": "reorder planning accounts for pending drafts; receipt posts stock and supplier credit once",
+      "status": "passed"
+    },
+    {
+      "title": "invalid receipt rolls back order, stock, supplier credit and retry marker",
+      "status": "passed"
+    },
+    {
+      "title": "cancelling pending reorders reopens requests only after their last pending draft",
+      "status": "passed"
+    },
+    {
+      "title": "follow-up requires live consent, a saved phone, active demand and available stock",
+      "status": "passed"
+    },
+    {
+      "title": "recovered sales allocate discount and invoice units once, with cancellation reversal",
+      "status": "passed"
+    },
+    {
+      "title": "invoice attribution rejects old dates, wrong customers, mismatched variants and excessive demand",
+      "status": "passed"
+    },
+    {
+      "title": "multi-item discounts allocate only matching net line revenue",
+      "status": "passed"
+    },
+    {
+      "title": "disabled modules reject backend writes while settings and recorded history remain recoverable",
+      "status": "passed"
+    },
+    {
+      "title": "staff permissions are checked directly and purchase costs never leak through demand summary",
+      "status": "passed"
+    },
+    {
+      "title": "settings reject unsupported fields, stale revisions and non-owner privilege changes",
+      "status": "passed"
+    },
+    {
+      "title": "demo reset restores isolated V3 scenarios even after optional modules were disabled",
+      "status": "passed"
+    },
+    {
+      "title": "V3 HTTP writes retain cookie, CSRF, module and payload checks",
+      "status": "passed"
+    },
+    {
+      "title": "voice demand separates visitors and dimensions from requested units in three languages",
+      "status": "passed"
+    },
+    {
+      "title": "voice refuses negative and overprecision quantities rather than silently turning them positive",
+      "status": "passed"
+    },
+    {
+      "title": "AI is explicitly configured, tenant-scoped, redacted, read-only and handles incomplete output",
+      "status": "passed"
+    },
+    {
+      "title": "development verification refuses an outbox inside publicly served files",
+      "status": "passed"
+    },
+    {
+      "title": "V3 visible copy keys exist in English, Hindi and Hinglish",
+      "status": "passed"
+    },
+    {
+      "title": "CSV imports review quoted merchant names and reject malformed, oversized or inaccurate data",
+      "status": "passed"
+    },
+    {
+      "title": "catalogue import rolls back every row on collision, preserves existing stock and retries once",
+      "status": "passed"
+    },
+    {
+      "title": "unit aliases can be matched without guessing different quantities or pack conversions",
+      "status": "passed"
+    },
+    {
+      "title": "discovery examples use supported actions, correct financial reports and entity roles in every UI language",
+      "status": "passed"
+    },
+    {
+      "title": "page references cannot select foreign entities or override an explicit business intent",
+      "status": "passed"
+    },
+    {
+      "title": "discovery filters disabled features, role permissions and unrelated or public routes",
+      "status": "passed"
+    },
+    {
+      "title": "invoice references select only the actual bill, without creating an invoice or borrowing foreign page context",
+      "status": "passed"
+    },
+    {
+      "title": "screenshot command preserves three quantities, clarifies stock or sale, and never writes on interpretation",
+      "status": "passed"
+    },
+    {
+      "title": "page context supplies an incomplete command but cannot override an explicit cross-module operation",
+      "status": "passed"
+    },
+    {
+      "title": "ambiguous dal variants remain unresolved after intent clarification",
+      "status": "passed"
+    },
+    {
+      "title": "bounded schema and fixed request registry reject malformed commands, incomplete amounts and inaccessible writes",
+      "status": "passed"
+    },
+    {
+      "title": "DemandPulse catalogue preparation creates and links once without inventory or revenue and rolls back failures",
+      "status": "passed"
+    },
+    {
+      "title": "browser collector distinguishes interim hypotheses from final text and replaces repeated indices",
+      "status": "passed"
+    },
+    {
+      "title": "manual edit parity prepares existing entity editors and low-risk language changes without creating contacts or stock",
+      "status": "passed"
+    },
+    {
+      "title": "number-first stock corrections replace the original quantity without losing product rates",
+      "status": "passed"
+    },
+    {
+      "title": "DemandPulse catalogue preparation requires both permissions, refuses a duplicate and binds retries to the payload",
+      "status": "passed"
+    },
+    {
+      "title": "V15 labelled semantic case 1: Rahul ke naam se 10 kilo daal ka bill add karo",
+      "status": "passed"
+    },
+    {
+      "title": "V15 labelled semantic case 2: Rahul ko 10 kilo daal bechi",
+      "status": "passed"
+    },
+    {
+      "title": "V15 labelled semantic case 3: 10 kilo daal stock mein add karo",
+      "status": "passed"
+    },
+    {
+      "title": "V15 labelled semantic case 4: Rahul ke naam se 10 kilo daal add kar do",
+      "status": "passed"
+    },
+    {
+      "title": "V15 labelled semantic case 5: Rahul ka ₹500 udhaar cash mein jama karo",
+      "status": "passed"
+    },
+    {
+      "title": "V15 labelled semantic case 6: Create a bill for Rahul for ten kilos of dal",
+      "status": "passed"
+    },
+    {
+      "title": "V15 labelled semantic case 7: Rahul ke naam pe 10 kg daal ka bill banao",
+      "status": "passed"
+    },
+    {
+      "title": "V15 labelled semantic case 8: Rahul ko daal di thi 10 kilo, bill bana do",
+      "status": "passed"
+    },
+    {
+      "title": "V15 labelled semantic case 9: Rahul ko 2 kilo aloo, 3 kilo pyaz aur 5 kilo daal bechi",
+      "status": "passed"
+    },
+    {
+      "title": "V15 labelled semantic case 10: Stock mein 10 kilo aloo, 20 kilo pyaz aur 5 packet Maggi add karo",
+      "status": "passed"
+    },
+    {
+      "title": "V15 labelled semantic case 11: राहुल के नाम से दस किलो दाल का बिल बनाओ",
+      "status": "passed"
+    },
+    {
+      "title": "V15 labelled semantic case 12: Rahul ko aadha kilo daal bechi",
+      "status": "passed"
+    },
+    {
+      "title": "V15 labelled semantic case 13: Rahul ko dedh kilo daal bechi",
+      "status": "passed"
+    },
+    {
+      "title": "V15 labelled semantic case 14: Rahul ko dhai kilo daal bechi",
+      "status": "passed"
+    },
+    {
+      "title": "V15 labelled semantic case 15: Rahul ko sava kilo daal bechi",
+      "status": "passed"
+    },
+    {
+      "title": "V15 labelled semantic case 16: Rahul ko 10 kilo daal ₹100 kilo mein bechi cash mila",
+      "status": "passed"
+    },
+    {
+      "title": "V15 labelled semantic case 17: Rahul ko 10 kilo daal total ₹1000 mein bechi UPI mila",
+      "status": "passed"
+    },
+    {
+      "title": "V15 labelled semantic case 18: Chetna ke naam se ₹200 ka bill bana do",
+      "status": "passed"
+    },
+    {
+      "title": "V15 labelled semantic case 19: Chetna ko 5 kilo aloo ₹200 mein beche cash mila",
+      "status": "passed"
+    },
+    {
+      "title": "V15 labelled semantic case 20: Rahul ko do shirts ₹899 ki ek bechi ₹1000 cash ₹500 UPI baaki udhaar",
+      "status": "passed"
+    },
+    {
+      "title": "V15 labelled semantic case 21: Aaj cash kitna mila",
+      "status": "passed"
+    },
+    {
+      "title": "V15 labelled semantic case 22: Kal ki closing PDF dikhao",
+      "status": "passed"
+    },
+    {
+      "title": "V15 labelled semantic case 23: Aaj ki dukaan close kar do",
+      "status": "passed"
+    },
+    {
+      "title": "V15 labelled semantic case 24: Maggi kitna mangwana chahiye",
+      "status": "passed"
+    },
+    {
+      "title": "V15 labelled semantic case 25: Agar daal 60 mein kharidun aur 75 mein bechu toh",
+      "status": "passed"
+    },
+    {
+      "title": "V15 labelled semantic case 26: If I buy at 60 and sell at 75 what if",
+      "status": "passed"
+    },
+    {
+      "title": "V15 labelled semantic case 27: Supplier ka bill scan karna hai",
+      "status": "passed"
+    },
+    {
+      "title": "V15 labelled semantic case 28: Aaj business mein kya dhyan dena hai",
+      "status": "passed"
+    },
+    {
+      "title": "V15 labelled semantic case 29: 20 kilo pyaz stock mein add karo",
+      "status": "passed"
+    },
+    {
+      "title": "V15 labelled semantic case 30: Chetna naam ka customer add karo",
+      "status": "passed"
+    },
+    {
+      "title": "V15 labelled semantic case 31: 20 kilo daal ₹1000 ki kharidi",
+      "status": "passed"
+    },
+    {
+      "title": "V15 labelled semantic case 32: Rahul ko 10 kilo daal 100 rupaye kilo mein bechi cash",
+      "status": "passed"
+    },
+    {
+      "title": "V15 labelled semantic case 33: 10 kilo daal Rahul supplier se aayi",
+      "status": "passed"
+    },
+    {
+      "title": "V15 labelled semantic case 34: Gupta Traders se 10 kilo daal aayi",
+      "status": "passed"
+    },
+    {
+      "title": "V15 labelled semantic case 35: Bhai Rahul ko 2 kilo daal ka bill bana do cash",
+      "status": "passed"
+    },
+    {
+      "title": "V15 labelled semantic case 36: Rahul ko 2 piece Blue Casual Shirt XL bechi cash",
+      "status": "passed"
+    },
+    {
+      "title": "V15 labelled semantic case 37: Rahul nahi Rohan ke naam se bill karo",
+      "status": "passed"
+    },
+    {
+      "title": "V15 labelled semantic case 38: ₹100 nahi ₹90 kilo karo",
+      "status": "passed"
+    },
+    {
+      "title": "V15 labelled semantic case 39: daal nahi aloo",
+      "status": "passed"
+    },
+    {
+      "title": "V15 labelled semantic case 40: Kal cash kitna mila",
+      "status": "passed"
+    },
+    {
+      "title": "V15 dependent sale, corrections and retry commit exactly once with separated roles",
+      "status": "passed"
+    },
+    {
+      "title": "V15 ambiguous variants, package weight and duplicate customers cannot reach a write",
+      "status": "passed"
+    },
+    {
+      "title": "V15 supplier roles, numerical simulation and strict provider contract do not execute data",
+      "status": "passed"
+    },
+    {
+      "title": "V15 authoritative intelligence calculations, extraction and permissions never write stock",
+      "status": "passed"
+    },
+    {
+      "title": "V15 provider consent, strict outputs, evidence and privacy keep all responses draft-only",
+      "status": "passed"
+    },
+    {
+      "title": "V15 provider unit rates, uncertainty, conditional and ambiguous commands cannot bypass clarification",
+      "status": "passed"
+    },
+    {
+      "title": "V15 catalogue reorder is exactly once, unreceived and permission checked without DemandPulse",
+      "status": "passed"
+    },
+    {
+      "title": "V15 business-day reports honour timezone cutoff and half-open historical boundaries",
+      "status": "passed"
+    },
+    {
+      "title": "V15 purchase costs, separate demand counts and sale corrections preserve financial roles",
+      "status": "passed"
+    },
+    {
+      "title": "V17 contextual interpretation preserves one task, omits saved records and permits one explicit reviewed confirmation",
+      "status": "passed"
+    },
+    {
+      "title": "V17 interpreter rejects foreign references, unbounded history, stale identities and role-swapped financial slots",
+      "status": "passed"
+    },
+    {
+      "title": "V17 provider quantity and rate units stay distinct at the authorized backend boundary",
+      "status": "passed"
+    },
+    {
+      "title": "V17 provider catalog continuation retains its name and does not infer opening stock",
+      "status": "passed"
+    },
+    {
+      "title": "V17 model refusals, revoked permissions and aborted provider calls cannot create records",
+      "status": "passed"
+    },
+    {
+      "title": "V17 bare rate units never become money received, and operational metrics omit business values",
+      "status": "passed"
+    },
+    {
+      "title": "V17 edited stock prices survive a correction and product creation can include opening stock",
+      "status": "passed"
+    },
+    {
+      "title": "V17 record navigation and financial corrections never build financial requests",
+      "status": "passed"
+    },
+    {
+      "title": "V17 scoped unfinished task recovery validates both drafts and current trading dates",
+      "status": "passed"
+    },
+    {
+      "title": "V17 semantic regression: Rahul naam ka customer bana do.",
+      "status": "passed"
+    },
+    {
+      "title": "V17 semantic regression: Ek naya customer add karna hai.",
+      "status": "passed"
+    },
+    {
+      "title": "V17 semantic regression: एक नया ग्राहक बनाना है",
+      "status": "passed"
+    },
+    {
+      "title": "V17 semantic regression: 10 kilo daal stock mein daal do.",
+      "status": "passed"
+    },
+    {
+      "title": "V17 semantic regression: Inventory mein daal 10 kilo badha do.",
+      "status": "passed"
+    },
+    {
+      "title": "V17 semantic regression: दाल दस किलो स्टॉक में डाल दो",
+      "status": "passed"
+    },
+    {
+      "title": "V17 semantic regression: Add ten kilos of Daal into the inventory",
+      "status": "passed"
+    },
+    {
+      "title": "V17 semantic regression: Rahul ko 10 kilo daal bechi.",
+      "status": "passed"
+    },
+    {
+      "title": "V17 semantic regression: Rahul ke naam se 10 kilo daal ka bill bana do.",
+      "status": "passed"
+    },
+    {
+      "title": "V17 semantic regression: Rahul ke naam se bill bana do.",
+      "status": "passed"
+    },
+    {
+      "title": "V17 semantic regression: Maggi Masala naam ka product add karna hai.",
+      "status": "passed"
+    },
+    {
+      "title": "V17 semantic regression: Ek product add kar do.",
+      "status": "passed"
+    },
+    {
+      "title": "V17 semantic regression: Best product add kar do.",
+      "status": "passed"
+    },
+    {
+      "title": "V17 semantic regression: Best Product naam ka product add karo",
+      "status": "passed"
+    },
+    {
+      "title": "V17 semantic regression: 500 rupaye Rahul se cash mile.",
+      "status": "passed"
+    },
+    {
+      "title": "V17 semantic regression: Rahul ke ₹500 purane udhaar cash mein jama karo.",
+      "status": "passed"
+    },
+    {
+      "title": "V17 semantic regression: Aaj business mein kya chal raha hai?",
+      "status": "passed"
+    },
+    {
+      "title": "V17 semantic regression: Maggi ka kitna stock mangwana chahiye?",
+      "status": "passed"
+    },
+    {
+      "title": "V17 semantic regression: Rahul ke naam se daal add kar do.",
+      "status": "passed"
+    },
+    {
+      "title": "V17 semantic regression: 10 kilo pyaz aur 5 kilo aloo add karo.",
+      "status": "passed"
+    },
+    {
+      "title": "V17 semantic regression: ढाई किलो आलू स्टॉक में जोड़ो",
+      "status": "passed"
+    },
+    {
+      "title": "V17 semantic regression: aadha kilo daal stock mein add karo",
+      "status": "passed"
+    },
+    {
+      "title": "V17 semantic regression: das packet Maggi add karo",
+      "status": "passed"
+    },
+    {
+      "title": "V17 semantic regression: Aaj kitni sale hui?",
+      "status": "passed"
+    },
+    {
+      "title": "V17 semantic regression: Aaj ka closing summary dikhao.",
+      "status": "passed"
+    },
+    {
+      "title": "V17 semantic regression: Cancel karo.",
+      "status": "passed"
+    },
+    {
+      "title": "V17 five-turn sale and bare corrections retain roles, rows and exact financial snapshots",
+      "status": "passed"
+    },
+    {
+      "title": "V17 product creation asks only missing fields and replays one guarded catalog transaction",
+      "status": "passed"
+    },
+    {
+      "title": "V17 unambiguous bare stock correction patches one row and ambiguous corrections cannot save",
+      "status": "passed"
+    },
+    {
+      "title": "V17 implicit page records remain scoped and explicit other names win",
+      "status": "passed"
+    },
+    {
+      "title": "the supplied five-product utterance preserves quantities and asks which dal",
+      "status": "passed"
+    },
+    {
+      "title": "English Hindi and Hinglish aliases produce the same confirmed candidate",
+      "status": "passed"
+    },
+    {
+      "title": "multi-clause speech without punctuation and repeated explicit products are retained",
+      "status": "passed"
+    },
+    {
+      "title": "half aadha dedh dhai Hindi digits and exact decimal conversion",
+      "status": "passed"
+    },
+    {
+      "title": "latest correction replaces quantity and removal removes only one clear item",
+      "status": "passed"
+    },
+    {
+      "title": "missing quantity is preserved and a quantity-only follow-up resolves one item",
+      "status": "passed"
+    },
+    {
+      "title": "ambiguous quantity-only correction cannot silently change multiple existing items",
+      "status": "passed"
+    },
+    {
+      "title": "fuzzy and phonetic matches are suggestions requiring product confirmation",
+      "status": "passed"
+    },
+    {
+      "title": "long unknown paragraphs do not trigger unbounded fuzzy matching",
+      "status": "passed"
+    },
+    {
+      "title": "dozen grams litre conversion and configured packs reject incompatible or fractional stock",
+      "status": "passed"
+    },
+    {
+      "title": "configured box conversion may target weight while an unsaved conversion is refused",
+      "status": "passed"
+    },
+    {
+      "title": "manual product selection retains merchant names and validates every editable row",
+      "status": "passed"
+    },
+    {
+      "title": "repeated interim and final recognition events replace indexed transcript segments",
+      "status": "passed"
+    },
+    {
+      "title": "recognition locale errors and stop are deliberate, with no automatic restart",
+      "status": "passed"
+    },
+    {
+      "title": "all visible voice copy keys exist in all three language dictionaries",
+      "status": "passed"
+    },
+    {
+      "title": "brand and saved variant tokens remain part of matching instead of invented quantity",
+      "status": "passed"
+    },
+    {
+      "title": "voice batch API commits linked history once, rejects foreign IDs and rolls back invalid batches",
+      "status": "passed"
+    },
+    {
+      "title": "unmatched speech becomes a reviewed new-product draft without inventing its selling price",
+      "status": "passed"
+    },
+    {
+      "title": "Hindi and Hinglish adrak match an existing Ginger product without creating a duplicate",
+      "status": "passed"
+    },
+    {
+      "title": "voice stock creates reviewed products and receives stock atomically, aggregates repeats and replays once",
+      "status": "passed"
+    },
+    {
+      "title": "a bad mixed voice batch rolls back new products, stock, audit, movements and retry records",
+      "status": "passed"
+    },
+    {
+      "title": "audio duration cannot be spoofed with a forged WAV header and language recovery never loses protected pending requests",
+      "status": "passed"
+    },
+    {
+      "title": "speech validates duration, membership, feature gates and global usage before any billed transcription",
+      "status": "passed"
+    },
+    {
+      "title": "VoiceOS 3 language follows full utterances and retains short answers independently of display preferences",
+      "status": "passed"
+    },
+    {
+      "title": "spoken confirmation must bind to one complete current task and cannot execute twice or cross shops",
+      "status": "passed"
+    },
+    {
+      "title": "required Rahul conversation uses authoritative price, commits the exact split once and speaks only verified results",
+      "status": "passed"
+    },
+    {
+      "title": "stock, catalogue, last-item removal and corrections never request irrelevant payments or fabricate product names",
+      "status": "passed"
+    },
+    {
+      "title": "changed catalogue or customer snapshots reject stale speech drafts without partial writes, and lost acknowledgements replay safely",
+      "status": "passed"
+    },
+    {
+      "title": "assistant preference persists per authenticated user with optimistic revisions and no reply-language field",
+      "status": "passed"
+    },
+    {
+      "title": "unconfigured speech and missing consent never make provider requests or save raw audio",
+      "status": "passed"
+    },
+    {
+      "title": "configured audio boundaries use real provider schemas, auto language, escaped SSML, observed usage and scoped consent",
+      "status": "passed"
+    },
+    {
+      "title": "final receipt is delivered once; duplicate end, result, error and cancellation cannot replay it",
+      "status": "passed"
+    },
+    {
+      "title": "app defaults, clear speech overrides and short replies obey a single language precedence policy",
+      "status": "passed"
+    },
+    {
+      "title": "adaptive silence waits through natural pauses, quiet speech, background noise and long statements",
+      "status": "passed"
+    },
+    {
+      "title": "native recognition automatically stops and finalizes without a manual stop or provider end event",
+      "status": "passed"
+    },
+    {
+      "title": "exact Rahul customer phrases after sales reports create and replay one real contact, never stock or payments",
+      "status": "passed"
+    },
+    {
+      "title": "native speech activity prevents stable interim text from cutting off a long sentence",
+      "status": "passed"
+    },
+    {
+      "title": "a worldwide customer question is a scoped clarification even inside a previous write/report draft",
+      "status": "passed"
+    },
+    {
+      "title": "recovered fallback language and bounded timestamps remain untrusted, while confirmed requests survive recovery",
+      "status": "passed"
+    },
+    {
+      "title": "duplicate replies preserve Rahul, require separate confirmation and create exactly one distinct backend record",
+      "status": "passed"
+    },
+    {
+      "title": "separate-name decision never authorises a shared phone, different name or ambiguous yes",
+      "status": "passed"
+    },
+    {
+      "title": "session latch ignores old callbacks, cannot restart after pause or close and resumes only explicitly",
+      "status": "passed"
+    },
+    {
+      "title": "verified success and read results allow the next task, while unverified failures never restart",
+      "status": "passed"
+    },
+    {
+      "title": "cloud transcription sends documented bilingual hints without forcing the display language or exposing shop records",
+      "status": "passed"
+    },
+    {
+      "title": "authoritative receipts recover an exact committed customer without new writes and reject another tenant or payload",
+      "status": "passed"
+    },
+    {
+      "title": "a status outage or account switch never falls through into another mutation",
+      "status": "passed"
+    },
+    {
+      "title": "10, 12 and 15 seconds are accepted; corrupt, silent, clipped and too-short recordings fail quality checks",
+      "status": "passed"
+    },
+    {
+      "title": "consent, verified account and approved verification configuration are required before recording",
+      "status": "passed"
+    },
+    {
+      "title": "ownership verification fails closed for replay, another subject, multiple speakers, insufficient speech or retention",
+      "status": "passed"
+    },
+    {
+      "title": "one verified recording creates one private profile; status, actual preview and explicit activation persist independently of business records",
+      "status": "passed"
+    },
+    {
+      "title": "profile identifiers do not grant another user preview, selection, synthesis or deletion",
+      "status": "passed"
+    },
+    {
+      "title": "deletion deactivates immediately and remains pending on provider failure; no replacement can evade cleanup",
+      "status": "passed"
+    },
+    {
+      "title": "confirmed provider deletion removes the private reference and allows a fresh setup",
+      "status": "passed"
+    },
+    {
+      "title": "lost creation acknowledgement does not generate another paid profile or claim readiness",
+      "status": "passed"
+    },
+    {
+      "title": "provider language and sync support are taken from actual status fields",
+      "status": "passed"
+    },
+    {
+      "title": "VoiceOS separates sale, old-credit collection, demand, expense, order and receipt intents",
+      "status": "passed"
+    },
+    {
+      "title": "spoken numbers retain exact thousandths and hundreds/thousands in all input languages",
+      "status": "passed"
+    },
+    {
+      "title": "base product names do not hide competing clothing variants and price basis is explicit",
+      "status": "passed"
+    },
+    {
+      "title": "active draft corrections patch one amount without adding items or replacing earlier receipts",
+      "status": "passed"
+    },
+    {
+      "title": "Hindi customer references, phone digits and unit conversion resolve only scoped catalogue records",
+      "status": "passed"
+    },
+    {
+      "title": "reports derive actual sales and collections and reject unpermitted access",
+      "status": "passed"
+    },
+    {
+      "title": "missing quantities, prices and phone details fill the active draft without restarting",
+      "status": "passed"
+    },
+    {
+      "title": "manual edits remain authoritative and a removal cannot resurrect an earlier voice line",
+      "status": "passed"
+    },
+    {
+      "title": "demand visitors are separate from units; English, Hindi and Hinglish aliases span business categories",
+      "status": "passed"
+    },
+    {
+      "title": "grouped currency, fractional repeats and numeric variants retain their intended meaning",
+      "status": "passed"
+    },
+    {
+      "title": "reviewed sale price is a frozen invoice snapshot; retries deduct stock and record receipts once",
+      "status": "passed"
+    },
+    {
+      "title": "voice contacts reject accidental duplicates, replay uncertain saves and remain tenant scoped",
+      "status": "passed"
+    },
+    {
+      "title": "reports cover the full ledger beyond page limits and enforce role, feature and tenant access",
+      "status": "passed"
+    },
+    {
+      "title": "old-credit collections affect receipts and outstanding, never today’s sales",
+      "status": "passed"
+    },
+    {
+      "title": "screen navigation honours business permissions and missing financial details remain explicit",
+      "status": "passed"
+    },
+    {
+      "title": "shared spoken-number preprocessing preserves the stock parser’s item and correction delimiters",
+      "status": "passed"
+    },
+    {
+      "title": "weather requires configuration/location and never invents readings",
+      "status": "passed"
+    },
+    {
+      "title": "weather uses geocoded shop coordinates, metric units, coalesces requests and caches",
+      "status": "passed"
+    },
+    {
+      "title": "ambiguous cities, stale readings, invalid values and provider errors stay unavailable",
+      "status": "passed"
+    },
+    {
+      "title": "weather route requires authentication and current business membership without changing records",
+      "status": "passed"
+    }
+  ]
+}

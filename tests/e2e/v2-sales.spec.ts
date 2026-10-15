@@ -128,7 +128,7 @@ test('Fashion mobile sale records two shirts, photo, split payments and exactly 
   const pdfPath = testInfo.outputPath('fashion-sale.pdf'); await download.saveAs(pdfPath); expect(readFileSync(pdfPath).subarray(0, 5).toString()).toBe('%PDF-'); preserveArtifact(pdfPath, 'fashion-sale.pdf');
   await screenshot(page, testInfo, 'fashion-invoice-mobile.png');
   await page.getByRole('link', { name: 'Open Customer', exact: true }).click();
-  await expect(page.locator('main')).toContainText('Rahul Sharma'); await expect(page.locator('main')).toContainText(invoice.number); await expect(page.locator('main')).toContainText('₹298');
+  await expect(page.locator('main')).toContainText('Rahul Sharma'); await expect(page.locator('main')).toContainText(invoice.number); await page.getByRole('tab',{name:'Bills',exact:true}).click(); await expect(page.locator('.detail-metrics')).toContainText('₹1,597');await page.locator(`a[href="/app/sales/${invoice.id}"]`).first().click();await expect(page.locator('.detail-metrics')).toContainText('₹298');
   await page.goto(`/app/sales?customer=${customer.id}`); await page.getByLabel('Payment status', { exact: true }).selectOption('partial'); await page.getByLabel('From date', { exact: true }).fill(invoice.date.slice(0, 10));
   await expect(page.locator('.sale-history-card').filter({ hasText: invoice.number })).toBeVisible();
 });
