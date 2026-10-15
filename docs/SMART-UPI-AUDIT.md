@@ -1,0 +1,11 @@
+# Smart UPI implementation audit
+
+The existing SQLite Store is authoritative for sales, integer-paise payments, customer dues and closing sessions. UPI receipts currently mean manually recorded payments. Invoice branding already stores an optional UPI address and payee for static QR printing. Authentication, business memberships, scoped permissions, idempotency, customer records, translations and PDF exports will be reused.
+
+The profile entry is `/app/settings/account`; it currently shows a small name/email form. Payments and customer detail are existing workspace routes. No authorised transaction provider, avatar storage or paid-subscription service is present. A saved address or decoded QR therefore cannot legitimately enable automatic tracking or prove destination ownership.
+
+Implementation adds a compact merchant profile, private user avatar/phone storage, shop-owned destinations, an explicit payment-account permission, encrypted provider authorisations, verified provider observations and conservative payer links. The first official adapter is Razorpay Technology Partner OAuth, using its documented authorisation, token, revoke, payment-fetch and signed-webhook endpoints. Provider account ownership is distinct from verification of a separately entered static UPI address.
+
+Provider observations remain distinct from posted ledger receipts. Linking a customer changes no invoice or balance. Confirmed reconciliation uses the existing payment service or explicitly matches an existing UPI receipt; it must not post the same receipt twice. Imports are unverified review records. Pending/failed payments and imported statements do not become verified collections. Strong automatic invoice matches require a server-created provider payment-request mapping, not a payer name, amount guess or provider note alone.
+
+Provider credentials, Technology Partner approval, callback/webhook registration and an authorised test merchant are external prerequisites. They have not been supplied. Local and simulated-provider tests will be labelled accordingly; this feature will not be declared production-ready or deployed to main without genuine provider acceptance. The approved Dashboard hero and VoiceOS conversation loop remain in place.

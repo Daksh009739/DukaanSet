@@ -54,18 +54,18 @@ export function voiceHeroForPage(path:string,state:V3State,tool?:VoiceIntent):He
 }
 
 /** Resolve typed page references only against the current authorised state; reuse the shared engine. */
-export function advancePageVoice(raw:string,state:V3State,previous:VoiceCommand|undefined,context:VoicePageContext):VoiceCommand{
+export function advancePageVoice(raw:string,state:V3State,previous:VoiceCommand|undefined,context:VoicePageContext,rememberedCustomerId?:string):VoiceCommand{
  const customer=state.configuration.permissions.customers&&state.customers.find(c=>c.id===context.customerId);
- let command=advanceVoice(raw,state,previous,customer?customer.id:undefined,context.intent);
+ let command=advanceVoice(raw,state,previous,rememberedCustomerId&&state.customers.some(c=>c.id===rememberedCustomerId)?rememberedCustomerId:customer?customer.id:undefined,context.intent);
  if(!voiceActionRegistry[command.intent].permitted(state))return command;
  const product=state.products.find(p=>p.id===context.productId);
- const productReference=/this product|is product|इस उत्पाद|इस प्रोडक्ट|यह उत्पाद/i;
+ const productReference=/this product|is product|इस उत्पाद|इस प्रोडक्ट|यह उत्पाद|\bisme\b|इसमें/i;
  if(product&&productReference.test(raw)){
   if(command.intent==='report'&&command.fields.report==='stock')command={...command,fields:{...command.fields,query:product.name+' '+product.variation+' stock'}};
   if(command.intent==='stock'&&command.items.length===1&&(productReference.test(command.items[0].query)||/^product$/i.test(command.items[0].query)))command={...command,fields:{...command.fields,pageProductId:product.id},items:[{...command.items[0],query:product.name+' '+product.variation,productId:product.id,candidates:[product.id]}]};
  }
  const invoice=state.invoices.find(i=>i.id===context.invoiceId);
- if(invoice&&command.intent==='document'&&/this bill|this invoice|is bill|इस बिल/i.test(raw))command={...command,fields:{...command.fields,invoiceId:invoice.id,customerId:invoice.customerId||'',documentKind:'invoice'}};
+ if(invoice&&!command.fields.invoiceId&&command.intent==='document'&&/this bill|this invoice|is bill|इस बिल|iska.*(?:pdf|whatsapp)|इसका.*(?:पीडीएफ|व्हाट्सएप)/i.test(raw))command={...command,fields:{...command.fields,invoiceId:invoice.id,customerId:invoice.customerId||'',documentKind:'invoice'}};
  const supplier=state.configuration.permissions.purchases&&state.suppliers.find(s=>s.id===context.supplierId);
  if(supplier&&command.intent==='report'&&/this supplier|is supplier|इस सप्लायर/i.test(raw))command={...command,fields:{...command.fields,report:'supplierOutstanding',supplierId:supplier.id,supplierQuery:supplier.name,customerId:'',customerQuery:''}};
  return command;

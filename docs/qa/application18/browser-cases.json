@@ -1,0 +1,1075 @@
+{
+  "cases": [
+    {
+      "suite": "application-header.spec.ts",
+      "title": "application-header.spec.ts > premium header retains keyboard search, updates, language, account and actual shop switching",
+      "line": 12,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "application-header.spec.ts",
+      "title": "application-header.spec.ts > header controls fit dashboard and detail-page layouts in all three languages",
+      "line": 22,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "approved-dashboard-v16.spec.ts",
+      "title": "approved-dashboard-v16.spec.ts > approved actions open existing workflows, chart selection and keyboard VoiceOS leave records unchanged",
+      "line": 12,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "approved-dashboard-v16.spec.ts",
+      "title": "approved-dashboard-v16.spec.ts > weather failures do not block finances; membership scopes weather and business switching",
+      "line": 24,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "approved-dashboard-v16.spec.ts",
+      "title": "approved-dashboard-v16.spec.ts > approved reference fits ten viewport widths with accessible en controls",
+      "line": 32,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "approved-dashboard-v16.spec.ts",
+      "title": "approved-dashboard-v16.spec.ts > approved reference fits ten viewport widths with accessible hi controls",
+      "line": 32,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "approved-dashboard-v16.spec.ts",
+      "title": "approved-dashboard-v16.spec.ts > approved reference fits ten viewport widths with accessible hinglish controls",
+      "line": 32,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "approved-dashboard.spec.ts",
+      "title": "approved-dashboard.spec.ts > approved dashboard uses real metrics, chart periods, hero VoiceOS and keyboard global search",
+      "line": 9,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "approved-dashboard.spec.ts",
+      "title": "approved-dashboard.spec.ts > product media upload, thumbnail reuse and pinned default preserve the business ledger",
+      "line": 18,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "approved-dashboard.spec.ts",
+      "title": "approved-dashboard.spec.ts > all major modules use the shared design at 1672px without overflow or runtime errors",
+      "line": 25,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "approved-dashboard.spec.ts",
+      "title": "approved-dashboard.spec.ts > all major modules use the shared design at 390px without overflow or runtime errors",
+      "line": 25,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "closing-dashboard.spec.ts",
+      "title": "closing-dashboard.spec.ts > dashboard → counted close → versions → PDF → explicit next opening",
+      "line": 17,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "closing-dashboard.spec.ts",
+      "title": "closing-dashboard.spec.ts > stale review, concurrent closes, skipped count and translated draft preserve accounting",
+      "line": 36,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "closing-dashboard.spec.ts",
+      "title": "closing-dashboard.spec.ts > linked details and keyboard tabs show real records with invoice-specific repayments",
+      "line": 43,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "conversation.spec.ts",
+      "title": "conversation.spec.ts > minimal global assistant prepares multi-turn bills from Customers, then saves one real transaction",
+      "line": 14,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "conversation.spec.ts",
+      "title": "conversation.spec.ts > closing, reload and a lost acknowledgement retain a frozen combined customer and sale",
+      "line": 22,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "conversation.spec.ts",
+      "title": "conversation.spec.ts > new voice stock rows appear automatically, corrections replace quantities, one Save commits all",
+      "line": 28,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "conversation.spec.ts",
+      "title": "conversation.spec.ts > global stock from Customers shares the focused engine and preserves costs separately",
+      "line": 34,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "conversation.spec.ts",
+      "title": "conversation.spec.ts > mobile conversational panel, language independence and keyboard controls pass accessibility",
+      "line": 37,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "conversation.spec.ts",
+      "title": "conversation.spec.ts > a new catalogue match appearing before save can be selected and retried without duplicates",
+      "line": 42,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "dashboard-polish.spec.ts",
+      "title": "dashboard-polish.spec.ts > styled shop and language pickers retain keyboard selection and active-shop data",
+      "line": 11,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "dashboard-polish.spec.ts",
+      "title": "dashboard-polish.spec.ts > dashboard adds exact session money and scoped tasks with visible clickable and hover colours",
+      "line": 15,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "dashboard-polish.spec.ts",
+      "title": "dashboard-polish.spec.ts > premium quick actions retain their forms and coloured metrics keep actual totals",
+      "line": 19,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "dashboard-polish.spec.ts",
+      "title": "dashboard-polish.spec.ts > dashboard cards, dropdowns and additional sections fit all app languages and phone widths",
+      "line": 30,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "insight-workspaces.spec.ts",
+      "title": "insight-workspaces.spec.ts > reports, task filters, demand search and help links reflect the actual shop without writes",
+      "line": 18,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "insight-workspaces.spec.ts",
+      "title": "insight-workspaces.spec.ts > account panel retains focus, real navigation and persistent language settings on a phone",
+      "line": 31,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "insight-workspaces.spec.ts",
+      "title": "insight-workspaces.spec.ts > closing review keeps the shop open until cash and explicit acknowledgement are confirmed",
+      "line": 36,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "insight-workspaces.spec.ts",
+      "title": "insight-workspaces.spec.ts > all seven refreshed views fit desktop and phones with accessible en copy",
+      "line": 42,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "insight-workspaces.spec.ts",
+      "title": "insight-workspaces.spec.ts > all seven refreshed views fit desktop and phones with accessible hi copy",
+      "line": 42,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "insight-workspaces.spec.ts",
+      "title": "insight-workspaces.spec.ts > all seven refreshed views fit desktop and phones with accessible hinglish copy",
+      "line": 42,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "invoice-studio.spec.ts",
+      "title": "invoice-studio.spec.ts > en: server PDF preview/download and manual WhatsApp recipient confirmation",
+      "line": 14,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "invoice-studio.spec.ts",
+      "title": "invoice-studio.spec.ts > hi: server PDF preview/download and manual WhatsApp recipient confirmation",
+      "line": 14,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "invoice-studio.spec.ts",
+      "title": "invoice-studio.spec.ts > hinglish: server PDF preview/download and manual WhatsApp recipient confirmation",
+      "line": 14,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "invoice-studio.spec.ts",
+      "title": "invoice-studio.spec.ts > customer period opening/closing, existing receipts and complete document centre",
+      "line": 20,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "invoice-studio.spec.ts",
+      "title": "invoice-studio.spec.ts > native file sharing records initiation without fabricating delivered status",
+      "line": 22,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "invoice-studio.spec.ts",
+      "title": "invoice-studio.spec.ts > branding saves with fictional preview and VoiceOS opens a saved statement without sending",
+      "line": 24,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "invoice-studio.spec.ts",
+      "title": "invoice-studio.spec.ts > saved PDF history keeps its period and customer edits retain issued details",
+      "line": 26,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "localization.spec.ts",
+      "title": "localization.spec.ts > all public language routes render localised HTML, canonical metadata and alternates",
+      "line": 19,
+      "status": "expected",
+      "serverMode": "development"
+    },
+    {
+      "suite": "localization.spec.ts",
+      "title": "localization.spec.ts > en: dashboard, modules, a split credit sale and shaped PDF preserve exact ledger values",
+      "line": 30,
+      "status": "expected",
+      "serverMode": "development"
+    },
+    {
+      "suite": "localization.spec.ts",
+      "title": "localization.spec.ts > hi: dashboard, modules, a split credit sale and shaped PDF preserve exact ledger values",
+      "line": 30,
+      "status": "expected",
+      "serverMode": "development"
+    },
+    {
+      "suite": "localization.spec.ts",
+      "title": "localization.spec.ts > hinglish: dashboard, modules, a split credit sale and shaped PDF preserve exact ledger values",
+      "line": 30,
+      "status": "expected",
+      "serverMode": "development"
+    },
+    {
+      "suite": "localization.spec.ts",
+      "title": "localization.spec.ts > switching language preserves sale values, payment modal, demand form and voice transcript",
+      "line": 42,
+      "status": "expected",
+      "serverMode": "development"
+    },
+    {
+      "suite": "localization.spec.ts",
+      "title": "localization.spec.ts > saved profile wins on a fresh device and shared Assistant renders delayed reports in the current language",
+      "line": 52,
+      "status": "expected",
+      "serverMode": "development"
+    },
+    {
+      "suite": "localization.spec.ts",
+      "title": "localization.spec.ts > display language changes during mocked live capture preserve spoken language and transcript without saving",
+      "line": 58,
+      "status": "expected",
+      "serverMode": "development"
+    },
+    {
+      "suite": "localization.spec.ts",
+      "title": "localization.spec.ts > communication choice remains independent of display language and previews do not change the ledger",
+      "line": 62,
+      "status": "expected",
+      "serverMode": "development"
+    },
+    {
+      "suite": "localization.spec.ts",
+      "title": "localization.spec.ts > registered profile survives logout, fresh-device login and business switches despite an English cookie",
+      "line": 65,
+      "status": "expected",
+      "serverMode": "development"
+    },
+    {
+      "suite": "pdf-suite.spec.ts",
+      "title": "pdf-suite.spec.ts > en: premium private PDFs preview, download and print from existing business workflows",
+      "line": 20,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "pdf-suite.spec.ts",
+      "title": "pdf-suite.spec.ts > hi: premium private PDFs preview, download and print from existing business workflows",
+      "line": 20,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "pdf-suite.spec.ts",
+      "title": "pdf-suite.spec.ts > hinglish: premium private PDFs preview, download and print from existing business workflows",
+      "line": 20,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "premium-modules.spec.ts",
+      "title": "premium-modules.spec.ts > directory filters, signed refunds and record actions use the real ledger without changing it",
+      "line": 19,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "premium-modules.spec.ts",
+      "title": "premium-modules.spec.ts > all seven sections fit desktop, tablet and small phones in all three languages",
+      "line": 51,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "premium-voice-v14.spec.ts",
+      "title": "premium-voice-v14.spec.ts > screenshot command chooses stock from Billing, keeps three quantities, resolves dal and saves one atomic batch",
+      "line": 29,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "premium-voice-v14.spec.ts",
+      "title": "premium-voice-v14.spec.ts > same instruction can choose cash sale without asking for spoken quantities again",
+      "line": 32,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "premium-voice-v14.spec.ts",
+      "title": "premium-voice-v14.spec.ts > DemandPulse prepares an unmatched product in place, preserves a lost acknowledgement and creates no fictitious stock or sales",
+      "line": 35,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "premium-voice-v14.spec.ts",
+      "title": "premium-voice-v14.spec.ts > Business Assistant and global VoiceOS keep one scoped draft; customer and price edits use real domain controls",
+      "line": 38,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "premium-voice-v14.spec.ts",
+      "title": "premium-voice-v14.spec.ts > speech finalizes once; interim-only and aborted recordings do not auto-prepare or save",
+      "line": 41,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "premium-voice-v14.spec.ts",
+      "title": "premium-voice-v14.spec.ts > denied microphone retains typing without claiming a prepared or saved action",
+      "line": 44,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "premium-voice-v14.spec.ts",
+      "title": "premium-voice-v14.spec.ts > seven-screen audit renders responsively in three languages, exposes readable timeline and passes accessibility",
+      "line": 47,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "premium-website.spec.ts",
+      "title": "premium-website.spec.ts > V8 public pages render in all languages across the required viewport widths",
+      "line": 5,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "premium-website.spec.ts",
+      "title": "premium-website.spec.ts > fictional product demos have pause, replay and reduced-motion controls without any writes",
+      "line": 15,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "premium-website.spec.ts",
+      "title": "premium-website.spec.ts > industry keyboard controls, help search, mobile navigation and localized CTAs work",
+      "line": 24,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "premium-website.spec.ts",
+      "title": "premium-website.spec.ts > auth password controls, matching, legal acknowledgement and language changes preserve form values",
+      "line": 32,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "product.spec.ts",
+      "title": "product.spec.ts > public pages have real routes, SEO and phone layouts",
+      "line": 10,
+      "status": "expected",
+      "serverMode": "development"
+    },
+    {
+      "suite": "product.spec.ts",
+      "title": "product.spec.ts > merchant onboarding, partial bill and repayment persist through refresh",
+      "line": 18,
+      "status": "expected",
+      "serverMode": "development"
+    },
+    {
+      "suite": "product.spec.ts",
+      "title": "product.spec.ts > three languages, switching businesses and narrow app layouts",
+      "line": 28,
+      "status": "expected",
+      "serverMode": "development"
+    },
+    {
+      "suite": "product.spec.ts",
+      "title": "product.spec.ts > 500g bill, cancellation and signed refund update stock together",
+      "line": 38,
+      "status": "expected",
+      "serverMode": "development"
+    },
+    {
+      "suite": "product.spec.ts",
+      "title": "product.spec.ts > expense and daily close record cash and prevent new financial entries",
+      "line": 43,
+      "status": "expected",
+      "serverMode": "development"
+    },
+    {
+      "suite": "product.spec.ts",
+      "title": "product.spec.ts > protected routes, API tenant isolation and CSRF reject unauthorized requests",
+      "line": 48,
+      "status": "expected",
+      "serverMode": "development"
+    },
+    {
+      "suite": "product.spec.ts",
+      "title": "product.spec.ts > received purchase, wastage and business export preserve ledger quantities",
+      "line": 52,
+      "status": "expected",
+      "serverMode": "development"
+    },
+    {
+      "suite": "smart-sidebar.spec.ts",
+      "title": "smart-sidebar.spec.ts > one navigation registry serves expanded, persistent rail, nested tools and profile actions",
+      "line": 14,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "smart-sidebar.spec.ts",
+      "title": "smart-sidebar.spec.ts > drawer locks page scrolling, closes on outside tap and brand navigation, and restores its trigger",
+      "line": 31,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "smart-sidebar.spec.ts",
+      "title": "smart-sidebar.spec.ts > shop switches protect drafts, commit scope atomically and preserve the active shop on failure",
+      "line": 35,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "smart-sidebar.spec.ts",
+      "title": "smart-sidebar.spec.ts > mobile drawer keyboard, route closing and eleven widths stay accessible in three languages",
+      "line": 52,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "v2-business.spec.ts",
+      "title": "v2-business.spec.ts > customer360, statement PDF, product aliases and invoice snapshots remain connected",
+      "line": 16,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "v2-business.spec.ts",
+      "title": "v2-business.spec.ts > customer details and data-backed insights are accessible across phone widths and languages",
+      "line": 31,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "v2-sales.spec.ts",
+      "title": "v2-sales.spec.ts > Fashion mobile sale records two shirts, photo, split payments and exactly one stock deduction",
+      "line": 89,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "v2-sales.spec.ts",
+      "title": "v2-sales.spec.ts > quick customer, stock validation and all three languages preserve the same sale draft",
+      "line": 136,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "v2-sales.spec.ts",
+      "title": "v2-sales.spec.ts > photo upload failure keeps quantities and payments, retry links photo, and removal deletes pending image",
+      "line": 155,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "v2-sales.spec.ts",
+      "title": "v2-sales.spec.ts > single sale screen has no overflow or Axe violations across phone, tablet and desktop widths",
+      "line": 174,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "v2-sales.spec.ts",
+      "title": "v2-sales.spec.ts > multi-item credit sale and paid walk-in UPI sale validate money without manual stock entry",
+      "line": 184,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "v2-sales.spec.ts",
+      "title": "v2-sales.spec.ts > a committed sale with a lost response stays locked across reload and replays its exact request despite lower stock",
+      "line": 206,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "v2-sales.spec.ts",
+      "title": "v2-sales.spec.ts > corrupt restored attachment metadata never loads external or cross-business URLs and never crashes the sale",
+      "line": 239,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "v2-sales.spec.ts",
+      "title": "v2-sales.spec.ts > blocked device storage prevents an unprotected sale request",
+      "line": 253,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "v2-sales.spec.ts",
+      "title": "v2-sales.spec.ts > quick customer lost response preserves its exact request across reload and selects one recovered profile",
+      "line": 263,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "v2-voice.spec.ts",
+      "title": "v2-voice.spec.ts > sample command is explicitly simulated, review resolves ambiguity, atomic save and repeat need confirmation",
+      "line": 12,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "v2-voice.spec.ts",
+      "title": "v2-voice.spec.ts > correction follow-up, manual hybrid, draft recovery and offline confirmation are safe",
+      "line": 22,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "v2-voice.spec.ts",
+      "title": "v2-voice.spec.ts > unsupported and denied speech show manual fallback, indexed interim repeats do not duplicate rows",
+      "line": 26,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "v2-voice.spec.ts",
+      "title": "v2-voice.spec.ts > voice batch browser API retry, tenant reference and demo reset preserve isolation",
+      "line": 31,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "v2-voice.spec.ts",
+      "title": "v2-voice.spec.ts > lost save acknowledgement reuses the frozen batch key without adding stock twice",
+      "line": 35,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "v2-voice.spec.ts",
+      "title": "v2-voice.spec.ts > browser speech adapter exposes stop and replaces repeated interim/final segments",
+      "line": 39,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "v3-demand.spec.ts",
+      "title": "v3-demand.spec.ts > missed XL request → reviewed reorder → actual receipt → manual follow-up → saved sale attribution",
+      "line": 13,
+      "status": "expected",
+      "serverMode": "development"
+    },
+    {
+      "suite": "v3-demand.spec.ts",
+      "title": "v3-demand.spec.ts > uncatalogued voice draft keeps reported customers separate and requires requested quantity",
+      "line": 18,
+      "status": "expected",
+      "serverMode": "development"
+    },
+    {
+      "suite": "v3-demand.spec.ts",
+      "title": "v3-demand.spec.ts > uncertain demand acknowledgement survives reload and repeats one unchanged request",
+      "line": 19,
+      "status": "expected",
+      "serverMode": "development"
+    },
+    {
+      "suite": "v3-demand.spec.ts",
+      "title": "v3-demand.spec.ts > feature switches change navigation and reject direct API writes while keeping history",
+      "line": 20,
+      "status": "expected",
+      "serverMode": "development"
+    },
+    {
+      "suite": "v3-demand.spec.ts",
+      "title": "v3-demand.spec.ts > private verification, onboarding and password recovery work through the browser",
+      "line": 21,
+      "status": "expected",
+      "serverMode": "development"
+    },
+    {
+      "suite": "v3-demand.spec.ts",
+      "title": "v3-demand.spec.ts > DemandPulse, account and configuration fit phones and have no automated WCAG violations",
+      "line": 22,
+      "status": "expected",
+      "serverMode": "development"
+    },
+    {
+      "suite": "v3-demand.spec.ts",
+      "title": "v3-demand.spec.ts > CSV review imports opening inventory without a sale and rejects accidental duplicate imports",
+      "line": 23,
+      "status": "expected",
+      "serverMode": "development"
+    },
+    {
+      "suite": "v3-demand.spec.ts",
+      "title": "v3-demand.spec.ts > owner invites a staff member; team, reports, costs and stock writes stay protected",
+      "line": 24,
+      "status": "expected",
+      "serverMode": "development"
+    },
+    {
+      "suite": "voice-hero.spec.ts",
+      "title": "voice-hero.spec.ts > one contextual hero covers business routes and adapts to the active intelligence tool",
+      "line": 12,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "voice-hero.spec.ts",
+      "title": "voice-hero.spec.ts > example prefill waits for review and confirmation; selected product and customer stay separate",
+      "line": 20,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "voice-hero.spec.ts",
+      "title": "voice-hero.spec.ts > collapse preference persists across pages, reload, business and UI language; a different user starts expanded",
+      "line": 26,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "voice-hero.spec.ts",
+      "title": "voice-hero.spec.ts > hero keyboard launch preserves the unfinished sale form and explicit intent overrides stock context",
+      "line": 30,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "voice-hero.spec.ts",
+      "title": "voice-hero.spec.ts > premium heroes fit desktop, tablet and 320px mobile with accessible en controls",
+      "line": 34,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "voice-hero.spec.ts",
+      "title": "voice-hero.spec.ts > premium heroes fit desktop, tablet and 320px mobile with accessible hi controls",
+      "line": 34,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "voice-hero.spec.ts",
+      "title": "voice-hero.spec.ts > premium heroes fit desktop, tablet and 320px mobile with accessible hinglish controls",
+      "line": 34,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "voice-products.spec.ts",
+      "title": "voice-products.spec.ts > voice entry is highlighted at the top; new spoken products and stock save together",
+      "line": 30,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "voice-products.spec.ts",
+      "title": "voice-products.spec.ts > a lost new-product acknowledgement survives reload and retries without duplicate products or stock",
+      "line": 69,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "voice-products.spec.ts",
+      "title": "voice-products.spec.ts > the highlighted entry and new-product review fit phones in all three languages",
+      "line": 88,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "voice-v15.spec.ts",
+      "title": "voice-v15.spec.ts > V15 separates Rahul and Daal, preserves corrections and commits the real reviewed sale once",
+      "line": 12,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "voice-v15.spec.ts",
+      "title": "voice-v15.spec.ts > V15 ambiguous add asks bill or stock, and a conditional calculation never saves business data",
+      "line": 13,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "voice-v15.spec.ts",
+      "title": "voice-v15.spec.ts > V15 reorder calculation shows assumptions and saves only an unreceived draft with a frozen retry",
+      "line": 14,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "voice-v15.spec.ts",
+      "title": "voice-v15.spec.ts > V15 invoice text extraction verifies totals, then opens the actual purchase receipt form without receiving",
+      "line": 15,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "voice-v15.spec.ts",
+      "title": "voice-v15.spec.ts > V15 intelligence and mobile multilingual panels preserve accessible layouts and sidebar branding",
+      "line": 16,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "voice-v15.spec.ts",
+      "title": "voice-v15.spec.ts > V15 extracted invoice requires an explicit choice for competing product variants",
+      "line": 17,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "voice-v17.spec.ts",
+      "title": "voice-v17.spec.ts > V17 multi-turn bill retains corrections and an incidental report, then settles only old dues",
+      "line": 15,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "voice-v17.spec.ts",
+      "title": "voice-v17.spec.ts > V17 stock uses edited rows and freezes uncertain batch retries across dismiss and reload",
+      "line": 31,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "voice-v17.spec.ts",
+      "title": "voice-v17.spec.ts > V17 simulated recognition uses final transcripts, never saves interim audio, and has denial fallback",
+      "line": 40,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "voice-v17.spec.ts",
+      "title": "voice-v17.spec.ts > V17 a late optional interpretation cannot replace a manual correction",
+      "line": 50,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "voice-v17.spec.ts",
+      "title": "voice-v17.spec.ts > V17 multilingual composer, drafts and stock rows fit supported widths with keyboard and accessibility",
+      "line": 55,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "voice3.spec.ts",
+      "title": "voice3.spec.ts > Default hands-free completes the spoken Rahul bill through verified database results and same-language replies",
+      "line": 29,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "voice3.spec.ts",
+      "title": "voice3.spec.ts > actual device voice choices share previews and persisted preferences across the dialog and main settings",
+      "line": 39,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "voice3.spec.ts",
+      "title": "voice3.spec.ts > spoken stock confirmation uses manual corrections once and cannot create a product from a generic request",
+      "line": 43,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "voice3.spec.ts",
+      "title": "voice3.spec.ts > encoded microphone turns release tracks and complete customer creation through the configured audio interface",
+      "line": 47,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "voice3.spec.ts",
+      "title": "voice3.spec.ts > reply language stays independent of display language and premium dialogue controls fit phones without audio after closure",
+      "line": 54,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "voice3.spec.ts",
+      "title": "voice3.spec.ts > a recovered Hindi conversation keeps its language for short answers and cancellation leaves records unchanged",
+      "line": 59,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "voice3.spec.ts",
+      "title": "voice3.spec.ts > cloud replies play real decoded audio under CSP and stop when the assistant closes",
+      "line": 63,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "voice31.spec.ts",
+      "title": "voice31.spec.ts > English default → exact Hinglish customer → automatic endpoint → spoken confirmation → one verified customer",
+      "line": 25,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "voice31.spec.ts",
+      "title": "voice31.spec.ts > a delayed old sales report cannot replace the new customer draft or spoken response",
+      "line": 32,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "voice31.spec.ts",
+      "title": "voice31.spec.ts > same-intent new report does not display or speak the old period while its request is pending",
+      "line": 38,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "voice31.spec.ts",
+      "title": "voice31.spec.ts > provider missing-end recovery accepts finals once but never dispatches interim-only speech; closing invalidates late callbacks",
+      "line": 41,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "voice31.spec.ts",
+      "title": "voice31.spec.ts > topbar defaults and changes preserve drafts; clear speech and recovered short answers take precedence",
+      "line": 44,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "voice31.spec.ts",
+      "title": "voice31.spec.ts > localized workspace, specific drafts and sticky mobile actions fit 12 layouts with accessible controls",
+      "line": 47,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "voice31.spec.ts",
+      "title": "voice31.spec.ts > default hands-free endpoints complete the 800 bill with 500 UPI and 300 credit through the real backend",
+      "line": 50,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "voice31.spec.ts",
+      "title": "voice31.spec.ts > actual MediaRecorder encoding ends on quiet audio without Stop; mocked cloud result prepares a real customer draft",
+      "line": 55,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "voice31.spec.ts",
+      "title": "voice31.spec.ts > standalone stock consumes its unique final receipt automatically and saves inventory only after confirmation",
+      "line": 61,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "voice33.spec.ts",
+      "title": "voice33.spec.ts > open once → greeting → duplicate Rahul → separate decision → spoken save → verified success → next task, without mic clicks",
+      "line": 25,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "voice33.spec.ts",
+      "title": "voice33.spec.ts > pause latches during greeting and capture; resume is explicit; close releases and rejects late finals",
+      "line": 32,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "voice33.spec.ts",
+      "title": "voice33.spec.ts > hands-free bill conversation commits correct invoice, inventory and ledger; success opens the next listening turn",
+      "line": 35,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "voice33.spec.ts",
+      "title": "voice33.spec.ts > permission failure stops the loop, permits typing and never retries in the background",
+      "line": 40,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "voice33.spec.ts",
+      "title": "voice33.spec.ts > lost customer acknowledgement recovers the committed receipt before retry, with no second customer POST",
+      "line": 43,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "voice33.spec.ts",
+      "title": "voice33.spec.ts > minimal three-language dialog keeps composer and confirmation visible, with accessible contrast and no overflow",
+      "line": 46,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "voice33.spec.ts",
+      "title": "voice33.spec.ts > reopening clears the old read-only answer and greets in the app language; an unfinished draft retains its language",
+      "line": 49,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "voiceos.spec.ts",
+      "title": "voiceos.spec.ts > demo A/D/E: reviewed voice bill, one stock deduction, old credit collection and ledger report",
+      "line": 18,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "voiceos.spec.ts",
+      "title": "voiceos.spec.ts > demo B/C: voice stock receipt and out-of-stock demand update their own records only",
+      "line": 29,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "voiceos.spec.ts",
+      "title": "voiceos.spec.ts > manual edits, missing answers, item removal, cancellation and a new bill keep draft boundaries",
+      "line": 35,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "voiceos.spec.ts",
+      "title": "voiceos.spec.ts > an unspecified receipt stays unconfirmed after reload; explicit manual payment resolves it",
+      "line": 40,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "voiceos.spec.ts",
+      "title": "voiceos.spec.ts > customers, suppliers, actual purchases and expenses use confirmed forms and recover lost acknowledgements",
+      "line": 43,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "voiceos.spec.ts",
+      "title": "voiceos.spec.ts > shared microphone replaces interim results, never auto-saves, and clears capture on business switch",
+      "line": 51,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "voiceos.spec.ts",
+      "title": "voiceos.spec.ts > global navigation, reorder planning and consent-aware message previews preserve write boundaries",
+      "line": 56,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "voiceos.spec.ts",
+      "title": "voiceos.spec.ts > VoiceOS has usable mobile layouts, accessible forms and distinct display/spoken languages",
+      "line": 61,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "workspace-overlays.spec.ts",
+      "title": "workspace-overlays.spec.ts > workspace search supports shortcuts, real records, clearing and restored focus",
+      "line": 16,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "workspace-overlays.spec.ts",
+      "title": "workspace-overlays.spec.ts > updates filters preserve counts and open the actual stock or customer record",
+      "line": 24,
+      "status": "expected",
+      "serverMode": "production"
+    },
+    {
+      "suite": "workspace-overlays.spec.ts",
+      "title": "workspace-overlays.spec.ts > hero and overlays remain readable, accessible and usable in all display languages",
+      "line": 32,
+      "status": "expected",
+      "serverMode": "production"
+    }
+  ]
+}

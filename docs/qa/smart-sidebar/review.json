@@ -1,0 +1,174 @@
+{
+  "checkedAt": "2026-10-11T21:32:14.897Z",
+  "environment": "Compiled production build; isolated fictional demo database",
+  "layouts": [
+    {
+      "language": "en",
+      "width": 320,
+      "overflow": false
+    },
+    {
+      "language": "en",
+      "width": 360,
+      "overflow": false
+    },
+    {
+      "language": "en",
+      "width": 375,
+      "overflow": false
+    },
+    {
+      "language": "en",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "language": "en",
+      "width": 412,
+      "overflow": false
+    },
+    {
+      "language": "en",
+      "width": 430,
+      "overflow": false
+    },
+    {
+      "language": "en",
+      "width": 768,
+      "overflow": false
+    },
+    {
+      "language": "en",
+      "width": 1024,
+      "overflow": false
+    },
+    {
+      "language": "en",
+      "width": 1280,
+      "overflow": false
+    },
+    {
+      "language": "en",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "language": "en",
+      "width": 1920,
+      "overflow": false
+    },
+    {
+      "language": "hi",
+      "width": 320,
+      "overflow": false
+    },
+    {
+      "language": "hi",
+      "width": 360,
+      "overflow": false
+    },
+    {
+      "language": "hi",
+      "width": 375,
+      "overflow": false
+    },
+    {
+      "language": "hi",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "language": "hi",
+      "width": 412,
+      "overflow": false
+    },
+    {
+      "language": "hi",
+      "width": 430,
+      "overflow": false
+    },
+    {
+      "language": "hi",
+      "width": 768,
+      "overflow": false
+    },
+    {
+      "language": "hi",
+      "width": 1024,
+      "overflow": false
+    },
+    {
+      "language": "hi",
+      "width": 1280,
+      "overflow": false
+    },
+    {
+      "language": "hi",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "language": "hi",
+      "width": 1920,
+      "overflow": false
+    },
+    {
+      "language": "hinglish",
+      "width": 320,
+      "overflow": false
+    },
+    {
+      "language": "hinglish",
+      "width": 360,
+      "overflow": false
+    },
+    {
+      "language": "hinglish",
+      "width": 375,
+      "overflow": false
+    },
+    {
+      "language": "hinglish",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "language": "hinglish",
+      "width": 412,
+      "overflow": false
+    },
+    {
+      "language": "hinglish",
+      "width": 430,
+      "overflow": false
+    },
+    {
+      "language": "hinglish",
+      "width": 768,
+      "overflow": false
+    },
+    {
+      "language": "hinglish",
+      "width": 1024,
+      "overflow": false
+    },
+    {
+      "language": "hinglish",
+      "width": 1280,
+      "overflow": false
+    },
+    {
+      "language": "hinglish",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "language": "hinglish",
+      "width": 1920,
+      "overflow": false
+    }
+  ],
+  "accessibilityScans": 5,
+  "runtimeErrors": [],
+  "ledgerUnchanged": true
+}

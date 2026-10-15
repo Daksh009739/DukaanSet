@@ -1,0 +1,351 @@
+{
+  "checkedAt": "2026-10-12T07:31:08.911Z",
+  "checks": [
+    {
+      "language": "en",
+      "width": 320,
+      "state": "idle"
+    },
+    {
+      "language": "en",
+      "width": 360,
+      "state": "idle"
+    },
+    {
+      "language": "en",
+      "width": 375,
+      "state": "idle"
+    },
+    {
+      "language": "en",
+      "width": 390,
+      "state": "idle"
+    },
+    {
+      "language": "en",
+      "width": 412,
+      "state": "idle"
+    },
+    {
+      "language": "en",
+      "width": 430,
+      "state": "idle"
+    },
+    {
+      "language": "en",
+      "width": 768,
+      "state": "idle"
+    },
+    {
+      "language": "en",
+      "width": 1024,
+      "state": "idle"
+    },
+    {
+      "language": "en",
+      "width": 1280,
+      "state": "idle"
+    },
+    {
+      "language": "en",
+      "width": 1440,
+      "state": "idle"
+    },
+    {
+      "language": "en",
+      "width": 1920,
+      "state": "idle"
+    },
+    {
+      "language": "en",
+      "width": 320,
+      "state": "sale"
+    },
+    {
+      "language": "en",
+      "width": 390,
+      "state": "sale"
+    },
+    {
+      "language": "en",
+      "width": 768,
+      "state": "sale"
+    },
+    {
+      "language": "en",
+      "width": 1440,
+      "state": "sale"
+    },
+    {
+      "language": "en",
+      "width": 320,
+      "state": "catalog"
+    },
+    {
+      "language": "en",
+      "width": 390,
+      "state": "catalog"
+    },
+    {
+      "language": "en",
+      "width": 768,
+      "state": "catalog"
+    },
+    {
+      "language": "en",
+      "width": 1440,
+      "state": "catalog"
+    },
+    {
+      "language": "en",
+      "width": 320,
+      "state": "stock"
+    },
+    {
+      "language": "en",
+      "width": 390,
+      "state": "stock"
+    },
+    {
+      "language": "en",
+      "width": 768,
+      "state": "stock"
+    },
+    {
+      "language": "en",
+      "width": 1440,
+      "state": "stock"
+    },
+    {
+      "language": "hi",
+      "width": 320,
+      "state": "idle"
+    },
+    {
+      "language": "hi",
+      "width": 360,
+      "state": "idle"
+    },
+    {
+      "language": "hi",
+      "width": 375,
+      "state": "idle"
+    },
+    {
+      "language": "hi",
+      "width": 390,
+      "state": "idle"
+    },
+    {
+      "language": "hi",
+      "width": 412,
+      "state": "idle"
+    },
+    {
+      "language": "hi",
+      "width": 430,
+      "state": "idle"
+    },
+    {
+      "language": "hi",
+      "width": 768,
+      "state": "idle"
+    },
+    {
+      "language": "hi",
+      "width": 1024,
+      "state": "idle"
+    },
+    {
+      "language": "hi",
+      "width": 1280,
+      "state": "idle"
+    },
+    {
+      "language": "hi",
+      "width": 1440,
+      "state": "idle"
+    },
+    {
+      "language": "hi",
+      "width": 1920,
+      "state": "idle"
+    },
+    {
+      "language": "hi",
+      "width": 320,
+      "state": "sale"
+    },
+    {
+      "language": "hi",
+      "width": 390,
+      "state": "sale"
+    },
+    {
+      "language": "hi",
+      "width": 768,
+      "state": "sale"
+    },
+    {
+      "language": "hi",
+      "width": 1440,
+      "state": "sale"
+    },
+    {
+      "language": "hi",
+      "width": 320,
+      "state": "catalog"
+    },
+    {
+      "language": "hi",
+      "width": 390,
+      "state": "catalog"
+    },
+    {
+      "language": "hi",
+      "width": 768,
+      "state": "catalog"
+    },
+    {
+      "language": "hi",
+      "width": 1440,
+      "state": "catalog"
+    },
+    {
+      "language": "hi",
+      "width": 320,
+      "state": "stock"
+    },
+    {
+      "language": "hi",
+      "width": 390,
+      "state": "stock"
+    },
+    {
+      "language": "hi",
+      "width": 768,
+      "state": "stock"
+    },
+    {
+      "language": "hi",
+      "width": 1440,
+      "state": "stock"
+    },
+    {
+      "language": "hinglish",
+      "width": 320,
+      "state": "idle"
+    },
+    {
+      "language": "hinglish",
+      "width": 360,
+      "state": "idle"
+    },
+    {
+      "language": "hinglish",
+      "width": 375,
+      "state": "idle"
+    },
+    {
+      "language": "hinglish",
+      "width": 390,
+      "state": "idle"
+    },
+    {
+      "language": "hinglish",
+      "width": 412,
+      "state": "idle"
+    },
+    {
+      "language": "hinglish",
+      "width": 430,
+      "state": "idle"
+    },
+    {
+      "language": "hinglish",
+      "width": 768,
+      "state": "idle"
+    },
+    {
+      "language": "hinglish",
+      "width": 1024,
+      "state": "idle"
+    },
+    {
+      "language": "hinglish",
+      "width": 1280,
+      "state": "idle"
+    },
+    {
+      "language": "hinglish",
+      "width": 1440,
+      "state": "idle"
+    },
+    {
+      "language": "hinglish",
+      "width": 1920,
+      "state": "idle"
+    },
+    {
+      "language": "hinglish",
+      "width": 320,
+      "state": "sale"
+    },
+    {
+      "language": "hinglish",
+      "width": 390,
+      "state": "sale"
+    },
+    {
+      "language": "hinglish",
+      "width": 768,
+      "state": "sale"
+    },
+    {
+      "language": "hinglish",
+      "width": 1440,
+      "state": "sale"
+    },
+    {
+      "language": "hinglish",
+      "width": 320,
+      "state": "catalog"
+    },
+    {
+      "language": "hinglish",
+      "width": 390,
+      "state": "catalog"
+    },
+    {
+      "language": "hinglish",
+      "width": 768,
+      "state": "catalog"
+    },
+    {
+      "language": "hinglish",
+      "width": 1440,
+      "state": "catalog"
+    },
+    {
+      "language": "hinglish",
+      "width": 320,
+      "state": "stock"
+    },
+    {
+      "language": "hinglish",
+      "width": 390,
+      "state": "stock"
+    },
+    {
+      "language": "hinglish",
+      "width": 768,
+      "state": "stock"
+    },
+    {
+      "language": "hinglish",
+      "width": 1440,
+      "state": "stock"
+    }
+  ],
+  "errors": []
+}

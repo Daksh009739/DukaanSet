@@ -124,7 +124,7 @@ export function calculateSale(draft: SaleDraft, products: Product[]) {
       quantityMilli = minorUnits(row.value, 3);
       if (!quantityMilli) error = 'quantityInvalid';
       else if (isWholeQuantityUnit(row.product.unit) && quantityMilli % 1000) error = 'wholeQuantity';
-      else if (quantityMilli > row.product.quantityMilli) error = 'stockShortage';
+      else if (row.product.stockTracked!==false && quantityMilli > row.product.quantityMilli) error = 'stockShortage';
       const sellingPrice=draft.prices?.[row.product.id]===undefined?row.product.pricePaise:minorUnits(draft.prices[row.product.id]);
       totalPaise = lineTotal(sellingPrice, quantityMilli);
       if (!Number.isSafeInteger(totalPaise)) error = 'quantityInvalid';

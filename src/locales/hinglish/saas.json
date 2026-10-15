@@ -223,5 +223,6 @@
   "emailExpiryReset": "Yeh link 30 minute mein expire hoga.",
   "emailExpiryOther": "Yeh link 24 ghante mein expire hoga.",
   "emailSafety": "Agar aapne request nahi ki, ise ignore karein. Yeh link kabhi share na karein.",
-  "followupMessage": "Namaste {{name}}, jo {{item}} aapne poocha tha woh {{business}} mein phir mil raha hai. Abhi bhi chahiye toh reply karein."
+  "followupMessage": "Namaste {{name}}, jo {{item}} aapne poocha tha woh {{business}} mein phir mil raha hai. Abhi bhi chahiye toh reply karein.",
+  "paymentAccounts": "Payment Accounts Sambhalein"
 }

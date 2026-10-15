@@ -1,0 +1,70 @@
+{
+  "checkedAt": "2026-10-14T20:48:31.549Z",
+  "environment": "Compiled application and real isolated database; actual browser MediaRecorder/WebAudio and HTMLAudioElement; simulated recognition, ownership verifier and cloning/TTS providers",
+  "humanMicrophone": false,
+  "realVoiceClone": false,
+  "checks": [
+    "Explicit consent, live challenge, real 12-second WebAudio/MediaRecorder encoding, released tracks and no generation before Generate",
+    "Real backend verified-profile adapter, provider-status read, generated test-tone playback, preview completion gate and persisted activation without granting STT consent",
+    "The same private profile persists after reload and each language requires its own generated preview approval; no reply-language selector",
+    "Selected custom-voice audio pipeline preserves default hands-free separate Rahul, one confirmed backend save and next-task listening; simulated provider outage uses disclosed native fallback",
+    "Opening shared settings suspends the conversation microphone; closing restores an active session without overlap or a manual microphone click",
+    "Confirmed provider deletion deactivates the preference, removes private references and unlocks fresh setup",
+    "Denied permission has a usable recovery, the actual recording automatically stops at the 15-second ceiling, and Retake/Cancel release tracks without another cloning request"
+  ],
+  "layouts": [
+    {
+      "language": "en",
+      "width": 320
+    },
+    {
+      "language": "en",
+      "width": 390
+    },
+    {
+      "language": "en",
+      "width": 768
+    },
+    {
+      "language": "en",
+      "width": 1440
+    },
+    {
+      "language": "hi",
+      "width": 320
+    },
+    {
+      "language": "hi",
+      "width": 390
+    },
+    {
+      "language": "hi",
+      "width": 768
+    },
+    {
+      "language": "hi",
+      "width": 1440
+    },
+    {
+      "language": "hinglish",
+      "width": 320
+    },
+    {
+      "language": "hinglish",
+      "width": 390
+    },
+    {
+      "language": "hinglish",
+      "width": 768
+    },
+    {
+      "language": "hinglish",
+      "width": 1440
+    }
+  ],
+  "accessibilityScans": 3,
+  "limitations": [
+    "Generated QA audio is a synthetic test tone, not a human voice or a voice-similarity test.",
+    "Provider eligibility, approved ownership verification, actual Hindi/English/Hinglish quality and physical Android testing remain pending."
+  ]
+}

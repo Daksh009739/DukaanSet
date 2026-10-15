@@ -1,0 +1,43 @@
+.header.header.header:global(.app-header) {
+  --header-ink:#eefcf5;--header-muted:#c0e2d3;
+  background:linear-gradient(115deg,#073d35,#095743 70%,#116952);color:var(--header-ink);
+  border-bottom:1px solid #3f9b7b;box-shadow:0 3px 14px #123e3012,inset 0 1px #ffffff0b;
+  min-height:78px;height:78px;padding:12px 24px;gap:20px;
+}
+.header.header :global(.global-search-trigger) {flex:1;min-width:0;width:auto;max-width:620px;min-height:48px;gap:12px;padding:0 16px;border:1px solid #78bd9e66;border-radius:15px;background:#ffffff12;color:#e4faee;box-shadow:inset 0 1px #ffffff0f;text-align:left}
+.header.header :global(.global-search-trigger>svg) {flex:none;color:#a7f0ce;stroke-width:1.8}
+.header.header :global(.global-search-trigger>span) {flex:1;min-width:0;font-size:12px;font-weight:550;color:#d0ecde;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.header.header :global(.global-search-trigger kbd) {flex:none;display:inline-flex;align-items:center;justify-content:center;min-height:27px;min-width:44px;padding:3px 7px;border:1px solid #90d0af55;border-radius:7px;background:#ffffff0e;color:#d5f6e4;font-size:10px;box-shadow:0 1px 2px #00291c15}
+.header.header :global(.global-search-trigger:hover:not(:disabled)) {background:#ffffff20;border-color:#a2e9bf;color:#fff;box-shadow:inset 0 1px #ffffff20,0 3px 12px #0033201a}
+.header.header :global(.global-search-trigger:focus-visible) {outline:3px solid #9ef5c9;outline-offset:3px;border-color:#cafde2;background:#ffffff20}
+.header.header :global(.header-tools) {gap:12px;flex:none;margin-left:auto;min-width:0}
+.header.header :global(.notification-button) {position:relative;display:grid;place-items:center;flex:none;min-height:43px;height:43px;min-width:43px;width:43px;background:#ffffff0e;color:#e2f8ec;border:1px solid #88c3a954;border-radius:13px}
+.header.header :global(.notification-button:hover) {color:#fff;background:#ffffff22;border-color:#95dbb8}
+.header.header :global(.notification-button>span) {display:grid;place-items:center;position:absolute;top:-5px;right:-4px;min-width:19px;height:19px;line-height:1;padding:0 4px;background:#ba4736;color:#fff;border:2px solid #07523f;border-radius:7px;font-size:10px;font-weight:800;box-shadow:0 2px 5px #002c2426}
+.header.header :global(.language-picker) {align-items:center;gap:7px;min-width:0;background:#ffffff10;border-color:#8dbca85c;border-radius:12px;box-shadow:inset 0 1px #ffffff0b}
+.localeIcon {display:grid;place-items:center;flex:none;color:#b7ecd0}
+.localeIcon svg {width:17px;height:17px;stroke-width:1.8}
+.header.header :global(.language-picker select) {color:#effff5;font-weight:650;font-size:12px;background:transparent;max-width:100px}
+.header.header :global(.language-picker:hover) {background:#ffffff22;border-color:#9ee1bc}
+.header.header :global(.language-picker:focus-within) {background:#ffffff20;border-color:#b6f5d0;box-shadow:0 0 0 3px #b1f6d02b}
+.header.header :global(select::picker-icon) {color:#bcebd0}
+.header.header .account.account {min-width:0;max-width:248px;gap:10px;padding:6px 10px 6px 6px;border:1px solid #8dc6aa45;background:#ffffff0c;border-radius:15px;box-shadow:inset 0 1px #ffffff0a}
+.header.header .account.account>div {flex:1;min-width:0;max-width:178px}
+.header.header .account.account :global(.profile-menu-trigger) {display:grid;place-items:center;flex:none;width:42px;height:42px;min-width:42px;border-radius:12px;background:linear-gradient(145deg,#cdfbe2,#a7ebc7);color:#145b40;border:1px solid #d0fce4;font-size:14px;font-weight:800;box-shadow:0 2px 5px #002e231a}
+.header.header .account.account :global(.profile-menu-trigger:hover) {background:#e6fff0;color:#084c33;border-color:#fff;box-shadow:0 3px 10px #002b272b}
+.header.header .account.account :global(.profile-name) {display:block;text-align:left;color:#fff;font-size:12px;font-weight:750;line-height:1.5;max-width:100%;min-height:28px;width:max-content;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;background:transparent;border-radius:5px;padding:0 3px;margin-left:-3px}
+.header.header .account.account :global(.profile-name:hover) {color:#d2ffe4;background:#ffffff16}
+.header.header .account.account :global(select) {font-size:11px;font-weight:500;color:var(--header-muted);line-height:1.5;max-width:100%;min-width:0;width:100%;min-height:28px;padding:0;background:transparent;border:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;border-radius:5px;gap:5px}
+.header.header .account.account :global(select:hover:not(:disabled)) {color:#effff5;background:#ffffff12}
+.header.header .account.account:focus-within {border-color:#b1f2cc;background:#ffffff14}
+.header.header :global(.voiceos-launcher) {background:#ddfbed;color:#08654a;border-color:#a8efd0;box-shadow:0 0 0 5px #91e8bd16,0 2px 8px #012e2526}
+.header.header :global(.voiceos-launcher:hover) {background:#f0fff6;color:#084f38;border-color:#d2ffe8;box-shadow:0 0 0 5px #b5f8d02a}
+.header.header :global(.reference-menu),.header.header :global(.mobile-only) {color:#e5f8ec;background:#ffffff0b;border:1px solid #84bda450;border-radius:11px}
+.header.header :global(.reference-menu:hover),.header.header :global(.mobile-only:hover) {background:#ffffff21;color:#fff;border-color:#a1e8be}
+.header.header :global(button:focus-visible),.header.header :global(select:focus-visible),.header.header :global(a:focus-visible) {outline:3px solid #a9f5c9;outline-offset:3px}
+.header.header :global(button:disabled),.header.header :global(select:disabled) {opacity:.55;cursor:wait}
+@media(min-width:1025px) and (max-width:1250px){.header.header.header:global(.app-header){padding:12px 18px;gap:16px}.header.header :global(.header-tools){gap:9px}.header.header .account.account{max-width:210px;gap:8px}.header.header .account.account>div{max-width:145px}.header.header :global(.global-search-trigger){padding:0 12px;gap:9px}.header.header :global(.global-search-trigger kbd){display:none}}
+@media(max-width:1024px){.header.header.header:global(.app-header){height:72px;min-height:72px;padding:10px 16px;gap:10px}.header.header :global(.header-tools){gap:10px}.header.header :global(.global-search-trigger){flex:0 0 40px;width:40px;min-width:40px;max-width:40px;min-height:40px;height:40px;border-radius:12px;justify-content:center;padding:0}.header.header :global(.global-search-trigger>span),.header.header :global(.global-search-trigger kbd){display:none}.header.header :global(.notification-button){width:40px;min-width:40px;min-height:40px;height:40px;border-radius:11px}.header.header .account.account{padding:0;border:0;background:transparent;box-shadow:none;gap:0;max-width:42px}.header.header .account.account :global(.profile-menu-trigger){width:39px;min-width:39px;height:39px;border-radius:12px}.header.header :global(.language-picker select){font-size:11px;max-width:78px}.localeIcon{display:none}.header.header :global(.mobile-only),.header.header :global(.reference-menu){min-height:40px;width:40px;min-width:40px}.header.header :global(.voiceos-launcher){box-shadow:0 0 0 4px #91e8bd17}}
+@media(max-width:600px){.header.header.header:global(.app-header){padding:10px 12px;gap:8px}.header.header :global(.header-tools){gap:8px}.header.header :global(.notification-button){width:36px;min-width:36px}.header.header :global(.mobile-only){width:36px;min-width:36px}.header.header :global(.language-picker){gap:0}}
+@media(max-width:359px){.header.header.header:global(.app-header){padding:10px 8px;gap:6px}.header.header :global(.header-tools){gap:6px}.header.header :global(.reference-menu){width:32px;min-width:32px}.header.header :global(.notification-button){width:32px;min-width:32px}.header.header :global(.language-picker select){max-width:70px}}
+@media(prefers-reduced-motion:reduce){.header.header :global(button),.header.header :global(select){transition:none}}

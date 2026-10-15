@@ -4,7 +4,7 @@ import {createRequire} from 'node:module';
 import {fileURLToPath} from 'node:url';
 const require=createRequire(import.meta.url),babel=require('next/dist/compiled/babel');
 export const locales=['en','hi','hinglish'];
-export const namespaces=['common','errors','retail','saas','sales','inventoryVoice','voiceos','marketing','documents','workspace'];
+export const namespaces=['common','errors','retail','saas','sales','inventoryVoice','voiceos','marketing','documents','workspace','speech'];
 const hindiTechnical=new Set('A4 AI CSV DemandPulse DukaanSet GST GitHub HTTPS IMEI IRN ISO JPEG KB MB OTP OpenAI PDF PIN PNG Pro SKU SMS SOC Starter Trial UPI VoiceOS WebP WhatsApp en-IN hi-IN localhost'.split(' '));
 // Approved Roman retail vocabulary. Full sentences may not use this exception.
 const sharedTerms=new Set('Home Bills Stock Customers Suppliers Reports Settings Payments DukaanSet AI Email Password Dashboard Product SKU Quantity Unit Customer Cash Subtotal Total Bill Date Status Supplier Download Hardware / Electrical optional Actions Security Team Privacy History Plan Available Environment Branch Commit Version piece pack bottle gram litre metre Packet Piece Kilogram Gram Box Litre Millilitre Dozen Metre Voice Manual Refresh Features Pricing Help Contact English · Hindi Hinglish Trial Starter Pro Refund Notes Requests Role Owner Manager Staff Draft VoiceOS DemandPulse Payment Online UPI Udhaar Discount Invoice Cancel'.split(' '));
@@ -14,7 +14,7 @@ export function flatten(value,prefix='',out={}){for(const[key,item]of Object.ent
 const variables=value=>[...value.matchAll(/\{\{\s*(\w+)\s*\}\}/g)].map(match=>match[1]).sort().join(',');
 export function compareDictionary(en,value,language,namespace){const issues=[];for(const key of new Set([...Object.keys(en),...Object.keys(value)])){const a=en[key],b=value[key];if(a===undefined||b===undefined){issues.push(key+': key mismatch');continue;}if(variables(a)!==variables(b))issues.push(key+': interpolation mismatch');const identity=namespace+':'+key;if(sourceKeys.has(identity))continue;const prose=b.replace(/\{\{.*?\}\}/g,'');if(language==='hi'){
  const words=prose.match(/[A-Za-z][A-Za-z0-9-]*/g)||[];
- const technicalCsv=namespace==='saas'&&key==='importHint';
+ const technicalCsv=(namespace==='saas'&&key==='importHint')||(namespace==='workspace'&&key==='smartUpi.importHint');
  if(!technicalCsv&&words.some(word=>!hindiTechnical.has(word)))issues.push(key+': unapproved Latin prose '+words.filter(word=>!hindiTechnical.has(word)).join(' '));
 }else if(/[\u0900-\u097f]/u.test(prose))issues.push(key+': unexpected Devanagari');
  if(language==='hinglish'&&a===b){const tokens=(prose.match(/[A-Za-z]+/g)||[]); if(tokens.some(token=>!sharedTerms.has(token)&&!sharedTerms.has(token.charAt(0).toUpperCase()+token.slice(1)))&&prose.trim())issues.push(key+': English copy requires a Hinglish translation');}

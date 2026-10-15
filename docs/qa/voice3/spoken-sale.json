@@ -1,0 +1,48 @@
+{
+  "environment": "Simulated browser ASR/TTS callbacks; real authenticated database transaction",
+  "invoice": {
+    "id": "b54a7460-8d83-4651-9641-300487d781e0",
+    "totalPaise": 80000,
+    "paidPaise": 50000,
+    "balancePaise": 30000
+  },
+  "writes": 1,
+  "overlaps": 0,
+  "spokenReplies": [
+    {
+      "text": "नमस्ते! आज मैं आपकी क्या मदद कर सकता हूँ?",
+      "voice": "qa-hi-a",
+      "lang": "hi-IN"
+    },
+    {
+      "text": "बिल्कुल। Rahul ने कौन सा सामान लिया?",
+      "voice": "qa-hi-a",
+      "lang": "hi-IN"
+    },
+    {
+      "text": "कुल ₹800 हुए। नकद मिला, UPI या उधार?",
+      "voice": "qa-hi-a",
+      "lang": "hi-IN"
+    },
+    {
+      "text": "कुल ₹800 हुए। नकद मिला, UPI या उधार?",
+      "voice": "qa-hi-a",
+      "lang": "hi-IN"
+    },
+    {
+      "text": "Rahul का बिल तैयार है: कुल ₹800, नकद ₹0, UPI ₹500 और उधार ₹300। सहेज दूँ?",
+      "voice": "qa-hi-a",
+      "lang": "hi-IN"
+    },
+    {
+      "text": "Rahul का DS-00008 बिल सहेज दिया है। कुल ₹800 और ₹300 उधार बाकी है। स्टॉक और ग्राहक का खाता अपडेट हो गए हैं।",
+      "voice": "qa-hi-a",
+      "lang": "hi-IN"
+    },
+    {
+      "text": "पहले छूटे हुए विवरण भरें। अभी कुछ नहीं सहेजा गया है।",
+      "voice": "qa-hi-a",
+      "lang": "hi-IN"
+    }
+  ]
+}

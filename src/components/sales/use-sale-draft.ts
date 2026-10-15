@@ -2,11 +2,13 @@
 
 import { useEffect, useState, type SetStateAction } from 'react';
 import { freshDraft, restoreDraft, type PendingSale, type SaleDraft } from './sale-draft';
+import {useUnsavedBusinessWork} from '../app-provider';
 
 export function useSaleDraft(storageKey: string, businessId: string) {
   const [draft, storeDraft] = useState<SaleDraft>(freshDraft);
   const [hydrated, setHydrated] = useState(false);
   const [storageError, setStorageError] = useState(false);
+  useUnsavedBusinessWork(Boolean(hydrated&&(draft.pendingSale||draft.recoveryBlocked||Object.keys(draft.items).length||draft.customerId||draft.received||draft.cash||draft.upi||draft.dueDate||draft.discount!=='0')));
 
   useEffect(() => {
     let raw: string | null = null;

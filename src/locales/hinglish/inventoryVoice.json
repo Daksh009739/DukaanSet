@@ -51,6 +51,7 @@
   "addition": "Stock aaya",
   "remove": "Hatao",
   "confirm": "Saara Stock Save Karo",
+  "retry": "Wahi saved request phir bhejein",
   "unsaved": "Sirf draft — stock abhi update nahi hua.",
   "offline": "Internet nahi hai. Draft iss device par hai; confirm se pehle connect karo.",
   "restored": "Iss business ka unsaved draft mil gaya.",

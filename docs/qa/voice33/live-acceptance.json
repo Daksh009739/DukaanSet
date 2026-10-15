@@ -1,0 +1,11 @@
+{
+  "version": "3.3",
+  "stagingUrl": null,
+  "reviewedCommit": null,
+  "providerVerified": false,
+  "desktop": {"status": "pending", "humanMicrophone": false, "browser": null, "testedAt": null, "evidence": null},
+  "android": {"status": "pending", "humanMicrophone": false, "browser": null, "testedAt": null, "evidence": null},
+  "metrics": {"endpointSuccess": null, "intentAccuracy": null, "duplicateFollowupSuccess": null, "duplicateBackendWrites": null, "replyLatencyP95Ms": null},
+  "criticalFailures": [],
+  "requiredScenarios": ["automaticGreeting", "automaticMicAfterGreeting", "naturalEndpoint", "duplicateSeparateRahul", "spokenSaveVerified", "billingLedger", "paymentLedger", "stockConfirmation", "pauseCloseRelease", "languageVoicePersistence", "noiseAndLongPause", "networkRecovery", "permissionDenial", "shopIsolation"]
+}

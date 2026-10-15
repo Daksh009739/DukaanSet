@@ -1,0 +1,70 @@
+{
+  "checkedAt": "2026-10-12T20:02:15.269Z",
+  "environment": "Compiled application with isolated fictional shops",
+  "layouts": [
+    {
+      "language": "en",
+      "width": 320
+    },
+    {
+      "language": "en",
+      "width": 390
+    },
+    {
+      "language": "en",
+      "width": 768
+    },
+    {
+      "language": "en",
+      "width": 1440
+    },
+    {
+      "language": "en",
+      "width": 1920
+    },
+    {
+      "language": "hi",
+      "width": 320
+    },
+    {
+      "language": "hi",
+      "width": 390
+    },
+    {
+      "language": "hi",
+      "width": 768
+    },
+    {
+      "language": "hi",
+      "width": 1440
+    },
+    {
+      "language": "hi",
+      "width": 1920
+    },
+    {
+      "language": "hinglish",
+      "width": 320
+    },
+    {
+      "language": "hinglish",
+      "width": 390
+    },
+    {
+      "language": "hinglish",
+      "width": 768
+    },
+    {
+      "language": "hinglish",
+      "width": 1440
+    },
+    {
+      "language": "hinglish",
+      "width": 1920
+    }
+  ],
+  "accessibilityScans": 6,
+  "runtimeErrors": [],
+  "cspViolations": [],
+  "ledgerUnchanged": true
+}

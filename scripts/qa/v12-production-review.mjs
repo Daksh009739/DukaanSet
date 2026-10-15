@@ -1,6 +1,6 @@
 import {spawn} from 'node:child_process';
 import {mkdirSync,writeFileSync} from 'node:fs';
-import {chromium} from '@playwright/test';
+import {chromium,expect} from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 import assert from 'node:assert/strict';
 
@@ -15,13 +15,13 @@ try{
  const post=(path,data)=>context.request.post('/api'+path,{headers:{Origin:origin},data});assert.equal((await post('/auth/demo',{language:'en'})).status(),201);await post('/account/language',{language:'en'});
  const session=await(await context.request.get('/api/session')).json(),business=session.businesses.find(b=>b.category==='vegetables');assert.ok(business);
  const state=async()=>await(await context.request.get(`/api/businesses/${business.id}/state`)).json();
- await page.goto('/app');await page.locator('.dashboard-welcome h1').waitFor();await page.locator('.bottom-nav').getByRole('button',{name:'More',exact:true}).click();const menu=page.getByRole('dialog');await menu.getByRole('combobox',{name:'Your business',exact:true}).selectOption(business.id);await page.locator('.dashboard-welcome h1').waitFor();if(await menu.isVisible())await menu.getByRole('button',{name:'Close',exact:true}).click();await page.goto('/app/customers');
+ await page.goto('/app');await page.locator('.dashboard-welcome h1').waitFor();await page.locator('.bottom-nav').getByRole('button',{name:'More',exact:true}).click();const menu=page.getByRole('dialog');await menu.locator('[data-shop-switch]').click();await menu.getByRole('option',{name:business.name,exact:true}).click();await expect(page.locator('main')).toHaveAttribute('data-business-id',business.id);if(await menu.isVisible())await menu.getByRole('button',{name:'Close',exact:true}).click();await page.goto('/app/customers');
  const launch=async()=>{await page.getByRole('button',{name:'Open VoiceOS',exact:true}).click();return page.getByRole('dialog');};
  const say=async text=>{const dialog=page.getByRole('dialog');await dialog.getByLabel('Voice command',{exact:true}).fill(text);await dialog.getByRole('button',{name:'Review request',exact:true}).click();};
  const before=await state(),potato=before.products.find(p=>p.name==='Potatoes');assert.ok(potato);
  let dialog=await launch();assert.equal(await dialog.locator('textarea').count(),0);assert.equal(await dialog.locator('.conversation-suggestions button').count(),3);
- await say('Heer customer add karo aur uska 5 kilo aloo 200 rupaye mein bill bana do');assert.equal(await dialog.getByRole('button',{name:'Confirm & Save',exact:true}).isEnabled(),false);await say('Cash');
- assert.equal((await state()).invoices.length,before.invoices.length);await dialog.getByRole('button',{name:'Confirm & Save',exact:true}).click();await dialog.getByText('Saved successfully',{exact:true}).waitFor();
+ await say('Heer customer add karo aur uska 5 kilo aloo 200 rupaye mein bill bana do');assert.equal(await dialog.getByRole('button',{name:/^Confirm & Save(?: Bill| Customer)?$/}).isEnabled(),false);await say('Cash');
+ assert.equal((await state()).invoices.length,before.invoices.length);await dialog.getByRole('button',{name:/^Confirm & Save(?: Bill| Customer)?$/}).click();await dialog.getByText('Saved successfully',{exact:true}).waitFor();
  let after=await state();assert.equal(after.invoices.length,before.invoices.length+1);assert.equal(after.customers.filter(c=>c.name==='Heer').length,1);assert.equal(after.products.find(p=>p.id===potato.id).quantityMilli,potato.quantityMilli-5000);assert.equal(after.invoices[0].totalPaise,20000);assert.equal(after.invoices[0].paidPaise,20000);report.checks.push('Compiled conversational customer + invoice saves one dependent transaction with accurate stock and cash');
  await dialog.getByRole('button',{name:'Close',exact:true}).click();await page.goto('/app/stock/voice');
  await page.getByLabel('Your words',{exact:true}).fill('20 kilo Apricot total purchase cost 1000 rupaye add karo');await page.getByRole('button',{name:'Review transcript',exact:true}).click();assert.equal(await page.getByRole('button',{name:'Save All Stock',exact:true}).isEnabled(),false);await page.getByLabel('Selling price (₹) 1',{exact:true}).fill('70');

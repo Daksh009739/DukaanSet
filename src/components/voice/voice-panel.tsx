@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { missingVoiceFields,voiceAllowed,type VoiceCommand,type VoiceIntent,voiceQuantity } from '@/lib/voice/os';
 import { osCopy,intentLabel,type VoiceOSCopyKey } from '@/lib/voice/os-copy';
 import { minorUnits } from '@/lib/client';
-import { useApp } from '../app-provider';
+import { useApp,useUnsavedBusinessWork } from '../app-provider';
 import { Button,Field,Select } from '../ui';
 import { useVoiceOS } from './voice-os-provider';
 import {advanceVoice,nextVoiceQuestion} from '@/lib/voice/conversation';
@@ -18,13 +18,14 @@ import './voice-os.css';
 export const voiceSamples:Partial<Record<VoiceIntent,string>>={sale:'Rahul ko 2 blue shirts 899 ki ek bechi, 1000 cash mila aur 500 UPI se, baaki udhaar.',stock:'4 doodh packet aur 5 kilo pyaz add kar do.',customer:'Naya customer add karo, naam Amit Kumar phone 9876543210.',payment:'Rahul ne purane udhaar ke 500 rupaye cash diye.',demand:'Ek customer ne 2 XL blue shirts maangi thi, lekin available nahi hain.',purchase:'Gupta Traders se 20 biscuit packet aur 10 kilo sugar aayi hai.',supplier:'Naya supplier add karo naam Gupta Traders.',expense:'Aaj dukaan ka 1500 rupaye bijli ka bill cash diya.',closing:'Actual cash 12,500 rupaye hai.',report:'Aaj kitni sales hui?'};
 export function VoicePanel({intent,onApply,disabled=false,onBlockedChange,seed,expanded=false,getContext,onCancel}:{intent:VoiceIntent;onApply:(command:VoiceCommand)=>void;disabled?:boolean;onBlockedChange?:(blocked:boolean)=>void;seed?:VoiceCommand;expanded?:boolean;getContext?:(command:VoiceCommand)=>VoiceCommand;onCancel?:()=>void}){
  const app=useApp(),copy=osCopy(useTranslation().i18n.language),voice=useVoiceOS(),[text,setText]=useState(''),[command,setCommand]=useState<VoiceCommand|null>(null),[note,setNote]=useState(''),[show,setShow]=useState(expanded),last=useRef(''),apply=useRef(onApply),blockedCallback=useRef(onBlockedChange);apply.current=onApply;blockedCallback.current=onBlockedChange;
- const state=app.state!,allowed=voiceAllowed(intent,state),locked=disabled||voice.capture.phase!=='ready',current=command?(getContext?.(command)||command):null;
+ const state=app.state!,allowed=voiceAllowed(intent,state),locked=disabled||['permissionState','listening','speechDetected','finalizing'].includes(voice.capture.phase),current=command?(getContext?.(command)||command):null;
+ useUnsavedBusinessWork(Boolean(text.trim()||command));
  const blocking=Boolean(current&&(current.intent==='sale'&&!current.fields.mode||current.warnings.some(w=>['permission','wrongWorkflow','correction','splitCollection','cashPurchaseOnly'].includes(w))||current.items.some(item=>current.intent!=='demand'&&(!item.productId||voiceQuantity(item,state.products)===null)||item.priceBasis==='unclear'||item.priceBasis==='total')));
  useEffect(()=>{blockedCallback.current?.(blocking);},[blocking]);
  const appliedSeed=useRef<VoiceCommand|null>(null);
  useEffect(()=>{const initial=seed||voice.handoff;if(!disabled&&initial?.intent===intent&&initial!==appliedSeed.current){appliedSeed.current=initial;setShow(true);setCommand(initial);setText(initial.transcript);last.current=initial.transcript;apply.current(initial);if(voice.handoff===initial)voice.consume(intent);}},[seed,voice.handoff,intent,disabled]);
  if(!allowed)return null;
- function fill(raw:string){if(!raw.trim())return;if(raw.trim()===last.current){setNote(copy.duplicate);return;}const previous=command?(getContext?.(command)||command):undefined;const next=advanceVoice(raw,state,previous,undefined,intent);last.current=raw.trim();setText(raw);if(next.intent==='cancel'){setCommand(null);setText('');last.current='';setNote(copy.cancelled);blockedCallback.current?.(false);onCancel?.();return;}if(next.intent!==intent||next.warnings.includes('intentChoice')){setCommand(null);setNote('');blockedCallback.current?.(false);voice.request(next);return;}setCommand(next);setNote(copy.filled);apply.current(next);}
+ function fill(raw:string){if(!raw.trim())return;voice.observeUtterance(raw);if(raw.trim()===last.current){setNote(copy.duplicate);return;}const previous=command?(getContext?.(command)||command):undefined;const next=advanceVoice(raw,state,previous,undefined,intent);last.current=raw.trim();setText(raw);if(next.intent==='cancel'){setCommand(null);setText('');last.current='';setNote(copy.cancelled);blockedCallback.current?.(false);onCancel?.();return;}if(next.intent!==intent||next.warnings.includes('intentChoice')){setCommand(null);setNote('');blockedCallback.current?.(false);voice.request(next);return;}setCommand(next);setNote(copy.filled);apply.current(next);}
  function edit(id:string,changes:Partial<VoiceCommand['items'][number]>){if(!command)return;const current=getContext?.(command)||command;const next={...current,changed:[],changedItems:[id],items:current.items.map(item=>item.id===id?{...item,...changes}:item)};setCommand(next);apply.current(next);}
  const missing=current?missingVoiceFields(current,state):[];
  return <section className="voiceos-panel" data-testid={`voiceos-${intent}`}>

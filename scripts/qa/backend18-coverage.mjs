@@ -1,0 +1,4 @@
+import {spawn} from 'node:child_process';
+import {mkdirSync,readdirSync,readFileSync} from 'node:fs';
+const output='.local/qa/application18';mkdirSync(output,{recursive:true});const files=readdirSync('tests').filter(name=>name.endsWith('.test.ts')).sort().map(name=>'tests/'+name);
+const code=await new Promise((resolve,reject)=>{const child=spawn(process.execPath,['--import','tsx','--experimental-test-coverage','--test-concurrency=4','--test-coverage-include=src/**','--test','--test-reporter=spec','--test-reporter-destination='+output+'/backend.log','--test-reporter=lcov','--test-reporter-destination='+output+'/backend.lcov',...files],{windowsHide:true,stdio:['ignore','inherit','inherit']});child.on('error',reject);child.on('exit',value=>resolve(value??1));});console.log(readFileSync(output+'/backend.log','utf8').split('\n').slice(-12).join('\n'));process.exitCode=Number(code);

@@ -1,0 +1,16 @@
+{
+  "checkedAt": "2026-10-12T07:50:48.592Z",
+  "url": "https://dukaan-set-git-dev-daksh009739s-projects.vercel.app",
+  "checks": [
+    {
+      "path": "/",
+      "status": 302,
+      "location": "https://vercel.com/sso-api"
+    },
+    {
+      "path": "/api/health",
+      "status": 302,
+      "location": "https://vercel.com/sso-api"
+    }
+  ]
+}

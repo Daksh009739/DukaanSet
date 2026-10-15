@@ -1,0 +1,7 @@
+{
+  "environment": "Actual MediaRecorder encoding of a synthetic stream; mocked cloud transcripts; real customer commit",
+  "audioRequests": 2,
+  "audioBytes": 19288,
+  "tracksReleased": 2,
+  "liveProvider": false
+}

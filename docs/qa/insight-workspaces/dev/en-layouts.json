@@ -1,0 +1,90 @@
+{
+  "checks": [
+    {
+      "page": "demand",
+      "width": 320
+    },
+    {
+      "page": "demand",
+      "width": 390
+    },
+    {
+      "page": "demand",
+      "width": 1440
+    },
+    {
+      "page": "reports",
+      "width": 320
+    },
+    {
+      "page": "reports",
+      "width": 390
+    },
+    {
+      "page": "reports",
+      "width": 1440
+    },
+    {
+      "page": "daily-closing",
+      "width": 320
+    },
+    {
+      "page": "daily-closing",
+      "width": 390
+    },
+    {
+      "page": "daily-closing",
+      "width": 1440
+    },
+    {
+      "page": "intelligence",
+      "width": 320
+    },
+    {
+      "page": "intelligence",
+      "width": 390
+    },
+    {
+      "page": "intelligence",
+      "width": 1440
+    },
+    {
+      "page": "todays-work",
+      "width": 320
+    },
+    {
+      "page": "todays-work",
+      "width": 390
+    },
+    {
+      "page": "todays-work",
+      "width": 1440
+    },
+    {
+      "page": "help",
+      "width": 320
+    },
+    {
+      "page": "help",
+      "width": 390
+    },
+    {
+      "page": "help",
+      "width": 1440
+    },
+    {
+      "page": "account",
+      "width": 320
+    },
+    {
+      "page": "account",
+      "width": 390
+    },
+    {
+      "page": "account",
+      "width": 1440
+    }
+  ],
+  "accessibilityScans": 14,
+  "pageErrors": []
+}

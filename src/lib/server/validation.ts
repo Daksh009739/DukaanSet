@@ -1,5 +1,6 @@
 import { createHash } from "node:crypto";
 import type { Category, Language, PaymentMethod } from "../contracts";
+import {businessCategories} from '../business-modes';
 const DOMAIN_ERROR_BRAND: unique symbol = Symbol.for("dukaanset.domain-error");
 
 export class DomainError extends Error {
@@ -64,7 +65,7 @@ export function oneOf<T extends string>(value: unknown, name: string, choices: r
   return value as T;
 }
 export const language = (value: unknown): Language => oneOf(value ?? "hinglish", "Language", ["en", "hi", "hinglish"]);
-export const category = (value: unknown): Category => oneOf(value ?? "general", "Category", ["grocery", "hardware", "vegetables", "mobile", "clothing", "general"]);
+export const category = (value: unknown): Category => oneOf(value ?? "general", "Category", businessCategories);
 export const method = (value: unknown): PaymentMethod => oneOf(value ?? "cash", "Payment method", ["cash", "upi"]);
 export function email(value: unknown): string {
   const v = string(value, "Email", 254).toLowerCase();

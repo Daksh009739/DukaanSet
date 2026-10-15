@@ -1,0 +1,171 @@
+{
+  "checkedAt": "2026-10-12T16:12:09.808Z",
+  "environment": "Compiled production application; isolated fictional shops; simulated native speech callbacks and mocked cloud audio; actual backend writes and HTMLAudioElement playback",
+  "checks": [
+    "Compiled English greeting, exact Rahul customer command, automatic end without Stop, spoken confirmation, one verified customer and authenticated statement read-back",
+    "Compiled spoken confirmation commits one exact ₹800 invoice, ₹500 UPI receipt, ₹300 credit and 10 kg deduction; success speech follows verified results",
+    "Actual authenticated voice preference is shared by header and Main Settings without changing app language",
+    "Dashboard extras show exact session amounts, readable clickable links and six accessible layouts without sidebar overlap",
+    "Three display languages fit four phone/tablet/desktop widths in both conversation and voice picker, with twelve conversation/picker accessibility scans",
+    "Actual synthetic audio decodes and plays through HTMLAudioElement under the compiled CSP; dismissal stops playback",
+    "A failed speech response preserves visible text and the usable composer without a business write",
+    "No extra business writes, runtime exceptions or CSP violations"
+  ],
+  "layouts": [
+    {
+      "language": "en",
+      "width": 390,
+      "state": "dashboard"
+    },
+    {
+      "language": "en",
+      "width": 1440,
+      "state": "dashboard"
+    },
+    {
+      "language": "en",
+      "width": 320,
+      "state": "dialog"
+    },
+    {
+      "language": "en",
+      "width": 390,
+      "state": "dialog"
+    },
+    {
+      "language": "en",
+      "width": 768,
+      "state": "dialog"
+    },
+    {
+      "language": "en",
+      "width": 1440,
+      "state": "dialog"
+    },
+    {
+      "language": "en",
+      "width": 320,
+      "state": "picker"
+    },
+    {
+      "language": "en",
+      "width": 390,
+      "state": "picker"
+    },
+    {
+      "language": "en",
+      "width": 768,
+      "state": "picker"
+    },
+    {
+      "language": "en",
+      "width": 1440,
+      "state": "picker"
+    },
+    {
+      "language": "hi",
+      "width": 390,
+      "state": "dashboard"
+    },
+    {
+      "language": "hi",
+      "width": 1440,
+      "state": "dashboard"
+    },
+    {
+      "language": "hi",
+      "width": 320,
+      "state": "dialog"
+    },
+    {
+      "language": "hi",
+      "width": 390,
+      "state": "dialog"
+    },
+    {
+      "language": "hi",
+      "width": 768,
+      "state": "dialog"
+    },
+    {
+      "language": "hi",
+      "width": 1440,
+      "state": "dialog"
+    },
+    {
+      "language": "hi",
+      "width": 320,
+      "state": "picker"
+    },
+    {
+      "language": "hi",
+      "width": 390,
+      "state": "picker"
+    },
+    {
+      "language": "hi",
+      "width": 768,
+      "state": "picker"
+    },
+    {
+      "language": "hi",
+      "width": 1440,
+      "state": "picker"
+    },
+    {
+      "language": "hinglish",
+      "width": 390,
+      "state": "dashboard"
+    },
+    {
+      "language": "hinglish",
+      "width": 1440,
+      "state": "dashboard"
+    },
+    {
+      "language": "hinglish",
+      "width": 320,
+      "state": "dialog"
+    },
+    {
+      "language": "hinglish",
+      "width": 390,
+      "state": "dialog"
+    },
+    {
+      "language": "hinglish",
+      "width": 768,
+      "state": "dialog"
+    },
+    {
+      "language": "hinglish",
+      "width": 1440,
+      "state": "dialog"
+    },
+    {
+      "language": "hinglish",
+      "width": 320,
+      "state": "picker"
+    },
+    {
+      "language": "hinglish",
+      "width": 390,
+      "state": "picker"
+    },
+    {
+      "language": "hinglish",
+      "width": 768,
+      "state": "picker"
+    },
+    {
+      "language": "hinglish",
+      "width": 1440,
+      "state": "picker"
+    }
+  ],
+  "accessibilityScans": 18,
+  "limitations": [
+    "No human microphone or live provider evaluation.",
+    "Noise, pronunciation, external provider latency and staging credentials are unverified."
+  ]
+}

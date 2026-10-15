@@ -1,0 +1,286 @@
+{
+  "checkedAt": "2026-10-14T18:02:00.634Z",
+  "compiledApplication": true,
+  "isolatedDatabase": true,
+  "realMicrophone": false,
+  "layouts": [
+    {
+      "language": "en",
+      "route": "/app/ai",
+      "width": 320
+    },
+    {
+      "language": "en",
+      "route": "/app/ai",
+      "width": 390
+    },
+    {
+      "language": "en",
+      "route": "/app/ai",
+      "width": 768
+    },
+    {
+      "language": "en",
+      "route": "/app/ai",
+      "width": 1440
+    },
+    {
+      "language": "en",
+      "route": "/app/business-tools",
+      "width": 320
+    },
+    {
+      "language": "en",
+      "route": "/app/business-tools",
+      "width": 390
+    },
+    {
+      "language": "en",
+      "route": "/app/business-tools",
+      "width": 768
+    },
+    {
+      "language": "en",
+      "route": "/app/business-tools",
+      "width": 1440
+    },
+    {
+      "language": "en",
+      "route": "/app/trust",
+      "width": 320
+    },
+    {
+      "language": "en",
+      "route": "/app/trust",
+      "width": 390
+    },
+    {
+      "language": "en",
+      "route": "/app/trust",
+      "width": 768
+    },
+    {
+      "language": "en",
+      "route": "/app/trust",
+      "width": 1440
+    },
+    {
+      "language": "hi",
+      "route": "/app/ai",
+      "width": 320
+    },
+    {
+      "language": "hi",
+      "route": "/app/ai",
+      "width": 390
+    },
+    {
+      "language": "hi",
+      "route": "/app/ai",
+      "width": 768
+    },
+    {
+      "language": "hi",
+      "route": "/app/ai",
+      "width": 1440
+    },
+    {
+      "language": "hi",
+      "route": "/app/business-tools",
+      "width": 320
+    },
+    {
+      "language": "hi",
+      "route": "/app/business-tools",
+      "width": 390
+    },
+    {
+      "language": "hi",
+      "route": "/app/business-tools",
+      "width": 768
+    },
+    {
+      "language": "hi",
+      "route": "/app/business-tools",
+      "width": 1440
+    },
+    {
+      "language": "hi",
+      "route": "/app/trust",
+      "width": 320
+    },
+    {
+      "language": "hi",
+      "route": "/app/trust",
+      "width": 390
+    },
+    {
+      "language": "hi",
+      "route": "/app/trust",
+      "width": 768
+    },
+    {
+      "language": "hi",
+      "route": "/app/trust",
+      "width": 1440
+    },
+    {
+      "language": "hinglish",
+      "route": "/app/ai",
+      "width": 320
+    },
+    {
+      "language": "hinglish",
+      "route": "/app/ai",
+      "width": 390
+    },
+    {
+      "language": "hinglish",
+      "route": "/app/ai",
+      "width": 768
+    },
+    {
+      "language": "hinglish",
+      "route": "/app/ai",
+      "width": 1440
+    },
+    {
+      "language": "hinglish",
+      "route": "/app/business-tools",
+      "width": 320
+    },
+    {
+      "language": "hinglish",
+      "route": "/app/business-tools",
+      "width": 390
+    },
+    {
+      "language": "hinglish",
+      "route": "/app/business-tools",
+      "width": 768
+    },
+    {
+      "language": "hinglish",
+      "route": "/app/business-tools",
+      "width": 1440
+    },
+    {
+      "language": "hinglish",
+      "route": "/app/trust",
+      "width": 320
+    },
+    {
+      "language": "hinglish",
+      "route": "/app/trust",
+      "width": 390
+    },
+    {
+      "language": "hinglish",
+      "route": "/app/trust",
+      "width": 768
+    },
+    {
+      "language": "hinglish",
+      "route": "/app/trust",
+      "width": 1440
+    }
+  ],
+  "accessibility": [
+    {
+      "language": "en",
+      "route": "/app/ai",
+      "violations": 0
+    },
+    {
+      "language": "en",
+      "route": "/app/business-tools",
+      "violations": 0
+    },
+    {
+      "language": "en",
+      "route": "/app/trust",
+      "violations": 0
+    },
+    {
+      "language": "hi",
+      "route": "/app/ai",
+      "violations": 0
+    },
+    {
+      "language": "hi",
+      "route": "/app/business-tools",
+      "violations": 0
+    },
+    {
+      "language": "hi",
+      "route": "/app/trust",
+      "violations": 0
+    },
+    {
+      "language": "hinglish",
+      "route": "/app/ai",
+      "violations": 0
+    },
+    {
+      "language": "hinglish",
+      "route": "/app/business-tools",
+      "violations": 0
+    },
+    {
+      "language": "hinglish",
+      "route": "/app/trust",
+      "violations": 0
+    }
+  ],
+  "workflows": [
+    {
+      "language": "en",
+      "isolatedPublicDemo": true,
+      "minimalOnboarding": true,
+      "zeroSeededRealFinancialData": true,
+      "atomicModeChange": true,
+      "ordersWithoutFinancialPosting": true,
+      "appointmentsAndConflict": true,
+      "serviceBilling": true,
+      "askMyShopVoice": true,
+      "transparentBackupAndPro": true,
+      "privateFeedback": true,
+      "optionalReferral": true,
+      "completeExport": true
+    },
+    {
+      "language": "hi",
+      "isolatedPublicDemo": true,
+      "minimalOnboarding": true,
+      "zeroSeededRealFinancialData": true,
+      "atomicModeChange": true,
+      "ordersWithoutFinancialPosting": true,
+      "appointmentsAndConflict": true,
+      "serviceBilling": true,
+      "askMyShopVoice": true,
+      "transparentBackupAndPro": true,
+      "privateFeedback": true,
+      "optionalReferral": true,
+      "completeExport": true
+    },
+    {
+      "language": "hinglish",
+      "isolatedPublicDemo": true,
+      "minimalOnboarding": true,
+      "zeroSeededRealFinancialData": true,
+      "atomicModeChange": true,
+      "ordersWithoutFinancialPosting": true,
+      "appointmentsAndConflict": true,
+      "serviceBilling": true,
+      "askMyShopVoice": true,
+      "transparentBackupAndPro": true,
+      "privateFeedback": true,
+      "optionalReferral": true,
+      "completeExport": true
+    }
+  ],
+  "limitations": [
+    "Microphone input uses browser speech API availability/fallback; physical desktop and Android recording is not asserted.",
+    "No subscription checkout or backup agent is configured; UI reports these states explicitly."
+  ]
+}

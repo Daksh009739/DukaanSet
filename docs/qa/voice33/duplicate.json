@@ -1,0 +1,12 @@
+{
+  "simulatedASRAndTTS": true,
+  "humanMicrophone": false,
+  "provider": false,
+  "manualMicClicks": 0,
+  "writes": 1,
+  "distinctRahulIds": [
+    "f777b9c0-ec03-4b44-b7b6-63b5e20d1553",
+    "1a6608f6-b57c-475c-8ea6-7e57c58bf009"
+  ],
+  "readbackGatedSuccess": true
+}

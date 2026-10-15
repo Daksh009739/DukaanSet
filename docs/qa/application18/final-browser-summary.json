@@ -1,0 +1,462 @@
+{
+  "checkedAt": "2026-10-15T02:59:39.004Z",
+  "freshDatabasePerSuite": true,
+  "suites": 28,
+  "passedSuites": 28,
+  "productionSuites": 25,
+  "developmentMailSuites": 3,
+  "passed": 153,
+  "failed": 0,
+  "skipped": 0,
+  "flaky": 0,
+  "runs": [
+    {
+      "suite": "application-header.spec.ts",
+      "serverMode": "production",
+      "startedAt": "2026-10-14T20:13:13.532Z",
+      "completedAt": "2026-10-14T20:13:55.587Z",
+      "exitCode": 0,
+      "stats": {
+        "startTime": "2026-10-14T20:13:14.437Z",
+        "duration": 41115.155,
+        "expected": 2,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      },
+      "errors": []
+    },
+    {
+      "suite": "approved-dashboard-v16.spec.ts",
+      "startedAt": "2026-10-14T19:19:35.282Z",
+      "completedAt": "2026-10-14T19:20:40.853Z",
+      "exitCode": 0,
+      "stats": {
+        "startTime": "2026-10-14T19:19:36.192Z",
+        "duration": 64620.928,
+        "expected": 5,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      },
+      "errors": [],
+      "serverMode": "production"
+    },
+    {
+      "suite": "approved-dashboard.spec.ts",
+      "startedAt": "2026-10-14T19:20:40.855Z",
+      "completedAt": "2026-10-14T19:22:39.606Z",
+      "exitCode": 0,
+      "stats": {
+        "startTime": "2026-10-14T19:20:41.689Z",
+        "duration": 117807.044,
+        "expected": 4,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      },
+      "errors": [],
+      "serverMode": "production"
+    },
+    {
+      "suite": "closing-dashboard.spec.ts",
+      "startedAt": "2026-10-14T19:22:39.610Z",
+      "completedAt": "2026-10-14T19:23:15.582Z",
+      "exitCode": 0,
+      "stats": {
+        "startTime": "2026-10-14T19:22:41.714Z",
+        "duration": 33817.403000000006,
+        "expected": 3,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      },
+      "errors": [],
+      "serverMode": "production"
+    },
+    {
+      "suite": "conversation.spec.ts",
+      "startedAt": "2026-10-14T19:23:15.583Z",
+      "completedAt": "2026-10-14T19:23:45.214Z",
+      "exitCode": 0,
+      "stats": {
+        "startTime": "2026-10-14T19:23:16.293Z",
+        "duration": 28864.681,
+        "expected": 6,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      },
+      "errors": [],
+      "serverMode": "production"
+    },
+    {
+      "suite": "dashboard-polish.spec.ts",
+      "startedAt": "2026-10-14T19:23:45.216Z",
+      "completedAt": "2026-10-14T19:24:14.131Z",
+      "exitCode": 0,
+      "stats": {
+        "startTime": "2026-10-14T19:23:46.276Z",
+        "duration": 27820.573,
+        "expected": 4,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      },
+      "errors": [],
+      "serverMode": "production"
+    },
+    {
+      "suite": "insight-workspaces.spec.ts",
+      "startedAt": "2026-10-14T19:24:14.132Z",
+      "completedAt": "2026-10-14T19:25:30.225Z",
+      "exitCode": 0,
+      "stats": {
+        "startTime": "2026-10-14T19:24:14.824Z",
+        "duration": 75361.54699999999,
+        "expected": 6,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      },
+      "errors": [],
+      "serverMode": "production"
+    },
+    {
+      "suite": "invoice-studio.spec.ts",
+      "serverMode": "production",
+      "startedAt": "2026-10-14T20:13:55.588Z",
+      "completedAt": "2026-10-14T20:14:44.366Z",
+      "exitCode": 0,
+      "stats": {
+        "startTime": "2026-10-14T20:13:56.325Z",
+        "duration": 47990.972,
+        "expected": 7,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      },
+      "errors": []
+    },
+    {
+      "suite": "localization.spec.ts",
+      "serverMode": "development",
+      "startedAt": "2026-10-14T20:34:50.239Z",
+      "completedAt": "2026-10-14T20:37:36.817Z",
+      "exitCode": 0,
+      "stats": {
+        "startTime": "2026-10-14T20:34:51.075Z",
+        "duration": 165630.934,
+        "expected": 9,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      },
+      "errors": []
+    },
+    {
+      "suite": "pdf-suite.spec.ts",
+      "serverMode": "production",
+      "startedAt": "2026-10-15T02:56:21.689Z",
+      "completedAt": "2026-10-15T02:57:58.154Z",
+      "exitCode": 0,
+      "stats": {
+        "startTime": "2026-10-15T02:56:22.949Z",
+        "duration": 95114.75899999999,
+        "expected": 3,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      },
+      "errors": []
+    },
+    {
+      "suite": "premium-modules.spec.ts",
+      "startedAt": "2026-10-14T19:32:19.569Z",
+      "completedAt": "2026-10-14T19:35:14.811Z",
+      "exitCode": 0,
+      "stats": {
+        "startTime": "2026-10-14T19:32:20.317Z",
+        "duration": 174451.156,
+        "expected": 2,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      },
+      "errors": [],
+      "serverMode": "production"
+    },
+    {
+      "suite": "premium-voice-v14.spec.ts",
+      "startedAt": "2026-10-14T19:35:14.812Z",
+      "completedAt": "2026-10-14T19:36:22.081Z",
+      "exitCode": 0,
+      "stats": {
+        "startTime": "2026-10-14T19:35:15.575Z",
+        "duration": 66467.346,
+        "expected": 7,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      },
+      "errors": [],
+      "serverMode": "production"
+    },
+    {
+      "suite": "premium-website.spec.ts",
+      "startedAt": "2026-10-14T19:36:22.083Z",
+      "completedAt": "2026-10-14T19:37:14.979Z",
+      "exitCode": 0,
+      "stats": {
+        "startTime": "2026-10-14T19:36:22.827Z",
+        "duration": 52085.241,
+        "expected": 4,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      },
+      "errors": [],
+      "serverMode": "production"
+    },
+    {
+      "suite": "product.spec.ts",
+      "serverMode": "development",
+      "startedAt": "2026-10-14T20:37:36.820Z",
+      "completedAt": "2026-10-14T20:39:39.682Z",
+      "exitCode": 0,
+      "stats": {
+        "startTime": "2026-10-14T20:37:37.699Z",
+        "duration": 121924.767,
+        "expected": 7,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      },
+      "errors": []
+    },
+    {
+      "suite": "smart-sidebar.spec.ts",
+      "serverMode": "production",
+      "startedAt": "2026-10-14T20:20:33.465Z",
+      "completedAt": "2026-10-14T20:23:22.421Z",
+      "exitCode": 0,
+      "stats": {
+        "startTime": "2026-10-14T20:20:34.402Z",
+        "duration": 167977.603,
+        "expected": 4,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      },
+      "errors": []
+    },
+    {
+      "suite": "v2-business.spec.ts",
+      "serverMode": "production",
+      "startedAt": "2026-10-14T20:23:22.423Z",
+      "completedAt": "2026-10-14T20:24:07.019Z",
+      "exitCode": 0,
+      "stats": {
+        "startTime": "2026-10-14T20:23:23.190Z",
+        "duration": 43787.92,
+        "expected": 2,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      },
+      "errors": []
+    },
+    {
+      "suite": "v2-sales.spec.ts",
+      "serverMode": "production",
+      "startedAt": "2026-10-14T20:39:39.685Z",
+      "completedAt": "2026-10-14T20:40:41.304Z",
+      "exitCode": 0,
+      "stats": {
+        "startTime": "2026-10-14T20:39:40.604Z",
+        "duration": 60661.527,
+        "expected": 9,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      },
+      "errors": []
+    },
+    {
+      "suite": "v2-voice.spec.ts",
+      "startedAt": "2026-10-14T19:43:18.541Z",
+      "completedAt": "2026-10-14T19:44:03.008Z",
+      "exitCode": 0,
+      "stats": {
+        "startTime": "2026-10-14T19:43:19.222Z",
+        "duration": 43738.846000000005,
+        "expected": 6,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      },
+      "errors": [],
+      "serverMode": "production"
+    },
+    {
+      "suite": "v3-demand.spec.ts",
+      "serverMode": "development",
+      "startedAt": "2026-10-14T20:40:41.305Z",
+      "completedAt": "2026-10-14T20:43:22.446Z",
+      "exitCode": 0,
+      "stats": {
+        "startTime": "2026-10-14T20:40:41.988Z",
+        "duration": 160401.41100000002,
+        "expected": 8,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      },
+      "errors": []
+    },
+    {
+      "suite": "voice-hero.spec.ts",
+      "startedAt": "2026-10-14T19:44:41.098Z",
+      "completedAt": "2026-10-14T19:45:55.693Z",
+      "exitCode": 0,
+      "stats": {
+        "startTime": "2026-10-14T19:44:41.990Z",
+        "duration": 73655.908,
+        "expected": 7,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      },
+      "errors": [],
+      "serverMode": "production"
+    },
+    {
+      "suite": "voice-products.spec.ts",
+      "startedAt": "2026-10-14T19:45:55.696Z",
+      "completedAt": "2026-10-14T19:46:25.060Z",
+      "exitCode": 0,
+      "stats": {
+        "startTime": "2026-10-14T19:45:56.479Z",
+        "duration": 28546.584000000003,
+        "expected": 3,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      },
+      "errors": [],
+      "serverMode": "production"
+    },
+    {
+      "suite": "voice-v15.spec.ts",
+      "startedAt": "2026-10-14T19:46:25.061Z",
+      "completedAt": "2026-10-14T19:47:01.214Z",
+      "exitCode": 0,
+      "stats": {
+        "startTime": "2026-10-14T19:46:25.763Z",
+        "duration": 35408.308000000005,
+        "expected": 6,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      },
+      "errors": [],
+      "serverMode": "production"
+    },
+    {
+      "suite": "voice-v17.spec.ts",
+      "startedAt": "2026-10-14T19:47:01.215Z",
+      "completedAt": "2026-10-14T19:49:54.064Z",
+      "exitCode": 0,
+      "stats": {
+        "startTime": "2026-10-14T19:47:01.923Z",
+        "duration": 172102.446,
+        "expected": 5,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      },
+      "errors": [],
+      "serverMode": "production"
+    },
+    {
+      "suite": "voice3.spec.ts",
+      "startedAt": "2026-10-14T19:49:54.065Z",
+      "completedAt": "2026-10-14T19:51:49.866Z",
+      "exitCode": 0,
+      "stats": {
+        "startTime": "2026-10-14T19:49:54.809Z",
+        "duration": 115019.122,
+        "expected": 7,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      },
+      "errors": [],
+      "serverMode": "production"
+    },
+    {
+      "suite": "voice31.spec.ts",
+      "startedAt": "2026-10-14T19:51:49.868Z",
+      "completedAt": "2026-10-14T19:53:06.949Z",
+      "exitCode": 0,
+      "stats": {
+        "startTime": "2026-10-14T19:51:50.573Z",
+        "duration": 76342.868,
+        "expected": 9,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      },
+      "errors": [],
+      "serverMode": "production"
+    },
+    {
+      "suite": "voice33.spec.ts",
+      "startedAt": "2026-10-14T19:53:06.950Z",
+      "completedAt": "2026-10-14T19:54:09.533Z",
+      "exitCode": 0,
+      "stats": {
+        "startTime": "2026-10-14T19:53:07.631Z",
+        "duration": 61863.296,
+        "expected": 7,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      },
+      "errors": [],
+      "serverMode": "production"
+    },
+    {
+      "suite": "voiceos.spec.ts",
+      "startedAt": "2026-10-14T19:54:09.534Z",
+      "completedAt": "2026-10-14T19:54:49.102Z",
+      "exitCode": 0,
+      "stats": {
+        "startTime": "2026-10-14T19:54:10.338Z",
+        "duration": 38731.993,
+        "expected": 8,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      },
+      "errors": [],
+      "serverMode": "production"
+    },
+    {
+      "suite": "workspace-overlays.spec.ts",
+      "startedAt": "2026-10-14T19:54:49.105Z",
+      "completedAt": "2026-10-14T19:55:37.611Z",
+      "exitCode": 0,
+      "stats": {
+        "startTime": "2026-10-14T19:54:49.842Z",
+        "duration": 47734.603,
+        "expected": 3,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      },
+      "errors": [],
+      "serverMode": "production"
+    }
+  ]
+}

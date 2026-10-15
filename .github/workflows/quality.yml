@@ -13,7 +13,7 @@ concurrency:
 jobs:
   validate:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 90
     env:
       NEXT_TELEMETRY_DISABLED: '1'
       DUKAANSET_ENV: local
@@ -33,14 +33,49 @@ jobs:
       - run: npm run lint
       - run: npm run typecheck
       - run: npm test
+      - name: Require real desktop and Android VoiceOS acceptance before main promotion
+        if: github.ref == 'refs/heads/main' || github.base_ref == 'main'
+        run: node scripts/qa/voice33-release-gate.mjs
       - name: Labelled V15 semantic intent, entity roles and financial slot regression gate
         run: npm run test:voice-eval
+      - name: VoiceOS 3 automatic language and explicit confirmation regression gate
+        run: node --import tsx scripts/qa/voice3-evaluation.ts
       - run: npm run build
       - run: npx playwright install --with-deps chromium
+      - name: Compiled merchant profile, verified UPI fixtures and multilingual accessibility
+        run: node scripts/qa/upi18-production-review.mjs
+      - name: Compiled My Voice AI enrollment, private profiles and synthetic audio acceptance
+        run: node scripts/qa/voice34-production-review.mjs
+      - name: Compiled business modes, isolated daily intelligence and mobile growth tools
+        run: node scripts/qa/growth18-production-review.mjs
+      - name: Compiled reviewed document capture, repeat-safe saves and business health
+        run: node scripts/qa/automation18-production-review.mjs
+      - name: Premium PDF exports, actual business sources and multilingual printing controls
+        run: npm run test:e2e -- tests/e2e/pdf-suite.spec.ts
       - name: Approved dashboard, product media and shared mobile design checks
         run: npm run test:e2e -- tests/e2e/approved-dashboard.spec.ts
       - name: V16.1 approved composition, cash accuracy, weather fallback and multilingual viewport checks
         run: npm run test:e2e -- tests/e2e/approved-dashboard-v16.spec.ts
+      - name: Dashboard card colors, styled native pickers, hover feedback and exact session information
+        run: npm run test:e2e -- tests/e2e/dashboard-polish.spec.ts
+      - name: Compiled dashboard card palette, exact totals and multilingual accessibility
+        run: node scripts/qa/dashboard-cards-production.mjs
+      - name: Premium module filters, signed refund summaries and multilingual responsive accessibility
+        run: npm run test:e2e -- tests/e2e/premium-modules.spec.ts
+      - name: Premium insight pages, task filtering, account navigation and acknowledged closing
+        run: npm run test:e2e -- tests/e2e/insight-workspaces.spec.ts
+      - name: Compiled insight workspaces, account focus and multilingual accessibility
+        run: node scripts/qa/insight-workspaces-production.mjs
+      - name: Workspace search, update actions, hero controls and multilingual dialog accessibility
+        run: npm run test:e2e -- tests/e2e/workspace-overlays.spec.ts
+      - name: Premium application header controls, responsive fit and accessible contrast
+        run: npm run test:e2e -- tests/e2e/application-header.spec.ts
+      - name: Compiled application header and three-language viewport checks
+        run: node scripts/qa/application-header-production.mjs
+      - name: Compiled workspace overlays and responsive dashboard controls
+        run: node scripts/qa/workspace-overlays-production.mjs
+      - name: Smart sidebar, persisted rail, protected shop switching and multilingual accessible drawers
+        run: npm run test:e2e -- tests/e2e/smart-sidebar.spec.ts
       - name: Critical auth, isolation, inventory and sales browser checks
         run: npm run test:e2e -- tests/e2e/product.spec.ts
       - name: Customer details, mobile sale recovery, voice stock and DemandPulse regression checks
@@ -57,6 +92,18 @@ jobs:
         run: npm run test:e2e -- tests/e2e/premium-voice-v14.spec.ts
       - name: V15 semantic billing, conditional simulations, reorder retries and purchase extraction
         run: npm run test:e2e -- tests/e2e/voice-v15.spec.ts
+      - name: V17 conversation memory, actual transactions, speech finals, frozen retries and multilingual accessibility
+        run: npm run test:e2e -- tests/e2e/voice-v17.spec.ts
+      - name: VoiceOS 3 turn taking, spoken commits, encoded audio, preferences and multilingual accessibility
+        run: npm run test:e2e -- tests/e2e/voice3.spec.ts
+      - name: VoiceOS 3.1 automatic endpoints, exact customer commits, language precedence and stale response isolation
+        run: npm run test:e2e -- tests/e2e/voice31.spec.ts
+      - name: VoiceOS 3.3 default hands-free, separate same-name customers, pause latch and verified spoken confirmation
+        run: npm run test:e2e -- tests/e2e/voice33.spec.ts
+      - name: VoiceOS 3 compiled actions, audio playback and responsive voice selection
+        run: node scripts/qa/voice3-production-review.mjs
+      - name: V17 compiled transactions, actual closing/document sources and multilingual accessibility
+        run: node scripts/qa/v17-production-review.mjs
       - name: Contextual VoiceOS heroes, safe prefill, scoped records and multilingual responsive controls
         run: npm run test:e2e -- tests/e2e/voice-hero.spec.ts
       - name: New product stock, lost acknowledgements and mobile inventory checks
@@ -88,3 +135,5 @@ jobs:
         run: node scripts/qa/v15-2-production-review.mjs
       - name: Compiled V16.1 reference layout, real cash totals and thirty accessible dashboard layouts
         run: node scripts/qa/v16-production-review.mjs
+      - name: Compiled V16.2 expanded sidebar, icon rail, shop switcher and multilingual mobile drawers
+        run: node scripts/qa/sidebar-production-review.mjs

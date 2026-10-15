@@ -1,0 +1,337 @@
+{
+  "checkedAt": "2026-10-14T14:29:47.625Z",
+  "compiledApplication": true,
+  "realProvider": false,
+  "realCamera": false,
+  "environment": "Fresh isolated database; official OAuth redirect, server token exchange and signed-event flows intercepted by explicit fictional provider fixtures; camera uses actual canvas video frames",
+  "workflows": [
+    {
+      "language": "en",
+      "upiSaved": true,
+      "qrUpload": true,
+      "syntheticCamera": true,
+      "officialOriginIntercepted": true,
+      "verifiedFixtureEvents": true,
+      "voiceVerifiedQuery": true,
+      "duplicateCustomerClarification": true,
+      "selectedCustomerFollowups": true,
+      "providerNameUnconfirmed": true,
+      "noCustomerAutoCreation": true,
+      "whyLinked": true,
+      "verifiedInvoiceProof": true,
+      "reviewInbox": true,
+      "confirmedCustomerCreation": true,
+      "keepUnmatched": true,
+      "overdueReminderApproval": true,
+      "monthlyCustomerContext": true,
+      "customerLink": true,
+      "noDuplicateLedger": true,
+      "dynamicQrMatch": true,
+      "importUnverified": true,
+      "profileIdentityRefresh": true,
+      "privateAvatar": true,
+      "disconnect": true
+    },
+    {
+      "language": "hi",
+      "upiSaved": true,
+      "qrUpload": true,
+      "syntheticCamera": true,
+      "officialOriginIntercepted": true,
+      "verifiedFixtureEvents": true,
+      "voiceVerifiedQuery": true,
+      "duplicateCustomerClarification": true,
+      "selectedCustomerFollowups": true,
+      "providerNameUnconfirmed": true,
+      "noCustomerAutoCreation": true,
+      "whyLinked": true,
+      "verifiedInvoiceProof": true,
+      "reviewInbox": true,
+      "confirmedCustomerCreation": true,
+      "keepUnmatched": true,
+      "overdueReminderApproval": true,
+      "monthlyCustomerContext": true,
+      "customerLink": true,
+      "noDuplicateLedger": true,
+      "dynamicQrMatch": true,
+      "importUnverified": true,
+      "profileIdentityRefresh": true,
+      "privateAvatar": true,
+      "disconnect": true
+    },
+    {
+      "language": "hinglish",
+      "upiSaved": true,
+      "qrUpload": true,
+      "syntheticCamera": true,
+      "officialOriginIntercepted": true,
+      "verifiedFixtureEvents": true,
+      "voiceVerifiedQuery": true,
+      "duplicateCustomerClarification": true,
+      "selectedCustomerFollowups": true,
+      "providerNameUnconfirmed": true,
+      "noCustomerAutoCreation": true,
+      "whyLinked": true,
+      "verifiedInvoiceProof": true,
+      "reviewInbox": true,
+      "confirmedCustomerCreation": true,
+      "keepUnmatched": true,
+      "overdueReminderApproval": true,
+      "monthlyCustomerContext": true,
+      "customerLink": true,
+      "noDuplicateLedger": true,
+      "dynamicQrMatch": true,
+      "importUnverified": true,
+      "profileIdentityRefresh": true,
+      "privateAvatar": true,
+      "disconnect": true
+    }
+  ],
+  "layouts": [
+    {
+      "language": "en",
+      "route": "reminder-review",
+      "width": 390
+    },
+    {
+      "language": "en",
+      "route": "expanded-insights",
+      "width": 390
+    },
+    {
+      "language": "en",
+      "route": "confirm-customer",
+      "width": 390
+    },
+    {
+      "language": "en",
+      "route": "/app/settings/account",
+      "width": 320
+    },
+    {
+      "language": "en",
+      "route": "/app/settings/account",
+      "width": 390
+    },
+    {
+      "language": "en",
+      "route": "/app/settings/account",
+      "width": 768
+    },
+    {
+      "language": "en",
+      "route": "/app/settings/account",
+      "width": 1440
+    },
+    {
+      "language": "en",
+      "route": "/app/payments/upi",
+      "width": 320
+    },
+    {
+      "language": "en",
+      "route": "/app/payments/upi",
+      "width": 390
+    },
+    {
+      "language": "en",
+      "route": "/app/payments/upi",
+      "width": 768
+    },
+    {
+      "language": "en",
+      "route": "/app/payments/upi",
+      "width": 1440
+    },
+    {
+      "language": "hi",
+      "route": "reminder-review",
+      "width": 390
+    },
+    {
+      "language": "hi",
+      "route": "expanded-insights",
+      "width": 390
+    },
+    {
+      "language": "hi",
+      "route": "confirm-customer",
+      "width": 390
+    },
+    {
+      "language": "hi",
+      "route": "/app/settings/account",
+      "width": 320
+    },
+    {
+      "language": "hi",
+      "route": "/app/settings/account",
+      "width": 390
+    },
+    {
+      "language": "hi",
+      "route": "/app/settings/account",
+      "width": 768
+    },
+    {
+      "language": "hi",
+      "route": "/app/settings/account",
+      "width": 1440
+    },
+    {
+      "language": "hi",
+      "route": "/app/payments/upi",
+      "width": 320
+    },
+    {
+      "language": "hi",
+      "route": "/app/payments/upi",
+      "width": 390
+    },
+    {
+      "language": "hi",
+      "route": "/app/payments/upi",
+      "width": 768
+    },
+    {
+      "language": "hi",
+      "route": "/app/payments/upi",
+      "width": 1440
+    },
+    {
+      "language": "hinglish",
+      "route": "reminder-review",
+      "width": 390
+    },
+    {
+      "language": "hinglish",
+      "route": "expanded-insights",
+      "width": 390
+    },
+    {
+      "language": "hinglish",
+      "route": "confirm-customer",
+      "width": 390
+    },
+    {
+      "language": "hinglish",
+      "route": "/app/settings/account",
+      "width": 320
+    },
+    {
+      "language": "hinglish",
+      "route": "/app/settings/account",
+      "width": 390
+    },
+    {
+      "language": "hinglish",
+      "route": "/app/settings/account",
+      "width": 768
+    },
+    {
+      "language": "hinglish",
+      "route": "/app/settings/account",
+      "width": 1440
+    },
+    {
+      "language": "hinglish",
+      "route": "/app/payments/upi",
+      "width": 320
+    },
+    {
+      "language": "hinglish",
+      "route": "/app/payments/upi",
+      "width": 390
+    },
+    {
+      "language": "hinglish",
+      "route": "/app/payments/upi",
+      "width": 768
+    },
+    {
+      "language": "hinglish",
+      "route": "/app/payments/upi",
+      "width": 1440
+    }
+  ],
+  "accessibility": [
+    {
+      "language": "en",
+      "route": "reminder-review",
+      "violations": 0
+    },
+    {
+      "language": "en",
+      "route": "expanded-insights",
+      "violations": 0
+    },
+    {
+      "language": "en",
+      "route": "confirm-customer",
+      "violations": 0
+    },
+    {
+      "language": "en",
+      "route": "/app/settings/account",
+      "violations": 0
+    },
+    {
+      "language": "en",
+      "route": "/app/payments/upi",
+      "violations": 0
+    },
+    {
+      "language": "hi",
+      "route": "reminder-review",
+      "violations": 0
+    },
+    {
+      "language": "hi",
+      "route": "expanded-insights",
+      "violations": 0
+    },
+    {
+      "language": "hi",
+      "route": "confirm-customer",
+      "violations": 0
+    },
+    {
+      "language": "hi",
+      "route": "/app/settings/account",
+      "violations": 0
+    },
+    {
+      "language": "hi",
+      "route": "/app/payments/upi",
+      "violations": 0
+    },
+    {
+      "language": "hinglish",
+      "route": "reminder-review",
+      "violations": 0
+    },
+    {
+      "language": "hinglish",
+      "route": "expanded-insights",
+      "violations": 0
+    },
+    {
+      "language": "hinglish",
+      "route": "confirm-customer",
+      "violations": 0
+    },
+    {
+      "language": "hinglish",
+      "route": "/app/settings/account",
+      "violations": 0
+    },
+    {
+      "language": "hinglish",
+      "route": "/app/payments/upi",
+      "violations": 0
+    }
+  ],
+  "limitations": [
+    "No authorised Razorpay partner/test merchant credentials were supplied. Real provider and Android-device acceptance remain pending."
+  ]
+}

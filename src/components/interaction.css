@@ -1,0 +1,37 @@
+/* Shared interactive states for the authenticated app and its portal dialogs. */
+:is(.workspace,.sheet) :is(a[href],button,select,summary,input,textarea){transition:color .16s,background-color .16s,border-color .16s,box-shadow .16s}
+:is(.workspace,.sheet) a[href]:not(.brand-logo):not(.btn){color:#1761a2}
+:is(.workspace,.sheet) :is(a[href],button:not(:disabled),summary):hover{color:#0d4c88;background-color:#e8f3ff}
+:is(.workspace,.sheet) a[href]:not(.brand-logo):not(.btn):hover{text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1px}
+:is(.workspace,.sheet) .btn-primary:hover{background:#087a66;color:#fff;border-color:#087a66;box-shadow:0 4px 12px #087a6625}
+:is(.workspace,.sheet) .btn-danger:hover{background:#a92f35;color:#fff;border-color:#a92f35}
+:is(.workspace,.sheet) :is(.btn-secondary,.btn-ghost,.icon-btn):hover{background:#e2efff;color:#145b99;border-color:#a5cbea}
+.workspace [data-nav-id]:hover{background:#dfedfc!important;color:#0d518c!important}
+.workspace [data-nav-id][aria-current=page]:hover{background:#bcebdc!important;color:#085640!important}
+.workspace :is(.invoice-row,.stock-row,.record-row,.top-product-row):hover{background:#f0f7ff;border-color:#bfd9ee}
+:is(.workspace,.sheet) :is(input:not([type=checkbox]):not([type=radio]),textarea,select):not(:disabled):hover{border-color:#90bbde}
+:is(.workspace,.sheet) :is(a,button,summary,input,textarea,select):focus-visible{outline:3px solid #237fb9;outline-offset:3px}
+.workspace .brand-logo:hover{background:transparent;filter:brightness(1.08)}
+.workspace.reference-workspace.approved-workspace>:is(.workspace-main,aside){transition:none!important}
+.workspace a[data-tone=inverse][href]:not(.brand-logo):not(.btn),.workspace a[data-tone=inverse][href]:not(.brand-logo):not(.btn):hover{color:#fff;text-decoration:none}
+.workspace a[data-tone=inverse] :is(b,small){color:#fff}
+.workspace a[data-tone=inverse]:hover{background:#087b68;box-shadow:0 6px 18px #065b4724}
+.workspace .language-picker{border:1px solid #dbe9f1;border-radius:12px;background:#f8fbff;padding:0 8px!important;height:40px!important}
+.workspace .language-picker:focus-within{border-color:#2184b5;box-shadow:0 0 0 3px #d9effb}
+.workspace .language-picker select{min-height:38px;background:transparent;border:0;font-weight:650;color:#185d90;max-width:100px!important}
+.workspace .reference-dashboard .dashboard-table-wrap a[href]{color:#1761a2;font-weight:650;border-radius:6px;padding:3px 5px;margin-left:-5px;display:inline-flex;align-items:center;min-height:30px;text-decoration:underline;text-underline-offset:3px;text-decoration-color:#aacbe5}
+.workspace .reference-dashboard .dashboard-table-wrap a[href]:hover{color:#09477c;background:#dfedfc;text-decoration:underline}
+.workspace .chart-bars button:hover{background:#d3e9ff55}
+@supports(appearance:base-select){
+ :is(.workspace,.sheet) select,:is(.workspace,.sheet) select::picker(select){appearance:base-select}
+ :is(.workspace,.sheet) select{display:flex;align-items:center;justify-content:space-between;gap:10px}
+ :is(.workspace,.sheet) select::picker(select){background:#fff;color:#183e42;border:1px solid #d7e6ec;border-radius:15px;padding:7px;box-shadow:0 18px 50px #0a344b24;margin-block-start:8px;max-height:min(360px,60vh);max-width:calc(100vw - 24px);min-width:180px;overflow:auto;scrollbar-width:thin}
+ :is(.workspace,.sheet) select::picker-icon{color:#267d9a;transition:rotate .16s;font-size:12px;flex:none}
+ :is(.workspace,.sheet) select:open::picker-icon{rotate:180deg}
+ :is(.workspace,.sheet) select option{font-size:13px;font-weight:550;line-height:1.6;color:#22424d;border-radius:10px;background:#fff;padding:11px 12px;min-height:43px;margin:2px 0;white-space:normal;overflow-wrap:anywhere;cursor:pointer}
+ :is(.workspace,.sheet) select option:is(:hover,:focus-visible){background:#e9f3ff;color:#145a91;outline:0}
+ :is(.workspace,.sheet) select option:checked{background:#ddf6ec;color:#075744;font-weight:750}
+ :is(.workspace,.sheet) select option::checkmark{color:#0a8164;margin-inline-end:9px}
+ .workspace .hero-greeting select::picker(select){min-width:min(300px,calc(100vw - 24px))}
+}
+@media(prefers-reduced-motion:reduce){:is(.workspace,.sheet) :is(a,button,select,summary,input,textarea){transition:none}}

@@ -8,4 +8,4 @@ import { WorkspaceLayout } from '@/components/workspace';
 export const dynamic='force-dynamic';
 export const runtime='nodejs';
 export async function generateMetadata():Promise<Metadata>{return {title:text(await serverLocale(),'translation','home'),robots:{index:false,follow:false}};}
-export default async function PrivateLayout({children}: {children:React.ReactNode}) {const jar=await cookies(),session=sessionForCookie(jar.get('dukaanset_session')?.value);if(!session)redirect('/login');return <WorkspaceLayout initialLanguage={session.user.language}>{children}</WorkspaceLayout>;}
+export default async function PrivateLayout({children}: {children:React.ReactNode}) {const jar=await cookies(),session=sessionForCookie(jar.get('dukaanset_session')?.value);if(!session)redirect('/login');return <WorkspaceLayout initialLanguage={session.user.language} initialCollapsed={jar.get(`ds-nav-${session.user.id}`)?.value==='collapsed'}>{children}</WorkspaceLayout>;}

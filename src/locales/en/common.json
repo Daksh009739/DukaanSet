@@ -91,7 +91,7 @@
   "paymentMethod": "Payment method",
   "cash": "Cash",
   "upi": "UPI · manually recorded",
-  "paymentNote": "This records a payment you received. DukaanSet does not verify bank or UPI transfers.",
+  "paymentNote": "Record payments only after checking receipt. Manual bank and UPI entries are not bank-verified.",
   "customer": "Customer",
   "walkIn": "Walk-in customer",
   "createCustomer": "Add a new customer",
@@ -415,5 +415,12 @@
     "dozen_one": "dozen",
     "dozen_other": "dozens",
     "bag": "{{count}} bags"
-  }
+  },
+  "retail": "Retail",
+  "medical": "Medical / pharmacy",
+  "restaurant": "Restaurant",
+  "salon": "Salon",
+  "electronics": "Electronics",
+  "wholesale": "Wholesale",
+  "services": "Services"
 }

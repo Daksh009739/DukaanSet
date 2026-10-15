@@ -1,10 +1,11 @@
 'use client';
+import {businessCategories} from '@/lib/business-modes';
 import {LocalizedUnit} from '@/components/localized-data';
 
 import { createContext, useContext, useRef, useState, type FormEvent, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Plus, Trash2 } from 'lucide-react';
-import { useApp } from './app-provider';
+import { useApp,useUnsavedBusinessWork } from './app-provider';
 import { Button, Field, FormError, Select, Sheet } from './ui';
 import { api, lineTotal, minorUnits, money, quantity } from '@/lib/client';
 import type { Category } from '@/lib/contracts';
@@ -15,7 +16,7 @@ import { VoicePanel } from './voice/voice-panel';
 import { useDemandWrite } from './demand/write-provider';
 
 export type Action = 'product' | 'customer' | 'supplier' | 'payment' | 'stock' | 'expense' | 'purchase' | 'business';
-type ActionData = { productId?: string; customerId?: string; supplierId?:string; invoiceId?:string; voiceCommand?:VoiceCommand };
+type ActionData = { nameHint?:string; productId?: string; customerId?: string; supplierId?:string; invoiceId?:string; voiceCommand?:VoiceCommand };
 type PurchaseDraft = { productId: string; quantity: string; cost: string };
 const Operations = createContext<(action: Action, data?: ActionData) => void>(() => {});
 export const useOperations = () => useContext(Operations);
@@ -37,23 +38,25 @@ function OperationSheet({ action, data, onClose }: { action: Action | null; data
   const { t } = useTranslation();
   const app = useApp();
   const write=useDemandWrite(),copy=osCopy(useTranslation().i18n.language);
-  const [values,setValues]=useState<Record<string,string>>({supplierId:data.supplierId||''});
+  const [values,setValues]=useState<Record<string,string>>({supplierId:data.supplierId||'',name:data.nameHint||''});
   const [voiceBlocked,setVoiceBlocked]=useState(false),[voiceUsed,setVoiceUsed]=useState(Boolean(data.voiceCommand)),[allowDuplicate,setAllowDuplicate]=useState(false);
   const [busy, setBusy] = useState(false);
   const submitting = useRef(false);
   const voiceItemsApplied=useRef(false);
   const [error, setError] = useState('');
+  const [dirty,setDirty]=useState(false);
+  useUnsavedBusinessWork(Boolean(action&&(dirty||voiceUsed||busy||write.pending)));
   const [idempotencyKey] = useState(() => crypto.randomUUID());
-  const [productId, setProductId] = useState(data.productId || app.state?.products[0]?.id || '');
+  const [productId, setProductId] = useState(data.productId || app.state?.products.find(p=>p.stockTracked!==false)?.id || '');
   const [customerId, setCustomerId] = useState(data.customerId || '');
   const [reason, setReason] = useState<'receipt' | 'wastage' | 'correction'>('receipt');
-  const [items, setItems] = useState<PurchaseDraft[]>([{ productId: app.state?.products[0]?.id || '', quantity: '1', cost: '' }]);
+  const [items, setItems] = useState<PurchaseDraft[]>([{ productId: app.state?.products.find(p=>p.stockTracked!==false)?.id || '', quantity: '1', cost: '' }]);
   const titles: Record<Action, string> = {
     product: 'addProduct', customer: 'addCustomer', supplier: 'addSupplier', payment: 'addPayment',
     stock: 'addStock', expense: 'addExpense', purchase: 'newPurchase', business: 'newBusiness',
   };
   if (!action || !app.state) return null;
-  const state = app.state;
+  const state = app.state;const physicalProducts=state.products.filter(p=>p.stockTracked!==false);
   const locked=busy||write.busy||Boolean(write.pending)||write.blocked;
   const updateValue=(name:string,value:string)=>setValues(previous=>({...previous,[name]:value}));
   const applyVoice=(command:VoiceCommand)=>{if(locked)return;setVoiceUsed(true);setValues(previous=>({...previous,...Object.fromEntries(command.changed.map(key=>[key,command.fields[key]]))}));if(command.changed.includes('customerId'))setCustomerId(command.fields.customerId);if(action==='purchase'&&(command.changedItems.length||command.removedProducts?.length)){const rows=command.items.filter(item=>item.productId&&voiceQuantity(item,state.products)!==null).map(item=>({productId:item.productId,quantity:String(voiceQuantity(item,state.products)!/1000),cost:item.priceBasis==='unit'?item.price:''}));if(rows.length||command.removedProducts?.length)setItems(rows);voiceItemsApplied.current=true;}setError('');};
@@ -107,9 +110,9 @@ function OperationSheet({ action, data, onClose }: { action: Action | null; data
     } catch (failure) { setError(failure instanceof Error&&!(failure as {code?:string}).code?failure.message:app.errorText(failure)); }
     finally { submitting.current = false; setBusy(false); }
   };
-  const unavailable = action === 'stock' && !state.products.length || action === 'payment' && !creditCustomers.length || action === 'purchase' && (!state.products.length || !state.suppliers.length);
+  const unavailable = action === 'stock' && !physicalProducts.length || action === 'payment' && !creditCustomers.length || action === 'purchase' && (!physicalProducts.length || !state.suppliers.length);
   return <Sheet title={t(titles[action])} description={t(action === 'payment' ? 'paymentNote' : action === 'purchase' ? 'purchaseHint' : action === 'stock' ? 'stockHint' : 'onboardingHint')} open onOpenChange={open => { if (!open && !submitting.current) onClose(); }} wide={action === 'purchase'}>
-    <form onSubmit={submit} className="operation-form">
+    <form onSubmit={submit} onChangeCapture={()=>setDirty(true)} className="operation-form">
       {['customer','supplier','payment','purchase','expense'].includes(action)&&<div className="sheet-body"><VoicePanel intent={action as VoiceIntent} seed={data.voiceCommand} onApply={applyVoice} disabled={locked} onBlockedChange={setVoiceBlocked} onCancel={onClose} getContext={command=>formVoiceContext(command,{...values,customerId},action==='purchase'&&voiceItemsApplied.current?items.map(row=>({productId:row.productId,quantity:row.quantity,price:row.cost||undefined})):[],state.products)}/></div>}
       <fieldset disabled={locked} style={{border:0,padding:0,margin:0,minWidth:0}}>
       <div className="sheet-body form-grid">
@@ -138,7 +141,7 @@ function OperationSheet({ action, data, onClose }: { action: Action | null; data
         </>}
         {action === 'stock' && <>
           <Select label={t('product')} value={productId} required onChange={event => setProductId(event.target.value)}>
-            {!state.products.length && <option value="">{t('selectProduct')}</option>}{state.products.map(item => <option key={item.id} value={item.id}>{item.name}</option>)}
+            {!physicalProducts.length && <option value="">{t('selectProduct')}</option>}{physicalProducts.map(item => <option key={item.id} value={item.id}>{item.name}</option>)}
           </Select>
           {product && <div className="inline-summary"><span>{t('stockQty')}</span><b>{quantity(product.quantityMilli)} <LocalizedUnit value={product.unit}/></b></div>}
           <Select label={t('reason')} value={reason} onChange={event => setReason(event.target.value as typeof reason)}><option value="receipt">{t('receipt')}</option>{state.configuration.features.wastageTracking&&<option value="wastage">{t('wastage')}</option>}<option value="correction">{t('correction')}</option></Select>
@@ -150,7 +153,7 @@ function OperationSheet({ action, data, onClose }: { action: Action | null; data
           <Select label={t('supplier')} name="supplierId" required value={values.supplierId||''} onChange={e=>updateValue('supplierId',e.target.value)}><option value="">{t('selectSupplier')}</option>{state.suppliers.map(item => <option value={item.id} key={item.id}>{item.name}</option>)}</Select>
           {items.map((item, index) => <div className="purchase-item" key={index}>
             <Select label={t('product')} value={item.productId} required onChange={event => updateItem(index, { productId: event.target.value, cost: '' })}>
-              {!state.products.length && <option value="">{t('selectProduct')}</option>}{state.products.map(p => <option value={p.id} key={p.id} disabled={items.some((other, i) => i !== index && other.productId === p.id)}>{p.name}</option>)}
+              {!physicalProducts.length && <option value="">{t('selectProduct')}</option>}{physicalProducts.map(p => <option value={p.id} key={p.id} disabled={items.some((other, i) => i !== index && other.productId === p.id)}>{p.name}</option>)}
             </Select>
             <div className="field-pair"><Field label={t('buyQty')} value={item.quantity} inputMode="decimal" required onChange={event => updateItem(index, { quantity: event.target.value })} /><Field label={t('cost')} value={item.cost} required={voiceUsed&&!state.products.find(p=>p.id===item.productId)?.costPaise} placeholder={String((state.products.find(p => p.id === item.productId)?.costPaise ?? 0) / 100)} inputMode="decimal" onChange={event => updateItem(index, { cost: event.target.value })} /></div>
             {items.length > 1 && <Button type="button" variant="ghost" onClick={() => setItems(previous => previous.filter((_, i) => i !== index))}><Trash2 size={15} />{t('cancel')}</Button>}

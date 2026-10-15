@@ -1,0 +1,214 @@
+{
+  "checkedAt": "2026-10-13T21:18:45.409Z",
+  "compiledApplication": true,
+  "realProvider": false,
+  "realCamera": false,
+  "environment": "Fresh isolated database; official OAuth redirect, server token exchange and signed-event flows intercepted by explicit fictional provider fixtures; camera uses actual canvas video frames",
+  "workflows": [
+    {
+      "language": "en",
+      "upiSaved": true,
+      "qrUpload": true,
+      "syntheticCamera": true,
+      "officialOriginIntercepted": true,
+      "verifiedFixtureEvents": true,
+      "voiceVerifiedQuery": true,
+      "customerLink": true,
+      "noDuplicateLedger": true,
+      "dynamicQrMatch": true,
+      "importUnverified": true,
+      "profileIdentityRefresh": true,
+      "privateAvatar": true,
+      "disconnect": true
+    },
+    {
+      "language": "hi",
+      "upiSaved": true,
+      "qrUpload": true,
+      "syntheticCamera": true,
+      "officialOriginIntercepted": true,
+      "verifiedFixtureEvents": true,
+      "voiceVerifiedQuery": true,
+      "customerLink": true,
+      "noDuplicateLedger": true,
+      "dynamicQrMatch": true,
+      "importUnverified": true,
+      "profileIdentityRefresh": true,
+      "privateAvatar": true,
+      "disconnect": true
+    },
+    {
+      "language": "hinglish",
+      "upiSaved": true,
+      "qrUpload": true,
+      "syntheticCamera": true,
+      "officialOriginIntercepted": true,
+      "verifiedFixtureEvents": true,
+      "voiceVerifiedQuery": true,
+      "customerLink": true,
+      "noDuplicateLedger": true,
+      "dynamicQrMatch": true,
+      "importUnverified": true,
+      "profileIdentityRefresh": true,
+      "privateAvatar": true,
+      "disconnect": true
+    }
+  ],
+  "layouts": [
+    {
+      "language": "en",
+      "route": "/app/settings/account",
+      "width": 320
+    },
+    {
+      "language": "en",
+      "route": "/app/settings/account",
+      "width": 390
+    },
+    {
+      "language": "en",
+      "route": "/app/settings/account",
+      "width": 768
+    },
+    {
+      "language": "en",
+      "route": "/app/settings/account",
+      "width": 1440
+    },
+    {
+      "language": "en",
+      "route": "/app/payments/upi",
+      "width": 320
+    },
+    {
+      "language": "en",
+      "route": "/app/payments/upi",
+      "width": 390
+    },
+    {
+      "language": "en",
+      "route": "/app/payments/upi",
+      "width": 768
+    },
+    {
+      "language": "en",
+      "route": "/app/payments/upi",
+      "width": 1440
+    },
+    {
+      "language": "hi",
+      "route": "/app/settings/account",
+      "width": 320
+    },
+    {
+      "language": "hi",
+      "route": "/app/settings/account",
+      "width": 390
+    },
+    {
+      "language": "hi",
+      "route": "/app/settings/account",
+      "width": 768
+    },
+    {
+      "language": "hi",
+      "route": "/app/settings/account",
+      "width": 1440
+    },
+    {
+      "language": "hi",
+      "route": "/app/payments/upi",
+      "width": 320
+    },
+    {
+      "language": "hi",
+      "route": "/app/payments/upi",
+      "width": 390
+    },
+    {
+      "language": "hi",
+      "route": "/app/payments/upi",
+      "width": 768
+    },
+    {
+      "language": "hi",
+      "route": "/app/payments/upi",
+      "width": 1440
+    },
+    {
+      "language": "hinglish",
+      "route": "/app/settings/account",
+      "width": 320
+    },
+    {
+      "language": "hinglish",
+      "route": "/app/settings/account",
+      "width": 390
+    },
+    {
+      "language": "hinglish",
+      "route": "/app/settings/account",
+      "width": 768
+    },
+    {
+      "language": "hinglish",
+      "route": "/app/settings/account",
+      "width": 1440
+    },
+    {
+      "language": "hinglish",
+      "route": "/app/payments/upi",
+      "width": 320
+    },
+    {
+      "language": "hinglish",
+      "route": "/app/payments/upi",
+      "width": 390
+    },
+    {
+      "language": "hinglish",
+      "route": "/app/payments/upi",
+      "width": 768
+    },
+    {
+      "language": "hinglish",
+      "route": "/app/payments/upi",
+      "width": 1440
+    }
+  ],
+  "accessibility": [
+    {
+      "language": "en",
+      "route": "/app/settings/account",
+      "violations": 0
+    },
+    {
+      "language": "en",
+      "route": "/app/payments/upi",
+      "violations": 0
+    },
+    {
+      "language": "hi",
+      "route": "/app/settings/account",
+      "violations": 0
+    },
+    {
+      "language": "hi",
+      "route": "/app/payments/upi",
+      "violations": 0
+    },
+    {
+      "language": "hinglish",
+      "route": "/app/settings/account",
+      "violations": 0
+    },
+    {
+      "language": "hinglish",
+      "route": "/app/payments/upi",
+      "violations": 0
+    }
+  ],
+  "limitations": [
+    "No authorised Razorpay partner/test merchant credentials were supplied. Real provider and Android-device acceptance remain pending."
+  ]
+}

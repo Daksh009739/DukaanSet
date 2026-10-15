@@ -1,0 +1,325 @@
+{
+  "checkedAt": "2026-10-12T19:30:33.580Z",
+  "environment": "Compiled production build; isolated fictional demo; stock and ledger read-only during layout checks",
+  "layouts": [
+    {
+      "view": "demand",
+      "language": "en",
+      "width": 320
+    },
+    {
+      "view": "demand",
+      "language": "en",
+      "width": 390
+    },
+    {
+      "view": "demand",
+      "language": "en",
+      "width": 1440
+    },
+    {
+      "view": "reports",
+      "language": "en",
+      "width": 320
+    },
+    {
+      "view": "reports",
+      "language": "en",
+      "width": 390
+    },
+    {
+      "view": "reports",
+      "language": "en",
+      "width": 1440
+    },
+    {
+      "view": "daily-closing",
+      "language": "en",
+      "width": 320
+    },
+    {
+      "view": "daily-closing",
+      "language": "en",
+      "width": 390
+    },
+    {
+      "view": "daily-closing",
+      "language": "en",
+      "width": 1440
+    },
+    {
+      "view": "intelligence",
+      "language": "en",
+      "width": 320
+    },
+    {
+      "view": "intelligence",
+      "language": "en",
+      "width": 390
+    },
+    {
+      "view": "intelligence",
+      "language": "en",
+      "width": 1440
+    },
+    {
+      "view": "todays-work",
+      "language": "en",
+      "width": 320
+    },
+    {
+      "view": "todays-work",
+      "language": "en",
+      "width": 390
+    },
+    {
+      "view": "todays-work",
+      "language": "en",
+      "width": 1440
+    },
+    {
+      "view": "help",
+      "language": "en",
+      "width": 320
+    },
+    {
+      "view": "help",
+      "language": "en",
+      "width": 390
+    },
+    {
+      "view": "help",
+      "language": "en",
+      "width": 1440
+    },
+    {
+      "view": "account",
+      "language": "en",
+      "width": 320
+    },
+    {
+      "view": "account",
+      "language": "en",
+      "width": 390
+    },
+    {
+      "view": "account",
+      "language": "en",
+      "width": 1440
+    },
+    {
+      "view": "demand",
+      "language": "hi",
+      "width": 320
+    },
+    {
+      "view": "demand",
+      "language": "hi",
+      "width": 390
+    },
+    {
+      "view": "demand",
+      "language": "hi",
+      "width": 1440
+    },
+    {
+      "view": "reports",
+      "language": "hi",
+      "width": 320
+    },
+    {
+      "view": "reports",
+      "language": "hi",
+      "width": 390
+    },
+    {
+      "view": "reports",
+      "language": "hi",
+      "width": 1440
+    },
+    {
+      "view": "daily-closing",
+      "language": "hi",
+      "width": 320
+    },
+    {
+      "view": "daily-closing",
+      "language": "hi",
+      "width": 390
+    },
+    {
+      "view": "daily-closing",
+      "language": "hi",
+      "width": 1440
+    },
+    {
+      "view": "intelligence",
+      "language": "hi",
+      "width": 320
+    },
+    {
+      "view": "intelligence",
+      "language": "hi",
+      "width": 390
+    },
+    {
+      "view": "intelligence",
+      "language": "hi",
+      "width": 1440
+    },
+    {
+      "view": "todays-work",
+      "language": "hi",
+      "width": 320
+    },
+    {
+      "view": "todays-work",
+      "language": "hi",
+      "width": 390
+    },
+    {
+      "view": "todays-work",
+      "language": "hi",
+      "width": 1440
+    },
+    {
+      "view": "help",
+      "language": "hi",
+      "width": 320
+    },
+    {
+      "view": "help",
+      "language": "hi",
+      "width": 390
+    },
+    {
+      "view": "help",
+      "language": "hi",
+      "width": 1440
+    },
+    {
+      "view": "account",
+      "language": "hi",
+      "width": 320
+    },
+    {
+      "view": "account",
+      "language": "hi",
+      "width": 390
+    },
+    {
+      "view": "account",
+      "language": "hi",
+      "width": 1440
+    },
+    {
+      "view": "demand",
+      "language": "hinglish",
+      "width": 320
+    },
+    {
+      "view": "demand",
+      "language": "hinglish",
+      "width": 390
+    },
+    {
+      "view": "demand",
+      "language": "hinglish",
+      "width": 1440
+    },
+    {
+      "view": "reports",
+      "language": "hinglish",
+      "width": 320
+    },
+    {
+      "view": "reports",
+      "language": "hinglish",
+      "width": 390
+    },
+    {
+      "view": "reports",
+      "language": "hinglish",
+      "width": 1440
+    },
+    {
+      "view": "daily-closing",
+      "language": "hinglish",
+      "width": 320
+    },
+    {
+      "view": "daily-closing",
+      "language": "hinglish",
+      "width": 390
+    },
+    {
+      "view": "daily-closing",
+      "language": "hinglish",
+      "width": 1440
+    },
+    {
+      "view": "intelligence",
+      "language": "hinglish",
+      "width": 320
+    },
+    {
+      "view": "intelligence",
+      "language": "hinglish",
+      "width": 390
+    },
+    {
+      "view": "intelligence",
+      "language": "hinglish",
+      "width": 1440
+    },
+    {
+      "view": "todays-work",
+      "language": "hinglish",
+      "width": 320
+    },
+    {
+      "view": "todays-work",
+      "language": "hinglish",
+      "width": 390
+    },
+    {
+      "view": "todays-work",
+      "language": "hinglish",
+      "width": 1440
+    },
+    {
+      "view": "help",
+      "language": "hinglish",
+      "width": 320
+    },
+    {
+      "view": "help",
+      "language": "hinglish",
+      "width": 390
+    },
+    {
+      "view": "help",
+      "language": "hinglish",
+      "width": 1440
+    },
+    {
+      "view": "account",
+      "language": "hinglish",
+      "width": 320
+    },
+    {
+      "view": "account",
+      "language": "hinglish",
+      "width": 390
+    },
+    {
+      "view": "account",
+      "language": "hinglish",
+      "width": 1440
+    }
+  ],
+  "accessibilityScans": 42,
+  "runtimeErrors": [],
+  "cspViolations": [],
+  "ledgerUnchanged": true
+}

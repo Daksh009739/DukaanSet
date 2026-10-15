@@ -1,0 +1,27 @@
+✔ existing UPI and decoded QR stay saved without transaction verification; primary updates only future branding (2324.0124ms)
+✔ official OAuth state is account-bound, single-use, encrypted and scope-isolated (398.1965ms)
+✔ signed provider fetch, duplicate and out-of-order events preserve one authoritative transaction (409.4404ms)
+✔ stable provider payer linking changes no balances and does not derive identities from handles (350.0582ms)
+✔ confirmed invoice and udhaar reconciliation reuses ledger service and cannot double-post (446.2021ms)
+✔ matching an existing manually recorded receipt changes no ledger totals (248.5497ms)
+✔ advances remain separate from dues until explicitly applied and provider refunds reverse once (343.5648ms)
+✔ statement import is unverified, atomic, deduplicated and cannot clear dues (251.6054ms)
+✔ staff cannot change destinations; disconnected accounts reject future sync/events and keep history (407.5282ms)
+✔ profile image storage strips metadata and is private; session cleanup keeps the current session (521.7884ms)
+✔ Razorpay adapter calls documented endpoints with server bearer tokens and validates responses (202.6022ms)
+✔ provider test money cannot pay real invoices or create a real-bill payment QR (321.1743ms)
+✔ VoiceOS reads verified UPI and prepares review only; existing sales stay in their workflow (504.6955ms)
+✔ export permissions and timezone boundaries use real scoped observations (525.5299ms)
+✔ UPI HTTP operations accept action names, reject wrong verbs and keep scoped authorisation (877.8802ms)
+✔ profile and shop updates expose current identity; branding keeps one saved primary and invoice snapshots (834.194ms)
+✔ rotated webhook secrets verify retries; real customer history excludes provider test money (290.1035ms)
+✔ all approved natural UPI questions stay read-only and amount queries never invent a payer (381.6801ms)
+✔ a retained disconnected test authorisation cannot label current live observations as test money (661.5832ms)
+ℹ tests 19
+ℹ suites 0
+ℹ pass 19
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 34582.9976

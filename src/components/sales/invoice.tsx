@@ -1,4 +1,5 @@
 'use client';
+import {CaptureEvidence} from '../document-capture';
 import {LocalizedUnit,LocalizedDate} from '@/components/localized-data';
 
 import Link from 'next/link';
@@ -38,7 +39,7 @@ export function SaleInvoicePage({id}:{id:string}) {
  const reverse=async()=>{setBusy(true);setError('');try{await app.mutation(`/invoices/${id}/cancel`,{});setConfirm(false);}catch(cause){setError(app.errorText(cause));}finally{setBusy(false);}};
  return <div className="sale-invoice-page"><DetailHeader title={invoice.number} subtitle={invoice.customerName||t('walkIn')} back="/app/sales" status={<span className={`sale-status sale-status-${invoice.status}`}>{t(invoice.status)}</span>} actions={invoice.balancePaise>0&&invoice.customerId&&p.payments&&<Button onClick={()=>open('payment',{customerId:invoice.customerId!,invoiceId:id})}>{common('addPayment')}</Button>}/>
   <DetailMetrics items={[{label:t('total'),value:money(invoice.totalPaise),primary:true},{label:t('moneyReceived'),value:money(invoice.paidPaise)},{label:t('pending'),value:money(invoice.balancePaise)}]}/>
-  {p.sales&&<InvoiceActions invoice={invoice} businessName={source?.merchant.name||app.state!.business.name} payments={payments}/>}
+  <CaptureEvidence kind="sale" recordId={id}/>{p.sales&&<InvoiceActions invoice={invoice} businessName={source?.merchant.name||app.state!.business.name} payments={payments}/>}
   <section className="card detail-items-list"><h2>{t('items')}</h2>{invoice.items.map((item,index)=><div className="record-row" key={item.productId+index}><div><b>{item.name}</b>{item.variation&&<small>{item.variation}</small>}<small>{quantity(item.quantityMilli)} <LocalizedUnit value={item.unit}/> × {money(item.pricePaise)}</small></div><b>{money(item.totalPaise)}</b></div>)}</section>
   {invoice.customerId&&p.customers&&<Link className="text-link below-card" href={`/app/customers/${invoice.customerId}`}>{t('openCustomer')}</Link>}
   <Disclosure title={w('financialDetails')}><InvoiceDocument invoice={invoice} businessName={source?.merchant.name||app.state!.business.name} payments={payments}/>{source?.invoice&&<p className="form-note">{t('documents:issuedPayment')}: {money(source.invoice.originalPaidPaise)} · {t('documents:issuedDue')}: {money(source.invoice.originalBalancePaise)}</p>}{invoice.status!=='cancelled'&&p.sales&&<div className="sale-invoice-reversal"><p>{t('reversalWarning')}</p><Button variant="danger" onClick={()=>setConfirm(true)}><XCircle size={17}/>{t('cancelSale')}</Button></div>}</Disclosure><FormError message={error}/>
