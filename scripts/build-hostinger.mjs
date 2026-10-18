@@ -14,6 +14,9 @@ if (!existsSync('.next/standalone/server.js')) throw new Error('The standalone N
 rmSync(output,{recursive:true,force:true});
 mkdirSync(output,{recursive:true});
 cpSync('.next/standalone',output,{recursive:true,dereference:true});
+// Native Sharp bindings also need their platform's adjacent libvips libraries;
+// tracing just the .node entry can omit the DLL/.so loaded by the OS loader.
+if (existsSync('node_modules/@img')) cpSync('node_modules/@img',path.join(output,'node_modules/@img'),{recursive:true,dereference:true});
 cpSync('public',path.join(output,'public'),{recursive:true});
 cpSync('.next/static',path.join(output,'.next/static'),{recursive:true});
 for (const name of ['deployment-config.mjs','hostinger-config.mjs']) cpSync('scripts/'+name,path.join(output,name));

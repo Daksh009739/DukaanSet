@@ -12,7 +12,7 @@ try {
   verifyBackendBuild(JSON.parse(readFileSync('.dukaanset-build.json', 'utf8')), process.env);
   mkdirSync(root, {recursive:true, mode:0o700});
   accessSync(root, constants.W_OK);
-  process.env.HOSTNAME = '0.0.0.0';
+  process.env.HOSTNAME = process.env.HOSTNAME_BIND || '0.0.0.0';
   process.env.DUKAANSET_CLOSING_WORKER = '1';
   await import('./server.js');
 } catch (error) {
