@@ -917,5 +917,20 @@
       "biscuit": "Biscuit ka item"
     },
     "batchCostNote": "Batch ki kharid lagat receipt evidence mein save hogi. Is stock action se existing catalogue cost nahi badalti."
+  },
+  "paymentDisplay": {
+    "title": "Aapki payment details",
+    "yourQr": "Payments lene ke liye taiyaar",
+    "qrAlt": "{{payee}} ka UPI payment QR",
+    "payee": "Account ka naam",
+    "upiId": "Aapki UPI ID",
+    "copy": "UPI ID copy karein",
+    "copied": "UPI ID copy ho gayi",
+    "scanHint": "Customers yeh QR scan karke pay kar sakte hain.",
+    "download": "QR download karein",
+    "manage": "UPI manage karein",
+    "loadFailed": "Payment details load nahi ho paayi.",
+    "retry": "Phir try karein",
+    "destinationNote": "Saved payment destination. QR scan hone se payment milne ki pushti nahi hoti."
   }
 }

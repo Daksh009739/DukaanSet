@@ -1,0 +1,201 @@
+{
+  "checkedAt": "2026-10-18T10:38:51.364Z",
+  "backend": {
+    "passed": 434,
+    "failed": 0,
+    "skipped": 0
+  },
+  "browser": {
+    "suites": 10,
+    "passed": 49,
+    "failed": 0,
+    "skipped": 0,
+    "flaky": 0,
+    "productionSuites": 9,
+    "developmentSuites": 1,
+    "runs": [
+      {
+        "suite": "premium-details-v19.spec.ts",
+        "serverMode": "production",
+        "startedAt": "2026-10-18T10:31:53.393Z",
+        "completedAt": "2026-10-18T10:33:02.123Z",
+        "exitCode": 0,
+        "stats": {
+          "startTime": "2026-10-18T10:31:54.150Z",
+          "duration": 67926.69200000001,
+          "expected": 3,
+          "skipped": 0,
+          "unexpected": 0,
+          "flaky": 0
+        },
+        "errors": []
+      },
+      {
+        "suite": "voice31.spec.ts",
+        "serverMode": "production",
+        "startedAt": "2026-10-18T10:33:02.125Z",
+        "completedAt": "2026-10-18T10:34:40.295Z",
+        "exitCode": 0,
+        "stats": {
+          "startTime": "2026-10-18T10:33:02.897Z",
+          "duration": 97356.851,
+          "expected": 10,
+          "skipped": 0,
+          "unexpected": 0,
+          "flaky": 0
+        },
+        "errors": []
+      },
+      {
+        "suite": "voice33.spec.ts",
+        "serverMode": "production",
+        "startedAt": "2026-10-18T10:34:40.296Z",
+        "completedAt": "2026-10-18T10:35:44.250Z",
+        "exitCode": 0,
+        "stats": {
+          "startTime": "2026-10-18T10:34:41.074Z",
+          "duration": 63133.657,
+          "expected": 7,
+          "skipped": 0,
+          "unexpected": 0,
+          "flaky": 0
+        },
+        "errors": []
+      },
+      {
+        "suite": "invoice-studio.spec.ts",
+        "serverMode": "production",
+        "startedAt": "2026-10-18T10:21:35.720Z",
+        "completedAt": "2026-10-18T10:22:28.383Z",
+        "exitCode": 0,
+        "stats": {
+          "startTime": "2026-10-18T10:21:36.498Z",
+          "duration": 51831.976,
+          "expected": 7,
+          "skipped": 0,
+          "unexpected": 0,
+          "flaky": 0
+        },
+        "errors": []
+      },
+      {
+        "suite": "insight-workspaces.spec.ts",
+        "serverMode": "production",
+        "startedAt": "2026-10-18T10:22:28.385Z",
+        "completedAt": "2026-10-18T10:23:53.000Z",
+        "exitCode": 0,
+        "stats": {
+          "startTime": "2026-10-18T10:22:29.178Z",
+          "duration": 83773.304,
+          "expected": 6,
+          "skipped": 0,
+          "unexpected": 0,
+          "flaky": 0
+        },
+        "errors": []
+      },
+      {
+        "suite": "workspace-overlays.spec.ts",
+        "serverMode": "production",
+        "startedAt": "2026-10-18T10:23:53.002Z",
+        "completedAt": "2026-10-18T10:24:46.627Z",
+        "exitCode": 0,
+        "stats": {
+          "startTime": "2026-10-18T10:23:53.785Z",
+          "duration": 52805.013,
+          "expected": 3,
+          "skipped": 0,
+          "unexpected": 0,
+          "flaky": 0
+        },
+        "errors": []
+      },
+      {
+        "suite": "premium-website.spec.ts",
+        "serverMode": "development",
+        "startedAt": "2026-10-18T10:24:46.629Z",
+        "completedAt": "2026-10-18T10:26:48.575Z",
+        "exitCode": 0,
+        "stats": {
+          "startTime": "2026-10-18T10:24:47.376Z",
+          "duration": 121132.743,
+          "expected": 4,
+          "skipped": 0,
+          "unexpected": 0,
+          "flaky": 0
+        },
+        "errors": []
+      },
+      {
+        "suite": "application-header.spec.ts",
+        "serverMode": "production",
+        "startedAt": "2026-10-18T10:26:48.578Z",
+        "completedAt": "2026-10-18T10:27:31.270Z",
+        "exitCode": 0,
+        "stats": {
+          "startTime": "2026-10-18T10:26:49.368Z",
+          "duration": 41864.446,
+          "expected": 2,
+          "skipped": 0,
+          "unexpected": 0,
+          "flaky": 0
+        },
+        "errors": []
+      },
+      {
+        "suite": "approved-dashboard.spec.ts",
+        "serverMode": "production",
+        "startedAt": "2026-10-18T10:27:31.271Z",
+        "completedAt": "2026-10-18T10:28:22.256Z",
+        "exitCode": 0,
+        "stats": {
+          "startTime": "2026-10-18T10:27:31.942Z",
+          "duration": 50278.573000000004,
+          "expected": 4,
+          "skipped": 0,
+          "unexpected": 0,
+          "flaky": 0
+        },
+        "errors": []
+      },
+      {
+        "suite": "pdf-suite.spec.ts",
+        "serverMode": "production",
+        "startedAt": "2026-10-18T10:35:44.251Z",
+        "completedAt": "2026-10-18T10:37:19.325Z",
+        "exitCode": 0,
+        "stats": {
+          "startTime": "2026-10-18T10:35:44.932Z",
+          "duration": 94334.86399999999,
+          "expected": 3,
+          "skipped": 0,
+          "unexpected": 0,
+          "flaky": 0
+        },
+        "errors": []
+      }
+    ]
+  },
+  "newUiMatrix": {
+    "languages": [
+      "en",
+      "hi",
+      "hinglish"
+    ],
+    "viewports": [
+      320,
+      390,
+      768,
+      1440
+    ],
+    "layouts": 132,
+    "scopedAxeScans": 33,
+    "violations": 0
+  },
+  "limitations": [
+    "Native speech recognition and TTS events are simulated; cloud encoding uses synthetic audio.",
+    "Human desktop/Android microphone, noise and acoustic acceptance remain separate.",
+    "Merchant QR in screenshots is a clearly fictional QA destination, not the real business account.",
+    "The new saved-destination display does not establish payment verification or live-provider readiness."
+  ]
+}

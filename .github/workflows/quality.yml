@@ -117,6 +117,8 @@ jobs:
         run: npm run test:e2e -- tests/e2e/invoice-studio.spec.ts
       - name: Premium website, multilingual auth and product demonstration browser checks
         run: npm run test:e2e -- tests/e2e/premium-website.spec.ts
+      - name: Premium detail records, authentication screens and saved merchant UPI QR display
+        run: npm run test:e2e -- tests/e2e/premium-details-v19.spec.ts
 
       - name: Compiled dashboard, closing PDFs and durable backend timer checks
         run: node scripts/qa/v10-production-review.mjs

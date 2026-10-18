@@ -917,5 +917,20 @@
       "biscuit": "Biscuit"
     },
     "batchCostNote": "Batch purchase cost is saved as receipt evidence. This stock action does not change the existing catalogue cost."
+  },
+  "paymentDisplay": {
+    "title": "Your payment details",
+    "yourQr": "Ready to receive payments",
+    "qrAlt": "UPI payment QR for {{payee}}",
+    "payee": "Account name",
+    "upiId": "UPI ID",
+    "copy": "Copy UPI ID",
+    "copied": "UPI ID copied",
+    "scanHint": "Customers can scan this QR to pay.",
+    "download": "Download QR",
+    "manage": "Manage UPI",
+    "loadFailed": "Payment details could not be loaded.",
+    "retry": "Try again",
+    "destinationNote": "Saved payment destination. Scanning a QR does not confirm that a payment was received."
   }
 }

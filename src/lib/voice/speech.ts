@@ -31,12 +31,16 @@ export const browserSpeechAdapter:SpeechTranscriptionAdapter={
   const Constructor=speechConstructor();if(!Constructor)throw new Error('Speech recognition unavailable');
   const recognition=new Constructor();let timer:ReturnType<typeof setTimeout>|null=null,deadline:ReturnType<typeof setTimeout>|null=null,limit:ReturnType<typeof setTimeout>|null=null,ended=false,stopping=false,startedOnce=false,speechActive=false,lastText='';
   const clear=()=>{if(timer)clearTimeout(timer);if(deadline)clearTimeout(deadline);if(limit)clearTimeout(limit);timer=null;deadline=null;limit=null;};
-  const end=(problem?:SpeechProblem)=>{if(ended)return;ended=true;clear();if(problem)callbacks.failed(problem);else callbacks.ended();};
+  const release=()=>{recognition.onstart=null;recognition.onend=null;recognition.onresult=null;recognition.onerror=null;recognition.onspeechstart=null;recognition.onspeechend=null;try{recognition.abort();}catch{}};
+  const end=(problem?:SpeechProblem)=>{if(ended)return;ended=true;clear();release();if(problem)callbacks.failed(problem);else callbacks.ended();};
   const stop=()=>{if(ended||stopping)return;stopping=true;if(timer)clearTimeout(timer);timer=null;callbacks.finalizing?.();deadline=setTimeout(()=>end(),policy.finalizationMs);try{recognition.stop();}catch{end('speechError');}};
-  const schedule=()=>{if(ended||stopping)return;if(timer)clearTimeout(timer);timer=setTimeout(stop,policy.silenceMs);};
-  configureRecognition(recognition,locale,{started:()=>{if(ended||stopping||startedOnce)return;startedOnce=true;callbacks.started();if(!speechActive)timer=setTimeout(()=>end('silence'),policy.noSpeechMs);limit=setTimeout(()=>end('speechError'),policy.maxTurnMs);},ended:()=>end(),failed:problem=>end(problem),transcript:(text,final)=>{if(ended)return;callbacks.transcript(text,final);if(text.trim()&&text!==lastText){lastText=text;if(!speechActive)schedule();}}});
-  recognition.onspeechstart=()=>{if(ended||stopping)return;speechActive=true;if(timer)clearTimeout(timer);timer=null;};
+  // Native speechend is advisory: Chromium/Android can omit it after speechstart.
+  // Changed transcripts keep a turn alive; repeated results must not hold the mic forever.
+  const schedule=(delay=policy.silenceMs)=>{if(ended||stopping)return;if(timer)clearTimeout(timer);timer=setTimeout(stop,delay);};
+  const transcriptIdleMs=Math.max(policy.silenceMs,3600);
+  configureRecognition(recognition,locale,{started:()=>{if(ended||stopping||startedOnce)return;startedOnce=true;callbacks.started();if(!speechActive)timer=setTimeout(()=>end('silence'),policy.noSpeechMs);limit=setTimeout(()=>end('speechError'),policy.maxTurnMs);},ended:()=>end(),failed:problem=>end(problem),transcript:(text,final)=>{if(ended)return;callbacks.transcript(text,final);if(text.trim()&&text!==lastText){lastText=text;schedule(speechActive?transcriptIdleMs:policy.silenceMs);}}});
+  recognition.onspeechstart=()=>{if(ended||stopping||speechActive)return;speechActive=true;schedule(lastText?transcriptIdleMs:policy.noSpeechMs);};
   recognition.onspeechend=()=>{speechActive=false;schedule();};
-  return{start:()=>recognition.start(),stop,abort:()=>{ended=true;clear();recognition.onstart=null;recognition.onend=null;recognition.onresult=null;recognition.onerror=null;recognition.onspeechstart=null;recognition.onspeechend=null;recognition.abort();}};
+  return{start:()=>recognition.start(),stop,abort:()=>{ended=true;clear();release();}};
  }
 };

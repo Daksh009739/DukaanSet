@@ -1,10 +1,10 @@
 /* Shared interactive states for the authenticated app and its portal dialogs. */
 :is(.workspace,.sheet) :is(a[href],button,select,summary,input,textarea){transition:color .16s,background-color .16s,border-color .16s,box-shadow .16s}
 :is(.workspace,.sheet) a[href]:not(.brand-logo):not(.btn){color:#1761a2}
-:is(.workspace,.sheet) :is(a[href],button:not(:disabled),summary):hover{color:#0d4c88;background-color:#e8f3ff}
+:is(.workspace,.sheet) :is(a[href],button:not(:disabled),summary):hover:not(.btn-primary):not(.btn-danger){color:#0d4c88;background-color:#e8f3ff}
 :is(.workspace,.sheet) a[href]:not(.brand-logo):not(.btn):hover{text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1px}
-:is(.workspace,.sheet) .btn-primary:hover{background:#087a66;color:#fff;border-color:#087a66;box-shadow:0 4px 12px #087a6625}
-:is(.workspace,.sheet) .btn-danger:hover{background:#a92f35;color:#fff;border-color:#a92f35}
+:is(.workspace,.sheet) .btn-primary:hover:not(:disabled){background:#087a66;color:#fff;border-color:#087a66;box-shadow:0 4px 12px #087a6625}
+:is(.workspace,.sheet) .btn-danger:hover:not(:disabled){background:#a92f35;color:#fff;border-color:#a92f35}
 :is(.workspace,.sheet) :is(.btn-secondary,.btn-ghost,.icon-btn):hover{background:#e2efff;color:#145b99;border-color:#a5cbea}
 .workspace [data-nav-id]:hover{background:#dfedfc!important;color:#0d518c!important}
 .workspace [data-nav-id][aria-current=page]:hover{background:#bcebdc!important;color:#085640!important}

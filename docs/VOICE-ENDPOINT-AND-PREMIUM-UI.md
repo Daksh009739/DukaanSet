@@ -1,0 +1,15 @@
+# Automatic voice turns and premium inner workspaces
+
+The browser adapter now treats native speech-start/end events as advisory. A missing `speechend` no longer leaves a turn waiting until the maximum recording limit. Changing transcripts renew an inactivity timer; repeated identical results and repeated `speechstart` events do not. Native speech-end uses the existing configured silence interval. When the browser leaves speech active, a 3.6-second transcript-inactivity fallback calls `stop()` and permits the existing bounded finalization interval to collect a final result.
+
+Only final transcripts enter the conversation. An interim-only turn, cancellation or recognition error cannot submit a financial request. The adapter detaches its callbacks and aborts native recognition at completion, failure and cancellation, including when the SDK omits its own end event. The conversation continues to deduplicate final receipts. Sending an utterance automatically prepares the relevant response/draft; financial confirmation remains a separate action.
+
+Inner customer, product, supplier, payment, purchase, purchase-order, bill and closing-record views reuse the shared detail components. A scoped style layer supplies clearer heading/body colours, record icons, metric hierarchy, tabs, disclosure controls and responsive actions. Shared dialogs gain consistent fields, headers, errors and focus states. Login, registration and recovery preserve the original authentication workflow while adding a split brand story, form card, mode navigation and clearer typography. The public voice demo has an explicit locale lookup and is optional on login. Motion honours the system reduced-motion preference.
+
+The dashboard reads the existing confirmed primary UPI destination through a private, authenticated, payments-permission endpoint. It displays the payee and UPI ID, generates a scannable QR for that exact destination, and offers copying/downloading and existing UPI management. The QR has no preset amount or fabricated transaction reference. It is regenerated from the saved destination; the original uploaded image is not retained by this existing upload flow. A scan is not payment verification. Verified collection totals and financial records remain in the original Smart UPI services.
+
+The display endpoint rechecks permission after QR generation and sends `Cache-Control: private, no-store`. Client responses are business-scoped and aborted on scope changes. Tests decode the generated PNG and verify its destination, primary selection, authentication, business isolation and absence of financial writes.
+
+The shared hover rule now excludes primary and destructive buttons; their foreground/background no longer cross through a low-contrast inversion during hover. This corrects the earlier remote PDF-dialog contrast failure while preserving hover feedback.
+
+See [the QA report](qa/premium19/REPORT.md) for the final automated results and preview images. Native speech events and encoded audio are simulated in automated acceptance; real microphone/noise/Android behaviour still needs a human device run.
