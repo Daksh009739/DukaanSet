@@ -13,3 +13,5 @@ The display endpoint rechecks permission after QR generation and sends `Cache-Co
 The shared hover rule now excludes primary and destructive buttons; their foreground/background no longer cross through a low-contrast inversion during hover. This corrects the earlier remote PDF-dialog contrast failure while preserving hover feedback.
 
 See [the QA report](qa/premium19/REPORT.md) for the final automated results and preview images. Native speech events and encoded audio are simulated in automated acceptance; real microphone/noise/Android behaviour still needs a human device run.
+
+The release accessibility check caught reduced text contrast during the new detail-workspace entrance animation. The entrance now animates position only, keeping content fully opaque and readable throughout navigation. The compiled Smart UPI/profile suite was rerun for English, Hindi and Hinglish before integration into dev.
