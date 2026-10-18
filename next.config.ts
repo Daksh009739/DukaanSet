@@ -1,6 +1,7 @@
 import type { NextConfig } from 'next';
 
 const config: NextConfig = {
+  output: process.env.DUKAANSET_HOSTINGER_STAGING === '1' ? 'standalone' : undefined,
   distDir: process.env.DUKAANSET_BUILD_DIR || '.next',
   turbopack: { root: process.cwd() },
   // Repeated isolated test servers must not reload a previous server's task graph.

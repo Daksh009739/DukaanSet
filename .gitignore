@@ -40,4 +40,5 @@ playwright-report/
 .next-local/
 .vercel/
 .dukaanset-build.json
+.hostinger/
 next-env.d.ts

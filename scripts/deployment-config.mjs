@@ -31,6 +31,7 @@ export function backendSettings(env) {
   const environment = env.DUKAANSET_ENV || 'local';
   if (!['local', 'staging', 'production'].includes(environment)) throw new Error('DUKAANSET_ENV must be local, staging or production.');
   if (environment === 'local') return { environment };
+  if (env.DUKAANSET_STAGING_DEMO_ONLY === '1' && environment !== 'staging') throw new Error('Demo-only hosting is restricted to staging.');
   if (env.VERCEL === '1') throw new Error('The SQLite backend requires a persistent Node host, not Vercel Functions.');
   const publicOrigin = httpsOrigin(env.DUKAANSET_PUBLIC_ORIGIN, 'DUKAANSET_PUBLIC_ORIGIN');
   if (httpsOrigin(env.AUTH_BASE_URL, 'AUTH_BASE_URL') !== publicOrigin || httpsOrigin(env.NEXT_PUBLIC_SITE_URL, 'NEXT_PUBLIC_SITE_URL') !== publicOrigin) {
@@ -40,9 +41,15 @@ export function backendSettings(env) {
   const relative = path.relative(env.DUKAANSET_DATA_ROOT, env.DATABASE_PATH);
   if (!relative || relative.startsWith('..') || path.isAbsolute(relative) || /(?:^|[\\/])tmp(?:[\\/]|$)/i.test(env.DATABASE_PATH)) throw new Error('Database must be inside the designated persistent volume, outside temporary storage.');
   if (environment === 'staging' && !/(?:^|[\\/])[^\\/]*staging[^\\/]*(?:[\\/]|$)/i.test(env.DUKAANSET_DATA_ROOT)) throw new Error('Staging needs its own clearly named staging volume.');
-  if (env.AUTH_EMAIL_MODE !== 'resend' || !env.RESEND_API_KEY || !env.AUTH_EMAIL_FROM) throw new Error('Hosted authentication requires Resend credentials and a verified sender.');
+  if (stagingDemoOnly(env)) {
+    if (env.AUTH_EMAIL_MODE !== 'unavailable' || env.NEXT_PUBLIC_DUKAANSET_DEMO_ONLY !== '1') throw new Error('Demo staging must disable hosted email and show its demo-only label.');
+  } else if (env.AUTH_EMAIL_MODE !== 'resend' || !env.RESEND_API_KEY || !env.AUTH_EMAIL_FROM) throw new Error('Hosted authentication requires Resend credentials and a verified sender.');
   if (!/^[A-Za-z0-9_-]{43,128}$/.test(env.DUKAANSET_DEPLOYMENT_TOKEN || '')) throw new Error('Configure the dedicated deployment-check token.');
   return { environment, publicOrigin };
+}
+
+export function stagingDemoOnly(env) {
+  return env.DUKAANSET_ENV === 'staging' && env.DUKAANSET_STAGING_DEMO_ONLY === '1';
 }
 
 export function gatewayOutput(settings) {

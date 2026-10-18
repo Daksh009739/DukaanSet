@@ -49,16 +49,19 @@ test('directory filters, signed refunds and record actions use the real ledger w
 });
 
 test('all seven sections fit desktop, tablet and small phones in all three languages',async({page})=>{
-  test.setTimeout(360000);await setup(page);const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
+  test.setTimeout(720000);await setup(page);const errors:string[]=[],throttles:string[]=[];page.on('pageerror',e=>errors.push(e.message));page.on('response',r=>{if(r.status()===429)throttles.push(new URL(r.url()).pathname);});
   const routes=['sales/new','sales','stock','customers','payments','purchases','suppliers'],out='.local/qa-premium-modules';mkdirSync(out,{recursive:true});
+  let auditedViewport=false;
   for(const language of ['en','hi','hinglish']) {
-    // Preserve the production request quota while auditing repeated authenticated pages.
-    if(language!=='en')await page.waitForTimeout(60000);
     expect((await post(page,'/account/language',{language})).status()).toBe(200);
     for(const width of language==='en'?[1440,768,320]:[1440,320]) {
+      // Fast CI can exhaust one user's quota across widths before a language
+      // boundary. Pace every viewport instead of weakening the application limit.
+      if(auditedViewport)await page.waitForTimeout(60000);
+      auditedViewport=true;
       await page.setViewportSize({width,height:900});
       for(const route of routes) {
-        await page.goto('/app/'+route);await expect(page.locator('main h1')).toBeVisible();await expect(page.getByTestId('contextual-voice-hero')).toBeVisible();await expect(page.locator('.demo-banner')).toHaveCount(0);await expect(page.locator('html')).toHaveAttribute('lang',language==='hinglish'?'hi-Latn':language);await page.evaluate(()=>document.fonts.ready);
+        await page.goto('/app/'+route);await expect(page.locator('main h1'),route+' '+language+' '+width+'; throttled: '+throttles.join(', ')).toBeVisible();expect(throttles,'The visual audit must respect the production request quota').toEqual([]);await expect(page.getByTestId('contextual-voice-hero')).toBeVisible();await expect(page.locator('.demo-banner')).toHaveCount(0);await expect(page.locator('html')).toHaveAttribute('lang',language==='hinglish'?'hi-Latn':language);await page.evaluate(()=>document.fonts.ready);
         expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),route+' '+language+' '+width).toBe(true);
         if(language==='en'&&width!==768)expect((await new AxeBuilder({page}).include('main').withTags(['wcag2a','wcag2aa','wcag21aa']).analyze()).violations,route+' '+width).toEqual([]);
         if(width!==768)await page.screenshot({path:out+'/'+route.replace('/','-')+'-'+language+'-'+width+'.png',fullPage:true});

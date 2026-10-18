@@ -1,4 +1,5 @@
 import type { Store } from "./store";
+import {stagingDemoOnly} from '../../../scripts/deployment-config.mjs';
 import { getStore } from "./store";
 import { DomainError, isDomainError, object, keys, language, oneOf } from "./validation";
 import { createHash } from "node:crypto";
@@ -92,6 +93,7 @@ export async function handleRequest(request: Request, store: Store = getStore())
     if (path.startsWith("/api/auth/") && verb === "POST") {
       throttle("auth:global", 40);
       const action = path.slice("/api/auth/".length);
+      if (stagingDemoOnly(process.env) && !['demo','demo/reset','logout'].includes(action)) throw new DomainError('DEMO_ONLY','This temporary staging site uses Try Demo. Registration and email are unavailable.',403);
       if (action === "logout") { store.logout(token(request)); return json({ ok: true }, 200, { "Set-Cookie": cookie("", request, true) }); }
       if (action === "demo/reset") {
         const userId = store.authenticate(token(request));

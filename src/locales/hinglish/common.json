@@ -422,5 +422,6 @@
   "salon": "Salon ka business",
   "electronics": "Electronics ka business",
   "wholesale": "Wholesale ka business",
-  "services": "Services ka business"
+  "services": "Services ka business",
+  "stagingDemoBanner": "Temporary staging · Sirf demo data. Try Demo chunein. Registration aur external services abhi available nahi hain."
 }

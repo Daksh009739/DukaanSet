@@ -422,5 +422,6 @@
   "salon": "Salon",
   "electronics": "Electronics",
   "wholesale": "Wholesale",
-  "services": "Services"
+  "services": "Services",
+  "stagingDemoBanner": "Temporary staging · Demo data only. Choose Try Demo. Registration and external services are unavailable."
 }

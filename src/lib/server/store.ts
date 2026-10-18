@@ -1,4 +1,5 @@
 import { DatabaseSync } from "node:sqlite";
+import {stagingDemoOnly} from '../../../scripts/deployment-config.mjs';
 import { createHash, randomBytes, randomUUID, scryptSync, timingSafeEqual } from "node:crypto";
 import { mkdirSync } from "node:fs";
 import { dirname, resolve } from "node:path";
@@ -145,6 +146,7 @@ export class Store {
     if (!token || token.length > 100) throw new DomainError("UNAUTHENTICATED", "Please sign in.", 401);
     const row = this.row("SELECT user_id FROM sessions WHERE token_hash=? AND expires_at>?", createHash("sha256").update(token).digest("hex"), stamp());
     if (!row) throw new DomainError("UNAUTHENTICATED", "Your session has expired. Please sign in.", 401);
+    if (stagingDemoOnly(process.env) && !this.row('SELECT id FROM users WHERE id=? AND demo=1', String(row.user_id))) throw new DomainError('UNAUTHENTICATED','This staging site accepts demo sessions only.',401);
     return String(row.user_id);
   }
   logout(token: string | null) { if (token) this.run("DELETE FROM sessions WHERE token_hash=?", createHash("sha256").update(token).digest("hex")); }
