@@ -4,7 +4,9 @@ import path from 'node:path';
 import {verifyBackendBuild} from './deployment-config.mjs';
 
 if (process.env.DUKAANSET_ENV !== 'staging' || process.env.DUKAANSET_HOSTINGER_STAGING !== '1') throw new Error('Hostinger packaging is limited to the approved staging deployment.');
-const result = spawnSync(process.execPath, ['scripts/run.mjs', 'build'], {stdio:'inherit',windowsHide:true,env:process.env});
+// Hostinger's shared Linux image can lack the glibc required by native SWC.
+// Webpack supports Next's WASM fallback while Turbopack requires native SWC.
+const result = spawnSync(process.execPath, ['scripts/run.mjs', 'build', '--webpack'], {stdio:'inherit',windowsHide:true,env:process.env});
 if (result.status !== 0) process.exit(result.status ?? 1);
 const info = JSON.parse(readFileSync('.dukaanset-build.json','utf8'));
 verifyBackendBuild(info, process.env);
