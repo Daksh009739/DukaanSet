@@ -4,7 +4,7 @@ import {httpsOrigin} from './deployment-config.mjs';
 
 // The hosting account home is outside hbuilds/current and public_html. Never
 // keep the SQLite/WAL files in a release directory that Hostinger replaces.
-export function configureHostinger(env, home = homedir()) {
+export function configureHostinger(env, home = env.DUKAANSET_HOSTINGER_HOME || homedir()) {
   if (env.DUKAANSET_HOSTINGER_STAGING !== '1' || env.DUKAANSET_ENV !== 'staging') throw new Error('Select the explicit Hostinger staging deployment.');
   const origin = httpsOrigin(env.DUKAANSET_PUBLIC_ORIGIN, 'DUKAANSET_PUBLIC_ORIGIN');
   const host = new URL(origin).hostname;
