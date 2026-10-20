@@ -57,19 +57,19 @@ test('health reveals no data; build details require an owner session or a narrow
   const previousToken = process.env.DUKAANSET_DEPLOYMENT_TOKEN, previousVercel = process.env.VERCEL, previousEnvironment = process.env.DUKAANSET_ENV;
   process.env.DUKAANSET_DEPLOYMENT_TOKEN = token; delete process.env.VERCEL; process.env.DUKAANSET_ENV = 'local';
   try {
-    assert.deepEqual(await health().json(), { ok: true });
-    assert.equal(deployment(new Request('https://staging.example.com/api/deployment')).status, 401);
+    assert.deepEqual(await (await health()).json(), { ok: true });
+    assert.equal((await deployment(new Request('https://staging.example.com/api/deployment'))).status, 401);
     assert.equal(deploymentCheckAuthorized(new Request('https://staging.example.com/api/deployment', { headers: { Authorization: `Bearer ${token.slice(1)}` } })), false);
     assert.equal(deploymentCheckAuthorized(new Request('https://staging.example.com/api/deployment', { headers: { Authorization: `Bearer ${'é'.repeat(43)}` } })), false);
-    const result = deployment(new Request('https://staging.example.com/api/deployment', { headers: { Authorization: `Bearer ${token}` } }));
+    const result = await deployment(new Request('https://staging.example.com/api/deployment', { headers: { Authorization: `Bearer ${token}` } }));
     assert.equal(result.status, 200); assert.ok(!JSON.stringify(await result.json()).includes(token));
     assert.equal((await handleRequest(new Request('https://staging.example.com/api/session', { headers: { Authorization: `Bearer ${token}` } }), store)).status, 401);
     const account = store.register({ name: 'QA Owner', email: 'staging-check@example.com', password: 'strong-password-123', businessName: 'Fictional QA Shop', category: 'grocery', language: 'en' }), session = store.issueSession(account.user.id);
     const request = new Request('https://staging.example.com/api/deployment', { headers: { Cookie: `dukaanset_session=${session}` } });
-    assert.equal(deployment(request).status, 200);
-    const details = await deployment(request).json(); assert.equal(details.publicOrigin, undefined);
+    assert.equal((await deployment(request)).status, 200);
+    const details = await (await deployment(request)).json(); assert.equal(details.publicOrigin, undefined);
     store.db.prepare("UPDATE memberships SET role='staff' WHERE user_id=?").run(account.user.id);
-    assert.equal(deployment(request).status, 403);
+    assert.equal((await deployment(request)).status, 403);
   } finally { store.close(); globalThis.dukaanStore = previous; for (const [key, value] of Object.entries({ DUKAANSET_DEPLOYMENT_TOKEN: previousToken, VERCEL: previousVercel, DUKAANSET_ENV: previousEnvironment })) if (value === undefined) delete process.env[key]; else process.env[key] = value; }
 });
 test('the default SQLite runtime refuses accidental Vercel execution', () => {

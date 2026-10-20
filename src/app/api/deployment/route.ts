@@ -1,14 +1,21 @@
 import { buildInfo, readBuildInfo, deploymentCheckAuthorized } from '@/lib/server/deployment';
-import { getStore } from '@/lib/server/store';
+import { getStore, type Store } from '@/lib/server/store';
+import {withVercelDemo} from '@/lib/server/vercel-demo';
+import {vercelDemoEnabled, vercelDemoSettings} from '../../../../scripts/vercel-demo-config.mjs';
 import { backendSettings, verifyBackendBuild } from '../../../../scripts/deployment-config.mjs';
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
+export const maxDuration = 60;
 const headers = { 'Cache-Control': 'no-store' };
 export function GET(request: Request) {
+  if(vercelDemoEnabled())return withVercelDemo(request,store=>inspect(request,store));
+  return inspect(request);
+}
+function inspect(request:Request, provided?:Store) {
   const internal = deploymentCheckAuthorized(request);
   try {
-    if (internal) { backendSettings(process.env); verifyBackendBuild(readBuildInfo(), process.env); }
-    const store = getStore();
+    if (internal) { if(vercelDemoEnabled())vercelDemoSettings();else backendSettings(process.env); verifyBackendBuild(readBuildInfo(), process.env); }
+    const store = provided||getStore();
     if (!internal) {
       const token = request.headers.get('cookie')?.match(/(?:^|;\s*)dukaanset_session=([A-Za-z0-9_-]{40,100})(?:;|$)/)?.[1];
       const user = store.authenticate(token || null);

@@ -9,7 +9,7 @@ const config: NextConfig = {
   poweredByHeader: false,
   logging:{incomingRequests:{ignore:[/\/verify-email/,/\/reset-password/,/\/accept-invite/]}},
   serverExternalPackages: ['node:sqlite','pdfkit','qrcode'],
-  outputFileTracingIncludes: { '/api/**/*': ['./public/fonts/pdf/*.ttf', './public/brand/storefront-logo.png', './public/brand/invoice-logo.png'] },
+  outputFileTracingIncludes: { '/api/**/*': ['./.dukaanset-build.json', './public/fonts/pdf/*.ttf', './public/brand/storefront-logo.png', './public/brand/invoice-logo.png'] },
   async headers() {
     return [{ source: '/:path*', headers: [
       ...(process.env.DUKAANSET_ENV === 'staging' ? [{ key: 'X-Robots-Tag', value: 'noindex, nofollow, noarchive' }] : []),

@@ -2,8 +2,17 @@ import { mkdirSync, writeFileSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
 import { setTimeout } from 'node:timers/promises';
 import { gatewaySettings, gatewayOutput, checkBackend } from './deployment-config.mjs';
+import {vercelDemoEnabled,vercelDemoSettings} from './vercel-demo-config.mjs';
+import {writeBuildInfo} from './build-info.mjs';
 
 try {
+  if(vercelDemoEnabled()) {
+    vercelDemoSettings();
+    writeBuildInfo();
+    const result=spawnSync(process.execPath,['scripts/run.mjs','build'],{stdio:'inherit',env:process.env,windowsHide:true});
+    if(result.status!==0)throw new Error('The Vercel demo application build failed.');
+    process.exit(0);
+  }
   const settings = gatewaySettings(process.env);
   for (const task of ['typecheck', 'test']) {
     const result = spawnSync(process.execPath, ['scripts/run.mjs', task], { stdio: 'inherit', env: process.env });

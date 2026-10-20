@@ -49,10 +49,12 @@ export class Store {
   readonly schemaVersion = 17;
   readonly runtimeRevision = "document-automation-v18.1.7";
   private transactionDepth = 0;
-  constructor(path = process.env.DATABASE_PATH || resolve(process.cwd(), ".data", "dukaanset.sqlite")) {
+  constructor(path = process.env.DATABASE_PATH || resolve(process.cwd(), ".data", "dukaanset.sqlite"), snapshot?: Uint8Array) {
+    if (snapshot && path !== ':memory:') throw new Error('Demo snapshots must use an isolated memory database.');
     // Runtime database directories are external mutable data, never bundle assets.
     if (path !== ":memory:") mkdirSync(dirname(resolve(/* turbopackIgnore: true */ path)), { recursive: true });
     this.db = new DatabaseSync(path);
+    if (snapshot) this.db.deserialize(snapshot);
     this.db.exec("PRAGMA foreign_keys = ON; PRAGMA busy_timeout = 5000; PRAGMA journal_mode = WAL;");
     const version = Number((this.db.prepare("PRAGMA user_version").get() as Row).user_version);
     if (version > 17) { this.db.close(); throw new Error("Database schema is newer than this application."); }
