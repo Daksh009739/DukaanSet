@@ -10,11 +10,22 @@ export function httpsOrigin(value, name) {
   return url.origin;
 }
 
+function releaseBranch(env, environment) {
+  const branch = env.DUKAANSET_RELEASE_BRANCH || (environment === 'staging' ? 'dev' : 'main');
+  if (!['dev', 'main'].includes(branch) || (environment === 'staging' && branch !== 'dev')) throw new Error('Select dev for staging, or explicitly select dev/main for the live release.');
+  return branch;
+}
+
+function refuseDemoRelease(env) {
+  if (env.DUKAANSET_VERCEL_DEMO === '1' || env.DUKAANSET_STAGING_DEMO_ONLY === '1' || env.NEXT_PUBLIC_DUKAANSET_DEMO_ONLY === '1') throw new Error('Remove demo-only settings before enabling a live account deployment.');
+}
+
 export function gatewaySettings(env) {
   const environment = env.VERCEL_ENV === 'production' ? 'production' : env.VERCEL_ENV === 'preview' ? 'staging' : env.DUKAANSET_ENV;
   if (!['staging', 'production'].includes(environment)) throw new Error('Select a staging or production deployment environment.');
+  if (environment === 'production') refuseDemoRelease(env);
   const branch = env.VERCEL_GIT_COMMIT_REF || env.DUKAANSET_GIT_BRANCH;
-  if (branch !== (environment === 'staging' ? 'dev' : 'main')) throw new Error('Only dev Preview and main Production are supported; provision isolated backends before enabling PR previews.');
+  if (branch !== releaseBranch(env, environment)) throw new Error('The checked-out branch must match this environment release branch; live dev deployments require DUKAANSET_RELEASE_BRANCH=dev.');
   const commit = env.VERCEL_GIT_COMMIT_SHA || env.DUKAANSET_GIT_SHA;
   if (!/^[a-f0-9]{40}$/i.test(commit || '')) throw new Error('A full Git commit SHA is required.');
   const origin = httpsOrigin(env.DUKAANSET_BACKEND_ORIGIN, 'DUKAANSET_BACKEND_ORIGIN');
@@ -31,6 +42,8 @@ export function backendSettings(env) {
   const environment = env.DUKAANSET_ENV || 'local';
   if (!['local', 'staging', 'production'].includes(environment)) throw new Error('DUKAANSET_ENV must be local, staging or production.');
   if (environment === 'local') return { environment };
+  releaseBranch(env, environment);
+  if (environment === 'production') refuseDemoRelease(env);
   if (env.DUKAANSET_STAGING_DEMO_ONLY === '1' && environment !== 'staging') throw new Error('Demo-only hosting is restricted to staging.');
   if (env.VERCEL === '1') throw new Error('The SQLite backend requires a persistent Node host, not Vercel Functions.');
   const publicOrigin = httpsOrigin(env.DUKAANSET_PUBLIC_ORIGIN, 'DUKAANSET_PUBLIC_ORIGIN');
@@ -61,7 +74,7 @@ export function gatewayOutput(settings) {
 
 export function verifyBackendBuild(info, env) {
   if ((env.DUKAANSET_ENV || 'local') === 'local') return;
-  if (!info || !/^[a-f0-9]{40}$/i.test(info.commit || '') || info.branch !== (env.DUKAANSET_ENV === 'staging' ? 'dev' : 'main') || info.environment !== env.DUKAANSET_ENV || info.publicOrigin !== env.DUKAANSET_PUBLIC_ORIGIN || !Number.isFinite(Date.parse(info.builtAt || '')) || !info.version) {
+  if (!info || !/^[a-f0-9]{40}$/i.test(info.commit || '') || info.branch !== releaseBranch(env, env.DUKAANSET_ENV) || info.environment !== env.DUKAANSET_ENV || info.publicOrigin !== env.DUKAANSET_PUBLIC_ORIGIN || !Number.isFinite(Date.parse(info.builtAt || '')) || !info.version) {
     throw new Error('Build metadata, static-page environment or site origin does not match this release.');
   }
 }

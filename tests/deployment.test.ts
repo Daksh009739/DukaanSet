@@ -26,6 +26,39 @@ test('backend checks require isolated durable storage, matching auth origins and
   for (const extra of [{ VERCEL: '1' }, { DUKAANSET_ENV: 'other' }, { AUTH_EMAIL_MODE: 'file' }, { RESEND_API_KEY: '' }, { DATABASE_PATH: '/tmp/shop.sqlite' }, { DATABASE_PATH: 'relative.sqlite' }, { AUTH_BASE_URL: 'https://production.example.com' }, { DUKAANSET_DATA_ROOT: '/var/lib/production' }]) assert.throws(() => backendSettings({ ...backend(), ...extra }));
   assert.deepEqual(backendSettings({ DUKAANSET_ENV: 'local' }), { environment: 'local' });
 });
+
+test('a live dev release is explicit on both hosts and still verifies the exact backend build', async () => {
+  const values = { ...gateway(), VERCEL_ENV: 'production', DUKAANSET_RELEASE_BRANCH: 'dev' };
+  assert.throws(() => gatewaySettings({ ...values, DUKAANSET_RELEASE_BRANCH: '' }));
+  const settings = gatewaySettings(values);
+  assert.equal(settings.environment, 'production');
+  assert.equal(settings.branch, 'dev');
+  const env = { ...backend(), DUKAANSET_ENV: 'production', DUKAANSET_RELEASE_BRANCH: 'dev' };
+  assert.equal(backendSettings(env).environment, 'production');
+  const info = { environment: 'production', branch: 'dev', commit: sha, publicOrigin: env.DUKAANSET_PUBLIC_ORIGIN, ready: true, builtAt: new Date().toISOString(), version: '0.1.0' };
+  verifyBackendBuild(info, env);
+  await checkBackend(settings, async () => Response.json(info));
+  assert.throws(() => verifyBackendBuild(info, { ...env, DUKAANSET_RELEASE_BRANCH: '' }));
+  for (const branch of ['main', 'feature/test']) {
+    assert.throws(() => gatewaySettings({ ...values, VERCEL_GIT_COMMIT_REF: branch }));
+    assert.throws(() => verifyBackendBuild({ ...info, branch }, env));
+    await assert.rejects(checkBackend(settings, async () => Response.json({ ...info, branch })));
+  }
+  await assert.rejects(checkBackend(settings, async () => Response.json({ ...info, commit: 'c'.repeat(40) })));
+  for (const branch of ['feature/test', 'DEV', 'main/dev']) assert.throws(() => gatewaySettings({ ...values, DUKAANSET_RELEASE_BRANCH: branch }));
+});
+
+test('real account deployments refuse leftover demo flags and cannot use the private local email outbox', () => {
+  const gatewayEnv = { ...gateway(), VERCEL_ENV: 'production', DUKAANSET_RELEASE_BRANCH: 'dev' };
+  const backendEnv = { ...backend(), DUKAANSET_ENV: 'production', DUKAANSET_RELEASE_BRANCH: 'dev' };
+  for (const key of ['DUKAANSET_VERCEL_DEMO', 'DUKAANSET_STAGING_DEMO_ONLY', 'NEXT_PUBLIC_DUKAANSET_DEMO_ONLY']) {
+    assert.throws(() => gatewaySettings({ ...gatewayEnv, [key]: '1' }), /demo-only/);
+    assert.throws(() => backendSettings({ ...backendEnv, [key]: '1' }), /demo-only/);
+  }
+  for (const extra of [{ AUTH_EMAIL_MODE: 'file' }, { AUTH_EMAIL_MODE: 'unavailable' }, { RESEND_API_KEY: '' }, { AUTH_EMAIL_FROM: '' }]) assert.throws(() => backendSettings({ ...backendEnv, ...extra }));
+  assert.throws(() => backendSettings({ ...backendEnv, VERCEL: '1' }), /persistent Node host/);
+  assert.throws(() => gatewaySettings({ ...gatewayEnv, RESEND_API_KEY: 'private' }));
+});
 test('gateway covers pages, APIs and assets without shipping SQLite functions or secrets', () => {
   const settings = gatewaySettings(gateway()), output = gatewayOutput(settings), text = JSON.stringify(output);
   assert.equal(output.version, 3); assert.equal(output.routes[0].dest, `${settings.origin}/$1`);
