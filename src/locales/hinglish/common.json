@@ -423,5 +423,9 @@
   "electronics": "Electronics ka business",
   "wholesale": "Wholesale ka business",
   "services": "Services ka business",
-  "stagingDemoBanner": "Temporary staging · Sirf demo data. Try Demo chunein. Registration aur external services abhi available nahi hain."
+  "stagingDemoBanner": "Free preview · Sirf isi browser session mein, zyada se zyada 7 din. Zaroori entries export karein.",
+  "previewTitle": "DukaanSet Try Karein",
+  "previewStart": "Khali workspace se shuru karein",
+  "previewHint": "Apni entries banayein ya sample data dekhein. Is free preview se permanent account nahi banta.",
+  "previewExpiry": "Workspace isi browser session mein zyada se zyada 7 din rahega. Session chhodne ya clear karne se pehle zaroori entries export karein."
 }

@@ -16,9 +16,9 @@ import {publicExamples,type PublicBusinessKey} from './public-data';
 
 function PublicLocale({language}:{language:Locale}){const {i18n}=useTranslation();useLayoutEffect(()=>{if(i18n.language!==language)void i18n.changeLanguage(language);},[language,i18n]);return null;}
 function useMarketing(){const {i18n,t}=useTranslation('marketing');return {m:t,language:locale(i18n.language),data:copy('marketing',i18n.language)};}
-export function DemoButton({children,label,className='m-button m-button-light',icon=true}:{children?:ReactNode;label?:string;className?:string;icon?:boolean}){
+export function DemoButton({children,label,className='m-button m-button-light',icon=true,scenario='standard'}:{children?:ReactNode;label?:string;className?:string;icon?:boolean;scenario?:'standard'|'blank'}){
  const {t,i18n}=useTranslation();const [loading,setLoading]=useState(false),[error,setError]=useState('');
- async function startDemo(){if(loading)return;setLoading(true);setError('');try{await api('/auth/demo',{language:locale(i18n.language)});window.location.assign('/app');}catch(cause){setError(localizedError(cause,i18n.language));setLoading(false);}}
+ async function startDemo(){if(loading)return;setLoading(true);setError('');try{await api('/auth/demo',{language:locale(i18n.language),scenario});window.location.assign(scenario==='blank'?'/onboarding/setup':'/app');}catch(cause){setError(localizedError(cause,i18n.language));setLoading(false);}}
  return <span className='m-demo-wrap'><button type='button' className={className} disabled={loading} aria-busy={loading} onClick={()=>void startDemo()}>{loading?t('demoOpening'):children??label??t('tryDemo')}{icon&&!loading&&<ArrowUpRight size={17}/>}</button>{error&&<span className='m-demo-error' role='alert'><SystemText value={error}/></span>}</span>;
 }
 const navigation=[['/features','features'],['/business-types','businessTypes'],['/how-it-works','how'],['/pricing','pricing'],['/help','help']] as const;

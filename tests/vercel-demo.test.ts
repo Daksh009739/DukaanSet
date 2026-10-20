@@ -48,6 +48,24 @@ test('invoice idempotency, stock and immutable payment history persist across sn
   const state=await(await operation(repo,cookie,base+'/state')).json();assert.equal(state.products.find((x:{id:string})=>x.id===p.id).quantityMilli,2000);assert.equal(state.payments.filter((x:{invoiceId:string})=>x.invoiceId===first.id).length,1);
   for(const original of seed.payments)assert.deepEqual(state.payments.find((x:{id:string})=>x.id===original.id),original);
 }));
+
+test('blank previews reuse onboarding and real calculations without inserting fictional shops or financial records',async()=>configured(async()=>{
+  const repo=new Repository(),created=await withVercelDemo(request('/api/auth/demo','',{language:'hi',scenario:'blank'}),undefined,repo);
+  assert.equal(created.status,201);const cookie=created.headers.get('set-cookie')!.split(';')[0],guest=await created.json();
+  assert.equal(guest.user.demo,true);assert.equal(guest.user.language,'hi');assert.equal(guest.user.name,'Guest');assert.deepEqual(guest.businesses,[]);
+  const setup={name:'QA Empty Business',merchantName:'QA Owner',category:'grocery',idempotencyKey:randomUUID()};
+  const onboard=await operation(repo,cookie,'/api/onboarding',setup);assert.equal(onboard.status,201);const session=await onboard.json();
+  assert.equal(session.user.name,'QA Owner');assert.equal(session.businesses.length,1);const base='/api/businesses/'+session.businesses[0].id;
+  const again=await(await operation(repo,cookie,'/api/onboarding',setup)).json();assert.deepEqual(again.businesses,session.businesses);
+  const state=await(await operation(repo,cookie,base+'/state')).json();for(const key of ['products','customers','suppliers','invoices','payments','purchases','expenses'])assert.equal(state[key].length,0,key);
+  const product=await(await operation(repo,cookie,base+'/products',{name:'Entered item',unit:'pcs',quantityMilli:2000,pricePaise:10000,costPaise:6000})).json();
+  const invoice=await(await operation(repo,cookie,base+'/invoices',{items:[{productId:product.id,quantityMilli:1000}],payments:[{method:'cash',amountPaise:10000}],idempotencyKey:randomUUID()})).json();
+  assert.equal(invoice.totalPaise,10000);assert.equal(invoice.paidPaise,10000);
+  assert.equal((await operation(repo,cookie,'/api/auth/register',{})).status,403);
+  assert.equal((await operation(repo,cookie,'/api/auth/demo/reset',{})).status,200);
+  const cleared=await(await operation(repo,cookie,base+'/state')).json();assert.equal(cleared.products.length,0);assert.equal(cleared.invoices.length,0);assert.equal(cleared.customers.length,0);
+  assert.equal((await(await operation(repo,cookie,'/api/session')).json()).businesses.length,1);
+}));
 test('concurrent financial requests cannot overwrite each other and an explicit retry creates one additional invoice',async()=>configured(async()=>{
   const repo=new Repository(),{cookie,session}=await demo(repo),base='/api/businesses/'+session.businesses[0].id;
   const p=await(await operation(repo,cookie,base+'/products',{name:'Concurrent stock',sku:'CAS-1',unit:'pcs',quantityMilli:3000,pricePaise:10000,costPaise:6000,minStockMilli:0})).json();

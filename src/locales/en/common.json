@@ -423,5 +423,9 @@
   "electronics": "Electronics",
   "wholesale": "Wholesale",
   "services": "Services",
-  "stagingDemoBanner": "Temporary staging · Demo data only. Choose Try Demo. Registration and external services are unavailable."
+  "stagingDemoBanner": "Free preview · Browser session only, up to 7 days. Export important entries.",
+  "previewTitle": "Explore DukaanSet",
+  "previewStart": "Start a blank workspace",
+  "previewHint": "Use your own entries, or explore sample data. This free preview does not create a permanent account.",
+  "previewExpiry": "Your workspace stays in this browser session for up to 7 days. Export important entries before leaving or clearing the session."
 }

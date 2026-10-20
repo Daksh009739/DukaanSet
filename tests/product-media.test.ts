@@ -43,6 +43,19 @@ test('creation queues durable enrichment without delaying product or stock commi
     assert.equal(media.summary(f.business, item.id).status, 'failed'); assert.equal(f.store.db.prepare('SELECT count(*) AS n FROM movements').get()!.n, 1);
   } finally { f.store.close(); }
 });
+
+test('on-demand lookup processes only the requested business/product and honours disabled media without financial changes', async () => {
+  const f=fixture();try{
+    const first=f.add('Tomato'),chosen=f.add('Pyaz'),other=f.store.register({name:'Other QA',email:crypto.randomUUID()+'@example.test',password:'Strong-private-123',language:'en',businessName:'Other Shop',category:'grocery'});
+    const foreign=f.store.createProduct(other.user.id,other.businesses[0].id,{name:'Potato',unit:'kg',pricePaise:1000,quantityMilli:1000}),searched:string[]=[];
+    const media=new ProductMediaService(f.store,{search:async p=>{searched.push(p.name);return[];},download:async()=>{throw Error('No images');}}),before=f.store.state(f.user,f.business);
+    assert.equal(await media.processOne({businessId:f.business,productId:foreign.id}),false);assert.equal(searched.length,0);
+    assert.equal(await media.processOne({businessId:f.business,productId:chosen.id}),true);assert.deepEqual(searched,['Pyaz']);assert.equal(media.summary(f.business,chosen.id).status,'fallback');
+    assert.equal(media.summary(f.business,first.id).status,'queued');assert.equal(media.summary(other.businesses[0].id,foreign.id).status,'queued');
+    media.saveSettings(f.user,f.business,{enabled:false});assert.equal(await media.processOne({businessId:f.business,productId:first.id}),false);assert.deepEqual(searched,['Pyaz']);
+    const after=f.store.state(f.user,f.business);assert.deepEqual(after.metrics,before.metrics);assert.deepEqual(after.movements,before.movements);assert.deepEqual(after.payments,before.payments);
+  }finally{f.store.close();}
+});
 test('licensed thumbnail, cache deduplication and suggestion association preserve financial records', async () => {
   const f = fixture(); try {
     let searches = 0; const image = await sharp({ create: { width: 640, height: 480, channels: 3, background: '#eeeeee' } }).jpeg().toBuffer();

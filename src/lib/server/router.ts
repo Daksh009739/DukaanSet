@@ -1,5 +1,6 @@
 import type { Store } from "./store";
 import {stagingDemoOnly} from '../../../scripts/deployment-config.mjs';
+import {vercelDemoEnabled} from '../../../scripts/vercel-demo-config.mjs';
 import { getStore } from "./store";
 import { DomainError, isDomainError, object, keys, language, oneOf } from "./validation";
 import { createHash } from "node:crypto";
@@ -103,8 +104,8 @@ export async function handleRequest(request: Request, store: Store = getStore())
       if (action === "demo") {
         throttle("demo:global", 10, 600_000);
         const input=object(await body(request)); keys(input,["language","scenario"]);
-        if(input.scenario!==undefined&&!['standard','closing'].includes(String(input.scenario)))throw new DomainError('INVALID_INPUT','Unknown demo scenario.');
-        const session = store.demo(input.language===undefined?"hinglish":language(input.language),input.scenario==='closing'?'closing':'standard'), secret = store.issueSession(session.user.id);
+        if(input.scenario!==undefined&&!['standard','closing','blank'].includes(String(input.scenario)))throw new DomainError('INVALID_INPUT','Unknown demo scenario.');
+        const session = store.demo(input.language===undefined?"hinglish":language(input.language),input.scenario==='closing'?'closing':input.scenario==='blank'?'blank':'standard'), secret = store.issueSession(session.user.id);
         return json(session, 201, { "Set-Cookie": cookie(secret, request) });
       }
       if(action==='verify'){const session=auth.verify(await body(request));return json(session,200,{'Set-Cookie':cookie(store.issueSession(session.user.id),request)});}
@@ -182,8 +183,8 @@ export async function handleRequest(request: Request, store: Store = getStore())
     if(action==='product-media'&&recordId){
       if(verb==='GET'&&subAction==='image'){const photo=media.read(userId,businessId,recordId,url.searchParams.get('candidate'));return new Response(new Uint8Array(photo.bytes),{headers:{'Content-Type':photo.mime,'Cache-Control':'private, no-store','X-Content-Type-Options':'nosniff','Content-Security-Policy':"default-src 'none'; sandbox"}});}
       if(verb==='GET'&&!subAction)return json(media.detail(userId,businessId,recordId));
-      if(verb==='POST'&&subAction==='refresh'){throttle(`media:${userId}`,6);return json(media.refresh(userId,businessId,recordId));}
-      if(verb==='POST'&&subAction==='select')return json(media.select(userId,businessId,recordId,await body(request)));
+      if(verb==='POST'&&subAction==='refresh'){throttle(`media:${userId}`,6);const result=media.refresh(userId,businessId,recordId);if(vercelDemoEnabled()){await media.processOne({businessId,productId:recordId});return json(media.detail(userId,businessId,recordId));}return json(result);}
+      if(verb==='POST'&&subAction==='select'){const result=media.select(userId,businessId,recordId,await body(request));if(vercelDemoEnabled()&&result.media.selected==='automatic'){throttle(`media:${userId}`,6);await media.processOne({businessId,productId:recordId});return json(media.detail(userId,businessId,recordId));}return json(result);}
       if(verb==='POST'&&subAction==='upload'){throttle(`upload:${userId}`,20);const bytes=await readBody(request,MAX_IMAGE_BYTES),mime=request.headers.get('content-type')?.split(';')[0]||'';return json(await media.upload(userId,businessId,recordId,bytes,mime,request.headers.get('x-image-rights')==='confirmed'),201);}
     }
     if(action==='record-details'&&recordId&&verb==='GET')return json(new RecordService(store).detail(userId,businessId,recordId,url.searchParams.get('type')));

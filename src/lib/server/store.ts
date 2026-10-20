@@ -656,10 +656,11 @@ export class Store {
     data.attachments = this.rows("SELECT id,business_id,product_id,invoice_id,mime,size,sha256,date FROM attachments WHERE business_id=?", businessId);
     return data;
   }
-  demo(preference: User["language"] = "hinglish",scenario:'standard'|'closing'='standard'): Session {
+  demo(preference: User["language"] = "hinglish",scenario:'standard'|'closing'|'blank'='standard'): Session {
     return this.transaction(() => {
     const userId = uid(), at = stamp(), baseline = new Date(Date.parse(at) - 7 * 86_400_000).toISOString();
-    this.run("INSERT INTO users(id,name,email,password_hash,language,demo,created_at) VALUES(?,?,?,?,?,?,?)", userId, "Aarav Sharma", `demo-${userId}@example.invalid`, hashPassword(randomBytes(32).toString("hex")), preference, 1, baseline);
+    this.run("INSERT INTO users(id,name,email,password_hash,language,demo,created_at) VALUES(?,?,?,?,?,?,?)", userId, scenario==='blank'?'Guest':"Aarav Sharma", `${scenario==='blank'?'preview':'demo'}-${userId}@example.invalid`, hashPassword(randomBytes(32).toString("hex")), preference, 1, baseline);
+    if(scenario==='blank')return this.session(userId);
     return scenario==='closing'?this.seedClosingDemo(userId):this.seedDemo(userId);
     });
   }
@@ -674,6 +675,7 @@ export class Store {
         for (const table of ["invoice_cancellations","deliveries","documents","communication_preferences","whatsapp_inbound","whatsapp_connections","invoice_branding","demand_followups", "demand_conversions", "reorder_drafts", "demand_dismissals", "demand_requests", "attachments", "idempotency", "payments", "movements", "inventory_entries", "purchases", "invoices", "expenses", "closings", "audit", "products", "customers", "suppliers"]) this.run(`DELETE FROM ${table} WHERE business_id=?`, business.id);
         this.run('DELETE FROM business_settings WHERE business_id=?',business.id);
       }
+      if(session.user.email===`preview-${userId}@example.invalid`){for(const business of session.businesses)this.audit(userId,business.id,'demo.reset','Blank preview cleared without sample records');return this.session(userId);}
       const result = session.businesses.length===1&&session.businesses[0].category==='clothing'?this.seedClosingDemo(userId,session.businesses[0]):this.seedDemo(userId, session.businesses);
       for (const business of result.businesses) this.audit(userId, business.id, "demo.reset", "Fictional demo workspace reset");
       return result;
